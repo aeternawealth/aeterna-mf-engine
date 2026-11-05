@@ -215,6 +215,7 @@ details.faq p{margin-top:8px;color:var(--ink-2);max-width:80ch}
 .checks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--rule);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px;background:var(--surface)}
 .checks input,.cf .checks input{accent-color:var(--teal);width:auto;padding:0;border:0;margin:0;flex:none}
 .checks label{white-space:nowrap}
+.big-fig{font:600 34px/1 var(--f-display);color:var(--teal)}
 .tag{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px;white-space:nowrap}
 a.sol:hover{border-color:var(--teal)}
 .sol-row{display:grid;grid-template-columns:1fr auto;gap:20px}
@@ -244,7 +245,7 @@ footer.site a{color:var(--ink-2)}
     <nav class="main" id="nav">
       <a href="#home">Home</a>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Mutual funds</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Every equity and index fund, by category</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Every equity and index fund, by category</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <a href="#solutions">Solutions</a><a href="#tools">Tools</a><a href="#about">About</a><a href="#contact">Contact</a>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
@@ -288,6 +289,12 @@ footer.site a{color:var(--ink-2)}
   </div></section>
 
   <section class="band tint"><div class="wrap">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><div class="eyebrow">This month in numbers</div><h2 style="margin-top:10px">What the data says right now</h2></div><a href="#insights">All insights →</a></div>
+    <div class="grid g3" style="margin-top:24px" id="insCards"></div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
     <div class="eyebrow">Open mutual fund research</div>
     <h2 style="margin-top:10px">Three questions, answered with data</h2>
     <div class="grid g3" style="margin-top:28px">
@@ -373,6 +380,8 @@ footer.site a{color:var(--ink-2)}
 <div data-view="method" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="methodPage"></div></section></div>
 <!-- SOLUTIONS -->
 <div data-view="solutions" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="solPage"></div></section></div>
+<!-- INSIGHTS -->
+<div data-view="insights" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="insPage"></div></section></div>
 <!-- TOOLS -->
 <div data-view="tools" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="toolsPage"></div></section></div>
 <!-- ABOUT -->
@@ -399,7 +408,7 @@ footer.site a{color:var(--ink-2)}
 
 <script>
 (()=>{
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s), $$=(s,root)=>[...(root||document).querySelectorAll(s)];
 const S={funds:[],byCode:new Map(),meta:{},holdings:null,cat:'Flexi Cap',plan:'Regular',hz:'Overall',q:'',cmp:[]};
 try{const c=JSON.parse(localStorage.getItem('aw_cmp')||'[]');if(Array.isArray(c))S.cmp=c.slice(0,4)}catch(e){}
 const saveCmp=()=>{try{localStorage.setItem('aw_cmp',JSON.stringify(S.cmp))}catch(e){}};
@@ -446,6 +455,7 @@ function noHoldings(f){
     :`Its rating uses the track record only: the 10% portfolio pillar is left out and the other weights scale up. Checks that need holdings (SEBI category limits, close-to-index) can't be run for it.`;
   return `<div class="card" style="margin-top:12px"><b>Holdings not available</b><p class="muted" style="margin-top:6px">${why} ${effect}</p><p class="muted" style="font-size:12.5px;margin-top:6px">We check every AMC's disclosures twice a month and add holdings as soon as we can read them.</p></div>`}
 async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdings.json').then(r=>r.json())}catch(e){S.holdings={}}}return S.holdings}
+const cats_=()=>cats();
 const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund'];
   const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
 
@@ -513,6 +523,7 @@ const inr=v=>v==null||!isFinite(v)?'–':'₹'+Math.round(v).toLocaleString('en-
 const inrS=v=>{if(v==null||!isFinite(v))return'–';const a=Math.abs(v);return a>=1e7?'₹'+(v/1e7).toFixed(2)+' cr':a>=1e5?'₹'+(v/1e5).toFixed(2)+' lakh':inr(v)};
 const TOOLS=[
  {id:'sip',t:'SIP calculator',d:'What a monthly SIP could grow to, with an optional yearly step-up.'},
+ {id:'sipreal',t:'SIP backtest',d:'What a real SIP in any fund would be worth today, from actual NAVs.'},
  {id:'lump',t:'Lump sum',d:'Growth of a one-time investment at an assumed return.'},
  {id:'goal',t:'Goal planner',d:'The monthly SIP or lump sum a goal needs, after inflation.'},
  {id:'tax',t:'Capital-gains tax',d:'Estimate tax on selling mutual funds, bonds or unlisted shares.'}];
@@ -547,6 +558,7 @@ function toolsPage(){
   <p class="muted" style="font-size:12.5px;margin-top:22px;max-width:90ch">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Tax estimates ignore surcharge, grandfathering, losses set off and special cases; please check with us or your tax adviser before acting.</p>`;
   $$('#toolsPage [data-t]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.t;toolsPage()});
   const body=$('#toolBody');
+  if(cur==='sipreal'){sipRealTool(body);return}
   if(cur==='sip'){
     body.innerHTML=`<div class="tool"><div class="card stack">${fld('sM','Monthly SIP (₹)',10000,500,500000,500)}${fld('sY','Years',15,1,40,1)}${fld('sR','Assumed return a year (%)',12,1,20,0.5)}${fld('sS','Step-up every year (%)',0,0,25,1)}</div>
     <div class="stack"><div class="out"><div><span>Amount invested</span><b id="oInv">–</b></div><div><span>Estimated value</span><b id="oVal">–</b></div><div><span>Estimated gain</span><b id="oGain">–</b></div></div><div class="card" id="oChart"></div></div></div>`;
@@ -590,8 +602,88 @@ function toolsPage(){
   }
 }
 
+
+/* ---------- real-data SIP backtest + insights ---------- */
+const SER={},slugC=c=>c.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+async function series(cat){if(!(cat in SER)){try{SER[cat]=await fetch('data/series/'+slugC(cat)+'.json').then(r=>r.ok?r.json():null)}catch(e){SER[cat]=null}}return SER[cat]}
+async function lastNav(){if(!('__l' in SER)){try{SER.__l=await fetch('data/series/last.json').then(r=>r.ok?r.json():null)}catch(e){SER.__l=null}}return SER.__l}
+async function benchSeries(){if(!('__b' in SER)){try{SER.__b=await fetch('data/series/bench.json').then(r=>r.ok?r.json():null)}catch(e){SER.__b=null}}return SER.__b}
+async function insights(){if(!S.ins){try{S.ins=await fetch('data/insights.json').then(r=>r.ok?r.json():{items:[]})}catch(e){S.ins={items:[]}}}return S.ins}
+const monLbl=m=>{const[y,mm]=m.split('-');return new Date(+y,+mm-1,1).toLocaleDateString('en-IN',{month:'short',year:'numeric'})};
+function sipRun(navs,si,amt,now){ // monthly buys at month-end NAVs from index si; valued at today's NAV (now)
+  let units=0,inv=0;const rows=[];for(let i=si;i<navs.length;i++){const v=navs[i];if(v){units+=amt/v;inv+=amt;rows.push({i,inv,val:units*v})}}
+  if(!inv||!now)return null;const N=navs.length;const val=units*now;rows.push({i:N,inv,val});
+  const flows=rows.slice(0,-1).map(r=>r.i);
+  const f=r=>flows.reduce((s,i)=>s+amt*Math.pow(1+r,N-i),0)-val;
+  let lo=-0.99,hi=1,x=null;if(f(lo)*f(hi)<=0){for(let k=0;k<80;k++){const m=(lo+hi)/2;(f(lo)*f(m)<=0)?hi=m:lo=m}x=Math.pow(1+(lo+hi)/2,12)-1}
+  return {inv,val,xirr:x,rows}}
+function monthChart(rows,months,bench){
+  const pts=rows.map(r=>({lab:months[r.i]||'Today',inv:r.inv,val:r.val,b:bench?bench.find(b=>b.i===r.i)?.val:null}));
+  const W=620,H=230,L=58,R=12,T=14,B=28, mx=Math.max(...pts.map(p=>Math.max(p.val,p.inv,p.b||0)),1);
+  const x=i=>L+i*(W-L-R)/Math.max(pts.length-1,1), y=v=>T+(H-T-B)*(1-v/mx);
+  const path=k=>pts.map((p,i)=>p[k]==null?'':`${i&&pts[i-1][k]!=null?'L':'M'}${x(i).toFixed(1)},${y(p[k]).toFixed(1)}`).join('');
+  const fmt=t=>t>=1e7?(t/1e7).toFixed(t>=1e8?0:1)+' cr':t>=1e5?(t/1e5).toFixed(t>=1e6?0:1)+' L':t?Math.round(t/1e3)+'k':'0';
+  const step=Math.ceil(pts.length/7);
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="SIP value over time">
+   ${[0,.25,.5,.75,1].map(f=>f*mx).map(t=>`<line x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${fmt(t)}</text>`).join('')}
+   <path d="${path('inv')}" fill="none" stroke="var(--ink-3)" stroke-width="1.6" stroke-dasharray="4 3"/>
+   ${bench?`<path d="${path('b')}" fill="none" stroke="var(--brass)" stroke-width="1.8"/>`:''}
+   <path d="${path('val')}" fill="none" stroke="var(--teal)" stroke-width="2.4"/>
+   ${pts.map((p,i)=>i%step===0||i===pts.length-1?`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${p.lab==='Today'?'Today':monLbl(p.lab).replace(' ',' ')}</text>`:'').join('')}</svg>
+   <div class="row" style="gap:16px;font-size:12.5px;margin-top:4px"><span><span style="display:inline-block;width:14px;height:3px;background:var(--teal);vertical-align:middle;margin-right:6px"></span>Your SIP in the fund</span>${bench?`<span><span style="display:inline-block;width:14px;height:3px;background:var(--brass);vertical-align:middle;margin-right:6px"></span>Same SIP in the index (TRI)</span>`:''}<span><span style="display:inline-block;width:14px;border-top:2px dashed var(--ink-3);vertical-align:middle;margin-right:6px"></span>Money put in</span></div>`}
+async function sipRealTool(body){
+  const cats=cats_().filter(c=>c!=='Index Fund').concat(['Index Fund']);
+  const A=S.toolArgs||{};S.toolArgs=null;
+  body.innerHTML=`<div class="tool"><div class="card stack">
+    <label class="field"><span>Category</span><select id="rC">${cats.map(c=>`<option${c===(A.category||'Flexi Cap')?' selected':''}>${c}</option>`).join('')}</select></label>
+    <label class="field"><span>Fund</span><select id="rF"></select></label>
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>SIP started</span><select id="rS"></select></label><label class="field"><span>Monthly amount (₹)</span><input type="number" id="rA" value="10000" min="500" step="500"></label></div>
+    <p class="muted" style="font-size:12.5px">Uses each fund's actual month-end NAVs (Growth option), one instalment a month, valued at the latest NAV. No assumed returns.</p></div>
+    <div class="stack" id="rOut"><div class="card"><p class="muted">Loading NAV history…</p></div></div></div>`;
+  const draw=async()=>{
+    const cat=$('#rC').value, d=await series(cat), bs=await benchSeries(), ln=await lastNav();
+    const now=c=>ln&&ln.nav[c]?ln.nav[c][1]:null;
+    if(!d){$('#rOut').innerHTML='<div class="card"><p class="muted">NAV history for this category is not available yet. It is added with the next daily update.</p></div>';return}
+    const fs=S.funds.filter(f=>f.category===cat&&d.nav[f.code]).sort((a,b)=>(a.plan_type===b.plan_type?0:a.plan_type==='Regular'?-1:1)||a.name.localeCompare(b.name));
+    const fSel=$('#rF'), prevF=fSel.dataset.cat===cat?fSel.value:'';
+    fSel.innerHTML=`<option value="all">All ${esc(cat)} funds, Regular plans</option>`+fs.map(f=>`<option value="${f.code}">${esc(f.name)} · ${f.plan_type}</option>`).join('');
+    fSel.value=prevF||(A.fund?String(A.fund):(A.start?'all':String(fs.find(f=>f.plan_type==='Regular')?.code||'all')));fSel.dataset.cat=cat;
+    const ms=d.months, sSel=$('#rS'), prevS=sSel.value||A.start||ms[Math.max(0,ms.length-37)];
+    sSel.innerHTML=ms.map(m=>`<option value="${m}">${monLbl(m)}</option>`).reverse().join('');sSel.value=ms.includes(prevS)?prevS:ms[Math.max(0,ms.length-37)];
+    const si=ms.indexOf(sSel.value), amt=Math.max(100,+$('#rA').value||10000), out=$('#rOut');
+    if(fSel.value==='all'){
+      const res=fs.filter(f=>f.plan_type==='Regular').map(f=>({f,r:sipRun(d.nav[f.code],si,amt,now(f.code))})).filter(x=>x.r&&d.nav[x.f.code][si]).sort((a,b)=>b.r.val/b.r.inv-a.r.val/a.r.inv);
+      if(!res.length){out.innerHTML='<div class="card"><p class="muted">No fund in this category has NAVs from that month. Pick a later start.</p></div>';return}
+      const under=res.filter(x=>x.r.val<x.r.inv).length, inv=res[0].r.inv;
+      out.innerHTML=`<div class="out"><div><span>Funds with NAVs from ${monLbl(sSel.value)}</span><b>${res.length}</b></div><div><span>Worth less than put in</span><b class="${under?'neg':''}">${under} of ${res.length}</b></div><div><span>Each SIP put in</span><b>${inrS(inv)}</b></div></div>
+      <div class="tablewrap"><table><thead><tr><th class="l">Fund</th><th>Value today</th><th>Gain</th><th>XIRR</th></tr></thead><tbody>${res.map(x=>`<tr><td class="l" style="white-space:normal"><a href="#fund-${x.f.code}">${esc(x.f.name)}</a></td><td class="num">${inrS(x.r.val)}</td><td class="num ${sg(x.r.val-x.r.inv)}">${spct(x.r.val/x.r.inv-1)}</td><td class="num ${sg(x.r.xirr)}">${x.r.xirr==null?'–':spct(x.r.xirr)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="muted" style="font-size:12.5px">₹${amt.toLocaleString('en-IN')} a month from ${monLbl(sSel.value)} to ${dmy(S.meta.as_of)}. Past results only; future returns will differ.</p>`;
+      return}
+    const f=S.byCode.get(+fSel.value), r=sipRun(d.nav[f.code],si,amt,now(f.code));
+    if(!r||!d.nav[f.code][si]){out.innerHTML=`<div class="card"><p class="muted">${esc(f.name)} has no NAV for ${monLbl(sSel.value)}; it started later. Pick a later month.</p></div>`;return}
+    const bn=bs&&f.benchmark&&bs.tri[f.benchmark]?bs.tri[f.benchmark]:null, br=bn?sipRun(bn,si,amt,ln&&ln.tri[f.benchmark]?ln.tri[f.benchmark][1]:null):null;
+    out.innerHTML=`<div class="out"><div><span>Money put in</span><b>${inrS(r.inv)}</b></div><div><span>Value today</span><b class="${sg(r.val-r.inv)}">${inrS(r.val)}</b></div><div><span>Return (XIRR)</span><b class="${sg(r.xirr)}">${r.xirr==null?'–':spct(r.xirr)}</b></div></div>
+    <div class="card">${monthChart(r.rows,ms,br?br.rows:null)}</div>
+    <div class="card"><p style="font-size:14.5px">${r.val<r.inv?`This SIP is <b class="neg">${inrS(r.inv-r.val)} below</b> the money put in.`:`This SIP has grown <b class="pos">${inrS(r.val-r.inv)}</b> on the money put in.`} ${br?`The same SIP in the ${esc(f.benchmark)} TRI would be worth ${inrS(br.val)}${br.xirr!=null?` (XIRR ${spct(br.xirr)})`:''}, so the fund is <b class="${sg(r.val-br.val)}">${inrS(Math.abs(r.val-br.val))} ${r.val>=br.val?'ahead of':'behind'}</b> the index.`:''}</p>
+    <p class="muted" style="font-size:12.5px;margin-top:8px">₹${amt.toLocaleString('en-IN')} a month from ${monLbl(sSel.value)}, at month-end NAVs, valued at the NAV of ${dmy(ln&&ln.nav[f.code]?ln.nav[f.code][0]:S.meta.as_of)}. Past results only; future returns will differ. <a href="#fund-${f.code}">Fund page →</a></p></div>`};
+  $('#rC').onchange=()=>{$('#rF').value='';draw()};$('#rF').onchange=draw;$('#rS').onchange=draw;$('#rA').oninput=draw;draw();
+}
+async function insightsBand(){const I=await insights(),el=$('#insCards');if(!el)return;const its=(I.items||[]).filter(i=>i.kind!=='scoreboard'||true).slice(0,3);
+  if(!its.length){el.closest('section').hidden=true;return}
+  el.innerHTML=its.map(insCard).join('');bindTry(el)}
+const insCard=i=>`<div class="card stack" style="gap:10px"><div class="big-fig">${esc(i.figure)}</div><b style="font:600 18px/1.3 var(--f-display)">${esc(i.title)}</b><p class="muted" style="font-size:14px">${esc(i.text)}</p>${i.try?`<a href="#${i.try.tool==='ratings'?'ratings':'tools'}" data-try='${esc(JSON.stringify(i.try))}' style="margin-top:auto;font-size:14px">Try it yourself →</a>`:''}</div>`;
+function bindTry(el){$$('[data-try]',el).forEach(a=>a.onclick=()=>{const t=JSON.parse(a.dataset.try);if(t.tool!=='ratings'){S.tool=t.tool;S.toolArgs=t}})}
+async function insightsPage(){const I=await insights(),el=$('#insPage');
+  const sb=(I.items||[]).find(i=>i.kind==='scoreboard');
+  el.innerHTML=`<div class="eyebrow">Insights</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">This month in numbers</h1>
+  <p class="lede" style="margin-top:12px">Facts worked out from our own data every day${I.as_of?`, last on ${dmy(I.as_of)}`:''}. Each one links to a tool so you can check it, or run it for your own dates and funds.</p>
+  <div class="grid g3" style="margin-top:26px">${(I.items||[]).map(insCard).join('')||'<p class="muted">Insights appear after the next daily update.</p>'}</div>
+  ${sb?`<h2 style="font-size:26px;margin-top:40px">Active funds vs their index, by category</h2><div class="tablewrap" style="margin-top:14px"><table><thead><tr><th class="l">Category</th><th>Beat the index, 3Y</th><th>Beat the index, 5Y</th></tr></thead><tbody>${sb.rows.map(r=>`<tr><td class="l">${esc(r.category)}</td><td class="num">${r.beat3} of ${r.n3} <span class="muted">(${Math.round(r.beat3/r.n3*100)}%)</span></td><td class="num">${r.n5?`${r.beat5} of ${r.n5} <span class="muted">(${Math.round(r.beat5/r.n5*100)}%)</span>`:'–'}</td></tr>`).join('')}</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:8px">Regular plans with at least 3 (or 5) years of history; index = the category benchmark's total-return index.</p>`:''}
+  <p class="note" style="margin-top:28px">These describe what has happened, not what will. They are not a recommendation to buy or sell any fund.</p>`;
+  bindTry(el)}
+
 /* ---------- search ---------- */
-const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity and index fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['Solutions','#solutions','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Tools','#tools','SIP, lump sum, goal and capital-gains calculators'],['SIP calculator','#tools','Tools'],['Capital-gains tax','#tools','Tools'],['PMS','#solutions','Solutions'],['AIFs','#solutions','Solutions'],['Bonds','#solutions','Solutions'],['Unlisted shares','#solutions','Solutions'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
+const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity and index fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['Solutions','#solutions','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Tools','#tools','SIP, lump sum, goal and capital-gains calculators'],['SIP backtest','#tools','Real SIP results from actual NAVs'],['Insights','#insights','This month in numbers'],['SIP calculator','#tools','Tools'],['Capital-gains tax','#tools','Tools'],['PMS','#solutions','Solutions'],['AIFs','#solutions','Solutions'],['Bonds','#solutions','Solutions'],['Unlisted shares','#solutions','Solutions'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
 function openSearch(){const o=$('#srch');o.hidden=false;const q=$('#srchQ');q.value='';drawSearch('');setTimeout(()=>q.focus(),10)}
 function closeSearch(){$('#srch').hidden=true}
 function drawSearch(q){
@@ -601,7 +693,7 @@ function drawSearch(q){
     .sort((a,b)=>(a.plan_type==='Regular'?0:1)-(b.plan_type==='Regular'?0:1)||(b.aum_cr||0)-(a.aum_cr||0)).slice(0,10):[];
   const ext=h=>h.startsWith('http')?' target="_blank" rel="noopener"':'';
   $('#srchRes').innerHTML=(fs.length?`<div class="grp">Funds</div>`+fs.map(f=>`<a href="#fund-${f.code}"><span style="min-width:0"><span style="display:block">${esc(f.name)}</span><small>${esc(f.plan_type)} · ${esc(f.category)}</small></span>${tier(f.tier)}</a>`).join(''):'')
-   +(pg.length?`<div class="grp">Pages</div>`+pg.map(p=>`<a href="${p[1]}"${ext(p[1])} data-tool="${p[0]==='SIP calculator'?'sip':p[0]==='Capital-gains tax'?'tax':''}"><span>${esc(p[0])}</span><small>${esc(p[2])}</small></a>`).join(''):'')
+   +(pg.length?`<div class="grp">Pages</div>`+pg.map(p=>`<a href="${p[1]}"${ext(p[1])} data-tool="${p[0]==='SIP calculator'?'sip':p[0]==='SIP backtest'?'sipreal':p[0]==='Capital-gains tax'?'tax':''}"><span>${esc(p[0])}</span><small>${esc(p[2])}</small></a>`).join(''):'')
    ||`<p class="muted" style="padding:14px">No match. Try a fund house, like "HDFC", or a category, like "small cap".</p>`;
   const as=$$('#srchRes a');as.forEach((a,i)=>{a.setAttribute('aria-selected',i===0);a.onclick=()=>{if(a.dataset.tool)S.tool=a.dataset.tool;closeSearch()}});
 }
@@ -899,14 +991,15 @@ function staticPages(){
 function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
-  if(!['home','ratings','fund','compare','method','solutions','tools','about','contact','disclosures'].includes(view))view='home';
+  if(!['home','ratings','fund','compare','method','insights','solutions','tools','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-  const mfv=['ratings','compare','method','fund'].includes(view); const ddb=$('#ddMf .ddbtn'); if(mfv)ddb.setAttribute('aria-current','page');else ddb.removeAttribute('aria-current');
+  const mfv=['ratings','compare','method','fund','insights'].includes(view); const ddb=$('#ddMf .ddbtn'); if(mfv)ddb.setAttribute('aria-current','page');else ddb.removeAttribute('aria-current');
   $('#ddMf').classList.remove('open');ddb.setAttribute('aria-expanded','false');
   if(view==='contact'&&S.topic){const m=$('#cm');$$('#ci input').forEach(i=>{if(S.topic.toLowerCase().includes(i.value.toLowerCase()))i.checked=true});if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
   if(view==='tools')toolsPage();
+  if(view==='insights')insightsPage();
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
   if(view==='ratings')ratings(); if(view==='fund')fund(code); if(view==='compare')compare();
   window.scrollTo(0,0);
@@ -914,7 +1007,7 @@ function route(){
 $('#ddMf .ddbtn').onclick=e=>{const d=$('#ddMf'),o=d.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',o)};
 document.addEventListener('click',e=>{if(!e.target.closest('#ddMf')){$('#ddMf').classList.remove('open');$('#ddMf .ddbtn').setAttribute('aria-expanded','false')}});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
-load().then(()=>{home();toolCards();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
+load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});
 })();
 </script>

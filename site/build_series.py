@@ -43,14 +43,13 @@ def month_end(series: pd.Series, months: pd.PeriodIndex) -> list:
 
 def sip(navs: list, start_i: int, amount=10000):
     """Monthly SIP from month index start_i at month-end NAVs, valued at the last NAV. Returns (invested, value)."""
+    """navs: month-end NAVs followed by today's NAV as the last element (valuation only, no instalment)."""
     units = inv = 0.0
-    last = None
-    for v in navs[start_i:]:
+    for v in navs[start_i:-1]:
         if v:
             units += amount / v
             inv += amount
-            last = v
-    return (inv, units * last) if last else (0.0, 0.0)
+    return (inv, units * navs[-1]) if inv and navs[-1] else (0.0, 0.0)
 
 
 def main():
@@ -62,7 +61,8 @@ def main():
         return 0
     tri = pd.read_csv(tri_p, index_col=0, parse_dates=True)
     end = max(pd.Timestamp(f["nav_date"]) for f in funds if f.get("nav_date"))
-    months = pd.period_range(START, end.to_period("M"), freq="M")
+    # completed months only: these files change once a month; today's NAVs live in last.json (tiny, daily)
+    months = pd.period_range(START, end.to_period("M") - 1, freq="M")
     mlist = [str(p) for p in months]
     SER.mkdir(parents=True, exist_ok=True)
 
@@ -77,7 +77,7 @@ def main():
         last[str(f["code"])] = [str(d.index[-1].date()), sig(d.iloc[-1])]
     sizes = {}
     for cat, nav in by_cat.items():
-        body = {"months": mlist, "nav": nav, "last": {c: last[c] for c in nav}}
+        body = {"months": mlist, "nav": nav}
         path = SER / f"{slug(cat)}.json"
         path.write_text(json.dumps(body, separators=(",", ":")))
         sizes[cat] = path.stat().st_size // 1024
@@ -88,7 +88,8 @@ def main():
         s = tri[b].dropna()
         btri[b] = month_end(s, months)
         blast[b] = [str(s.index[-1].date()), sig(s.iloc[-1])]
-    (SER / "bench.json").write_text(json.dumps({"months": mlist, "tri": btri, "last": blast}, separators=(",", ":")))
+    (SER / "bench.json").write_text(json.dumps({"months": mlist, "tri": btri}, separators=(",", ":")))
+    (SER / "last.json").write_text(json.dumps({"as_of": str(end.date()), "nav": last, "tri": blast}, separators=(",", ":")))
 
     # ---------------------------------------------------------------- insights (all recomputed each run)
     ins = []
@@ -96,11 +97,12 @@ def main():
     # 1. SIP started at the last market peak: is it under water?
     n50 = "NIFTY 50" if "NIFTY 50" in tri.columns else benches[0]
     m50 = pd.Series(month_end(tri[n50], months), index=months, dtype="float64")
+    m50_now = float(tri[n50].dropna().iloc[-1])
     window = m50.iloc[-36:-3]            # a peak at least 3 months back, within 3 years
     if len(window) and window.notna().any():
         pk = window.idxmax()
         pk_i = list(months).index(pk)
-        below_now = m50.iloc[-1] < window.max()
+        below_now = m50_now < window.max()
         for cat in ["Large Cap", "Mid Cap", "Small Cap", "Flexi Cap"]:
             fs = [f for f in reg if f["category"] == cat and str(f["code"]) in by_cat.get(cat, {})]
             res = []
@@ -108,7 +110,7 @@ def main():
                 navs = by_cat[cat][str(f["code"])]
                 if navs[pk_i] is None:
                     continue
-                inv, val = sip(navs[:-1] + [last[str(f["code"])][1]], pk_i)
+                inv, val = sip(navs + [last[str(f["code"])][1]], pk_i)
                 if inv:
                     res.append(val / inv - 1)
             if len(res) >= 8:

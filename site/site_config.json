@@ -1,0 +1,6 @@
+{
+  "social": ["https://www.linkedin.com/company/aeterna-wealth", "https://www.instagram.com/aeternawealth/", "https://x.com/AeternaWealth"],
+  "ga4_id": "",
+  "cloudflare_beacon_token": "",
+  "_note": "ga4_id = Google Analytics 4 measurement ID (G-XXXXXXX); cloudflare_beacon_token = Cloudflare Web Analytics site token. Empty = not loaded."
+}

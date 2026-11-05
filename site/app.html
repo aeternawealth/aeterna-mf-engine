@@ -260,7 +260,7 @@ footer.site a{color:var(--ink-2)}
     <div>
       <div class="eyebrow">Wealth management · India</div>
       <h1 style="margin-top:14px">Your family's wealth, looked after in one place.</h1>
-      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds, unlisted shares and tax-aware planning, from a team of chartered accountants, advocates and wealth professionals. Our mutual fund research is open to everyone: every equity fund in India, rated on its track record.</p>
+      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds, unlisted shares and tax-aware planning, from a team of chartered accountants, advocates and wealth professionals. Our mutual fund data is open to everyone: every equity fund in India, rated on its track record.</p>
       <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#solutions">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
       <div class="facts" id="facts"></div>
     </div>
@@ -294,7 +294,7 @@ footer.site a{color:var(--ink-2)}
   </div></section>
 
   <section class="band"><div class="wrap">
-    <div class="eyebrow">Open mutual fund research</div>
+    <div class="eyebrow">Open mutual fund data</div>
     <h2 style="margin-top:10px">Three questions, answered with data</h2>
     <div class="grid g3" style="margin-top:28px">
       <div class="card stack"><h3>How has this fund really done?</h3><p class="muted">Returns over 6 months to 5 years against its index, its rank in the category, and how it held up in falls.</p><a href="#ratings">Browse by category →</a></div>
@@ -460,8 +460,8 @@ const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap'
 
 /* ---------- solutions (home cards + Solutions page) ---------- */
 const SOL=[
- {id:'mf',t:'Mutual funds',tag:'Our largest practice',short:'Equity, hybrid and debt funds across fund houses, chosen with our own research and reviewed regularly.',
-  body:'We work across fund houses, using the research on this site: track record against the right index, cost, portfolio overlap and the range of outcomes a fund has delivered. We help you build a portfolio that fits your goals and review it as markets and your life change.',
+ {id:'mf',t:'Mutual funds',tag:'Our largest practice',short:'Equity, hybrid and debt funds across fund houses, chosen with our own fund data and reviewed regularly.',
+  body:'We work across fund houses, using the fund data on this site: track record against the right index, cost, portfolio overlap and the range of outcomes a fund has delivered. We help you build a portfolio that fits your goals and review it as markets and your life change.',
   who:'Anyone investing for a goal, from a first SIP to a large lump sum.',link:['#ratings','Explore fund ratings']},
  {id:'pms',t:'PMS',short:'Portfolio management services, with manager due diligence and side-by-side comparison.',
   body:'Portfolio managers run a concentrated portfolio held in your own name. We compare strategies on track record, risk, fees and style, and help you understand how a PMS fits with what you already own.',
@@ -747,6 +747,8 @@ function drawSearch(q){
 }
 function searchInit(){
   $('#srchBtn').onclick=openSearch;
+  try{const c=new URLSearchParams(location.search).get('cat');if(c&&S.funds.some(f=>f.category===c))S.cat=c}catch(e){}
+  try{const q=new URLSearchParams(location.search).get('q');if(q){openSearch();setTimeout(()=>{$('#srchQ').value=q;drawSearch(q)},20)}}catch(e){}
   $('#srch').onclick=e=>{if(e.target.id==='srch')closeSearch()};
   $('#srchQ').oninput=e=>drawSearch(e.target.value);
   $('#srchQ').onkeydown=e=>{const as=$$('#srchRes a');let i=as.findIndex(a=>a.getAttribute('aria-selected')==='true');
@@ -1003,10 +1005,10 @@ function staticPages(){
   <p>We did not tune the weights to improve this result: that would fit one market cycle and fail in the next. Instead we present ratings as an assessment of the record so far and repeat the test each year.</p>
   <h3>5. Limitations</h3><p>Categories and benchmarks are today's; SEBI recategorised funds in 2018 and redefined multi cap in 2020. Fund manager changes are not yet tracked. ${holdCov()} Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and AMC monthly portfolio disclosures.</p>
   <h3>6. Updates</h3><p>NAVs, returns and period ranks refresh every weekday morning after AMFI publishes the previous day's NAVs. Track-record ratings, holdings, expense ratios and AUM refresh twice a month, on the 11th and the 16th, after fund houses publish their monthly portfolios (due by the 10th).</p>`;
-  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A wealth partner that shows its research</h1>
+  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A wealth partner that shows its working</h1>
   <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889), headquartered in New Delhi and working with families across India. We help families manage their wealth across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and unlisted shares, with tax-aware planning throughout. Insurance is coming soon.</p>
   <h3>Who we are</h3><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
-  <h3>How we work</h3><p>We build the research on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
+  <h3>How we work</h3><p>We build the fund data on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
   <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
   <div class="row" style="margin-top:22px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>`;
   $('#contactPage').innerHTML=`<div class="eyebrow">Contact</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Talk to us</h1>

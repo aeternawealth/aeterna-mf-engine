@@ -155,11 +155,13 @@ def main():
             return sum(10000 * (1 + mr) ** k for k in range(1, 241))
         diff = fv(r) - fv(r - g)
         ins.append({"id": "direct-regular", "kind": "cost", "gap": round(g * 100, 2),
-                    "title": "What the Regular plan costs over 20 years",
-                    "figure": f"{g * 100:.2f}%",
-                    "text": f"The typical gap between a fund's Regular and Direct expense ratio is {g * 100:.2f}% a year. "
-                            f"On a ₹10,000 monthly SIP for 20 years at an assumed 12%, that is about ₹{diff / 1e5:.1f} lakh. "
-                            f"Regular plans pay a distributor, like us, for our service; Direct plans don't.",
+                    "title": "Regular or Direct: what the extra cost pays for",
+                    "figure": f"{g * 100:.2f}% a year",
+                    "text": f"A fund's Regular plan typically costs {g * 100:.2f}% a year more than its Direct plan. That difference "
+                            f"pays a distributor, like us, to help choose and combine funds, rebalance, plan tax, handle the paperwork "
+                            f"and keep you on plan when markets fall. If you would rather do all of that yourself, the Direct plan of "
+                            f"the same fund costs less: on a ₹10,000 monthly SIP for 20 years at an assumed 12%, the gap adds up to about "
+                            f"₹{diff / 1e5:.1f} lakh.",
                     "try": {"tool": "sip"}})
     (OUT / "insights.json").write_text(json.dumps({"as_of": str(end.date()), "items": ins}, separators=(",", ":")))
     print("series:", len(by_cat), "categories", sizes, "| bench", len(btri), "| insights", [i["id"] for i in ins])

@@ -1,11 +1,32 @@
-# Aeterna Wealth - Indian mutual fund research
+# Aeterna Wealth
 
-> Track-record ratings, returns vs total-return benchmarks, risk, costs, holdings and portfolio overlap for every Indian equity and index mutual fund. Published by Aeterna Wealth Private Limited, AMFI-registered mutual fund distributor (ARN-317889). Ratings describe past track records and are not forecasts or investment advice.
+> Aeterna Wealth Private Limited (Aeterna Wealth) is a wealth management firm in New Delhi, India, working with families across India on mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds, unlisted shares and tax-aware planning. It is an AMFI-registered mutual fund distributor (ARN-317889); it is not a SEBI-registered investment adviser and does not advise on individual listed shares. Its website publishes open fund data: track-record ratings, returns against total-return indices, risk, costs and holdings for every Indian equity and index mutual fund, updated every weekday. Ratings describe past track records and are not forecasts or investment advice.
+
+Contact: +91-85959-93600 · contact@aeternawealth.com · B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029
+Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram.com/aeternawealth/, https://x.com/AeternaWealth
+
+## Fund data
+- [All categories](https://aeternawealth.com/mutual-funds/)
+- [Large Cap funds](https://aeternawealth.com/mutual-funds/large-cap/)
+- [Mid Cap funds](https://aeternawealth.com/mutual-funds/mid-cap/)
+- [Small Cap funds](https://aeternawealth.com/mutual-funds/small-cap/)
+- [Large & Mid Cap funds](https://aeternawealth.com/mutual-funds/large-and-mid-cap/)
+- [Multi Cap funds](https://aeternawealth.com/mutual-funds/multi-cap/)
+- [Flexi Cap funds](https://aeternawealth.com/mutual-funds/flexi-cap/)
+- [Focused funds](https://aeternawealth.com/mutual-funds/focused/)
+- [Value / Contra funds](https://aeternawealth.com/mutual-funds/value-contra/)
+- [Dividend Yield funds](https://aeternawealth.com/mutual-funds/dividend-yield/)
+- [ELSS funds](https://aeternawealth.com/mutual-funds/elss/)
+- [Sectoral/Thematic funds](https://aeternawealth.com/mutual-funds/sectoral-thematic/)
+- [Index Fund funds](https://aeternawealth.com/mutual-funds/index-fund/)
 
 ## Open data
-- [All funds, latest metrics (JSON)](https://aeternawealth.com/data/funds.json)
-- [Dataset dates and sources (JSON)](https://aeternawealth.com/data/meta.json)
+- [All funds, latest metrics (CSV)](https://aeternawealth.com/data/funds.csv)
+- [All funds (JSON)](https://aeternawealth.com/data/funds.json)
+- [Data dates and sources (JSON)](https://aeternawealth.com/data/meta.json)
+- [This month's insights (JSON)](https://aeternawealth.com/data/insights.json)
 
-## Pages
+## More
+- [Full text for language models](https://aeternawealth.com/llms-full.txt)
 - [Method and backtest](https://aeternawealth.com/#method)
 - [Disclosures](https://aeternawealth.com/#disclosures)

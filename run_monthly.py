@@ -69,8 +69,13 @@ def main():
             log(f"  downloader failed: {type(e).__name__}: {e}")
     up = assign_peers(u, tri)
     hold = H.load_cached(hmonth) if a.daily else pd.DataFrame()
+    before = H.load_cached(hmonth) if not a.daily else pd.DataFrame()   # a re-run must not lose portfolios already parsed
     if not len(hold):
         hold = H.analyse(hmonth, up, prev_month=(pd.Period(hmonth) - 1).strftime("%Y-%m"), log=log)
+    if not a.daily:   # AMCs publish by the 10th and some late: never rate on fewer holdings than last month
+        hold, hmonth = H.with_fallback(hold, hmonth, log=log, same_month=before)
+        if len(hold):
+            H.save_cached(hold, hmonth)   # the daily refresh re-uses exactly this set
 
     log("[6/7] Metrics, protocols, ranking committee")
     out = rank_universe(u, navs, tri, as_of=a.as_of, ter=ingest.load_manual("ter"),

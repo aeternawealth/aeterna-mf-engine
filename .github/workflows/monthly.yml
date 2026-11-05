@@ -4,7 +4,12 @@ name: Monthly ratings
 on:
   schedule:
     - cron: "50 3 12 * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      holdings_month:
+        description: "Holdings month YYYY-MM (blank = previous calendar month)"
+        required: false
+        default: ""
 permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
@@ -13,11 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
-      - run: python run_monthly.py
+      - name: Run engine
+        env: { HMONTH: "${{ inputs.holdings_month }}" }
+        run: python run_monthly.py ${HMONTH:+--holdings-month "$HMONTH"}
       - run: python site/build_data.py && python site/build_site.py
       - name: Health check
         run: |
@@ -26,7 +33,11 @@ jobs:
           d=p.read_csv('outputs/latest/rankings.csv')
           assert len(d)>1500, 'too few funds'
           assert d.tier.ne('Unrated').sum()>1000, 'too few rated funds'
-          print('ok', len(d))
+          import json
+          h=json.load(open('site/data/holdings.json')); m=json.load(open('site/data/meta.json'))
+          assert m.get('holdings_month'), 'no holdings month on the site'
+          assert len(h)>=450, f'holdings coverage too low: {len(h)} funds'
+          print('ok', len(d), 'funds,', len(h), 'with holdings, month', m['holdings_month'])
           PY
       - name: Commit results
         run: |

@@ -378,6 +378,64 @@ def analyse(month: str, universe_with_peers: pd.DataFrame, prev_month: str | Non
     return out
 
 
+def latest_cached_month(before: str | None = None) -> str | None:
+    """Most recent month (YYYY-MM) with parsed holdings on disk, optionally strictly before `before`."""
+    done = sorted(p.name for p in HOLD_DIR.glob("20??-??") if (p / "holdings_valid.csv").exists())
+    if before:
+        done = [m for m in done if m < before]
+    return done[-1] if done else None
+
+
+def with_fallback(hold: pd.DataFrame, month: str, log=print, same_month: pd.DataFrame | None = None) -> tuple[pd.DataFrame, str]:
+    """Fill funds missing from `month` with their latest earlier parsed portfolio.
+
+    - nothing parsed for `month` (portfolios not published yet, downloads blocked): use the previous month whole
+    - some AMCs missing (late publishers, a failed download): carry those funds' previous portfolio forward
+    Each row records the month its portfolio is from in `holdings_month`.
+    `same_month`: what was already parsed for `month` before this run (a re-run keeps those portfolios).
+    Returns (holdings, month the site should show as the holdings month).
+    """
+    if same_month is not None and len(same_month):
+        keep = same_month[~same_month.pair_key.isin(hold.pair_key)] if len(hold) else same_month
+        if len(keep):
+            top = {**same_month.attrs.get("top", {}), **(hold.attrs.get("top", {}) if len(hold) else {})}
+            hold = pd.concat([hold, keep], ignore_index=True) if len(hold) else keep.copy()
+            hold.attrs["top"] = top
+            log(f"  holdings: kept {len(keep)} portfolios already parsed for {month} that this run did not re-download")
+    prev_m = latest_cached_month(before=month)
+    if len(hold):
+        hold = hold.copy()
+        hold["holdings_month"] = month
+    if not prev_m:
+        return hold, month
+    prev = load_cached(prev_m)
+    if not len(prev):
+        return hold, month
+    prev = prev.copy()
+    prev["holdings_month"] = prev.get("holdings_month", prev_m)
+    if not len(hold):
+        log(f"  holdings: nothing parsed for {month}; re-using {len(prev)} portfolios from {prev_m}")
+        return prev, prev_m
+    carry = prev[~prev.pair_key.isin(hold.pair_key)].copy()
+    for c in [c for c in carry.columns if c == "turnover_1m" or c.startswith("drift_")]:
+        carry[c] = np.nan   # month-on-month measures are not valid for a carried-forward portfolio
+    top = dict(prev.attrs.get("top", {}))
+    top = {k: v for k, v in top.items() if k in set(carry.pair_key)}
+    out = pd.concat([hold, carry], ignore_index=True)
+    out.attrs["top"] = {**top, **hold.attrs.get("top", {})}
+    log(f"  holdings: {len(hold)} portfolios from {month}, {len(carry)} carried forward from {prev_m} "
+        f"(AMCs not published / not downloaded) -> {len(out)} total")
+    return out, month
+
+
+def save_cached(hold: pd.DataFrame, month: str) -> None:
+    import json as _json
+    folder = HOLD_DIR / month
+    folder.mkdir(parents=True, exist_ok=True)
+    hold.to_csv(folder / "holdings_valid.csv", index=False)
+    (folder / "_top.json").write_text(_json.dumps(hold.attrs.get("top", {}), separators=(",", ":")))
+
+
 def load_cached(month: str) -> pd.DataFrame:
     """Parsed results of a previous analyse() run (used by the daily refresh; raw AMC files are not kept in git)."""
     import json as _json

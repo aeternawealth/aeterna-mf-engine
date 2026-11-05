@@ -96,8 +96,14 @@ def _get(url, **kw):
 def list_amcs() -> list[str]:
     """All AMCs from advisorkhoj's 'Select Company' dropdown -> URL slugs."""
     h = _get(INDEX.format(slug="HDFC-Mutual-Fund")).text
-    names = re.findall(r'<option value="([^"0][^"]*)">', h)
-    return [n.strip().replace(" ", "-") for n in names if "mutual fund" in n.lower()] or AMCS
+    # any attributes: the page's own AMC (HDFC here) is the `selected` option and was being skipped
+    names = re.findall(r'<option\b[^>]*\bvalue="([^"]+)"[^>]*>', h)
+    slugs = [n.strip().replace(" ", "-") for n in names if n.strip().lower().endswith("mutual fund")]
+    if len(slugs) < 20:   # dropdown changed or failed to load: use the built-in list
+        return AMCS
+    if "HDFC-Mutual-Fund" not in slugs:
+        slugs.insert(0, "HDFC-Mutual-Fund")
+    return list(dict.fromkeys(slugs))
 
 
 def find_link(slug: str, month: str):

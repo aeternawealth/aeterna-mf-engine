@@ -34,4 +34,5 @@ jobs:
         run: |
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
           git add outputs/latest data/raw site/data site/dist && git commit -m "Daily NAV refresh $(date -u +%F)" || echo "nothing to commit"
-          git push
+          # main may have moved during the run (code pushes, the office-PC upload): rebase our data commit onto it
+          for i in 1 2 3; do git push && break; git pull --rebase origin main || { git rebase --abort; exit 1; }; done

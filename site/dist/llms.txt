@@ -1,6 +1,6 @@
 # Aeterna Wealth
 
-> Aeterna Wealth Private Limited (Aeterna Wealth) is a wealth management firm in New Delhi, India, working with families across India on mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds, unlisted shares and tax-aware planning. It is an AMFI-registered mutual fund distributor (ARN-317889); it is not a SEBI-registered investment adviser and does not advise on individual listed shares. Its website publishes open fund data: track-record ratings, returns against total-return indices, risk, costs and holdings for every Indian equity and index mutual fund, updated every weekday. Ratings describe past track records and are not forecasts or investment advice.
+> Aeterna Wealth Private Limited (Aeterna Wealth) is a wealth management firm in New Delhi, India, working with families across India on mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds, unlisted shares and tax-aware planning. It is an AMFI-registered mutual fund distributor (ARN-317889); it is not a SEBI-registered investment adviser and does not advise on individual listed shares. Its website compares every Indian equity and index mutual fund using public data from AMFI, NSE Indices and fund houses: track-record ratings, returns against total-return indices, risk, costs and holdings for every Indian equity and index mutual fund, updated every weekday. Ratings describe past track records and are not forecasts or investment advice.
 
 Contact: +91-85959-93600 · contact@aeternawealth.com · B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029
 Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram.com/aeternawealth/, https://x.com/AeternaWealth
@@ -20,7 +20,7 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 - [Sectoral/Thematic funds](https://aeternawealth.com/mutual-funds/sectoral-thematic/)
 - [Index Fund funds](https://aeternawealth.com/mutual-funds/index-fund/)
 
-## Open data
+## Downloadable data
 - [All funds, latest metrics (CSV)](https://aeternawealth.com/data/funds.csv)
 - [All funds (JSON)](https://aeternawealth.com/data/funds.json)
 - [Data dates and sources (JSON)](https://aeternawealth.com/data/meta.json)

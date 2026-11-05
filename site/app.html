@@ -223,6 +223,12 @@ a.sol:hover{border-color:var(--teal)}
 .prose p+p{margin-top:12px}
 .prose h3{margin:28px 0 10px}
 footer.site{background:var(--surface);border-top:1px solid var(--rule);padding-block:44px 36px;font-size:13.5px;color:var(--ink-2)}
+
+.why{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}.why b{font:600 17px/1.3 var(--f-display);color:var(--ink)}.why p{margin:4px 0 0;color:var(--ink-2);font-size:14.5px}
+@media (max-width:640px){.why{grid-template-columns:1fr}}
+.gaprow{display:grid;grid-template-columns:118px 1fr 88px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.gaprow .bar{position:relative;height:10px;background:var(--teal-soft);border-radius:5px}.gaprow .bar i{position:absolute;top:0;bottom:0;background:var(--teal);border-radius:5px}
+.gaprow .rng{font:12px var(--f-mono);color:var(--ink-3);display:block;margin-top:3px}.gaprow b{font:600 14px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
 footer.site .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px}footer.site .cols>:first-child{grid-column:span 2}
 @media (max-width:800px){footer.site .cols{grid-template-columns:1fr 1fr}footer.site .cols>:first-child{grid-column:1/-1}}
 footer.site a{color:var(--ink-2)}
@@ -262,7 +268,7 @@ footer.site a{color:var(--ink-2)}
     <div>
       <div class="eyebrow">Wealth management · India</div>
       <h1 style="margin-top:14px">Your family's wealth, looked after in one place.</h1>
-      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds, unlisted shares and tax-aware planning, from a team of chartered accountants, advocates and wealth professionals. Our mutual fund data is open to everyone: every equity fund in India, rated on its track record.</p>
+      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds and unlisted shares, chosen and reviewed by a team of chartered accountants, advocates and wealth professionals. We measure every equity fund in India against its index, every weekday, so each fund you hold has to earn its place.</p>
       <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#solutions">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
       <div class="facts" id="facts"></div>
     </div>
@@ -273,6 +279,26 @@ footer.site a{color:var(--ink-2)}
       <div id="strip" style="margin-top:6px"></div>
       <p id="stripSum" style="font-size:14px;margin-top:10px"></p>
     </figure>
+  </div></section>
+
+  <section class="band"><div class="wrap grid g2" style="align-items:start;gap:40px">
+    <div class="stack" style="min-width:0">
+      <div class="eyebrow">Why the choice of fund matters</div>
+      <h2 id="gapH">Same category, same three years, lakhs apart</h2>
+      <p class="lede" id="gapTxt"></p>
+      <div id="gapRows" style="margin-top:6px"></div>
+      <p class="muted" style="font-size:12.5px">Regular plans with a 3-year record, strongest and weakest 3-year return in each category, to the latest NAV. Past returns, not a forecast.</p>
+    </div>
+    <div class="stack" style="min-width:0">
+      <div class="eyebrow">Why families choose Aeterna</div>
+      <div class="why">
+        <div><b>Everything in one view</b><p>Mutual funds, PMS, AIFs, bonds and unlisted shares, reviewed together for overlap, cost and risk, wherever they are held.</p></div>
+        <div><b>Tax planned in, not after</b><p>Chartered accountants and advocates on the team plan what to sell and when, so gains use the ₹1.25 lakh yearly exemption and losses are not wasted.</p></div>
+        <div><b>Numbers before stories</b><p>Every fund is measured against its total-return index and its peers. When one you hold falls behind, it comes up in your review.</p></div>
+        <div><b>Clear about what we earn</b><p>Commission on Regular plans, fees on PMS and AIFs. We tell you what we earn on a product before you invest.</p></div>
+      </div>
+      <a class="btn primary" href="#contact" style="align-self:flex-start;margin-top:4px">Talk to us</a>
+    </div>
   </div></section>
 
   <section class="band tint"><div class="wrap">
@@ -296,8 +322,8 @@ footer.site a{color:var(--ink-2)}
   </div></section>
 
   <section class="band"><div class="wrap">
-    <div class="eyebrow">Open mutual fund data</div>
-    <h2 style="margin-top:10px">Three questions, answered with data</h2>
+    <div class="eyebrow">Free fund tools</div>
+    <h2 style="margin-top:10px">Three questions every investor should ask</h2>
     <div class="grid g3" style="margin-top:28px">
       <div class="card stack"><h3>How has this fund really done?</h3><p class="muted">Returns over 6 months to 5 years against its index, its rank in the category, and how it held up in falls.</p><a href="#ratings">Browse by category →</a></div>
       <div class="card stack"><h3>Do my funds own the same stocks?</h3><p class="muted">Put up to four funds side by side. See costs, risk and how much of each portfolio they share.</p><a href="#compare">Compare funds →</a></div>
@@ -316,9 +342,9 @@ footer.site a{color:var(--ink-2)}
   <section class="band tint"><div class="wrap grid g2">
     <div class="stack">
       <div class="eyebrow">We tested our own ratings</div>
-      <h2>Past winners did not keep winning</h2>
+      <h2>Last year's top-rated funds rarely stayed on top</h2>
       <p class="lede">We rebuilt our ratings at 13 dates from 2019 to 2025 using only data available at the time, then checked what happened next. Top-rated funds beat their index over the following three years less often than the average fund. Rankings by trailing returns did no better.</p>
-      <p class="muted">That is why our tiers describe a fund's track record and are not forecasts. Use them to understand a fund, then decide on cost, fit and diversification.</p>
+      <p class="muted">So a rating is where the work starts, not where it ends. We choose on cost, overlap, mandate, fit with your other holdings and tax, and review the choice every year. Our tiers describe a fund's track record; they are not forecasts.</p>
       <a href="#method">Read the method and full backtest →</a>
     </div>
     <div class="card"><b style="font-size:14px">Beat the benchmark over the next 3 years, by tier at the time</b><div id="btChart" style="margin-top:12px"></div><p class="muted" style="font-size:12.5px;margin-top:8px">Regular plans, 9 rating dates Jun 2019–Jun 2023, 2,257 fund-date observations, closed funds included.</p></div>
@@ -781,6 +807,7 @@ function home(){
   $('#leaders').innerHTML=L.map(c=>{const top=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.score!=null).sort((a,b)=>b.score-a.score).slice(0,3);
     return `<div class="card stack" style="gap:10px"><b style="font:600 17px var(--f-display)">${c}</b>${top.map((f,i)=>`<a href="#fund-${f.code}" style="text-decoration:none;color:inherit;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--rule)"><span class="mono muted">${i+1}</span><span style="min-width:0"><span style="display:block;font-weight:500;line-height:1.3">${esc(f.name)}</span><span class="muted mono" style="font-size:12px">3Y ${pct(f.ret_3Y)} · vs index ${spct(f.excess_3Y)}</span></span>${tier(f.tier)}</a>`).join('')}<a href="#ratings" data-cat="${c}" style="font-size:13.5px">Full ${c} table →</a></div>`}).join('');
   $$('#leaders a[data-cat]').forEach(a=>a.onclick=()=>{S.cat=a.dataset.cat});
+  gapBlock();
   $('#services').innerHTML=SOL.map(s=>`<a class="card stack sol" href="#solutions" style="gap:6px;text-decoration:none;color:inherit"><div class="row" style="justify-content:space-between;gap:8px"><b style="font:600 18px var(--f-display)">${s.t}</b>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div><span class="muted" style="font-size:14px">${s.short}</span></a>`).join('');
 }
 function drawStrip(cat){
@@ -935,6 +962,17 @@ async function fund(code){
   <p class="muted" style="font-size:12.5px;margin-top:10px">Returns are for the Growth option, point to point on the NAV date shown, a year compounded for periods over 1 year. Other sites may differ if they use another date, plan, option or a price index instead of TRI.</p></div>`;
   $('#addCmp').onclick=()=>{if(!S.cmp.includes(f.code)){S.cmp=[...S.cmp,f.code].slice(-4);saveCmp()}location.hash='compare'};
 }
+function gapBlock(){const el=$('#gapRows');if(!el)return;
+  const cats=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Flexi Cap','Focused','ELSS'];
+  const rows=cats.map(c=>{const F=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.ret_3Y!=null).sort((a,b)=>a.ret_3Y-b.ret_3Y);if(F.length<8)return null;
+    const lo=F[0],hi=F[F.length-1];return {c,lo,hi,gap:1e6*(Math.pow(1+hi.ret_3Y,3)-Math.pow(1+lo.ret_3Y,3))}}).filter(Boolean);
+  if(!rows.length){el.closest('section').hidden=true;return}
+  const top=rows.reduce((a,b)=>b.gap>a.gap?b:a),mx=Math.max(...rows.map(r=>r.hi.ret_3Y)),mn=Math.min(0,...rows.map(r=>r.lo.ret_3Y));
+  const L=v=>'₹'+(v/1e5).toFixed(1)+' lakh';
+  $('#gapH').textContent=`Same category, same three years, ${L(top.gap)} apart`;
+  $('#gapTxt').textContent=`₹10 lakh put into the strongest ${top.c==='ELSS'?'ELSS':top.c.toLowerCase()} fund three years ago is now worth ${L(top.gap)} more than the same amount in the weakest. Same SEBI rules, same market. Picking the fund, and moving on from a weak one in time, is where most of the difference is made.`;
+  const x=v=>((v-mn)/(mx-mn)*100).toFixed(1);
+  el.innerHTML=rows.map(r=>`<div class="gaprow"><span>${esc(r.c)}<span class="rng">${pct(r.lo.ret_3Y)} to ${pct(r.hi.ret_3Y)}</span></span><span class="bar" title="Weakest and strongest 3-year return in ${esc(r.c)}"><i style="left:${x(r.lo.ret_3Y)}%;right:${(100-x(r.hi.ret_3Y)).toFixed(1)}%"></i></span><b>${L(r.gap)}</b></div>`).join('')}
 function rangeBlock(f){
   const v=[f.hist3y_worst,f.hist3y_p10,f.hist3y_median,f.hist3y_p90,f.hist3y_best];
   const nar=innerWidth<640,st=nar||(Math.max(0.25,v[4])-Math.min(-0.05,v[0]))>0.45?0.1:0.05;

@@ -47,6 +47,21 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Sectoral/Thematic": "invest at least 80% in one sector or theme, such as banking, technology or infrastructure",
     "Index Fund": "track an index such as the Nifty 50 as closely and cheaply as possible",
 }
+CAT_PITCH = {   # what the category is for, in plain words
+    "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
+    "Mid Cap": "Companies ranked 101 to 250: more room to grow than large caps, and deeper falls along the way. Suits money you will not need for seven years or more. Funds differ widely here, so the choice of fund matters more than in large caps.",
+    "Small Cap": "India's smaller listed companies: the highest long-run return potential and the sharpest falls; drops of 30 to 50% have happened. Best built up slowly, for ten-year money, in a fund that can still buy and sell its stocks easily.",
+    "Large & Mid Cap": "At least 35% each in large and mid caps: a middle path between the stability of large companies and the growth of mid-sized ones.",
+    "Multi Cap": "At least 25% each in large, mid and small caps, so the fund cannot drift into one size of company. A ready-made spread across the market.",
+    "Flexi Cap": "The manager can move freely between large, mid and small companies. One good flexi cap fund can be the core of an equity portfolio; the risk is a manager whose style drifts with fashion.",
+    "Focused": "At most 30 stocks: high conviction, so results depend heavily on the manager's picks, for better and worse.",
+    "ELSS": "Tax-saving equity funds. The three-year lock-in also helps: it is hard to panic-sell in a fall.",
+    "Value / Contra": "Funds that buy out-of-favour companies. They can lag for years and then catch up quickly, so they reward patience.",
+    "Dividend Yield": "Mostly companies that pay high dividends, which has often made them steadier in falls.",
+    "Sectoral/Thematic": "One sector or theme, such as banking, pharma or technology. These show the widest spread of results of any category: a theme can lag for years. Most investors keep them to a small slice.",
+    "Index Fund": "Funds that follow an index at low cost. Between funds on the same index, the choice comes down to cost and how closely each one tracks it.",
+}
+
 TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
 
@@ -127,8 +142,8 @@ ORG_LD = {
     "name": ORG["brand"], "legalName": ORG["name"], "url": SITE + "/", "logo": SITE + "/og.png", "image": SITE + "/og.png",
     "telephone": ORG["phone"], "email": ORG["email"],
     "description": "Wealth management for families across India: mutual funds, PMS, AIFs, bonds, unlisted shares and "
-                   "tax-aware planning. AMFI-registered mutual fund distributor (ARN-317889), with open fund data and "
-                   "track-record ratings for every Indian equity and index fund.",
+                   "tax-aware planning. AMFI-registered mutual fund distributor (ARN-317889). Its website compares every Indian equity and "
+                   "index mutual fund, with returns against the right index and track-record ratings.",
     "address": {"@type": "PostalAddress", "streetAddress": ORG["street"], "addressLocality": ORG["city"],
                 "postalCode": ORG["pin"], "addressRegion": "Delhi", "addressCountry": "IN"},
     "areaServed": {"@type": "Country", "name": "India"},
@@ -380,11 +395,22 @@ def main():
     cat_cards = []
     for c in cats:
         L = by_cat[c]
+        lc = c if c == "ELSS" else c.lower()
         reg = [f for f in L if f["plan_type"] == "Regular"]
         e3 = [f for f in reg if f.get("excess_3Y") is not None]
         beat = sum(1 for f in e3 if f["excess_3Y"] > 0)
         bench = iname(next((f.get("benchmark") for f in L if f.get("benchmark")), None))
         path = f"/mutual-funds/{slug(c)}/"
+        r3 = sorted([f for f in reg if f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
+        gap_html = ""
+        if len(r3) >= 8 and c not in ("Index Fund", "Sectoral/Thematic"):
+            lo, hi = r3[0], r3[-1]
+            gap = 1e6 * ((1 + hi["ret_3Y"]) ** 3 - (1 + lo["ret_3Y"]) ** 3)
+            gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>₹{gap / 1e5:.1f} lakh</div>"
+                        f"<p style='margin-top:6px'>The difference, on ₹10 lakh invested three years ago, between the strongest {e(lc if c != 'ELSS' else c)} fund "
+                        f"({pct(hi['ret_3Y'])} a year) and the weakest ({pct(lo['ret_3Y'])} a year). Same category, same SEBI rules, same market. "
+                        + (f"<b>{beat} of {len(e3)}</b> funds beat {('the ' + e(bench) + ' total-return index') if bench else 'their index'} over the same period." if e3 else "")
+                        + "</p><p class='muted' style='font-size:12.5px;margin-top:6px'>Regular plans, to the latest NAV. Past returns, not a forecast.</p></div>")
         grp = made_idx if c == "Index Fund" else made_thm if c == "Sectoral/Thematic" else []
         sub = ("<h2 style='font-size:24px;margin-top:30px'>" + ("By index tracked" if c == "Index Fund" else "By theme") + "</h2><div class='row' style='margin-top:12px;gap:8px;flex-wrap:wrap'>"
                + "".join(f"<a class='btn' href='{pth}'>{e(nm)} <span class='muted'>({n})</span></a>" for nm, pth, n in grp) + "</div>") if grp else ""
@@ -395,18 +421,19 @@ def main():
                           f"<td>{tier_badge(f.get('tier'))}</td><td class='num'>{pct(f.get('ret_3Y'))}</td><td class='num {'pos' if (f.get('excess_3Y') or 0) > 0 else 'neg' if f.get('excess_3Y') is not None else ''}'>{spct(f.get('excess_3Y'))}</td>"
                           f"<td class='num'>{num(f.get('ter'), 2)}%</td><td class='num'>{cr(f.get('aum_cr'))}</td></tr>" for f in P)
             tabs += (f"<h2 style='font-size:24px;margin-top:32px'>{plan} plans ({len(P)})</h2><div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Fund</th><th>Rating</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>AUM</th></tr></thead><tbody>{trs}</tbody></table></div>")
-        faq = [(f"What does a {c.lower()} fund invest in?", f"SEBI requires {c.lower()} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
-               (f"How many {c.lower()} funds beat their index over 3 years?",
-                f"{beat} of {len(e3)} {c.lower()} funds (Regular plans with 3 years of history) beat {('the ' + bench + ' total-return index') if bench else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),
+        faq = [(f"What does a {lc} fund invest in?", f"SEBI requires {lc} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
+               (f"How many {lc} funds beat their index over 3 years?",
+                f"{beat} of {len(e3)} {lc} funds (Regular plans with 3 years of history) beat {('the ' + bench + ' total-return index') if bench else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),
                ("How are these funds rated?", "Each fund is compared only with funds in its category and plan type, on its long-run return over the index, risk-adjusted return, consistency, cost and portfolio. The ratings describe the track record so far; our own backtest found they do not predict future returns.")]
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
-        desc = (f"All {len(L)} {c.lower()} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
+        desc = (f"All {len(L)} {lc} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
                 f"{bench + ' TRI' if bench else 'their index'}, expense ratios and AUM. {beat} of {len(e3)} Regular plans beat the index over 3 years. Updated daily.")[:300]
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › {e(c)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{e(c)} funds in India</h1>
 <p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {('the ' + e(bench) + ' total-return index') if bench else 'their index'} and their peers. Data as of {dmy(as_of)}.</p>
-<p style="margin-top:14px;max-width:72ch">SEBI requires {e(c.lower())} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}. {f'Over the last 3 years, <b>{beat} of {len(e3)}</b> Regular plans beat the index.' if e3 else ''}</p>
+<p style="margin-top:14px;max-width:72ch">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
+{gap_html}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a></div>
 {sub}{tabs}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
@@ -418,14 +445,14 @@ def main():
         cat_cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{len(L)} plans · {f'{beat} of {len(e3)} beat the index over 3Y' if e3 else 'new category'}</span></a>")
 
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
-<h1 style="font-size:clamp(30px,4vw,44px)">Mutual funds in India: open fund data</h1>
-<p class="lede" style="margin-top:12px">Every equity and index fund, {len(funds):,} plans in {len(cats)} categories, with track-record ratings, returns against the right index, risk, costs and holdings. Updated every weekday; data as of {dmy(as_of)}.</p>
+<h1 style="font-size:clamp(30px,4vw,44px)">Every equity mutual fund in India, compared</h1>
+<p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right index and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cat_cards)}</div>
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
 <p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/#method">how the ratings work</a>.</p>
 </div></section>"""
-    write("/mutual-funds/", page("Mutual funds in India: ratings, returns and costs for every fund | Aeterna Wealth",
-                                 f"Open data on {len(funds):,} Indian equity and index mutual fund plans: track-record ratings, returns vs total-return indices, risk, expense ratios and holdings. Updated every weekday.",
+    write("/mutual-funds/", page("Every mutual fund in India compared: ratings, returns and costs | Aeterna Wealth",
+                                 f"Compare {len(funds):,} Indian equity and index mutual fund plans: track-record ratings, returns vs total-return indices, risk, expense ratios and holdings. Updated every weekday.",
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))
 
     # ---- the app (home page) with full head
@@ -473,13 +500,13 @@ def main():
     about = (f"> {ORG['name']} (Aeterna Wealth) is a wealth management firm in New Delhi, India, working with families across India on "
              "mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds, unlisted shares and tax-aware "
              f"planning. It is an AMFI-registered mutual fund distributor ({ORG['arn']}); it is not a SEBI-registered investment adviser "
-             "and does not advise on individual listed shares. Its website publishes open fund data: track-record ratings, returns against "
+             "and does not advise on individual listed shares. Its website compares every Indian equity and index mutual fund using public data from AMFI, NSE Indices and fund houses: track-record ratings, returns against "
              "total-return indices, risk, costs and holdings for every Indian equity and index mutual fund, updated every weekday. "
              "Ratings describe past track records and are not forecasts or investment advice.")
     links = "\n".join(f"- [{c} funds]({SITE}/mutual-funds/{slug(c)}/)" for c in cats)
     llms = (f"# Aeterna Wealth\n\n{about}\n\nContact: {ORG['phone']} · {ORG['email']} · {ORG['street']}, {ORG['city']} {ORG['pin']}\n"
             + ("Profiles: " + ", ".join(SOCIAL) + "\n" if SOCIAL else "")
-            + f"\n## Fund data\n- [All categories]({SITE}/mutual-funds/)\n{links}\n\n## Open data\n- [All funds, latest metrics (CSV)]({SITE}/data/funds.csv)\n"
+            + f"\n## Fund data\n- [All categories]({SITE}/mutual-funds/)\n{links}\n\n## Downloadable data\n- [All funds, latest metrics (CSV)]({SITE}/data/funds.csv)\n"
             f"- [All funds (JSON)]({SITE}/data/funds.json)\n- [Data dates and sources (JSON)]({SITE}/data/meta.json)\n- [This month's insights (JSON)]({SITE}/data/insights.json)\n\n"
             f"## Tools and guides\n- [Calculators: SIP, lump sum, goal, SWP, EMI, inflation, capital-gains tax]({SITE}/calculators/)\n- [Fund houses]({SITE}/mutual-funds/amc/)\n- [Insights]({SITE}/insights/)\n\n"
             f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/#method)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")

@@ -1,6 +1,9 @@
-Aeterna MF Engine run 2026-11-05 11:08
+Aeterna MF Engine run 2026-11-05 11:22
 [1/7] Universe (AMFI NAVAll)
   1687 equity + index schemes (growth, Direct & Regular)
+[2/7] AMFI extras: TER, AUM, market-cap list
+  TER: 1672/1687 plans matched
+  AUM (July - September 2026): 838 schemes
 [3/7] Benchmarks (Nifty TRI)
   TRI: 145 indices, 2013-01-01 -> 2026-11-04
 [4/7] NAV history (mfapi)
@@ -22,7 +25,58 @@ Aeterna MF Engine run 2026-11-05 11:08
   NAV 1600/1687
   1687 NAV histories
 [5/7] Holdings for 2026-10
-  daily mode: re-using holdings of 2026-09
+  NOT_YET 360-ONE-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Abakkus-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Aditya-Birla-Sun-Life-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Angel-One-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Axis-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Bajaj-Finserv-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Bandhan-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Bank-of-India-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Baroda-BNP-Paribas-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Canara-Robeco-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Capitalmind-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Choice-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET DSP-Mutual-Fund  adapter found no files for this month
+  NOT_YET Edelweiss-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Franklin-Templeton-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Groww-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Helios-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET HSBC-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET ICICI-Prudential-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Invesco-Mutual-Fund  adapter found no files for this month
+  NOT_YET ITI-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Jio-BlackRock-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET JM-Financial-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Kotak-Mahindra-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET LIC-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Mahindra-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Mirae-Asset-Mutual-Fund  adapter found no files for this month
+  NOT_YET Motilal-Oswal-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Navi-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Nippon-India-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET NJ-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Old-Bridge-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET PGIM-India-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET PPFAS-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Quant-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Quantum-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Samco-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET SBI-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Shriram-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Sundaram-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Tata-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Taurus-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET The-Wealth-Company-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Trust-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Unifi-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Union-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET UTI-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET WhiteOak-Capital-Mutual-Fund  adapter found no files for this month
+  NOT_YET Zerodha-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet
+  NOT_YET Mutual-Fund-Research  no 'October 2026' entry on advisorkhoj yet
+  holdings download: 0/50 AMCs OK, 50 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
+  holdings: no files in /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
 [6/7] Metrics, protocols, ranking committee
   metrics 200/1687
   metrics 400/1687
@@ -32,19 +86,20 @@ Aeterna MF Engine run 2026-11-05 11:08
   metrics 1200/1687
   metrics 1400/1687
   metrics 1600/1687
-  wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
+  flows: 36 quarters of AUM history on disk
+  wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/2026-11
 tier                A  A+    B   C  Unrated
 category                                   
 Contra              3   1    2   0        5
 Dividend Yield      4   2    8   4        6
 ELSS               16   8   25  25        2
-Flexi Cap          14   8   30  20       20
+Flexi Cap          13   9   30  20       20
 Focused            12   6   20  16        2
-Index Fund         83  46  257  64       90
+Index Fund         82  47  258  63       90
 Large & Mid Cap    10   6   20  16       20
-Large Cap          12   8   24  16        8
-Mid Cap             9   4   27  16       10
-Multi Cap           9   5   20  12       18
-Sectoral/Thematic  51  36  108  81      225
-Small Cap           8   6   18  14       24
-Value               6   5   15  15        6
+Large Cap          12   8   23  17        8
+Mid Cap            12   6   22  16       10
+Multi Cap           8   6   20  12       18
+Sectoral/Thematic  52  36  107  81      225
+Small Cap          10   6   19  15       20
+Value               6   5   16  14        6

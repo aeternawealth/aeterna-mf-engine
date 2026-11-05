@@ -456,6 +456,27 @@ def with_fallback(hold: pd.DataFrame, month: str, log=print, same_month: pd.Data
     return out, month
 
 
+def add_prev_mandate(hold: pd.DataFrame, month: str) -> pd.DataFrame:
+    """mandate_ok_prev = the fund's mandate result in the latest earlier parsed month (NaN if none).
+    Rows carried forward from an earlier month are compared with the month before their own portfolio."""
+    hold = hold.copy()
+    hold["mandate_ok_prev"] = np.nan
+    if "mandate_ok" not in hold.columns:
+        return hold
+    hm = hold["holdings_month"] if "holdings_month" in hold.columns else pd.Series(month, index=hold.index)
+    for m in sorted(set(hm.fillna(month))):
+        prev_m = latest_cached_month(before=m)
+        if not prev_m:
+            continue
+        prev = load_cached(prev_m)
+        if not len(prev) or "mandate_ok" not in prev.columns:
+            continue
+        mp = prev.drop_duplicates("pair_key").set_index("pair_key")["mandate_ok"]
+        rows = hm.fillna(month) == m
+        hold.loc[rows, "mandate_ok_prev"] = hold.loc[rows, "pair_key"].map(mp)
+    return hold
+
+
 def save_cached(hold: pd.DataFrame, month: str) -> None:
     import json as _json
     folder = HOLD_DIR / month

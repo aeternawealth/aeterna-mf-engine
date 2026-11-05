@@ -77,6 +77,7 @@ def main():
     if not a.daily:   # AMCs publish by the 10th and some late: never rate on fewer holdings than last month
         hold, hmonth = H.with_fallback(hold, hmonth, log=log, same_month=before)
         if len(hold):
+            hold = H.add_prev_mandate(hold, hmonth)   # two-month rule for the mandate cap
             H.save_cached(hold, hmonth)   # the daily refresh re-uses exactly this set
 
     log("[6/7] Metrics, protocols, ranking committee")

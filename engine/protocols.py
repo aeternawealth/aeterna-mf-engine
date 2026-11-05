@@ -74,7 +74,11 @@ def red_flags(g: pd.DataFrame) -> pd.Series:
         p10 = g.max_drawdown_5y.quantile(0.10)
         add(g.max_drawdown_5y < p10 - 0.05, "deep_drawdown")
     if "mandate_ok" in g.columns:
-        add(g.mandate_ok == 0, "mandate_breach")
+        # cap only when the portfolio is off-mandate in two consecutive monthly disclosures; a single month
+        # (inflows, AMFI's half-yearly re-classification, a stock migrating between size bands) is a watch flag
+        prev = g["mandate_ok_prev"] if "mandate_ok_prev" in g.columns else pd.Series(np.nan, index=g.index)
+        add((g.mandate_ok == 0) & (prev == 0), "mandate_breach")
+        add((g.mandate_ok == 0) & (prev != 0), "mandate_watch")
     if "excess_cagr_1y" in g.columns and g["excess_cagr_1y"].notna().sum() >= 5:
         # informational only (no tier change): recent deterioration worth watching
         q20 = g["excess_cagr_1y"].quantile(0.2)

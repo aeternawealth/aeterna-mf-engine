@@ -74,7 +74,8 @@ An internal Aeterna tool that ranks every open-ended equity fund and equity inde
 | Chronic underperformer | Rolling 3Y hit rate below 25% and median excess below −2% | Avoid |
 | Risk without reward | Downside capture above 110% and information ratio below 0 | Avoid |
 | Deep drawdown | Max drawdown more than 5 percentage points worse than the peer group's 10th percentile | Capped at B |
-| Mandate breach | Portfolio breaks the SEBI category rule (e.g. a small-cap fund with less than 65% in small caps, or a focused fund with more than 30 stocks) | Capped at B |
+| Mandate breach | Portfolio breaks the SEBI category rule (e.g. a small-cap fund with less than 65% in small caps, or a focused fund with more than 30 stocks) in **two consecutive monthly portfolios** (Nov 2026) | Capped at B |
+| Mandate watch | The same, in the latest month only | Shown on the site; no cap |
 | Closet indexer | Active share below 50% (30% for large caps) and no 3-year excess return over the benchmark | Capped at B |
 | Turnaround unproven | Chronic rolling underperformance, but a positive 3-year excess return recently | Capped at B |
 | Manual / qualitative flag | Raised by the qualitative agent | Rating becomes Watch (if it was A or A+) |

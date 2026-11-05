@@ -160,7 +160,8 @@ RED_FLAGS = {
     "turnaround_unproven": "Chronic rolling underperformance but positive 3Y excess recently -> capped at B",
     "risk_without_reward": "Downside capture > 110% and 3Y info ratio < 0",
     "deep_drawdown": "5Y max drawdown worse than category 10th percentile by >5pp",
-    "mandate_breach": "Portfolio violates SEBI category mandate (e.g. small cap fund <65% in small caps)",
+    "mandate_breach": "Portfolio violates SEBI category mandate in two consecutive months (e.g. small cap fund <65% in small caps) -> capped at B",
+    "mandate_watch": "Portfolio violates SEBI category mandate in the latest month only (informational, no cap)",
     "closet_indexer": "Active share below threshold (50%; 30% for large caps) AND no 3Y excess return - paying active fees for index returns",
 }
 CLOSET_INDEX_ACTIVE_SHARE = 50          # default threshold

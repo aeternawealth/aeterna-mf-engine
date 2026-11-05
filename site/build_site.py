@@ -176,11 +176,13 @@ def crumbs(items):
             "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + p} for i, (n, p) in enumerate(items)]}
 
 
-HEADER = """<header class="site"><div class="wrap">
- <a class="brand" href="/" aria-label="Aeterna Wealth home"><svg width="34" height="33" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg><b>Aeterna Wealth</b></a>
- <nav class="main static-nav" style="margin-left:auto"><a href="/mutual-funds/">Mutual funds</a><a href="/calculators/">Calculators</a><a href="/insights/">Insights</a><a href="/#solutions">Solutions</a><a href="/#about">About</a><a href="/#contact">Contact</a></nav>
- <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="/#contact">Talk to us</a></div>
-</div></header>"""
+HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
+HEADER_JS = ("<script>(function(){var d=document.getElementById('ddMf'),b=d&&d.querySelector('.ddbtn'),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
+             "if(b)b.onclick=function(e){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);e.stopPropagation()};"
+             "document.addEventListener('click',function(e){if(d&&!d.contains(e.target)){d.classList.remove('open');b&&b.setAttribute('aria-expanded','false')}});"
+             "if(m)m.onclick=function(){var o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};"
+             "var h=(document.querySelector('a.brand')||{}).href||'/',go=function(){location.href=h.split('#')[0]+'?q='};var s=document.getElementById('srchBtn');if(s)s.onclick=go;"
+             "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}})})();</script>")
 
 
 def footer():
@@ -199,8 +201,8 @@ def page(title, desc, path, body, ld=()):
     return (f'<!doctype html>\n<html lang="en-IN"><head>{head(title, desc, path, ld)}'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,500;0,600;1,400&display=swap">'
-            '<link rel="stylesheet" href="/assets/site.css"><style>.static-nav{display:flex}@media (max-width:860px){header.site .wrap{flex-wrap:wrap;row-gap:4px;height:auto;padding-top:8px}header.site nav.static-nav{display:flex;position:static;order:3;width:100%;margin-left:0!important;flex-direction:row;overflow-x:auto;gap:4px;padding:0 0 6px;background:none;border:0;white-space:nowrap;-webkit-overflow-scrolling:touch}header.site .hdr-cta{display:flex;margin-left:auto;order:2}header.site .hdr-cta .btn{padding:8px 14px}.hdr-cta .btn:not(.primary){display:none}}table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}</style></head><body>'
-            f'{HEADER}<main>{body}</main>{footer()}</body></html>\n')
+            '<link rel="stylesheet" href="/assets/site.css"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
+            f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}</body></html>\n')
 
 
 def write(path, text):
@@ -246,6 +248,10 @@ def main():
 
     # ---- shared stylesheet (the app's own design tokens and components)
     app = (S / "app.html").read_text(encoding="utf-8")
+    global HEADER
+    hdr = app[app.index("<!-- HEADER-START -->"): app.index("<!-- HEADER-END -->")]
+    hdr = re.sub(r'href="#', 'href="/#', hdr)
+    HEADER = '<header class="site">' + hdr + '</header>'
     css = app[app.index("<style>") + 7: app.index("</style>")]
     (DIST / "assets").mkdir(parents=True, exist_ok=True)
     (DIST / "assets" / "site.css").write_text(css, encoding="utf-8")

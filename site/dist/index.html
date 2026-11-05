@@ -236,6 +236,7 @@ footer.site a{color:var(--ink-2)}
 </style>
 
 <header class="site">
+<!-- HEADER-START -->
   <div class="wrap">
     <a class="brand" href="#home" aria-label="Aeterna Wealth home">
       <svg width="34" height="33" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
@@ -246,12 +247,13 @@ footer.site a{color:var(--ink-2)}
     <nav class="main" id="nav">
       <a href="#home">Home</a>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Mutual funds</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Every equity and index fund, by category</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All categories<small>A page for each category, index and theme</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <a href="#solutions">Solutions</a><a href="#tools">Tools</a><a href="#about">About</a><a href="#contact">Contact</a>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
     <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener" title="Opens your Centricity client account in a new tab">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
   </div>
+<!-- HEADER-END -->
 </header>
 
 <main id="app">
@@ -751,7 +753,7 @@ function drawSearch(q){
 function searchInit(){
   $('#srchBtn').onclick=openSearch;
   try{const c=new URLSearchParams(location.search).get('cat');if(c&&S.funds.some(f=>f.category===c))S.cat=c}catch(e){}
-  try{const q=new URLSearchParams(location.search).get('q');if(q){openSearch();setTimeout(()=>{$('#srchQ').value=q;drawSearch(q)},20)}}catch(e){}
+  try{const q=new URLSearchParams(location.search).get('q');if(q!=null){openSearch();setTimeout(()=>{$('#srchQ').value=q;drawSearch(q)},20)}}catch(e){}
   $('#srch').onclick=e=>{if(e.target.id==='srch')closeSearch()};
   $('#srchQ').oninput=e=>drawSearch(e.target.value);
   $('#srchQ').onkeydown=e=>{const as=$$('#srchRes a');let i=as.findIndex(a=>a.getAttribute('aria-selected')==='true');

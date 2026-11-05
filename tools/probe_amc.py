@@ -55,6 +55,29 @@ def probe(url: str, rep: dict) -> dict:
             rep["render_error"] = f"{type(e).__name__}: {str(e)[:200]}"
         page.wait_for_timeout(5000)
         import traceback
+        try:   # open tabs / accordions / buttons that load the portfolio list on click (LIC, Bandhan, ...)
+            clicked = []
+            for el in page.query_selector_all("a[href^='#'], button, [role=tab], li[data-tab], div[data-toggle], span[onclick]")[:300]:
+                try:
+                    t = (el.inner_text() or "").strip()
+                except Exception:
+                    continue
+                if re.search(r"monthly portfolio|month end portfolio|portfolio disclosure|^portfolios?$|scheme portfolio", t, re.I) and el.is_visible():
+                    try:
+                        el.click(timeout=3000)
+                        page.wait_for_timeout(3500)
+                        clicked.append(t[:80])
+                    except Exception:
+                        pass
+                if len(clicked) >= 6:
+                    break
+            rep["clicked"] = clicked
+        except Exception:
+            rep["click_error"] = traceback.format_exc()[-400:]
+        try:
+            rep["_html"] = page.content()
+        except Exception:
+            pass
         steps = {
             "rendered_file_links": lambda: sorted(set(FILE.findall(page.content())), key=lambda l: (not re.search(r"\.xls|\.zip", l, re.I), l))[:2500],
             "anchors_mentioning_portfolio": lambda: page.evaluate(
@@ -83,6 +106,9 @@ if __name__ == "__main__":
         except Exception:
             import traceback
             rep["error"] = traceback.format_exc()[-1500:]
+        html = rep.pop("_html", None)
+        if html:
+            (out / f"{name}.html").write_text(html[:3_000_000], encoding="utf-8")
         (out / f"{name}.json").write_text(json.dumps(rep, indent=1))
         print(u, "->", rep.get("http", {}).get("status"), len(rep.get("requests", [])), "requests,",
               len(rep.get("rendered_file_links", [])), "file links", flush=True)

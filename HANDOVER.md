@@ -14,7 +14,7 @@ Read this file, `AGENTS.md` (methodology), `README.md` and `DEPLOY.md` before st
 - Methodology audit doc: https://claude.ai/artifact/XsWiyNEVcnsaCBd9kQirf2
 - GitHub Actions:
   - Daily refresh, Tue–Sat at 08:45 IST
-  - Monthly re-rating on the 12th
+  - Monthly re-rating on the 11th and 16th at 14:50 IST (office PC uploads at 10:30 the same days)
 
 ## Backend, 5 Nov (afternoon session)
 - Repo pushed to `aeternawealth/aeterna-mf-engine`. Daily and monthly workflows tested on GitHub; both pass.
@@ -29,7 +29,7 @@ Read this file, `AGENTS.md` (methodology), `README.md` and `DEPLOY.md` before st
 - Tools: the `Probe AMC pages` workflow (manual) inspects AMC pages and runs single-AMC download tests from GitHub;
   results go to the `probe-results` branch.
 - Ops log (runs, AMC status, anomalies): https://claude.ai/artifact/8tQP7qmdP55yJGPpHFMp1b
-  Scheduled checks in the Claude session: daily Tue–Sat 09:22 IST, monthly on the 12th at 11:47 IST (push + email).
+  Scheduled checks in the Claude session: daily Tue–Sat 09:22 IST, monthly checks on the 11th and 16th at 17:17 IST (push + email).
 
 ## Next, in order
 1. ~~Push repo, run workflows~~ done. ~~Test HDFC/Motilal/Navi/Union from GitHub~~ done: Motilal fixed; the rest go through the office PC.

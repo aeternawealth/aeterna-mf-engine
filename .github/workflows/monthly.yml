@@ -1,9 +1,10 @@
-# Monthly full run on the 12th at 09:20 IST (03:50 UTC): new AMC portfolios (due by the 10th),
-# expense ratios, AUM, market-cap list, full re-rating (Overall tiers), dashboard.
+# Monthly full run on the 11th and 16th at 14:50 IST (09:20 UTC): new AMC portfolios (due by the 10th; the 16th
+# picks up late publishers), expense ratios, AUM, market-cap list, full re-rating (Overall tiers), dashboard.
+# The office PC uploads blocked AMCs at 10:30 IST on the same days (tools/pc_download.py), before these runs.
 name: Monthly ratings
 on:
   schedule:
-    - cron: "50 3 12 * *"
+    - cron: "20 9 11,16 * *"
   workflow_dispatch:
     inputs:
       holdings_month:

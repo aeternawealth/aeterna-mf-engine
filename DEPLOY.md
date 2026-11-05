@@ -17,5 +17,5 @@ Cloudflare Pages watches the repo and republishes `site/dist/` on every push.
 
 ## Schedule
 - Daily NAV refresh: Tue–Sat at 08:45 IST (`.github/workflows/daily.yml`)
-- Monthly re-rating: the 12th at 09:20 IST (`.github/workflows/monthly.yml`)
+- Monthly re-rating: the 11th and 16th at 14:50 IST (`.github/workflows/monthly.yml`); the office PC uploads blocked AMCs at 10:30 the same days
 - Both can be run by hand from GitHub → Actions → choose the workflow → Run workflow.

@@ -90,6 +90,8 @@ section.tint{background:var(--band);border-block:1px solid var(--rule)}
 .facts div span{font-size:13px;color:var(--ink-3)}
 .strip{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 18px 10px;min-width:0}
 .strip svg{width:100%;height:auto;display:block}
+.strip .tabs button{padding:6px 12px;font-size:13px}
+.tap-hint{display:none} @media (hover:none){.hover-hint{display:none}.tap-hint{display:inline}}
 .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font:12.5px/1.45 var(--f-body);padding:8px 10px;border-radius:6px;max-width:260px;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 /* tiers */
 .tier{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 7px;border-radius:5px;font:600 12.5px var(--f-mono);color:#fff;letter-spacing:.02em}
@@ -103,6 +105,29 @@ section.tint{background:var(--band);border-block:1px solid var(--rule)}
 .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+.mob-only{display:none}
+@media (max-width:640px){
+ .mob-only{display:flex}
+ .rt{border:0;background:none;overflow:visible}
+ .rt table,.rt tbody{display:block}
+ .rt thead{display:none}
+ .rt tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px;margin-bottom:10px}
+ .rt tr.dim{opacity:.8}
+ .rt td{border:0;padding:0;text-align:left;white-space:normal;min-width:0}
+ .rt td.fund{grid-column:1/-1;min-width:0}
+ .rt td.num{white-space:nowrap;font-size:13.5px}
+ .card.navbox{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;align-items:start}
+ .card.navbox>div:first-child{grid-column:1/-1}
+ .card.navbox .big{font-size:28px}
+ .card.navbox .mono{font-size:17px!important}
+ th,td{padding:9px 8px;font-size:13px}
+ th{font-size:10.5px;letter-spacing:.03em}
+ .rt td[data-l]::before{content:attr(data-l);display:block;font:500 10px/1.5 var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+ .rt tbody tr:hover td{background:none}
+ .controls .seg{width:100%;overflow-x:auto}
+ .controls .seg button{flex:1;padding:9px 8px}
+ .controls select,.controls input[type=search]{flex:1 1 100%;max-width:none}
+}
 .sortbtn{all:unset;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
 .sortbtn .arr{font-size:9px;opacity:.45}
 th[aria-sort="ascending"] .arr,th[aria-sort="descending"] .arr{opacity:1;color:var(--teal)}
@@ -226,9 +251,11 @@ footer.site a{color:var(--ink-2)}
       <div class="facts" id="facts"></div>
     </div>
     <figure class="strip" style="margin:0">
-      <div class="row" style="justify-content:space-between;margin-bottom:6px"><b style="font-size:14px">Flexi Cap funds vs the Nifty 500 TRI</b><span class="muted mono" style="font-size:12px" id="stripAsOf"></span></div>
-      <p class="muted" style="font-size:13px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. Hover to see which.</p>
-      <div id="strip"></div>
+      <div class="tabs" id="stripTabs" role="tablist" aria-label="Category" style="margin-bottom:14px"></div>
+      <div class="row" style="justify-content:space-between;margin-bottom:4px"><b style="font-size:15px" id="stripTitle"></b><span class="muted mono" style="font-size:12px" id="stripAsOf"></span></div>
+      <p class="muted" style="font-size:13px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. <span class="hover-hint">Hover to see which, click to open.</span><span class="tap-hint">Tap a dot to open the fund.</span></p>
+      <div id="strip" style="margin-top:6px"></div>
+      <p id="stripSum" style="font-size:14px;margin-top:10px"></p>
     </figure>
   </div></section>
 
@@ -308,6 +335,7 @@ footer.site a{color:var(--ink-2)}
     </div>
     <div class="note" id="hzNote"></div>
     <details class="faq" id="colHelp" style="margin-top:10px;max-width:90ch"></details>
+    <label class="mob-only" style="gap:8px;align-items:center;margin-top:12px;font-size:14px"><span class="muted">Sort by</span><select id="mobSort" style="flex:1"></select></label>
     <div id="tables" style="margin-top:18px" class="stack"></div>
   </div></section>
 </div>
@@ -576,7 +604,11 @@ function home(){
   const rated=S.funds.filter(f=>f.tier&&f.tier!=='Unrated').length;
   $('#facts').innerHTML=[[S.funds.length.toLocaleString('en-IN'),'fund plans tracked'],[rated.toLocaleString('en-IN'),'with a track-record rating'],[cats().length,'categories'],[dmy(m.as_of),'NAV data as of']].map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join('');
   $('#stripAsOf').textContent='3Y to '+dmy(m.as_of);
-  drawStrip(S.funds.filter(f=>f.category==='Flexi Cap'&&f.plan_type==='Regular'&&f.excess_3Y!=null));
+  const SC=['Large Cap','Mid Cap','Small Cap','Flexi Cap','ELSS'].filter(c=>S.funds.some(f=>f.category===c));
+  S.stripCat=S.stripCat||'Flexi Cap';
+  const drawTabs=()=>{$('#stripTabs').innerHTML=SC.map(c=>`<button role="tab" aria-selected="${c===S.stripCat}" data-c="${c}">${c}</button>`).join('');
+    $$('#stripTabs button').forEach(b=>b.onclick=()=>{S.stripCat=b.dataset.c;drawTabs();drawStrip(S.stripCat)})};
+  drawTabs();drawStrip(S.stripCat);
   const P=[['Long-run excess',25,'Median rolling 3-year return over the index, and how often the fund was ahead'],['Risk-adjusted',35,'Information ratio, capture ratio (gains kept ÷ losses taken) and Jensen\'s alpha over 3 years'],['Consistency',20,'Worst rolling periods and how often the fund beat its index over 1-year windows'],['Cost',10,'Total expense ratio of the plan'],['Portfolio',10,'Active share, SEBI mandate fit, cash drag and turnover, from monthly holdings']];
   const cols=['var(--teal)','var(--teal-2)','var(--t-a)','var(--brass)','var(--ink-2)'];
   $('#pillars').innerHTML=P.map((p,i)=>`<div style="flex:${p[1]};background:${cols[i]}" title="${p[0]} ${p[1]}%">${p[0]} · ${p[1]}</div>`).join('');
@@ -588,24 +620,34 @@ function home(){
   $$('#leaders a[data-cat]').forEach(a=>a.onclick=()=>{S.cat=a.dataset.cat});
   $('#services').innerHTML=SOL.map(s=>`<a class="card stack sol" href="#solutions" style="gap:6px;text-decoration:none;color:inherit"><div class="row" style="justify-content:space-between;gap:8px"><b style="font:600 18px var(--f-display)">${s.t}</b>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div><span class="muted" style="font-size:14px">${s.short}</span></a>`).join('');
 }
-function drawStrip(F){
-  const W=560,H=190,L=34,R=14,T=16,B=40;
-  if(!F.length){$('#strip').innerHTML='<p class="muted">No data</p>';return}
-  const v=F.map(f=>f.excess_3Y), lo=Math.min(-0.06,Math.min(...v)), hi=Math.max(0.08,Math.max(...v));
+function drawStrip(cat){
+  const F=S.funds.filter(f=>f.category===cat&&f.plan_type==='Regular'&&f.excess_3Y!=null);
+  const bench=(F.find(f=>f.benchmark)||{}).benchmark||'its index';
+  $('#stripTitle').textContent=`${cat} funds vs the ${bench.replace(/\bNIFTY\b/g,'Nifty').replace(/Nifty(\d)/,'Nifty $1')} TRI`;
+  const narrow=($('#strip').clientWidth||600)<480;
+  const W=600,H=narrow?250:300,L=30,R=14,T=24,B=46, rad=narrow?8:7, gap=narrow?17:15;
+  if(!F.length){$('#strip').innerHTML='<p class="muted">No data</p>';$('#stripSum').textContent='';return}
+  const v=F.map(f=>f.excess_3Y), lo=Math.min(-0.04,Math.min(...v)-0.005), hi=Math.max(0.04,Math.max(...v)+0.005);
   const x=e=>L+(e-lo)/(hi-lo)*(W-L-R);
   const sorted=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y); const lanes=[];
-  const pts=sorted.map(f=>{const px=x(f.excess_3Y);let lane=0;while(lanes[lane]!=null&&px-lanes[lane]<11)lane++;lanes[lane]=px;return {f,px,lane}});
-  const maxLane=Math.max(...pts.map(p=>p.lane)), base=T+(H-T-B)/2;
-  const y=l=>base+((l%2?1:-1)*Math.ceil(l/2))*10;
-  const ticks=[];for(let t=Math.ceil(lo*50)/50;t<=hi;t+=0.02)ticks.push(+t.toFixed(2));
-  $('#strip').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Flexi Cap funds' 3-year excess return over the Nifty 500 TRI">
-  ${ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${T}" y2="${H-B}" stroke="var(--rule)" stroke-width="1"/><text x="${x(t)}" y="${H-B+16}" text-anchor="middle" font-size="11" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t>0?'+':''}${Math.round(t*100)}%</text>`).join('')}
-  <line x1="${x(0)}" x2="${x(0)}" y1="${T-4}" y2="${H-B}" stroke="var(--ink)" stroke-width="1.5"/>
-  <text x="${x(0)+6}" y="${T+6}" font-size="11.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif">Index</text>
-  <text x="${L}" y="${H-6}" font-size="11.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">← behind the index</text>
-  <text x="${W-R}" y="${H-6}" text-anchor="end" font-size="11.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">ahead of the index →</text>
-  ${pts.map(p=>`<circle cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="5.2" fill="var(--${({'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'}[p.f.tier]||'t-u')})" stroke="var(--surface)" stroke-width="1.2" data-c="${p.f.code}" style="cursor:pointer"/>`).join('')}
-  </svg><div class="row" style="gap:14px;font-size:12px;margin-top:4px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t==='Unrated'?'Unrated':t}</span>`).join('')}</div>`;
+  const pts=sorted.map(f=>{const px=x(f.excess_3Y);let lane=0;while(lanes[lane]!=null&&px-lanes[lane]<gap)lane++;lanes[lane]=px;return {f,px,lane}});
+  const base=T+(H-T-B)/2, maxOff=(H-T-B)/2-rad-2;
+  const y=l=>base+Math.max(-maxOff,Math.min(maxOff,((l%2?1:-1)*Math.ceil(l/2))*gap));
+  const span=hi-lo, stp=span>0.3?0.1:span>0.15?0.05:0.02;
+  const ticks=[];for(let t=Math.ceil(lo/stp)*stp;t<=hi+1e-9;t+=stp)ticks.push(+t.toFixed(3));
+  const TC={'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'};
+  $('#strip').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(cat)} funds' 3-year return over ${esc(bench)} TRI">
+  ${ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${T}" y2="${H-B}" stroke="var(--rule)" stroke-width="1"/><text x="${x(t)}" y="${H-B+18}" text-anchor="middle" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t>0?'+':''}${Math.round(t*100)}%</text>`).join('')}
+  <rect x="${x(0)}" y="${T}" width="${W-R-x(0)}" height="${H-B-T}" fill="var(--teal-soft)" opacity=".35"/>
+  <line x1="${x(0)}" x2="${x(0)}" y1="${T-8}" y2="${H-B}" stroke="var(--ink)" stroke-width="1.6"/>
+  <text x="${x(0)+7}" y="${T+2}" font-size="12.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif">Index</text>
+  <text x="${L}" y="${H-8}" font-size="12.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">← behind the index</text>
+  <text x="${W-R}" y="${H-8}" text-anchor="end" font-size="12.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">ahead of the index →</text>
+  ${pts.map(p=>`<circle cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="var(--${TC[p.f.tier]||'t-u'})" stroke="var(--surface)" stroke-width="1.5" data-c="${p.f.code}" style="cursor:pointer"><title>${esc(p.f.name)}: ${spct(p.f.excess_3Y)} vs index</title></circle>`).join('')}
+  </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t}</span>`).join('')}</div>`;
+  const ahead=F.filter(f=>f.excess_3Y>0).length, med=[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
+  $('#stripSum').innerHTML=`<b>${ahead} of ${F.length}</b> ${esc(cat)} funds beat the index over 3 years; ${Math.abs(med)<0.0005?'the typical fund was about level with it.':`the typical fund was <b class="${sg(med)}">${spct(med)}</b> a year against it.`} <a href="#ratings" id="stripMore">See the ${esc(cat)} table →</a>`;
+  $('#stripMore').onclick=()=>{S.cat=cat};
   $$('#strip circle').forEach(c=>{const f=S.byCode.get(+c.dataset.c);
     c.onmousemove=e=>showTip(e,`<b>${esc(f.name)}</b><br>3Y ${pct(f.ret_3Y)} a year · ${spct(f.excess_3Y)} vs index<br>Track record: ${esc(f.tier)}`);
     c.onmouseleave=hideTip;c.onclick=()=>{hideTip();location.hash='fund-'+f.code}});
@@ -673,15 +715,18 @@ function ratings(){
     const n=L.filter(f=>f[sk]!=null).length;
     const rows=L.map(f=>{const has=f[sk]!=null, fl=flags(f);
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
-      return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
+      return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(c[0])}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
     const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1];return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}">${c[0]}<span class="arr">${on?(srt.dir==='asc'?'▲':'▼'):'↕'}</span></button></th>`}).join('');
     return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
-    <div class="tablewrap"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
+    <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
   $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${c[0]}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,downside_capture_3y:1,tracking_err_1y:1};
   $$('#tables .sortbtn').forEach(b=>b.onclick=()=>{const k=b.dataset.k,cur=S.sort&&S.sort.key===k?S.sort:null;
     S.sort={key:k,dir:cur?(cur.dir==='asc'?'desc':'asc'):(lowFirst[k]?'asc':'desc')};ratings()});
   const rs=$('#sortReset'); if(rs)rs.onclick=e=>{e.preventDefault();S.sort=null;ratings()};
+  const ms=$('#mobSort'); const opts=[['','Default order']].concat(COLS.flatMap(c=>[[c[1]+':'+(lowFirst[c[1]]?'asc':'desc'),c[0]+(lowFirst[c[1]]?' (low to high)':' (high to low)')],[c[1]+':'+(lowFirst[c[1]]?'desc':'asc'),c[0]+(lowFirst[c[1]]?' (high to low)':' (low to high)')]]));
+  ms.innerHTML=opts.map(o=>`<option value="${o[0]}">${esc(o[1].replace('Fund (','Name ('))}</option>`).join(''); ms.value=srt?srt.key+':'+srt.dir:'';
+  ms.onchange=()=>{const [k,d]=ms.value.split(':');S.sort=k?{key:k,dir:d}:null;ratings()};
 }
 
 /* ---------- fund page ---------- */

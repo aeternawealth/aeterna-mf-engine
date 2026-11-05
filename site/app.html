@@ -47,14 +47,27 @@ button,input,select{font:inherit;color:inherit}
 header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
 header.site .wrap{display:flex;align-items:center;gap:24px;height:64px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
-.brand b{font:600 19px var(--f-display);letter-spacing:.01em}
-.brand small{display:block;font:500 10px var(--f-mono);letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+.brand b{font:600 22px/1 var(--f-display);letter-spacing:.01em;white-space:nowrap}
 nav.main{display:flex;gap:4px;margin-left:auto}
-nav.main a{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
-nav.main a[aria-current="page"],nav.main a:hover{color:var(--teal);background:var(--teal-soft)}
+nav.main a,.ddbtn{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
+nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.ddbtn:hover{color:var(--teal);background:var(--teal-soft)}
+.dd{position:relative}
+.ddbtn{background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.ddbtn::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.ddmenu{position:absolute;top:calc(100% + 6px);left:0;min-width:240px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);box-shadow:0 12px 30px rgba(0,0,0,.08);padding:6px;display:none;flex-direction:column}
+.ddmenu a{display:block}
+.ddmenu a small{display:block;font-size:12px;color:var(--ink-3);font-weight:400}
+.dd.open .ddmenu{display:flex}
+@media (hover:hover) and (min-width:861px){.dd:hover .ddmenu,.dd:focus-within .ddmenu{display:flex}}
+.hdr-cta{display:flex;gap:10px;align-items:center}
+.hdr-cta .btn{padding:9px 15px;font-size:14px}
+.nav-cta{display:none}
 .menu-btn{display:none;margin-left:auto;background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 10px;cursor:pointer}
-@media (max-width:860px){nav.main{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-left,0px)) 12px}
- nav.main.open{display:flex} .menu-btn{display:block} header .cta-top{display:none}}
+@media (max-width:1020px){nav.main{gap:0} nav.main a,.ddbtn{padding:8px 9px}}
+@media (max-width:860px){.dd .ddmenu{position:static;display:flex;box-shadow:none;border:0;padding:0 0 0 12px;min-width:0} .ddbtn{pointer-events:none} .ddbtn::after{display:none}
+ .nav-cta{display:flex;gap:10px;flex-wrap:wrap;padding-top:10px;margin-top:6px;border-top:1px solid var(--rule)}
+ nav.main{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-left,0px)) 12px}
+ nav.main.open{display:flex} .menu-btn{display:block} .hdr-cta{display:none}}
 /* sections */
 section.band{padding-block:72px}
 section.tint{background:var(--band);border-block:1px solid var(--rule)}
@@ -116,6 +129,10 @@ input[type=search]{flex:1 1 220px;max-width:340px}
 .sugg button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;cursor:pointer;font-size:14px}
 .sugg button:hover,.sugg button:focus{background:var(--band)}
 .flag{color:var(--bad);font-size:12.5px}
+.tag{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px;white-space:nowrap}
+a.sol:hover{border-color:var(--teal)}
+.sol-row{display:grid;grid-template-columns:1fr auto;gap:20px}
+@media (max-width:760px){.sol-row{grid-template-columns:1fr}.sol-row .row{justify-content:flex-start!important}}
 .prose{max-width:72ch}
 .prose p+p{margin-top:12px}
 .prose h3{margin:28px 0 10px}
@@ -134,13 +151,17 @@ footer.site a{color:var(--ink-2)}
   <div class="wrap">
     <a class="brand" href="#home" aria-label="Aeterna Wealth home">
       <svg width="34" height="33" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
-      <span><b>Aeterna Wealth</b><small>Wealth · Research</small></span>
+      <b>Aeterna Wealth</b>
     </a>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     <nav class="main" id="nav">
-      <a href="#ratings">Ratings</a><a href="#compare">Compare</a><a href="#method">Method</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <a href="#home">Home</a>
+      <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Mutual funds</button>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Every equity and index fund, by category</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+      <a href="#solutions">Solutions</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
-    <a class="btn primary cta-top" href="#contact">Talk to us</a>
+    <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener" title="Opens your Centricity client account in a new tab">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
   </div>
 </header>
 
@@ -150,10 +171,10 @@ footer.site a{color:var(--ink-2)}
 <div data-view="home">
   <section class="hero"><div class="wrap grid g2">
     <div>
-      <div class="eyebrow">Equity mutual funds · India</div>
-      <h1 style="margin-top:14px">Fund ratings that show their working.</h1>
-      <p class="lede" style="margin-top:18px">Every equity and index fund in India, rated on its track record against the right benchmark. The method, the data and our own backtest are in the open.</p>
-      <div class="actions"><a class="btn primary" href="#ratings">Explore the ratings</a><a class="btn" href="#compare">Compare funds and overlap</a></div>
+      <div class="eyebrow">Wealth management · New Delhi</div>
+      <h1 style="margin-top:14px">Your family's wealth, looked after in one place.</h1>
+      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds, unlisted shares and tax-aware planning, from a team led by a Chartered Accountant and an advocate. Our mutual fund research is open to everyone: every equity fund in India, rated on its track record.</p>
+      <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#solutions">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
       <div class="facts" id="facts"></div>
     </div>
     <figure class="strip" style="margin:0">
@@ -164,7 +185,15 @@ footer.site a{color:var(--ink-2)}
   </div></section>
 
   <section class="band tint"><div class="wrap">
-    <div class="eyebrow">What you can do here</div>
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><div class="eyebrow">What we do</div><h2 style="margin-top:10px">One team for everything you invest in</h2></div>
+      <a href="#solutions">All solutions →</a></div>
+    <p class="lede" style="margin-top:12px">Mutual funds are our largest practice. Alongside them we bring in the products that fit as wealth grows, and look at it all together: what you hold, what it costs, how it's taxed and what's missing.</p>
+    <div class="grid g4" style="margin-top:26px" id="services"></div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <div class="eyebrow">Open mutual fund research</div>
     <h2 style="margin-top:10px">Three questions, answered with data</h2>
     <div class="grid g3" style="margin-top:28px">
       <div class="card stack"><h3>How has this fund really done?</h3><p class="muted">Returns over 6 months to 5 years against its index, its rank in the category, and how it held up in falls.</p><a href="#ratings">Browse by category →</a></div>
@@ -173,7 +202,7 @@ footer.site a{color:var(--ink-2)}
     </div>
   </div></section>
 
-  <section class="band"><div class="wrap">
+  <section class="band tint"><div class="wrap">
     <div class="eyebrow">How a rating is built</div>
     <h2 style="margin-top:10px">Measured against the category's own index, then against peers</h2>
     <p class="lede" style="margin-top:14px">A fund is compared only with funds in its SEBI category and plan type, using the total-return version of the category's benchmark. Each measure becomes a percentile among peers, and the weighted result sets the tier.</p>
@@ -181,7 +210,7 @@ footer.site a{color:var(--ink-2)}
     <div class="legend" id="pillarLegend"></div>
   </div></section>
 
-  <section class="band tint"><div class="wrap grid g2">
+  <section class="band"><div class="wrap grid g2">
     <div class="stack">
       <div class="eyebrow">We tested our own ratings</div>
       <h2>Past winners did not keep winning</h2>
@@ -192,7 +221,7 @@ footer.site a{color:var(--ink-2)}
     <div class="card"><b style="font-size:14px">Beat the benchmark over the next 3 years, by tier at the time</b><div id="btChart" style="margin-top:12px"></div><p class="muted" style="font-size:12.5px;margin-top:8px">Regular plans, 9 rating dates Jun 2019–Jun 2023, 2,257 fund-date observations, closed funds included.</p></div>
   </div></section>
 
-  <section class="band"><div class="wrap">
+  <section class="band tint"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
       <div><div class="eyebrow">This month</div><h2 style="margin-top:10px">Strongest track records by category</h2></div>
       <a href="#ratings">All categories →</a>
@@ -201,14 +230,13 @@ footer.site a{color:var(--ink-2)}
     <div class="grid g4" style="margin-top:24px" id="leaders"></div>
   </div></section>
 
-  <section class="band tint"><div class="wrap grid g2" style="align-items:start">
+  <section class="band"><div class="wrap grid g2" style="align-items:center">
     <div class="stack">
       <div class="eyebrow">Working with Aeterna</div>
-      <h2>Research is free. Help goes beyond mutual funds.</h2>
-      <p class="lede">Aeterna Wealth is led by a Chartered Accountant and an advocate. We help families, professionals and business owners across mutual funds, PMS, AIFs and bonds, with insurance coming soon.</p>
-      <div class="row" style="margin-top:6px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#about">About us</a></div>
+      <h2>Bring us the whole picture</h2>
+      <p class="lede">Families, professionals and business owners come to us with a mix of funds, policies, shares and plans built up over years. We start by putting it in one view, then help you decide what to keep, what to change and what to add.</p>
     </div>
-    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))" id="services"></div>
+    <div class="row" style="justify-content:flex-end"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#about">About us</a></div>
   </div></section>
 </div>
 
@@ -246,6 +274,8 @@ footer.site a{color:var(--ink-2)}
 
 <!-- METHOD -->
 <div data-view="method" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="methodPage"></div></section></div>
+<!-- SOLUTIONS -->
+<div data-view="solutions" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="solPage"></div></section></div>
 <!-- ABOUT -->
 <div data-view="about" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="aboutPage"></div></section></div>
 <!-- CONTACT -->
@@ -260,7 +290,7 @@ footer.site a{color:var(--ink-2)}
       <span>AMFI-registered Mutual Fund Distributor · ARN-317889</span>
       <span>B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029</span>
       <span>+91 85959 93600 · contact@aeternawealth.com</span></div>
-    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Research</b><a href="#ratings">Ratings</a><a href="#compare">Compare and overlap</a><a href="#method">Method and backtest</a></div>
+    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Solutions</b><a href="#solutions">All solutions</a><a href="#ratings">Mutual fund ratings</a><a href="#compare">Compare and overlap</a><a href="#method">Method and backtest</a></div>
     <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="#about">About</a><a href="#contact">Contact</a><a href="#disclosures">Disclosures</a><a href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>
   </div>
   <p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Aeterna Wealth Private Limited is a mutual fund distributor (ARN-317889) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings on this site describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns. <span id="footAsOf"></span></p>
@@ -307,6 +337,42 @@ async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdi
 const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund'];
   const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
 
+/* ---------- solutions (home cards + Solutions page) ---------- */
+const SOL=[
+ {id:'mf',t:'Mutual funds',tag:'Our largest practice',short:'Equity, hybrid and debt funds across fund houses, chosen with our own research and reviewed regularly.',
+  body:'We work across fund houses, using the research on this site: track record against the right index, cost, portfolio overlap and the range of outcomes a fund has delivered. We help you build a portfolio that fits your goals and review it as markets and your life change.',
+  who:'Anyone investing for a goal, from a first SIP to a large lump sum.',link:['#ratings','Explore fund ratings']},
+ {id:'pms',t:'PMS',short:'Portfolio management services, with manager due diligence and side-by-side comparison.',
+  body:'Portfolio managers run a concentrated portfolio held in your own name. We compare strategies on track record, risk, fees and style, and help you understand how a PMS fits with what you already own.',
+  who:'Investors able to commit at least ₹50 lakh, the SEBI minimum.'},
+ {id:'aif',t:'AIFs',short:'Category I–III alternative investment funds: access, documentation and monitoring.',
+  body:'Alternative investment funds cover private equity, private credit, venture and long-short strategies. We help with selection, the paperwork and tracking capital calls and distributions over the life of the fund.',
+  who:'Investors able to commit at least ₹1 crore, the SEBI minimum for most investors.'},
+ {id:'bonds',t:'Bonds',short:'Listed bonds and debt instruments to match income and maturity needs.',
+  body:'Government securities, corporate bonds and other fixed-income instruments, matched to when you need the money and how much risk you can take. We look at credit quality, yield and tax treatment together.',
+  who:'Investors who want predictable income or a defined maturity.'},
+ {id:'unlisted',t:'Unlisted shares',short:'Pre-IPO and unlisted company shares, with valuation context and transfer paperwork handled.',
+  body:'Shares of companies before they list on an exchange. We help you understand the business, the price you are paying and how the shares would be transferred and held, and we’re clear about the risks: these shares can be hard to sell, and lock-in rules apply after a listing.',
+  who:'Experienced investors comfortable with illiquid, higher-risk holdings.'},
+ {id:'tax',t:'Tax-aware planning',short:'CA-led: capital-gains harvesting, redemption order, NRI and business-owner situations.',
+  body:'Tax is part of every investment decision. Led by a Chartered Accountant, we plan capital-gains harvesting, the order of redemptions, and the situations that need care, such as NRIs, business owners and inherited holdings.',
+  who:'Anyone with capital gains, multiple income sources or cross-border questions.'},
+ {id:'review',t:'Portfolio review',short:'Everything you hold in one view: overlap, costs, tax position and gaps.',
+  body:'Bring your statements, whether from us or elsewhere. We put mutual funds, shares, bonds and other holdings in one view and show what overlaps, what it costs, how it is taxed and what is missing.',
+  who:'Anyone who has built up investments over the years and wants a clear picture.'},
+ {id:'ins',t:'Insurance',tag:'Coming soon',short:'Term and health cover, chosen for protection, not investment.',
+  body:'Term life and health cover sized to what your family would need, kept separate from investing.',
+  who:'Coming soon.'}];
+function solutionsPage(){
+  $('#solPage').innerHTML=`<div class="eyebrow">Solutions</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Everything you invest in, with one team</h1>
+  <p class="lede" style="margin-top:12px">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in the products that fit and keep the whole picture in view.</p>
+  <div class="stack" style="gap:18px;margin-top:30px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
+    <p style="margin-top:10px;max-width:70ch">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
+    <div class="row" style="align-self:center;justify-content:flex-end">${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
+  <p class="note" style="margin-top:28px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889). PMS, AIFs, bonds and unlisted shares carry their own risks, including loss of capital and, for some, limited ability to sell; read the offer documents before investing. We are not a SEBI-registered investment adviser.</p>`;
+  $$('#solPage a[data-topic]').forEach(a=>a.onclick=()=>{S.topic=a.dataset.topic});
+}
+
 /* ---------- home ---------- */
 function home(){
   const m=S.meta, act=S.funds.filter(f=>f.plan_type==='Regular');
@@ -323,8 +389,7 @@ function home(){
   $('#leaders').innerHTML=L.map(c=>{const top=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.score!=null).sort((a,b)=>b.score-a.score).slice(0,3);
     return `<div class="card stack" style="gap:10px"><b style="font:600 17px var(--f-display)">${c}</b>${top.map((f,i)=>`<a href="#fund-${f.code}" style="text-decoration:none;color:inherit;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--rule)"><span class="mono muted">${i+1}</span><span style="min-width:0"><span style="display:block;font-weight:500;line-height:1.3">${esc(f.name)}</span><span class="muted mono" style="font-size:12px">3Y ${pct(f.ret_3Y)} · vs index ${spct(f.excess_3Y)}</span></span>${tier(f.tier)}</a>`).join('')}<a href="#ratings" data-cat="${c}" style="font-size:13.5px">Full ${c} table →</a></div>`}).join('');
   $$('#leaders a[data-cat]').forEach(a=>a.onclick=()=>{S.cat=a.dataset.cat});
-  const SV=[['Mutual funds','Equity, hybrid and debt funds across fund houses, with portfolio construction and periodic review.',''],['PMS','Portfolio management services for eligible investors, with manager due diligence.',''],['AIFs','Category I–III alternative investment funds: access, documentation and monitoring.',''],['Bonds','Listed bonds and debt instruments to match income and maturity needs.',''],['Tax-aware planning','CA-led: capital-gains harvesting, redemption order, NRI and business-owner situations.',''],['Insurance','Term and health cover, chosen for protection, not investment.','Coming soon']];
-  $('#services').innerHTML=SV.map(s=>`<div class="card stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${s[0]}</b>${s[2]?`<span class="mono" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px">${s[2]}</span>`:''}</div><span class="muted" style="font-size:14px">${s[1]}</span></div>`).join('');
+  $('#services').innerHTML=SOL.map(s=>`<a class="card stack sol" href="#solutions" style="gap:6px;text-decoration:none;color:inherit"><div class="row" style="justify-content:space-between;gap:8px"><b style="font:600 18px var(--f-display)">${s.t}</b>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div><span class="muted" style="font-size:14px">${s.short}</span></a>`).join('');
 }
 function drawStrip(F){
   const W=560,H=190,L=34,R=14,T=16,B=40;
@@ -501,8 +566,8 @@ function staticPages(){
   <p>We did not tune the weights to improve this result: that would fit one market cycle and fail in the next. Instead we present ratings as an assessment of the record so far and repeat the test each year.</p>
   <h3>5. Limitations</h3><p>Categories and benchmarks are today's; SEBI recategorised funds in 2018 and redefined multi cap in 2020. Fund manager changes are not yet tracked. ${holdCov()} Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and AMC monthly portfolio disclosures.</p>
   <h3>6. Updates</h3><p>NAVs, returns and period ranks refresh every weekday morning after AMFI publishes the previous day's NAVs. Track-record ratings, holdings, expense ratios and AUM refresh monthly, after AMCs publish portfolios.</p>`;
-  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A distributor that shows its research</h1>
-  <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889) based in New Delhi. We work across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs) and bonds. Insurance is coming soon.</p>
+  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A wealth partner that shows its research</h1>
+  <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889) based in New Delhi. We help families manage their wealth across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and unlisted shares, with tax-aware planning throughout. Insurance is coming soon.</p>
   <h3>Who we are</h3><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
   <h3>How we work</h3><p>We build the research on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
   <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
@@ -529,16 +594,21 @@ function staticPages(){
 function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
-  if(!['home','ratings','fund','compare','method','about','contact','disclosures'].includes(view))view='home';
+  if(!['home','ratings','fund','compare','method','solutions','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  const mfv=['ratings','compare','method','fund'].includes(view); const ddb=$('#ddMf .ddbtn'); if(mfv)ddb.setAttribute('aria-current','page');else ddb.removeAttribute('aria-current');
+  $('#ddMf').classList.remove('open');ddb.setAttribute('aria-expanded','false');
+  if(view==='contact'&&S.topic){const m=$('#cm');if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
   if(view==='ratings')ratings(); if(view==='fund')fund(code); if(view==='compare')compare();
   window.scrollTo(0,0);
 }
+$('#ddMf .ddbtn').onclick=e=>{const d=$('#ddMf'),o=d.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',o)};
+document.addEventListener('click',e=>{if(!e.target.closest('#ddMf')){$('#ddMf').classList.remove('open');$('#ddMf .ddbtn').setAttribute('aria-expanded','false')}});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
-load().then(()=>{home();ratingsInit();compareInit();staticPages();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
+load().then(()=>{home();ratingsInit();compareInit();staticPages();solutionsPage();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});
 })();
 </script>

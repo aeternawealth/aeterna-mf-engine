@@ -27,7 +27,9 @@ def probe(url: str, rep: dict) -> dict:
     from playwright.sync_api import sync_playwright
     reqs = []
     with sync_playwright() as pw:
-        b = pw.chromium.launch()
+        import os
+        ch = os.environ.get("PW_CHANNEL") or ("msedge" if sys.platform == "win32" else None)
+        b = pw.chromium.launch(channel=ch)
         ctx = b.new_context(user_agent=UA, accept_downloads=True)
         page = ctx.new_page()
 

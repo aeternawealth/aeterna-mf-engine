@@ -50,7 +50,7 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backgrou
 header.site .wrap{display:flex;align-items:center;gap:24px;height:64px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
 .brand b{font:600 22px/1 var(--f-display);letter-spacing:.01em;white-space:nowrap}
-nav.main{display:flex;gap:4px;margin-left:auto}
+nav.main{display:flex;gap:4px}
 nav.main a,.ddbtn{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
 nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.ddbtn:hover{color:var(--teal);background:var(--teal-soft)}
 .dd{position:relative}
@@ -64,7 +64,10 @@ nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.dd
 .hdr-cta{display:flex;gap:10px;align-items:center}
 .hdr-cta .btn{padding:9px 15px;font-size:14px}
 .nav-cta{display:none}
-.menu-btn{display:none;margin-left:auto;background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 10px;cursor:pointer}
+nav.main{order:1;margin-left:auto} #srchBtn{order:2;margin-left:6px} .hdr-cta{order:3} .menu-btn{order:4}
+@media (max-width:860px){#srchBtn{margin-left:auto}}
+@media (max-width:1180px){.srch-btn .srch-lbl,.srch-btn kbd{display:none}}
+.menu-btn{display:none;margin-left:10px;background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 10px;cursor:pointer}
 @media (max-width:1020px){nav.main{gap:0} nav.main a,.ddbtn{padding:8px 9px}}
 @media (max-width:860px){.dd .ddmenu{position:static;display:flex;box-shadow:none;border:0;padding:0 0 0 12px;min-width:0} .ddbtn{pointer-events:none} .ddbtn::after{display:none}
  .nav-cta{display:flex;gap:10px;flex-wrap:wrap;padding-top:10px;margin-top:6px;border-top:1px solid var(--rule)}
@@ -131,6 +134,46 @@ input[type=search]{flex:1 1 220px;max-width:340px}
 .sugg button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;cursor:pointer;font-size:14px}
 .sugg button:hover,.sugg button:focus{background:var(--band)}
 .flag{color:var(--bad);font-size:12.5px}
+/* search overlay */
+.srch-btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:8px 11px;cursor:pointer;color:var(--ink-3);font-size:14px}
+.srch-btn kbd{font:500 11px var(--f-mono);border:1px solid var(--rule);border-radius:4px;padding:0 5px;color:var(--ink-3)}
+.srch-btn:hover{border-color:var(--teal);color:var(--teal)}
+.overlay{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--ink) 35%,transparent);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 70px) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.palette{width:100%;max-width:620px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden}
+.palette input{width:100%;max-width:none;flex:none;border:0;border-bottom:1px solid var(--rule);padding:16px 18px;font-size:17px;background:transparent;outline:none}
+.palette .res{max-height:60vh;overflow:auto;padding:6px}
+.palette .res a{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink)}
+.palette .res a small{color:var(--ink-3);font-size:12.5px}
+.palette .res a[aria-selected="true"],.palette .res a:hover{background:var(--band)}
+.palette .grp{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 12px 4px}
+/* tools */
+.tool{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:start}
+@media (max-width:900px){.tool{grid-template-columns:1fr}}
+.field{display:grid;gap:6px}
+.field>span{font-size:13.5px;color:var(--ink-2)}
+.field .in{display:flex;align-items:center;gap:10px}
+.field input[type=number],.field select,.cf input,.cf select,.cf textarea{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:9px 12px;width:100%;min-width:0;font:inherit;color:inherit}
+.field input[type=range]{flex:1;accent-color:var(--teal);min-width:0}
+.field .in input[type=number]{width:130px;flex:none;font-family:var(--f-mono)}
+.out{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.out{grid-template-columns:1fr}}
+.out div{background:var(--band);border-radius:var(--r);padding:12px 14px}
+.out span{display:block;font-size:12.5px;color:var(--ink-3)}
+.out b{font:500 20px var(--f-mono)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;color:var(--ink-2)}
+.tabs button[aria-selected="true"]{background:var(--teal);border-color:var(--teal);color:var(--paper)}
+.cmpt td,.cmpt th{white-space:normal;text-align:left;vertical-align:top;min-width:150px}
+.cmpt td:first-child,.cmpt th:first-child{min-width:120px;font-weight:600;color:var(--ink)}
+details.faq{border-bottom:1px solid var(--rule);padding:14px 0}
+details.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.faq summary::after{content:"+";font:500 18px var(--f-mono);color:var(--teal)}
+details.faq[open] summary::after{content:"–"}
+details.faq p{margin-top:8px;color:var(--ink-2);max-width:80ch}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--rule);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px;background:var(--surface)}
+.checks input,.cf .checks input{accent-color:var(--teal);width:auto;padding:0;border:0;margin:0;flex:none}
+.checks label{white-space:nowrap}
 .tag{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px;white-space:nowrap}
 a.sol:hover{border-color:var(--teal)}
 .sol-row{display:grid;grid-template-columns:1fr auto;gap:20px}
@@ -155,12 +198,13 @@ footer.site a{color:var(--ink-2)}
       <svg width="34" height="33" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
       <b>Aeterna Wealth</b>
     </a>
+    <button class="srch-btn" id="srchBtn" type="button" aria-label="Search funds and pages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="srch-lbl">Search</span><kbd>/</kbd></button>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     <nav class="main" id="nav">
       <a href="#home">Home</a>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Mutual funds</button>
         <div class="ddmenu"><a href="#ratings">Fund ratings<small>Every equity and index fund, by category</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
-      <a href="#solutions">Solutions</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <a href="#solutions">Solutions</a><a href="#tools">Tools</a><a href="#about">About</a><a href="#contact">Contact</a>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
     <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener" title="Opens your Centricity client account in a new tab">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
@@ -195,6 +239,12 @@ footer.site a{color:var(--ink-2)}
   </div></section>
 
   <section class="band"><div class="wrap">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><div class="eyebrow">Plan with numbers</div><h2 style="margin-top:10px">Calculators, built by a CA</h2></div><a href="#tools">All tools →</a></div>
+    <div class="grid g4" style="margin-top:24px"><div id="toolCards" style="display:contents"></div></div>
+  </div></section>
+
+  <section class="band tint"><div class="wrap">
     <div class="eyebrow">Open mutual fund research</div>
     <h2 style="margin-top:10px">Three questions, answered with data</h2>
     <div class="grid g3" style="margin-top:28px">
@@ -204,7 +254,7 @@ footer.site a{color:var(--ink-2)}
     </div>
   </div></section>
 
-  <section class="band tint"><div class="wrap">
+  <section class="band"><div class="wrap">
     <div class="eyebrow">How a rating is built</div>
     <h2 style="margin-top:10px">Measured against the category's own index, then against peers</h2>
     <p class="lede" style="margin-top:14px">A fund is compared only with funds in its SEBI category and plan type, using the total-return version of the category's benchmark. Each measure becomes a percentile among peers, and the weighted result sets the tier.</p>
@@ -212,7 +262,7 @@ footer.site a{color:var(--ink-2)}
     <div class="legend" id="pillarLegend"></div>
   </div></section>
 
-  <section class="band"><div class="wrap grid g2">
+  <section class="band tint"><div class="wrap grid g2">
     <div class="stack">
       <div class="eyebrow">We tested our own ratings</div>
       <h2>Past winners did not keep winning</h2>
@@ -223,7 +273,7 @@ footer.site a{color:var(--ink-2)}
     <div class="card"><b style="font-size:14px">Beat the benchmark over the next 3 years, by tier at the time</b><div id="btChart" style="margin-top:12px"></div><p class="muted" style="font-size:12.5px;margin-top:8px">Regular plans, 9 rating dates Jun 2019–Jun 2023, 2,257 fund-date observations, closed funds included.</p></div>
   </div></section>
 
-  <section class="band tint"><div class="wrap">
+  <section class="band"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
       <div><div class="eyebrow">This month</div><h2 style="margin-top:10px">Strongest track records by category</h2></div>
       <a href="#ratings">All categories →</a>
@@ -232,7 +282,7 @@ footer.site a{color:var(--ink-2)}
     <div class="grid g4" style="margin-top:24px" id="leaders"></div>
   </div></section>
 
-  <section class="band"><div class="wrap grid g2" style="align-items:center">
+  <section class="band tint"><div class="wrap grid g2" style="align-items:center">
     <div class="stack">
       <div class="eyebrow">Working with Aeterna</div>
       <h2>Bring us the whole picture</h2>
@@ -278,6 +328,8 @@ footer.site a{color:var(--ink-2)}
 <div data-view="method" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="methodPage"></div></section></div>
 <!-- SOLUTIONS -->
 <div data-view="solutions" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="solPage"></div></section></div>
+<!-- TOOLS -->
+<div data-view="tools" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="toolsPage"></div></section></div>
 <!-- ABOUT -->
 <div data-view="about" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="aboutPage"></div></section></div>
 <!-- CONTACT -->
@@ -298,6 +350,7 @@ footer.site a{color:var(--ink-2)}
   <p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Aeterna Wealth Private Limited is a mutual fund distributor (ARN-317889) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings on this site describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns. <span id="footAsOf"></span></p>
 </div></footer>
 <div class="tip" id="tip" hidden></div>
+<div class="overlay" id="srch" hidden role="dialog" aria-modal="true" aria-label="Search"><div class="palette"><input id="srchQ" type="search" placeholder="Search a fund, AMC or page…" autocomplete="off" aria-label="Search"><div class="res" id="srchRes"></div></div></div>
 
 <script>
 (()=>{
@@ -368,11 +421,142 @@ const SOL=[
 function solutionsPage(){
   $('#solPage').innerHTML=`<div class="eyebrow">Solutions</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Everything you invest in, with one team</h1>
   <p class="lede" style="margin-top:12px">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in the products that fit and keep the whole picture in view.</p>
-  <div class="stack" style="gap:18px;margin-top:30px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
+
+  <h2 style="font-size:26px;margin-top:40px">How they compare</h2>
+  <p class="muted" style="margin-top:6px">A quick guide. Rules and minimums change, and every product has exceptions; we go through the details with you.</p>
+  <div class="tablewrap cmpt" style="margin-top:14px"><table><thead><tr><th></th><th>Mutual funds</th><th>PMS</th><th>AIFs</th><th>Bonds</th><th>Unlisted shares</th></tr></thead><tbody>
+   <tr><td>Start from</td><td>₹100–₹500 a month by SIP</td><td>₹50 lakh</td><td>₹1 crore for most investors</td><td>About ₹10,000 for many listed bonds</td><td>Varies by company and lot size</td></tr>
+   <tr><td>Regulator</td><td>SEBI</td><td>SEBI</td><td>SEBI</td><td>SEBI (listed bonds), RBI (government securities)</td><td>No product regulator; company law applies</td></tr>
+   <tr><td>Getting your money out</td><td>Usually within 1–3 working days; exit loads and ELSS lock-in apply</td><td>Any time, as the stocks are sold; exit fees may apply</td><td>Mostly locked for the fund's life, often 3–10 years</td><td>Sell on the exchange; ease varies by bond</td><td>Hard to sell before a listing; 6-month lock-in after an IPO</td></tr>
+   <tr><td>What you pay</td><td>Expense ratio, inside the NAV</td><td>Fixed and/or performance fee</td><td>Management fee and carry</td><td>Built into the price or yield</td><td>The spread in the deal price</td></tr>
+   <tr><td>How gains are taxed</td><td>Equity funds: 20% short term, 12.5% long term above ₹1.25 lakh</td><td>As if you held each stock yourself</td><td>Cat I/II pass through to you; Cat III taxed in the fund</td><td>Interest at your slab; gains depend on listing</td><td>12.5% after 24 months; slab rate before</td></tr>
+  </tbody></table></div>
+  <p class="muted" style="font-size:12.5px;margin-top:8px">Tax rates as per the Finance (No. 2) Act, 2024; surcharge and cess extra. Try the <a href="#tools" data-tool="tax">capital-gains calculator</a>.</p>
+  <div class="stack" style="gap:18px;margin-top:40px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
     <p style="margin-top:10px;max-width:70ch">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
     <div class="row" style="align-self:center;justify-content:flex-end">${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
+
+  <h2 style="font-size:26px;margin-top:40px">Common questions</h2>
+  <div style="margin-top:8px">${[
+   ['Do you give stock tips or manage a stock portfolio directly?','No. Advising on individual listed shares needs a SEBI investment adviser or research analyst licence, which we don’t hold. For direct equity exposure we work through mutual funds and PMS, where a SEBI-registered manager picks the stocks.'],
+   ['How are you paid?','For mutual funds, PMS and AIFs, the product provider pays us a distribution commission, which is part of the product’s costs. For mutual funds, Direct plans don’t pay us and cost less; we explain the difference openly.'],
+   ['Can I start small?','Yes. Most families start with mutual fund SIPs from a few thousand rupees a month. PMS and AIFs have SEBI minimums of ₹50 lakh and ₹1 crore.'],
+   ['What does a portfolio review involve?','You share your statements, such as your mutual fund CAS, demat and bond holdings. We put them in one view and show overlap, costs, tax position and gaps, then talk you through it. There’s no obligation to invest through us.'],
+   ['Are unlisted shares safe?','They carry more risk than listed investments: prices are not discovered on an exchange, they can be hard to sell, and lock-in rules apply after a listing. They suit only a small part of a portfolio, for investors who understand that.'],
+   ['Where do I log in to see my investments?','Use Client login at the top of the page. It opens your Centricity account, where your holdings and statements are kept.']]
+   .map(q=>`<details class="faq"><summary>${q[0]}</summary><p>${q[1]}</p></details>`).join('')}</div>
   <p class="note" style="margin-top:28px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889). PMS, AIFs, bonds and unlisted shares carry their own risks, including loss of capital and, for some, limited ability to sell; read the offer documents before investing. We are not a SEBI-registered investment adviser.</p>`;
   $$('#solPage a[data-topic]').forEach(a=>a.onclick=()=>{S.topic=a.dataset.topic});
+  $$('#solPage a[data-tool]').forEach(a=>a.onclick=()=>{S.tool=a.dataset.tool});
+}
+
+
+/* ---------- tools ---------- */
+const inr=v=>v==null||!isFinite(v)?'–':'₹'+Math.round(v).toLocaleString('en-IN');
+const inrS=v=>{if(v==null||!isFinite(v))return'–';const a=Math.abs(v);return a>=1e7?'₹'+(v/1e7).toFixed(2)+' cr':a>=1e5?'₹'+(v/1e5).toFixed(2)+' lakh':inr(v)};
+const TOOLS=[
+ {id:'sip',t:'SIP calculator',d:'What a monthly SIP could grow to, with an optional yearly step-up.'},
+ {id:'lump',t:'Lump sum',d:'Growth of a one-time investment at an assumed return.'},
+ {id:'goal',t:'Goal planner',d:'The monthly SIP or lump sum a goal needs, after inflation.'},
+ {id:'tax',t:'Capital-gains tax',d:'Estimate tax on selling mutual funds, bonds or unlisted shares.'}];
+function toolCards(){const el=$('#toolCards');if(el)el.outerHTML=TOOLS.map(t=>`<a class="card stack sol" href="#tools" data-tool="${t.id}" style="gap:6px;text-decoration:none;color:inherit"><b style="font:600 18px var(--f-display)">${t.t}</b><span class="muted" style="font-size:14px">${t.d}</span><span style="color:var(--teal);font-size:14px;margin-top:auto">Open →</span></a>`).join('');
+  $$('a[data-tool]').forEach(a=>a.onclick=()=>{S.tool=a.dataset.tool})}
+const fld=(id,label,val,min,max,step,suffix)=>`<label class="field"><span>${label}</span><span class="in"><input type="range" id="${id}R" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}${suffix?' ('+suffix+')':''}"></span></label>`;
+function bindPair(id,fn){const r=$('#'+id+'R'),n=$('#'+id);r.oninput=()=>{n.value=r.value;fn()};n.oninput=()=>{r.value=n.value;fn()}}
+const val=id=>+($('#'+id)?.value||0);
+function growthChart(rows){ // rows: [{y,inv,val}]
+  const W=620,H=220,L=58,R=12,T=14,B=28, mx=Math.max(...rows.map(r=>r.val),1);
+  const x=i=>L+i*(W-L-R)/Math.max(rows.length-1,1), y=v=>T+(H-T-B)*(1-v/mx);
+  const path=k=>rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(r[k]).toFixed(1)}`).join('');
+  const area=k=>path(k)+`L${x(rows.length-1)},${y(0)}L${x(0)},${y(0)}Z`;
+  const ticks=[0,.25,.5,.75,1].map(f=>f*mx);
+  const step=Math.ceil(rows.length/8);
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Value and amount invested by year">
+   ${ticks.map(t=>`<line x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t>=1e7?(t/1e7).toFixed(t>=1e8?0:1)+' cr':t>=1e5?(t/1e5).toFixed(t>=1e6?0:1)+' L':t?Math.round(t/1e3)+'k':'0'}</text>`).join('')}
+   <path d="${area('val')}" fill="var(--teal-soft)"/><path d="${path('val')}" fill="none" stroke="var(--teal)" stroke-width="2.2"/>
+   <path d="${area('inv')}" fill="var(--band)" opacity=".9"/><path d="${path('inv')}" fill="none" stroke="var(--ink-3)" stroke-width="1.6" stroke-dasharray="4 3"/>
+   ${rows.map((r,i)=>i%step===0||i===rows.length-1?`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">Y${r.y}</text>`:'').join('')}
+   <circle cx="${x(rows.length-1)}" cy="${y(rows[rows.length-1].val)}" r="4" fill="var(--teal)"/></svg>
+   <div class="row" style="gap:16px;font-size:12.5px;margin-top:4px"><span><span style="display:inline-block;width:14px;height:3px;background:var(--teal);vertical-align:middle;margin-right:6px"></span>Value</span><span><span style="display:inline-block;width:14px;height:0;border-top:2px dashed var(--ink-3);vertical-align:middle;margin-right:6px"></span>Amount invested</span></div>`}
+function sipSim(m,yrs,r,step){const rm=Math.pow(1+r/100,1/12)-1;let bal=0,inv=0,amt=m;const rows=[];
+  for(let mo=1;mo<=yrs*12;mo++){bal=(bal+amt)*(1+rm);inv+=amt;if(mo%12===0){rows.push({y:mo/12,inv,val:bal});amt*=1+step/100}}return {bal,inv,rows}}
+const TAXR={eq:{n:'Equity mutual funds (65%+ equity)',lt:12,st:'rate',stR:20,ltR:12.5,ex:125000},debt:{n:'Debt mutual funds (bought from 1 Apr 2023)',lt:null,st:'slab'},lbond:{n:'Listed bonds and debentures',lt:12,st:'slab',ltR:12.5},unl:{n:'Unlisted shares',lt:24,st:'slab',ltR:12.5}};
+function toolsPage(){
+  const cur=S.tool||'sip';
+  $('#toolsPage').innerHTML=`<div class="eyebrow">Tools</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Plan with numbers</h1>
+  <p class="lede" style="margin-top:12px">Simple calculators for the questions families ask most. The results are illustrations: returns are assumptions, not promises.</p>
+  <div class="tabs" role="tablist" style="margin-top:24px">${TOOLS.map(t=>`<button role="tab" data-t="${t.id}" aria-selected="${t.id===cur}">${t.t}</button>`).join('')}</div>
+  <div id="toolBody" style="margin-top:22px"></div>
+  <p class="muted" style="font-size:12.5px;margin-top:22px;max-width:90ch">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Tax estimates ignore surcharge, grandfathering, losses set off and special cases; please check with us or your tax adviser before acting.</p>`;
+  $$('#toolsPage [data-t]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.t;toolsPage()});
+  const body=$('#toolBody');
+  if(cur==='sip'){
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('sM','Monthly SIP (₹)',10000,500,500000,500)}${fld('sY','Years',15,1,40,1)}${fld('sR','Assumed return a year (%)',12,1,20,0.5)}${fld('sS','Step-up every year (%)',0,0,25,1)}</div>
+    <div class="stack"><div class="out"><div><span>Amount invested</span><b id="oInv">–</b></div><div><span>Estimated value</span><b id="oVal">–</b></div><div><span>Estimated gain</span><b id="oGain">–</b></div></div><div class="card" id="oChart"></div></div></div>`;
+    const f=()=>{const r=sipSim(val('sM'),Math.max(1,Math.round(val('sY'))),val('sR'),val('sS'));$('#oInv').textContent=inrS(r.inv);$('#oVal').textContent=inrS(r.bal);$('#oGain').textContent=inrS(r.bal-r.inv);$('#oChart').innerHTML=growthChart(r.rows)};
+    ['sM','sY','sR','sS'].forEach(i=>bindPair(i,f));f();
+  } else if(cur==='lump'){
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('lA','Investment (₹)',500000,10000,50000000,10000)}${fld('lY','Years',10,1,40,1)}${fld('lR','Assumed return a year (%)',12,1,20,0.5)}</div>
+    <div class="stack"><div class="out"><div><span>Invested</span><b id="oInv">–</b></div><div><span>Estimated value</span><b id="oVal">–</b></div><div><span>Grows by</span><b id="oGain">–</b></div></div><div class="card" id="oChart"></div></div></div>`;
+    const f=()=>{const a=val('lA'),y=Math.max(1,Math.round(val('lY'))),r=val('lR')/100;const rows=[...Array(y)].map((_,i)=>({y:i+1,inv:a,val:a*Math.pow(1+r,i+1)}));const v=rows[rows.length-1].val;
+      $('#oInv').textContent=inrS(a);$('#oVal').textContent=inrS(v);$('#oGain').textContent=(v/a).toFixed(2)+'×';$('#oChart').innerHTML=growthChart(rows)};
+    ['lA','lY','lR'].forEach(i=>bindPair(i,f));f();
+  } else if(cur==='goal'){
+    body.innerHTML=`<div class="tool"><div class="card stack"><label class="field"><span>Goal</span><select id="gG"><option>Child's education</option><option>Retirement corpus</option><option>Buying a home</option><option>Child's wedding</option><option>Other goal</option></select></label>
+      ${fld('gT',"Cost in today's money (₹)",2500000,100000,100000000,50000)}${fld('gY','Years to goal',12,1,40,1)}${fld('gI','Inflation for this goal (%)',7,0,15,0.5)}${fld('gR','Assumed return a year (%)',11,1,20,0.5)}${fld('gH','Already saved for it (₹)',0,0,100000000,10000)}</div>
+    <div class="stack"><div class="out"><div><span>Goal cost then</span><b id="oF">–</b></div><div><span>Monthly SIP needed</span><b id="oS">–</b></div><div><span>Or lump sum today</span><b id="oL">–</b></div></div>
+      <div class="card stack" style="gap:8px"><b id="oTxt"></b><p class="muted" style="font-size:14px" id="oNote"></p><div><a class="btn primary" href="#contact" id="goalCta">Plan this goal with us</a></div></div></div></div>`;
+    const f=()=>{const y=Math.max(1,Math.round(val('gY'))),r=val('gR')/100,fv=val('gT')*Math.pow(1+val('gI')/100,y),have=val('gH')*Math.pow(1+r,y),need=Math.max(0,fv-have);
+      const rm=Math.pow(1+r,1/12)-1,N=y*12,sip=need/(((Math.pow(1+rm,N)-1)/rm)*(1+rm)),lump=need/Math.pow(1+r,y);
+      $('#oF').textContent=inrS(fv);$('#oS').textContent=inrS(sip);$('#oL').textContent=inrS(lump);
+      $('#oTxt').textContent=`${$('#gG').value}: about ${inrS(fv)} in ${y} years.`;
+      $('#oNote').textContent=have>0?`Your ${inrS(val('gH'))} already saved could grow to ${inrS(have)} at the same return, so the SIP covers the remaining ${inrS(need)}.`:`A ${inrS(val('gT'))} cost today becomes ${inrS(fv)} at ${val('gI')}% inflation.`;
+      $('#goalCta').onclick=()=>{S.topic=`planning for ${$('#gG').value.toLowerCase()} (about ${inrS(fv)} in ${y} years)`}};
+    ['gT','gY','gI','gR','gH'].forEach(i=>bindPair(i,f));$('#gG').onchange=f;f();
+  } else {
+    body.innerHTML=`<div class="tool"><div class="card stack"><label class="field"><span>What are you selling?</span><select id="tA">${Object.entries(TAXR).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select></label>
+      ${fld('tM','Months held',18,1,240,1)}<label class="field"><span>Gain (₹)</span><input type="number" id="tG" value="300000" min="0" step="1000"></label>
+      <label class="field"><span>Your income-tax slab (%)</span><select id="tS"><option>0</option><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option selected>30</option></select></label>
+      <details><summary class="muted" style="cursor:pointer;font-size:13.5px">Rates used (edit if the law changes)</summary><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px">
+       <label class="field"><span>Equity STCG (%)</span><input type="number" id="rS" value="20" step="0.5"></label><label class="field"><span>LTCG (%)</span><input type="number" id="rL" value="12.5" step="0.5"></label>
+       <label class="field"><span>Equity LTCG exemption a year (₹)</span><input type="number" id="rE" value="125000" step="5000"></label><label class="field"><span>Health and education cess (%)</span><input type="number" id="rC" value="4" step="1"></label></div>
+       <p class="muted" style="font-size:12.5px;margin-top:8px">Defaults follow the Finance (No. 2) Act, 2024, for sales from 23 July 2024: equity funds long term after 12 months; listed bonds after 12 months; unlisted shares after 24 months; debt funds bought from 1 April 2023 always at slab.</p></details></div>
+    <div class="stack"><div class="out"><div><span>Treated as</span><b id="oK">–</b></div><div><span>Taxable gain</span><b id="oTG">–</b></div><div><span>Estimated tax</span><b id="oT">–</b></div></div><div class="card"><p id="oW" style="font-size:14.5px"></p></div></div></div>`;
+    const f=()=>{const a=TAXR[$('#tA').value],m=val('tM'),g=Math.max(0,val('tG')),slab=+$('#tS').value,cess=val('rC')/100;
+      const lt=a.lt!=null&&m>a.lt;let taxable=g,rate,why;
+      if(!lt){rate=a.st==='slab'?slab:val('rS');why=a.lt==null?'Debt funds bought from 1 April 2023 are taxed at your slab rate however long you hold them.':`Held ${m} months, so short term (long term starts after ${a.lt} months). Taxed at ${a.st==='slab'?'your slab rate':val('rS')+'%'}.`}
+      else{rate=val('rL');if(a.ex){taxable=Math.max(0,g-val('rE'));why=`Held over ${a.lt} months, so long term: ${val('rL')}% on gains above ${inr(val('rE'))} a year (this assumes none of the exemption is used elsewhere).`}else why=`Held over ${a.lt} months, so long term: ${val('rL')}% without indexation.`}
+      const tax=taxable*rate/100*(1+cess);
+      $('#oK').textContent=lt?'Long term':'Short term';$('#oTG').textContent=inrS(taxable);$('#oT').textContent=inrS(tax);
+      $('#oW').textContent=why+` Includes ${val('rC')}% cess; surcharge not included.`+(a.ex&&!lt&&m>=9?' Waiting a few more months would make this long term.':'')};
+    bindPair('tM',f);['tG','rS','rL','rE','rC'].forEach(i=>$('#'+i).oninput=f);$('#tA').onchange=f;$('#tS').onchange=f;f();
+  }
+}
+
+/* ---------- search ---------- */
+const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity and index fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['Solutions','#solutions','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Tools','#tools','SIP, lump sum, goal and capital-gains calculators'],['SIP calculator','#tools','Tools'],['Capital-gains tax','#tools','Tools'],['PMS','#solutions','Solutions'],['AIFs','#solutions','Solutions'],['Bonds','#solutions','Solutions'],['Unlisted shares','#solutions','Solutions'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
+function openSearch(){const o=$('#srch');o.hidden=false;const q=$('#srchQ');q.value='';drawSearch('');setTimeout(()=>q.focus(),10)}
+function closeSearch(){$('#srch').hidden=true}
+function drawSearch(q){
+  const t=q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const pg=PAGES.filter(p=>!t.length||t.every(w=>(p[0]+' '+p[2]).toLowerCase().includes(w))).slice(0,t.length?4:8);
+  const fs=t.length?S.funds.filter(f=>{const h=(f.name+' '+f.amc+' '+f.category+' '+f.plan_type).toLowerCase();return t.every(w=>h.includes(w))})
+    .sort((a,b)=>(a.plan_type==='Regular'?0:1)-(b.plan_type==='Regular'?0:1)||(b.aum_cr||0)-(a.aum_cr||0)).slice(0,10):[];
+  const ext=h=>h.startsWith('http')?' target="_blank" rel="noopener"':'';
+  $('#srchRes').innerHTML=(fs.length?`<div class="grp">Funds</div>`+fs.map(f=>`<a href="#fund-${f.code}"><span style="min-width:0"><span style="display:block">${esc(f.name)}</span><small>${esc(f.plan_type)} · ${esc(f.category)}</small></span>${tier(f.tier)}</a>`).join(''):'')
+   +(pg.length?`<div class="grp">Pages</div>`+pg.map(p=>`<a href="${p[1]}"${ext(p[1])} data-tool="${p[0]==='SIP calculator'?'sip':p[0]==='Capital-gains tax'?'tax':''}"><span>${esc(p[0])}</span><small>${esc(p[2])}</small></a>`).join(''):'')
+   ||`<p class="muted" style="padding:14px">No match. Try a fund house, like "HDFC", or a category, like "small cap".</p>`;
+  const as=$$('#srchRes a');as.forEach((a,i)=>{a.setAttribute('aria-selected',i===0);a.onclick=()=>{if(a.dataset.tool)S.tool=a.dataset.tool;closeSearch()}});
+}
+function searchInit(){
+  $('#srchBtn').onclick=openSearch;
+  $('#srch').onclick=e=>{if(e.target.id==='srch')closeSearch()};
+  $('#srchQ').oninput=e=>drawSearch(e.target.value);
+  $('#srchQ').onkeydown=e=>{const as=$$('#srchRes a');let i=as.findIndex(a=>a.getAttribute('aria-selected')==='true');
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();i=(i+(e.key==='ArrowDown'?1:-1)+as.length)%as.length;as.forEach((a,j)=>a.setAttribute('aria-selected',j===i));as[i]?.scrollIntoView({block:'nearest'})}
+    else if(e.key==='Enter'&&as[i]){e.preventDefault();as[i].click();if(!as[i].target)location.hash=as[i].getAttribute('href').slice(1)}
+    else if(e.key==='Escape')closeSearch()};
+  document.addEventListener('keydown',e=>{if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();openSearch()}else if(e.key==='Escape'&&!$('#srch').hidden)closeSearch()});
 }
 
 /* ---------- home ---------- */
@@ -575,15 +759,23 @@ function staticPages(){
   <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
   <div class="row" style="margin-top:22px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>`;
   $('#contactPage').innerHTML=`<div class="eyebrow">Contact</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Talk to us</h1>
-  <p class="lede" style="margin-top:12px">Tell us what you are trying to do. We usually reply within one working day.</p>
+  <p class="lede" style="margin-top:12px">Tell us a little about what you're planning. We'll reply within one working day, usually on WhatsApp.</p>
   <div class="grid g2" style="margin-top:28px;align-items:start">
-    <form class="card stack" id="cform"><label class="stack" style="gap:6px"><span>Name</span><input id="cn" required style="background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px"></label>
-      <label class="stack" style="gap:6px"><span>What would you like help with?</span><textarea id="cm" rows="5" required style="background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px;font:inherit;color:inherit"></textarea></label>
+    <form class="card stack cf" id="cform" style="gap:16px">
+      <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Name</span><input id="cn" required autocomplete="name"></label><label class="field"><span>Phone (optional)</span><input id="cp" type="tel" autocomplete="tel" inputmode="tel"></label></div>
+      <label class="field"><span>What are you planning for?</span><select id="cg"><option>Growing my wealth</option><option>Retirement</option><option>Children's education</option><option>Buying a home</option><option>Regular income</option><option>Saving tax</option><option>Reviewing what I already hold</option><option>Something else</option></select></label>
+      <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Roughly how much?</span><select id="ca"><option>Not sure yet</option><option>Under ₹10 lakh</option><option>₹10–50 lakh</option><option>₹50 lakh–₹1 crore</option><option>₹1–5 crore</option><option>Above ₹5 crore</option><option>A monthly SIP</option></select></label>
+        <label class="field"><span>For how long?</span><select id="ch"><option>Not sure yet</option><option>Under 3 years</option><option>3–5 years</option><option>5–10 years</option><option>10 years or more</option></select></label></div>
+      <div class="field"><span>Interested in</span><div class="checks" id="ci">${['Mutual funds','PMS','AIFs','Bonds','Unlisted shares','Tax-aware planning','Portfolio review','Insurance'].map(x=>`<label><input type="checkbox" value="${x}">${x}</label>`).join('')}</div></div>
+      <label class="field"><span>Anything else? (optional)</span><textarea id="cm" rows="3"></textarea></label>
       <button class="btn primary" type="submit" style="justify-content:center">Continue on WhatsApp</button>
-      <p class="muted" style="font-size:12.5px">Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site.</p><p id="cout" hidden></p></form>
-    <div class="stack">${[['Phone and WhatsApp','+91 85959 93600'],['Email','contact@aeternawealth.com'],['Office','B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029']].map(([k,v])=>`<div class="card"><div class="muted" style="font-size:13px">${k}</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">${v}</b><button class="copy" data-v="${v}">Copy</button></div></div>`).join('')}</div>
+      <p class="muted" style="font-size:12.5px">Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site. Prefer email? Write to contact@aeternawealth.com.</p><p id="cout" hidden></p></form>
+    <div class="stack">${[['Phone and WhatsApp','+91 85959 93600'],['Email','contact@aeternawealth.com'],['Office','B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029']].map(([k,v])=>`<div class="card"><div class="muted" style="font-size:13px">${k}</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">${v}</b><button class="copy" type="button" data-v="${v}">Copy</button></div></div>`).join('')}
+      <div class="card"><div class="muted" style="font-size:13px">Already a client?</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">See your holdings and statements</b><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div></div>
   </div>`;
-  $('#cform').onsubmit=e=>{e.preventDefault();const t=`Hello Aeterna, I'm ${$('#cn').value}. ${$('#cm').value}`;const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;o.innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a>`};
+  $('#cform').onsubmit=e=>{e.preventDefault();const ints=$$('#ci input:checked').map(i=>i.value);
+    const t=[`Hello Aeterna, I'm ${$('#cn').value.trim()}.`,`Planning for: ${$('#cg').value}.`,`Amount: ${$('#ca').value}. Time frame: ${$('#ch').value}.`,ints.length?`Interested in: ${ints.join(', ')}.`:'',$('#cp').value.trim()?`My number: ${$('#cp').value.trim()}.`:'',$('#cm').value.trim()].filter(Boolean).join('\n');
+    const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;o.innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a> <span class="muted" style="font-size:13px">If WhatsApp doesn't open, message us on +91 85959 93600.</span>`};
   $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.v).then(()=>{b.textContent='Copied'},()=>{b.textContent='Select and copy'})});
   $('#discPage').innerHTML=`<div class="eyebrow">Disclosures</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Disclosures</h1>
   <h3>Registration</h3><p>Aeterna Wealth Private Limited is registered with the Association of Mutual Funds in India as a mutual fund distributor, ARN-317889. We are not registered with SEBI as an investment adviser or research analyst.</p>
@@ -596,13 +788,14 @@ function staticPages(){
 function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
-  if(!['home','ratings','fund','compare','method','solutions','about','contact','disclosures'].includes(view))view='home';
+  if(!['home','ratings','fund','compare','method','solutions','tools','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   const mfv=['ratings','compare','method','fund'].includes(view); const ddb=$('#ddMf .ddbtn'); if(mfv)ddb.setAttribute('aria-current','page');else ddb.removeAttribute('aria-current');
   $('#ddMf').classList.remove('open');ddb.setAttribute('aria-expanded','false');
-  if(view==='contact'&&S.topic){const m=$('#cm');if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
+  if(view==='contact'&&S.topic){const m=$('#cm');$$('#ci input').forEach(i=>{if(S.topic.toLowerCase().includes(i.value.toLowerCase()))i.checked=true});if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
+  if(view==='tools')toolsPage();
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
   if(view==='ratings')ratings(); if(view==='fund')fund(code); if(view==='compare')compare();
   window.scrollTo(0,0);
@@ -610,7 +803,7 @@ function route(){
 $('#ddMf .ddbtn').onclick=e=>{const d=$('#ddMf'),o=d.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',o)};
 document.addEventListener('click',e=>{if(!e.target.closest('#ddMf')){$('#ddMf').classList.remove('open');$('#ddMf .ddbtn').setAttribute('aria-expanded','false')}});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
-load().then(()=>{home();ratingsInit();compareInit();staticPages();solutionsPage();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
+load().then(()=>{home();toolCards();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});
 })();
 </script>

@@ -1,8 +1,8 @@
-amc,status,info,file,run 2026-11-05 13:49
+amc,status,info,file,run 2026-11-05 17:07
 360-ONE-Mutual-Fund,OK,https://s3.ap-south-1.amazonaws.com/x-web-s3.360.one/IN_MF_MONTHLY_PORTFOLIO_Sep2026_Final_fc91906e39.xls,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/360-ONE-Mutual-Fund/IN_MF_MONTHLY_PORTFOLIO_Sep2026_Final_fc91906e39.xls
 Abakkus-Mutual-Fund,OK,https://www.abakkusmf.com/uploads/Final_Monthly_Portolio_Sep30_2026_fd59e57829.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Abakkus-Mutual-Fund/Final_Monthly_Portolio_Sep30_2026_fd59e57829.xlsx
 Aditya-Birla-Sun-Life-Mutual-Fund,OK,https://mutualfund.adityabirlacapital.com/-/media/bsl/files/resources/monthly-portfolio/2026/30092026_abslmf_monthlydisclosure.zip,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Aditya-Birla-Sun-Life-Mutual-Fund/30092026_ABSLMF_MonthlyDisclosure.zip
-Angel-One-Mutual-Fund,FAILED,no 2026-09 file found on https://www.angelonemf.com/downloads,
+Angel-One-Mutual-Fund,SKIPPED,already downloaded,
 Axis-Mutual-Fund,OK,https://www.axismf.com/1/5/464/560/3622/4593/Monthly_Portfolio_30_09_2026_75011dd855.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Axis-Mutual-Fund/Monthly_Portfolio_30_09_2026_75011dd855.xlsx
 Bajaj-Finserv-Mutual-Fund,OK,https://media.bajajamc.com/wp-content/uploads/2026/10/Bajaj-Finserv-Mutual-Fund_Monthly-Portfolio-as-on-30-Sep2026-1.xls,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Bajaj-Finserv-Mutual-Fund/Bajaj-Finserv-Mutual-Fund_Monthly-Portfolio-as-on-30-Sep2026-1.xls
 Bandhan-Mutual-Fund,FAILED,no 2026-09 file found on https://bandhanmutual.com/downloads/disclosures,
@@ -15,9 +15,9 @@ DSP-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aet
 Edelweiss-Mutual-Fund,OK,https://www.edelweissmf.com/Files/MF/Statutory/Portfolio_of_schemes/Monthly_Portfolio_and_RiskoMeter/EDEL_Portfolio_Monthly_Notes_30Sep2026_09102026151145.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Edelweiss-Mutual-Fund/EDEL_Portfolio_Monthly_Notes_30Sep2026_09102026151145.xlsx
 Franklin-Templeton-Mutual-Fund,OK,https://www.franklintempletonindia.com/download/en-in/monthly-portfolio-dsclr/79c9638b-ce3e-48c8-8036-a571ecd54260/MF-Monthly-Portfolio-ISIN-30-Sep-2026.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Franklin-Templeton-Mutual-Fund/MF-Monthly-Portfolio-ISIN-30-Sep-2026.xlsx
 Groww-Mutual-Fund,OK,2/2 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Groww-Mutual-Fund/Monthly_Portfolio_-_September_30__2026.xlsx
-HDFC-Mutual-Fund,FAILED,no 2026-09 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio,
+HDFC-Mutual-Fund,SKIPPED,already downloaded,
 Helios-Mutual-Fund,OK,7 files from https://www.heliosmf.in/portfolio-disclosure/,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Helios-Mutual-Fund/helios-arbitrage-fund-monthly-portfolio-as-on-30th-september-2026.xls
-HSBC-Mutual-Fund,OK,21 files from https://www.assetmanagement.hsbc.co.in/en/mutual-funds/investor-resources?Cap=&Doc=portfolios#,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/HSBC-Mutual-Fund/ir-hsbc-mf-02092026.xlsx
+HSBC-Mutual-Fund,SKIPPED,already downloaded,
 ICICI-Prudential-Mutual-Fund,OK,https://www.icicipruamc.com/blob/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Sep/Monthly-Portfolio-Disclosure-September-2026.zip,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/ICICI-Prudential-Mutual-Fund/Monthly-Portfolio-Disclosure-September-2026.zip
 Invesco-Mutual-Fund,OK,18/18 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Invesco-Mutual-Fund/invesco-india-elss-tax-saver-fund_sep_2026_equity.xlsx
 ITI-Mutual-Fund,OK,https://itiamc.com/admin/pdf/1791539984-ITIMF_Monthly_Portfolio_30092026.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/ITI-Mutual-Fund/1791539984-ITIMF_Monthly_Portfolio_30092026.xlsx
@@ -49,5 +49,5 @@ Union-Mutual-Fund,FAILED,"Error: Page.goto: net::ERR_CONNECTION_REFUSED at https
 Call log:
   - navigating to ""https://www.unionmf.com",
 UTI-Mutual-Fund,OK,https://d3ce1o48hc5oli.cloudfront.net/static/generic-zip/Oct-26/FW__UTI_MF_SCHEME_PORTFOLIOS_-_30.09.2026_.zip,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/UTI-Mutual-Fund/FW__UTI_MF_SCHEME_PORTFOLIOS_-_30.09.2026_.zip
-WhiteOak-Capital-Mutual-Fund,NOT_YET,adapter found no files for this month,
+WhiteOak-Capital-Mutual-Fund,SKIPPED,already downloaded,
 Zerodha-Mutual-Fund,OK,14 files from https://www.zerodhafundhouse.com/resources/disclosures/,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Zerodha-Mutual-Fund/Alignment_of_Interest_Disclosure_Sep_2026.xlsx

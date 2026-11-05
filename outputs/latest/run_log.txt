@@ -1,11 +1,11 @@
-Aeterna MF Engine run 2026-11-05 11:56
+Aeterna MF Engine run 2026-11-05 13:31
 [1/7] Universe (AMFI NAVAll)
   1687 equity + index schemes (growth, Direct & Regular)
 [2/7] AMFI extras: TER, AUM, market-cap list
   TER: 1672/1687 plans matched
   AUM (July - September 2026): 838 schemes
 [3/7] Benchmarks (Nifty TRI)
-  TRI: 145 indices, 2013-01-01 -> 2026-11-04
+  TRI: 145 indices, 2013-01-01 -> 2026-11-05
 [4/7] NAV history (mfapi)
   NAV 100/1687
   NAV 200/1687
@@ -40,7 +40,7 @@ Aeterna MF Engine run 2026-11-05 11:56
   OK      DSP-Mutual-Fund  
   OK      Edelweiss-Mutual-Fund  
   OK      Franklin-Templeton-Mutual-Fund  
-  NOT_YET Groww-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet
+  OK      Groww-Mutual-Fund  
   FAILED  HDFC-Mutual-Fund  no 2026-09 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio
   OK      Helios-Mutual-Fund  
   OK      HSBC-Mutual-Fund  
@@ -53,15 +53,12 @@ Aeterna MF Engine run 2026-11-05 11:56
   NOT_YET LIC-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet
   FAILED  Mahindra-Mutual-Fund  no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure
   OK      Mirae-Asset-Mutual-Fund  
-  FAILED  Motilal-Oswal-Mutual-Fund  TimeoutError: Timeout 90000ms exceeded while waiting for event "download"
-=========================== logs ===========================
-waiting for event "download"
-
+  OK      Motilal-Oswal-Mutual-Fund  
   FAILED  Navi-Mutual-Fund  no 2026-09 file found on https://navi.com/mutual-fund/downloads/portfolio
   OK      Nippon-India-Mutual-Fund  
   OK      NJ-Mutual-Fund  
   OK      Old-Bridge-Mutual-Fund  
-  FAILED  PGIM-India-Mutual-Fund  no 2026-09 file found on https://www.pgimindia.com/mutual-funds/disclosures/Portfolios/Monthly-Portfolio
+  OK      PGIM-India-Mutual-Fund  
   OK      PPFAS-Mutual-Fund  
   OK      Quant-Mutual-Fund  
   OK      Quantum-Mutual-Fund  
@@ -80,8 +77,8 @@ Call log:
   OK      UTI-Mutual-Fund  
   NOT_YET WhiteOak-Capital-Mutual-Fund  adapter found no files for this month
   OK      Zerodha-Mutual-Fund  
-  holdings download: 33/50 AMCs OK, 4 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09
-  holdings: 901 portfolios parsed from 313 files, 542 mapped to schemes
+  holdings download: 36/50 AMCs OK, 3 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09
+  holdings: 1092 portfolios parsed from 359 files, 612 mapped to schemes
   holdings validation: 4 portfolios quarantined
   holdings: kept 13 portfolios already parsed for 2026-09 that this run did not re-download
 [6/7] Metrics, protocols, ranking committee
@@ -99,14 +96,14 @@ tier                A  A+    B   C  Unrated
 category                                   
 Contra              3   1    2   0        5
 Dividend Yield      4   2    8   4        6
-ELSS               16   8   25  25        2
-Flexi Cap          14   8   30  20       20
+ELSS               16   8   24  26        2
+Flexi Cap          13   9   30  20       20
 Focused            12   6   20  16        2
 Index Fund         82  47  258  63       90
-Large & Mid Cap    10   6   20  16       20
-Large Cap          12   8   24  16        8
-Mid Cap            10   4   26  16       10
-Multi Cap           8   6   20  12       18
-Sectoral/Thematic  50  36  109  81      225
-Small Cap          10   6   18  16       20
-Value               6   5   16  14        6
+Large & Mid Cap    10   6   19  17       20
+Large Cap          14   6   24  16        8
+Mid Cap            10   4   25  17       10
+Multi Cap           8   6   19  13       18
+Sectoral/Thematic  48  35  109  84      225
+Small Cap          10   6   19  15       20
+Value               6   5   15  15        6

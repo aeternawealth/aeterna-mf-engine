@@ -54,7 +54,7 @@ def probe(url: str, rep: dict) -> dict:
         page.wait_for_timeout(5000)
         import traceback
         steps = {
-            "rendered_file_links": lambda: sorted(set(FILE.findall(page.content())), key=lambda l: (not re.search(r"\\.xls|\\.zip", l, re.I), l))[:2500],
+            "rendered_file_links": lambda: sorted(set(FILE.findall(page.content())), key=lambda l: (not re.search(r"\.xls|\.zip", l, re.I), l))[:2500],
             "anchors_mentioning_portfolio": lambda: page.evaluate(
                 "() => [...document.querySelectorAll('a,button')].map(e => [(e.innerText||'').trim().slice(0,120), e.getAttribute('href')||'', e.getAttribute('onclick')||''])"
                 ".filter(x => /portfolio|monthly|download|sep|2026/i.test(x.join(' '))).slice(0,200)"),

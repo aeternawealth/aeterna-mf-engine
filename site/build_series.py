@@ -108,6 +108,23 @@ def make_insights(funds, by_cat, last, months, m50, m50_now, end):
                                 f"{lakh(res[0][2])} and the strongest at {lakh(res[-1][2])}.",
                         "try": {"tool": "sipreal", "category": cat, "start": str(months[si])}})
 
+    # 1b. Patience: share of all past 3-year holding periods that ended with a gain (funds with 10+ years of weekly history)
+    for cat in ["Large Cap", "Flexi Cap", "Mid Cap", "Small Cap", "ELSS"]:
+        lc = cat if cat == "ELSS" else cat.lower()
+        r = [f for f in reg if f["category"] == cat and f.get("hist3y_pos") is not None and (f.get("hist3y_n") or 0) >= 500]
+        if len(r) < 8:
+            continue
+        med = lambda k: sorted(f[k] for f in r)[len(r) // 2]
+        pos, gt7, worst = med("hist3y_pos"), med("hist3y_gt7"), med("hist3y_worst")
+        ins.append({"id": f"held-3y-{slug(cat)}", "kind": "patience", "category": cat,
+                    "title": f"Held for 3 years, {lc} funds made money {pos * 100:.0f}% of the time",
+                    "figure": f"{pos * 100:.0f}%",
+                    "text": f"Across {len(r)} {lc} funds with 10 or more years of history (Regular plans), the middle fund "
+                            f"ended {pos * 100:.0f}% of all its 3-year holding periods with a gain, and {gt7 * 100:.0f}% with more than "
+                            f"7% a year, roughly a fixed-deposit rate. That counts every weekly start date back to 2006, through the 2008 "
+                            f"and 2020 crashes. Its worst 3-year stretch was {worst * 100:+.1f}% a year.",
+                    "try": {"tool": "sipreal", "category": cat}})
+
     # 2. SIP started at the last market peak: how many are already back in profit?
     window = m50[-36:-3]            # a peak at least 3 months back, within 3 years
     vals = [v for v in window if v is not None]
@@ -137,29 +154,6 @@ def make_insights(funds, by_cat, last, months, m50, m50_now, end):
             ins.append({"id": f"sip-peak-{slug(cat)}", "kind": "sip_peak", "category": cat, "start": str(pk),
                         "title": title, "figure": f"{up} of {n}", "text": text,
                         "try": {"tool": "sipreal", "category": cat, "start": str(pk)}})
-
-    # 3. What Regular vs Direct costs, and what it pays for
-    pairs = {}
-    for f in funds:
-        if f.get("ter") is not None and f.get("pair_key"):
-            pairs.setdefault(f["pair_key"], {})[f["plan_type"]] = f["ter"]
-    gaps = sorted(p["Regular"] - p["Direct"] for p in pairs.values() if "Regular" in p and "Direct" in p)
-    if len(gaps) > 50:
-        g = gaps[len(gaps) // 2] / 100
-
-        def fv(rate):
-            mr = (1 + rate) ** (1 / 12) - 1
-            return sum(10000 * (1 + mr) ** k for k in range(1, 241))
-        diff = fv(0.12) - fv(0.12 - g)
-        ins.append({"id": "direct-regular", "kind": "cost", "gap": round(g * 100, 2),
-                    "title": "Regular or Direct: what the extra cost pays for",
-                    "figure": f"{g * 100:.2f}% a year",
-                    "text": f"A fund's Regular plan typically costs {g * 100:.2f}% a year more than its Direct plan. That difference "
-                            f"pays a distributor, like us, to help choose and combine funds, rebalance, plan tax, handle the paperwork "
-                            f"and keep you on plan when markets fall. If you would rather do all of that yourself, the Direct plan of "
-                            f"the same fund costs less: on a ₹10,000 monthly SIP for 20 years at an assumed 12%, the gap adds up to about "
-                            f"₹{diff / 1e5:.1f} lakh.",
-                    "try": {"tool": "sip"}})
 
     # 4. Category scoreboard: where active funds beat their index
     rows = []

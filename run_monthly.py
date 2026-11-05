@@ -61,6 +61,8 @@ def main():
         done = sorted(p.name for p in (C.DATA / "holdings").glob("20??-??") if (p / "holdings_valid.csv").exists())
         hmonth = done[-1] if done else hmonth
         log(f"  daily mode: re-using holdings of {hmonth}")
+    if not a.daily:
+        H.merge_inbox(hmonth, log=log)   # files uploaded from the office PC for AMCs that block GitHub
     if not (a.offline or a.no_download or a.daily):
         try:
             from engine import amc_downloader

@@ -378,6 +378,34 @@ def analyse(month: str, universe_with_peers: pd.DataFrame, prev_month: str | Non
     return out
 
 
+def merge_inbox(month: str, log=print) -> int:
+    """Copy data/holdings_inbox/<month>/<AMC>/ (uploaded by tools/pc_download.py) into the month's folder.
+    Zips are extracted so the downloader sees those AMCs as already downloaded and skips them."""
+    import shutil
+    import zipfile
+    inbox = C.DATA / "holdings_inbox" / month
+    if not inbox.exists():
+        return 0
+    n = 0
+    for amc in sorted(p for p in inbox.iterdir() if p.is_dir()):
+        dst = HOLD_DIR / month / amc.name
+        dst.mkdir(parents=True, exist_ok=True)
+        for f in amc.rglob("*"):
+            if not f.is_file():
+                continue
+            if f.suffix.lower() == ".zip":
+                with zipfile.ZipFile(f) as z:
+                    for m in z.namelist():
+                        if re.search(r"\.(xlsx|xls|xlsm|xlsb)$", m, re.I):
+                            z.extract(m, dst)
+                            n += 1
+            elif f.suffix.lower() in (".xlsx", ".xls", ".xlsm", ".xlsb"):
+                shutil.copy2(f, dst / f.name)
+                n += 1
+        log(f"  holdings inbox: {amc.name} from the office PC")
+    return n
+
+
 def latest_cached_month(before: str | None = None) -> str | None:
     """Most recent month (YYYY-MM) with parsed holdings on disk, optionally strictly before `before`."""
     done = sorted(p.name for p in HOLD_DIR.glob("20??-??") if (p / "holdings_valid.csv").exists())

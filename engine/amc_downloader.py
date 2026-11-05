@@ -273,7 +273,7 @@ def run(month: str, only=None, show=False, log=print):
     rows, pw, b, ctx = [], None, None, None
     try:
         for slug in amcs:
-            if (out / slug).exists() and any((out / slug).glob("*.xls*")):
+            if (out / slug).exists() and any((out / slug).rglob("*.xls*")):
                 rows.append((slug, "SKIPPED", "already downloaded", ""))
                 continue
             st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))

@@ -1,4 +1,4 @@
-amc,status,info,file,run 2026-11-05 17:07
+amc,status,info,file,run 2026-11-05 18:59
 360-ONE-Mutual-Fund,OK,https://s3.ap-south-1.amazonaws.com/x-web-s3.360.one/IN_MF_MONTHLY_PORTFOLIO_Sep2026_Final_fc91906e39.xls,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/360-ONE-Mutual-Fund/IN_MF_MONTHLY_PORTFOLIO_Sep2026_Final_fc91906e39.xls
 Abakkus-Mutual-Fund,OK,https://www.abakkusmf.com/uploads/Final_Monthly_Portolio_Sep30_2026_fd59e57829.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Abakkus-Mutual-Fund/Final_Monthly_Portolio_Sep30_2026_fd59e57829.xlsx
 Aditya-Birla-Sun-Life-Mutual-Fund,OK,https://mutualfund.adityabirlacapital.com/-/media/bsl/files/resources/monthly-portfolio/2026/30092026_abslmf_monthlydisclosure.zip,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Aditya-Birla-Sun-Life-Mutual-Fund/30092026_ABSLMF_MonthlyDisclosure.zip
@@ -24,30 +24,35 @@ ITI-Mutual-Fund,OK,https://itiamc.com/admin/pdf/1791539984-ITIMF_Monthly_Portfol
 Jio-BlackRock-Mutual-Fund,FAILED,no 2026-09 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure,
 JM-Financial-Mutual-Fund,FAILED,no 2026-09 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure,
 Kotak-Mahindra-Mutual-Fund,OK,"https://vatseelabs-s3.kotakmf.com/FormsDownloads/Portfolios/Consolidated-Portfolio-as-on-September-30,-2026/ConsolidatedSEBIPortfolioSeptember2026.xlsx",/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Kotak-Mahindra-Mutual-Fund/ConsolidatedSEBIPortfolioSeptember2026.xlsx
-LIC-Mutual-Fund,NOT_YET,no 'September 2026' entry on advisorkhoj yet,
-Mahindra-Mutual-Fund,FAILED,no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure,
+LIC-Mutual-Fund,NOT_YET,no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.licmf.com/downloads/monthly-portfolio: no 2026-09 file found on https://www.licmf.com/downloads/monthly-portfolio,
+Mahindra-Mutual-Fund,FAILED,no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure; AMFI page https://www.mahindramanulife.com/downloads#mandatory-disclosures: no 2026-09 file found on https://www.mahindramanulife.com/downloads,
 Mirae-Asset-Mutual-Fund,OK,19/19 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Mirae-Asset-Mutual-Fund/mafcf_sept2026.xlsx
 Motilal-Oswal-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Motilal-Oswal-Mutual-Fund/Scheme_Portfolio_Details_September_2026.xlsx
 Navi-Mutual-Fund,FAILED,no 2026-09 file found on https://navi.com/mutual-fund/downloads/portfolio,
 Nippon-India-Mutual-Fund,OK,https://mf.nipponindiaim.com/InvestorServices/FactsheetsDocuments/NIMF-MONTHLY-PORTFOLIO-30-Sep-26.xls,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Nippon-India-Mutual-Fund/NIMF-MONTHLY-PORTFOLIO-30-Sep-26.xls
 NJ-Mutual-Fund,OK,7 files from https://downloads.njmutualfund.com/njmf_download.php?nme=127,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/NJ-Mutual-Fund/NJ-MF-Monthly-Portfolio-NJABF-September-2026-20261008112906.xlsx
-Old-Bridge-Mutual-Fund,OK,https://www.oldbridgemf.com/uploads/Monthly_Overlap_September_2026_d5efacca71.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Old-Bridge-Mutual-Fund/Monthly_Overlap_September_2026_d5efacca71.xlsx
+Old-Bridge-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Monthly_Overlap_September_2026_d5efacca71.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Old-Bridge-Mutual-Fund/Monthly_Overlap_September_2026_d5efacca71.xlsx
 PGIM-India-Mutual-Fund,OK,25/25 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/PGIM-India-Mutual-Fund/PGIM_INDIA_HEALTHCARE_FUND_Sep_2026.xlsx
 PPFAS-Mutual-Fund,OK,https://amc.ppfas.com/downloads/portfolio-disclosure/2026/PPFAS_Monthly_Portfolio_Report_September_30_2026.xls?07102026,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/PPFAS-Mutual-Fund/PPFAS_Monthly_Portfolio_Report_September_30_2026.xls
 Quant-Mutual-Fund,OK,https://www.quantmutual.com/Admin/disclouser/Monthly_portfolio_sept_30092026.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Quant-Mutual-Fund/Monthly_portfolio_sept_30092026.xlsx
 Quantum-Mutual-Fund,OK,https://www.quantumamc.com/FileCDN/FactSheet/ad2b590e-6fbc-4467-9700-c31f2337fbe8.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Quantum-Mutual-Fund/ad2b590e-6fbc-4467-9700-c31f2337fbe8.xlsx
-Samco-Mutual-Fund,OK,91 files from https://www.samcomf.com/StatutoryDisclosure,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Samco-Mutual-Fund/05ProductDashboard_Sep2026_1791549366.xlsx
+Samco-Mutual-Fund,OK,89 files from https://www.samcomf.com/StatutoryDisclosure,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Samco-Mutual-Fund/IN_MF_MONTHLY_PORTFOLIO_September_2026_SamcoDynamicAssetAllocationFund_1791526270.xlsx
 SBI-Mutual-Fund,OK,https://www.sbimf.com/docs/default-source/scheme-portfolios/all-schemes-monthly-portfolio---as-on-30th-september-2026.xlsx?sfvrsn=2a79126c_2,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/SBI-Mutual-Fund/All-Schemes-Monthly-Portfolio---as-on-30th-September-2026.xlsx
 Shriram-Mutual-Fund,OK,https://cdn.shriramamc.in/uploads/Statutory-disclosure/Monthly--Fortnightly--Weekly-Portfolio-of-Scheme(s)/Monthly-Portfolio-for-the-Financial-Year/2026-2027/Monthly-Portfolio-Shriram-Mutual-Fund-September-2026.xls?_gl=1*1e7f7yr*_gcl_au*MTUxMTg2MTIwMS4xNzkxNTI3NDUw*_ga*Njk4NDM5MDU2LjE3OTE1Mjc0NTA.*_ga_TR4QNMVZKQ*czE3OTE1Mjc0NTAkbzEkZzEkdDE3OTE1Mjc0ODYkajI0JGwwJGgw,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Shriram-Mutual-Fund/Monthly-Portfolio-Shriram-Mutual-Fund-September-2026.xls
-Sundaram-Mutual-Fund,NOT_YET,no 'September 2026' entry on advisorkhoj yet,
+Sundaram-Mutual-Fund,NOT_YET,no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: no 2026-09 file found on https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios,
 Tata-Mutual-Fund,OK,https://betacms.tatamutualfund.com/system/files/2026-10/Monthly%20Portfolio%20as%20on%2030th%20September%202026.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Tata-Mutual-Fund/Monthly_Portfolio_as_on_30th_September_2026.xlsx
-Taurus-Mutual-Fund,FAILED,no 2026-09 file found on https://www.taurusmutualfund.com/index.php/monthly-portfolio,
+Taurus-Mutual-Fund,FAILED,no 2026-09 file found on https://www.taurusmutualfund.com/index.php/monthly-portfolio; AMFI page https://taurusmutualfund.com/monthly-portfolio: no 2026-09 file found on https://taurusmutualfund.com/monthly-portfolio,
 The-Wealth-Company-Mutual-Fund,FAILED,no 2026-09 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/,
 Trust-Mutual-Fund,OK,https://www.trustmf.com/Content/2026/10/Monthly%20Port_20261009132916.xlsx,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Trust-Mutual-Fund/Monthly_Port_20261009132916.xlsx
-Unifi-Mutual-Fund,OK,8 files from https://unifimf.com/statutorydocuments/#monthly-portfolio-disclosure,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Unifi-Mutual-Fund/Investor-Complaints_Sep_2026.xlsx
+Unifi-Mutual-Fund,OK,5 files from https://unifimf.com/statutorydocuments/#monthly-portfolio-disclosure,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Unifi-Mutual-Fund/Investor-Complaints_Sep_2026.xlsx
 Union-Mutual-Fund,FAILED,"Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads#!#factsheets
 Call log:
-  - navigating to ""https://www.unionmf.com",
+  - navigating to ""https://www.unionmf.com; AMFI page https://www.unionmf.com/about-us/downloads/monthly-portfolio: Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads/monthly-portfolio
+Call log:
+  - navigating to ""https://www.unionm",
 UTI-Mutual-Fund,OK,https://d3ce1o48hc5oli.cloudfront.net/static/generic-zip/Oct-26/FW__UTI_MF_SCHEME_PORTFOLIOS_-_30.09.2026_.zip,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/UTI-Mutual-Fund/FW__UTI_MF_SCHEME_PORTFOLIOS_-_30.09.2026_.zip
 WhiteOak-Capital-Mutual-Fund,SKIPPED,already downloaded,
-Zerodha-Mutual-Fund,OK,14 files from https://www.zerodhafundhouse.com/resources/disclosures/,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Zerodha-Mutual-Fund/Alignment_of_Interest_Disclosure_Sep_2026.xlsx
+Zerodha-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Monthly_AAUM_Disclosure_Report_-_September_2026.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Zerodha-Mutual-Fund/Monthly_AAUM_Disclosure_Report_-_September_2026.xlsx
+AlphaGrep-Mutual-Fund,NOT_YET,no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-09 file found on https://www.alphagrepmf.ai/disclosures,
+ASK-MUTUAL-FUND,NOT_YET,no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-09 file found on https://www.askmutualfund.com/,
+Monarch-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Monthly_Portfolio_Monarch_Overnight_Fund_30_September_2026_8d5f63f3c7.xls),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09/Monarch-Mutual-Fund/Monthly_Portfolio_Monarch_Overnight_Fund_30_September_2026_8d5f63f3c7.xls

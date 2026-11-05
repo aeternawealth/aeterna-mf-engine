@@ -52,16 +52,20 @@ def probe(url: str) -> dict:
         except Exception as e:
             rep["render_error"] = f"{type(e).__name__}: {str(e)[:200]}"
         page.wait_for_timeout(5000)
-        try:
-            html = page.content()
-            rep["rendered_file_links"] = sorted(set(FILE.findall(html)))[:400]
-            rep["anchors_mentioning_portfolio"] = page.eval_on_selector_all(
-                "a,button", "els => els.map(e => [e.innerText.trim().slice(0,120), e.getAttribute('href')||'', e.getAttribute('onclick')||''])"
-                ".filter(x => /portfolio|monthly|download|sep|2026/i.test(x.join(' '))).slice(0,200)")
-            rep["selects"] = page.eval_on_selector_all("select", "els => els.map(s => [s.name||s.id, [...s.options].slice(0,40).map(o => o.value+'|'+o.text)])")
-            rep["title"] = page.title()
-        except Exception as e:
-            rep["dom_error"] = f"{type(e).__name__}: {str(e)[:200]}"
+        import traceback
+        steps = {
+            "rendered_file_links": lambda: sorted(set(FILE.findall(page.content())))[:400],
+            "anchors_mentioning_portfolio": lambda: page.evaluate(
+                "() => [...document.querySelectorAll('a,button')].map(e => [(e.innerText||'').trim().slice(0,120), e.getAttribute('href')||'', e.getAttribute('onclick')||''])"
+                ".filter(x => /portfolio|monthly|download|sep|2026/i.test(x.join(' '))).slice(0,200)"),
+            "selects": lambda: page.evaluate("() => [...document.querySelectorAll('select')].map(s => [s.name||s.id, [...s.options].slice(0,40).map(o => o.value+'|'+o.text)])"),
+            "title": lambda: page.title(),
+        }
+        for k, fn in steps.items():
+            try:
+                rep[k] = fn()
+            except Exception:
+                rep[k + "_error"] = traceback.format_exc()[-600:]
         b.close()
     rep["requests"] = [r for r in reqs if r["type"] in ("xhr", "fetch", "document") or r["method"] == "POST"][:300]
     return rep
@@ -73,8 +77,9 @@ if __name__ == "__main__":
         name = re.sub(r"[^A-Za-z0-9]+", "_", u.split("//", 1)[-1])[:80]
         try:
             rep = probe(u)
-        except Exception as e:
-            rep = {"url": u, "error": f"{type(e).__name__}: {e}"}
+        except Exception:
+            import traceback
+            rep = {"url": u, "error": traceback.format_exc()[-1500:]}
         (out / f"{name}.json").write_text(json.dumps(rep, indent=1))
         print(u, "->", rep.get("http", {}).get("status"), len(rep.get("requests", [])), "requests,",
               len(rep.get("rendered_file_links", [])), "file links", flush=True)

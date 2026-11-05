@@ -6,3 +6,4 @@ xlrd
 scipy
 amfipy
 playwright
+pyxlsb

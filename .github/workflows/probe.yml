@@ -5,8 +5,13 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: "Space-separated page URLs"
-        required: true
+        description: "Space-separated page URLs (optional)"
+        required: false
+        default: ""
+      download:
+        description: "Optional downloader test, e.g. '2026-09 Motilal,PGIM' (month, then AMC name parts)"
+        required: false
+        default: ""
 permissions:
   contents: write
 jobs:
@@ -20,11 +25,30 @@ jobs:
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
       - name: Probe
         env: { URLS: "${{ inputs.urls }}" }
-        run: python tools/probe_amc.py /tmp/probe $URLS
+        run: |
+          mkdir -p /tmp/probe
+          if [ -n "$URLS" ]; then python tools/probe_amc.py /tmp/probe $URLS; fi
+      - name: Downloader test
+        if: ${{ inputs.download != '' }}
+        env: { DL: "${{ inputs.download }}" }
+        run: |
+          set -- $DL
+          python -m engine.amc_downloader --month "$1" --only "$2" | tee /tmp/probe/download_stdout.txt || true
+          cp "data/holdings/$1/_download_log.csv" /tmp/probe/download_log.csv || true
+          find "data/holdings/$1" -type f -printf "%s %p\n" > /tmp/probe/download_files.txt
+          python - "$1" <<'PY' > /tmp/probe/parse_check.txt 2>&1 || true
+          import sys
+          from pathlib import Path
+          from engine import holdings as H
+          for f in sorted(Path("data/holdings", sys.argv[1]).rglob("*")):
+              if f.suffix.lower() in (".xlsx", ".xls", ".xlsm", ".xlsb"):
+                  r = H.parse_file(f)
+                  print(f"{f.parent.name}/{f.name}: {len(r)} portfolios, equity rows {sum(int(x[1]['is_equity'].sum()) for x in r)}")
+          PY
       - name: Push results to probe-results branch
         run: |
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
           git fetch origin probe-results && git checkout probe-results || git checkout --orphan probe-results
           git rm -rq --cached . 2>/dev/null || true
-          mkdir -p probe && cp /tmp/probe/*.json probe/
+          rm -rf probe && mkdir -p probe && cp /tmp/probe/* probe/
           git add probe && git commit -m "Probe $(date -u +%F_%H%M)" && git push origin probe-results

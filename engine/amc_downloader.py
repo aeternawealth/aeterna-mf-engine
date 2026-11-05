@@ -23,7 +23,7 @@ import pandas as pd
 from . import config as C
 
 INDEX = "https://www.advisorkhoj.com/form-download-centre/Mutual/{slug}/Monthly-Portfolio-Disclosures"
-FILE_RE = re.compile(r"\.(xlsx|xls|xlsm|zip)(\?|$)", re.I)
+FILE_RE = re.compile(r"\.(xlsx|xls|xlsm|xlsb|zip)(\?|$)", re.I)
 
 # Top AMCs by equity AUM first. slug = advisorkhoj URL slug. Extend freely.
 AMCS = [
@@ -82,7 +82,7 @@ def _save(download, folder: Path) -> Path:
     if p.suffix.lower() == ".zip":
         with zipfile.ZipFile(p) as z:
             for n in z.namelist():
-                if re.search(r"\.(xlsx|xls|xlsm)$", n, re.I) and not re.search(r"debt|fortnight", n, re.I):
+                if re.search(r"\.(xlsx|xls|xlsm|xlsb)$", n, re.I) and not re.search(r"debt|fortnight", n, re.I):
                     z.extract(n, folder)
     return p
 
@@ -128,7 +128,7 @@ def _direct(url: str, folder: Path) -> Path | None:
     if p.suffix.lower() == ".zip":
         with zipfile.ZipFile(p) as z:
             for n in z.namelist():
-                if re.search(r"\.(xlsx|xls|xlsm)$", n, re.I) and not re.search(r"debt|fortnight", n, re.I):
+                if re.search(r"\.(xlsx|xls|xlsm|xlsb)$", n, re.I) and not re.search(r"debt|fortnight", n, re.I):
                     z.extract(n, folder)
     return p
 
@@ -140,7 +140,7 @@ _SKIP = re.compile(r"fortnight|half.?year|debt|liquid|overnight|money.?market|gi
 def _download_all(html: str, base: str, month: str, folder: Path) -> list[Path]:
     from urllib.parse import urljoin, unquote
     toks = month_tokens(month)
-    links = set(re.findall(r'(?:href|data-href|data-url)\s*=\s*["\']([^"\']+?\.(?:xlsx?|xlsm|zip)(?:\?[^"\']*)?)["\']', html, re.I))
+    links = set(re.findall(r'(?:href|data-href|data-url)\s*=\s*["\']([^"\']+?\.(?:xlsx?|xlsm|xlsb|zip)(?:\?[^"\']*)?)["\']', html, re.I))
     pick = []
     for l in links:
         name = unquote(l.split("?")[0].rsplit("/", 1)[-1]).lower().replace("–", "-")

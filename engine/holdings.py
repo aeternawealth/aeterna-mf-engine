@@ -300,7 +300,7 @@ def active_share(w_f: pd.Series, w_b: pd.Series) -> float:
 
 def analyse(month: str, universe_with_peers: pd.DataFrame, prev_month: str | None = None, log=print) -> pd.DataFrame:
     folder = HOLD_DIR / month
-    files = sorted([p for p in folder.rglob("*") if p.suffix.lower() in (".xlsx", ".xls", ".xlsm")
+    files = sorted([p for p in folder.rglob("*") if p.suffix.lower() in (".xlsx", ".xls", ".xlsm", ".xlsb")
                     and not re.search(r"debt|fortnight|^~", p.name, re.I)])
     if not files:
         log(f"  holdings: no files in {folder}")

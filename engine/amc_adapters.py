@@ -77,7 +77,42 @@ def dsp(month: str) -> list[str]:
     return out[:1]
 
 
+def motilal(month: str) -> list[str]:
+    """AEM search API behind motilaloswalmf.com/download/month-end-portfolio. The monthly file is titled
+    'Scheme Portfolio Details <Month> <YYYY>' (filed under the publishing month, so match on the title)."""
+    from urllib.parse import quote
+    full, abbr, y = _month(month)
+    r = requests.get("https://www.motilaloswalmf.com/content/aem-cloud-dept-backend-motilal-oswal/api/search-documents.json",
+                     params={"year": "", "category": "month end portfolio", "month": "", "type": "mf"}, headers=UA, timeout=60)
+    out = []
+    for d in r.json().get("results", []) if r.ok else []:
+        t = (d.get("title") or "").lower()
+        if "fortnight" in t or str(y) not in t or not (full in t or re.search(rf"\b{abbr}\b", t)):
+            continue
+        if "scheme portfolio" in t or "month end portfolio" in t or "monthly portfolio" in t:
+            out.append("https://www.motilaloswalmf.com" + quote(d["path"]))
+    return out
+
+
+def pgim(month: str) -> list[str]:
+    """pgimindia.com disclosure API: section 'Monthly Portfolio' (SECTION_747960037), one entry per month."""
+    from urllib.parse import quote
+    full, abbr, y = _month(month)
+    r = requests.post("https://www.pgimindia.com/api/v1/brochure/published/disclosure",
+                      json={"headerId": 2, "sectionId": "SECTION_747960037", "source": "W", "branchCode": None},
+                      headers={**UA, "Referer": "https://www.pgimindia.com/mutual-funds/disclosures/Portfolios/Monthly-Portfolio"}, timeout=60)
+    out = []
+    for tab in r.json().get("data", []) if r.ok else []:
+        for c in tab.get("content", []):
+            if str(c.get("year")) == str(y) and str(c.get("month", "")).lower() in (full, abbr) and c.get("pdfPath"):
+                u = c["pdfPath"]
+                out.append(u.split("/image/")[0] + "/image/" + quote(u.split("/image/")[1]) if "/image/" in u else u)
+    return out
+
+
 AMC_ADAPTERS = {
+    "Motilal-Oswal-Mutual-Fund": motilal,
+    "PGIM-India-Mutual-Fund": pgim,
     "Invesco-Mutual-Fund": invesco,
     "Mirae-Asset-Mutual-Fund": mirae,
     "WhiteOak-Capital-Mutual-Fund": whiteoak,

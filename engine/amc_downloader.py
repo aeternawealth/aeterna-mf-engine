@@ -152,7 +152,9 @@ def _direct(url: str, folder: Path) -> Path | None:
 
 
 _SKIP = re.compile(r"fortnight|half.?year|debt|liquid|overnight|money.?market|gilt|bond|factsheet|riskometer|risk-o-meter|"
-                   r"dividend|overlap|exposure.*derivative|annual|\bter\b|\bkim\b|\bsid\b", re.I)
+                   r"dividend|overlap|exposure.*derivative|annual|(?<![a-z])ter(?![a-z])|\bkim\b|\bsid\b|"
+                   r"(?<![a-z])nav(?![a-z])|aaum|dashboard|proxy.?voting|scheme.?performance|alignment|constituents|"
+                   r"investments.?by.?amc|tracking.?error|unaudited|financials", re.I)
 
 
 _MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
@@ -309,6 +311,23 @@ def _download_page(ctx, slug: str, month: str, out: Path, url: str):
         page.close()
 
 
+def _check_portfolios(folder: Path, st: str, info: str):
+    """An AMC only counts as OK if at least one downloaded file holds an equity portfolio. Otherwise the files are
+    removed (they were NAV/TER/AAUM/dashboard sheets, not portfolios) and the AMC is reported FAILED."""
+    import shutil
+    from .holdings import parse_file
+    files = [p for p in folder.rglob("*") if p.suffix.lower() in (".xlsx", ".xls", ".xlsm", ".xlsb")]
+    for p in sorted(files, key=lambda p: -p.stat().st_size):
+        try:
+            if any(x[1]["is_equity"].any() for x in parse_file(p)):
+                return st, info
+        except Exception:
+            continue
+    names = ", ".join(sorted(p.name for p in files)[:3])
+    shutil.rmtree(folder, ignore_errors=True)
+    return "FAILED", f"downloaded {len(files)} files but none is an equity portfolio ({names}{', ...' if len(files) > 3 else ''})"
+
+
 def run(month: str, only=None, show=False, log=print):
     out = C.DATA / "holdings" / month
     out.mkdir(parents=True, exist_ok=True)
@@ -334,6 +353,8 @@ def run(month: str, only=None, show=False, log=print):
                 b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
                 ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
                 st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
+            if st == "OK":
+                st, info = _check_portfolios(out / slug, st, info)
             rows.append((slug, st, info, str(path or "")))
             log(f"  {st:7s} {slug}  {info if st != 'OK' else ''}")
     finally:

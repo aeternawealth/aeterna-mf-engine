@@ -13,8 +13,10 @@ html = ('<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'
         '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 233 226%22%3E%3Cpath d=%22M0 0H137V43H43V137H0Z%22 fill=%22%231c1a17%22/%3E%3Cpath d=%22M185 0H233V137H145V226H0V185H90V88H185Z%22 fill=%22%230b4a3c%22/%3E%3C/svg%3E">'
         + robots_meta + '</head><body>\n' + body + '\n</body></html>\n')
 (dist / "index.html").write_text(html, encoding="utf-8")
-for f in (S / "data").glob("*.json"):
-    shutil.copy(f, dist / "data" / f.name)
+for f in (S / "data").rglob("*.json"):   # incl. data/series/ (month-end NAV/TRI for the SIP tool)
+    dst = dist / "data" / f.relative_to(S / "data")
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(f, dst)
 (dist / "CNAME").write_text("aeternawealth.com\n")
 # Search engines and AI assistants are welcome to read and cite the public research
 (dist / "robots.txt").write_text("User-agent: *\nDisallow: /\n" if not LAUNCHED else "User-agent: *\nAllow: /\n\n# AI crawlers explicitly welcome\nUser-agent: GPTBot\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Google-Extended\nAllow: /\n\nSitemap: https://aeternawealth.com/sitemap.xml\n")

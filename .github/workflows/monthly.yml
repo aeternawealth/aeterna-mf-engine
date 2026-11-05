@@ -27,7 +27,7 @@ jobs:
       - name: Run engine
         env: { HMONTH: "${{ inputs.holdings_month }}" }
         run: python run_monthly.py ${HMONTH:+--holdings-month "$HMONTH"}
-      - run: python site/build_data.py && python site/build_site.py
+      - run: python site/build_data.py && python site/build_series.py && python site/build_site.py
       - name: Health check
         run: |
           python - <<'PY'

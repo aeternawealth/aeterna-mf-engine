@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "50 3 12 * *"
   workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency: { group: data-refresh, cancel-in-progress: false }
 jobs:
   rate:
     runs-on: ubuntu-latest

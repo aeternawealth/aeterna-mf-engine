@@ -18,14 +18,16 @@ Read this file, `AGENTS.md` (methodology), `README.md` and `DEPLOY.md` before st
 
 ## Backend, 5 Nov (afternoon session)
 - Repo pushed to `aeternawealth/aeterna-mf-engine`. Daily and monthly workflows tested on GitHub; both pass.
-- Holdings: 621 schemes / 1236 of 1687 plans (month 2026-09). 36/50 AMCs download from GitHub.
+- Holdings (final 5 Nov): 665 schemes / 1324 of 1687 plans (78%), month 2026-09. 39 AMCs from GitHub + HDFC, WhiteOak, Angel One from the office PC.
+  The downloader finds AMC pages via AMFI's portfolio-disclosure directory (official), falling back to advisorkhoj, and only counts an AMC OK if a file holds an equity portfolio.
+  **Accepted gap**: 323 plans / 15 AMCs without holdings (Bandhan, LIC, Sundaram, HSBC, Mahindra Manulife, Union, Navi + 8 small). Rated on track record only; the site must show a 'holdings not available' note for them. Backlog: direct downloaders for the big five.
   - New direct adapters: Motilal Oswal, PGIM (.xlsb support), Groww, Canara (paginated). NJ fixed (file naming).
   - HDFC was never attempted (advisorkhoj `selected` option bug): fixed, but hdfcfund.com blocks GitHub (403).
 - Safety: a month with no or partial portfolios falls back to the previous month for each fund (`holdings_month` column).
   Health checks fail the run below 450 funds with holdings, so a bad run is never committed.
 - Blocked or unsolved from GitHub: HDFC, Navi, Union, Angel One, WhiteOak, Sundaram, Mahindra Manulife, Bandhan, LIC, HSBC.
   These go through the **office-PC download** (`tools/pc_download.py`, `PC_SETUP.md`), which pushes to
-  `data/holdings_inbox/<month>/`; the monthly run merges it first. **Waiting on the PC setup and a first run.**
+  `data/holdings_inbox/<month>/`; the monthly run merges it first. Set up on DESKTOP-2PPBSHC (C:\Claude Data\MF Data\Aeterna); first run worked for HDFC, WhiteOak, Angel One. The script re-registers its Task Scheduler entry (11th and 16th, 10:30) itself.
 - Tools: the `Probe AMC pages` workflow (manual) inspects AMC pages and runs single-AMC download tests from GitHub;
   results go to the `probe-results` branch.
 - Ops log (runs, AMC status, anomalies): https://claude.ai/artifact/8tQP7qmdP55yJGPpHFMp1b
@@ -33,7 +35,7 @@ Read this file, `AGENTS.md` (methodology), `README.md` and `DEPLOY.md` before st
 
 ## Next, in order
 1. ~~Push repo, run workflows~~ done. ~~Test HDFC/Motilal/Navi/Union from GitHub~~ done: Motilal fixed; the rest go through the office PC.
-2. Set up the office PC (`PC_SETUP.md`) and run it once with `--show`; fix any AMC that still fails there.
+2. ~~Office PC~~ done. Website next: holdings-not-available note first, then Cloudflare Pages, then SEO.
 3. Set up Cloudflare Pages using `DEPLOY.md`, then point aeternawealth.com at it.
 4. Scheduled Claude check-in on the 13th of each month: read the monthly run log, then fix or report problems.
 5. SEO and AI discoverability:

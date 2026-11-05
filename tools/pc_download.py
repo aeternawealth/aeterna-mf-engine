@@ -31,7 +31,10 @@ def git(*args, check=True):
 
 
 def main():
+    import os
     import pandas as pd
+    if sys.platform == "win32":   # Edge ships with Windows: no separate Chromium download (avoids side-by-side errors)
+        os.environ.setdefault("PW_CHANNEL", "msedge")
     ap = argparse.ArgumentParser()
     ap.add_argument("--month", default=(pd.Period(datetime.now(), "M") - 1).strftime("%Y-%m"))
     ap.add_argument("--only", default=None, help="comma-separated name parts, e.g. HDFC,Navi")

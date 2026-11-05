@@ -18,7 +18,6 @@ previous portfolio, and the ops log shows it.
    cd aeterna-mf-engine
    python -m venv .venv
    .venv\Scripts\pip install -r requirements.txt
-   .venv\Scripts\python -m playwright install chromium
    ```
 4. Test it once with the browser visible:
    ```
@@ -34,6 +33,7 @@ previous portfolio, and the ops log shows it.
    It's safe to run more than once: AMCs already uploaded for that month are skipped.
 
 ## Notes
+- On Windows the script drives the PC's own Microsoft Edge, so no separate Chromium download is needed. To use Playwright's Chromium instead, set `PW_CHANNEL=chromium` (and run `.venv\Scripts\python -m playwright install chromium`).
 - The PC needs to be on, and logged in, on the 10th or 11th. Output goes to `pc_download.log` in the repo folder.
 - To run it by hand for one AMC: `.venv\Scripts\python tools\pc_download.py --month 2026-10 --only HDFC --show`
 - The repo is private. The PC only needs permission to push to it.

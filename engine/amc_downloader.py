@@ -12,6 +12,7 @@ Usage:  python -m engine.amc_downloader --month 2026-10 [--only HDFC,SBI] [--sho
 from __future__ import annotations
 
 import argparse
+import os
 import csv
 import re
 import zipfile
@@ -280,7 +281,7 @@ def run(month: str, only=None, show=False, log=print):
             if st == "FAILED" and ctx is None and info.startswith("needs browser"):
                 from playwright.sync_api import sync_playwright
                 pw = sync_playwright().start()
-                b = pw.chromium.launch(headless=not show)
+                b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
                 ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
                 st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
             rows.append((slug, st, info, str(path or "")))

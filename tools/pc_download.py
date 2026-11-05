@@ -25,6 +25,53 @@ BLOCKED = ["HDFC-Mutual-Fund", "Navi-Mutual-Fund", "Union-Mutual-Fund", "Angel-O
 EXT = (".xlsx", ".xls", ".xlsm", ".xlsb", ".zip")
 
 
+TASK_NAME = "Aeterna portfolio download"
+TASK_DAYS = (11, 16)       # holdings days; the GitHub monthly runs follow at 14:50 IST the same days
+TASK_TIME = "10:30"
+TASK_VERSION = "2"        # bump to make every PC re-register its task on its next run
+
+
+def ensure_schedule():
+    """Windows only: keep this PC's Task Scheduler entry in line with the repo (days, time, missed-start
+    catch-up), replacing any older entry that runs pc_download.bat. Runs as the current user; no admin needed."""
+    if sys.platform != "win32":
+        return
+    marker = ROOT / "data" / ".pc_task_version"   # untracked (data/.* is not committed)
+    if marker.exists() and marker.read_text().strip() == TASK_VERSION:
+        return
+    import tempfile
+    bat = ROOT / "tools" / "pc_download.bat"
+    days = "".join(f"<Day>{d}</Day>" for d in TASK_DAYS)
+    xml = f"""<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo><Description>Aeterna MF engine: monthly portfolio download for AMCs that block GitHub (tools/pc_download.py)</Description></RegistrationInfo>
+  <Triggers><CalendarTrigger><StartBoundary>2026-01-01T{TASK_TIME}:00</StartBoundary><Enabled>true</Enabled>
+    <ScheduleByMonth><DaysOfMonth>{days}</DaysOfMonth><Months><January/><February/><March/><April/><May/><June/><July/><August/><September/><October/><November/><December/></Months></ScheduleByMonth>
+  </CalendarTrigger></Triggers>
+  <Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
+  <Settings><StartWhenAvailable>true</StartWhenAvailable><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><RunOnlyIfNetworkAvailable>true</RunOnlyIfNetworkAvailable>
+    <ExecutionTimeLimit>PT2H</ExecutionTimeLimit><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><Enabled>true</Enabled></Settings>
+  <Actions Context="Author"><Exec><Command>"{bat}"</Command><WorkingDirectory>{ROOT}</WorkingDirectory></Exec></Actions>
+</Task>"""
+    try:
+        # remove older entries (any name) that run pc_download.bat, then register ours
+        ps = ("Get-ScheduledTask | Where-Object { ($_.Actions | ForEach-Object { $_.Execute + ' ' + $_.Arguments }) -match 'pc_download' "
+              f"-and $_.TaskName -ne '{TASK_NAME}' }} | Unregister-ScheduledTask -Confirm:$false")
+        subprocess.run(["powershell", "-NoProfile", "-Command", ps], check=False)
+        with tempfile.NamedTemporaryFile("w", suffix=".xml", delete=False, encoding="utf-16") as f:
+            f.write(xml)
+        r = subprocess.run(["schtasks", "/Create", "/F", "/TN", TASK_NAME, "/XML", f.name], capture_output=True, text=True)
+        Path(f.name).unlink(missing_ok=True)
+        if r.returncode == 0:
+            marker.write_text(TASK_VERSION)
+            print(f"Scheduled task '{TASK_NAME}': days {TASK_DAYS} at {TASK_TIME}, catch-up after a missed start.")
+        else:
+            print("Could not update the scheduled task:", (r.stdout + r.stderr).strip()[:300])
+    except Exception as e:   # never let scheduling stop the download
+        print("Could not update the scheduled task:", e)
+
+
 def git(*args, check=True):
     print("$ git", " ".join(args), flush=True)
     return subprocess.run(["git", *args], cwd=ROOT, check=check)
@@ -44,6 +91,7 @@ def main():
 
     git("checkout", "--", "data/holdings", check=False)
     git("pull", "--rebase", "--autostash", "origin", "main")
+    ensure_schedule()
     inbox = ROOT / "data" / "holdings_inbox" / a.month
     amcs = [s for s in BLOCKED if not a.only or any(o.lower() in s.lower() for o in a.only.split(","))]
     todo = [s for s in amcs if not (inbox / s).exists() or not any(p.suffix.lower() in EXT for p in (inbox / s).rglob("*"))]

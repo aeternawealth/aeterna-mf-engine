@@ -21,3 +21,4 @@ setup.bat
 run_monthly.bat
 schedule_monthly.bat
 START_HERE.md
+data/.pc_task_version

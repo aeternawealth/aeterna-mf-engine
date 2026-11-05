@@ -47,8 +47,9 @@ jobs:
           PY
       - name: Push results to probe-results branch
         run: |
+          # results of each run replace the previous ones; pushed from a separate repo so main's tree is untouched
+          R=$(git config --get remote.origin.url); H=$(git config --get http.https://github.com/.extraheader || true)
+          mkdir /tmp/pr && cd /tmp/pr && git init -q && git checkout -q -b probe-results
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
-          git fetch origin probe-results && git checkout probe-results || git checkout --orphan probe-results
-          git rm -rq --cached . 2>/dev/null || true
-          rm -rf probe && mkdir -p probe && cp /tmp/probe/* probe/
-          git add probe && git commit -m "Probe $(date -u +%F_%H%M)" && git push origin probe-results
+          mkdir probe && cp /tmp/probe/* probe/ && git add probe && git commit -qm "Probe $(date -u +%F_%H%M)"
+          git -c http.https://github.com/.extraheader="$H" push -f "$R" probe-results

@@ -10,7 +10,8 @@ Read this file, `AGENTS.md` (methodology), `README.md` and `DEPLOY.md` before st
 - Public site: `site/app.html`, with data built by `site/build_data.py` and the site by `site/build_site.py` into `site/dist`.
   - Covers MF, PMS, AIF and Bonds; Insurance shows "coming soon".
   - Uses the real logo.
-  - Preview artifact: https://claude.ai/artifact/MF3TjNnSkiW2cZR4ZB3hh4
+  - Preview artifact (current, republished from site/app.html + site/data): https://claude.ai/artifact/WfVGjU7HZx9oufxSSh26og
+  - Pre-launch: build_site.py adds noindex + robots Disallow until `site/LAUNCHED` exists; create that file at launch
 - Methodology audit doc: https://claude.ai/artifact/XsWiyNEVcnsaCBd9kQirf2
 - GitHub Actions:
   - Daily refresh, Tue–Sat at 08:45 IST

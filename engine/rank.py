@@ -133,8 +133,9 @@ def score_horizons(df: pd.DataFrame) -> pd.DataFrame:
         df[f"peers_{h}"] = np.nan
         if f"excess_{h}" not in df.columns:
             continue
-        hard = df["flags"].map(lambda f: isinstance(f, list) and any(x in f for x in C.HARD_FLAGS))
-        elig = df[f"excess_{h}"].notna() & ~df["gate"].astype(str).str.startswith("stale") & ~hard
+        # every fund that existed for the whole window is ranked (persistent-underperformer flags stay visible
+        # next to the name; they cap the Overall tier, not what happened in a given period)
+        elig = df[f"excess_{h}"].notna() & ~df["gate"].astype(str).str.startswith("stale")
         for (pg, plan), g in df[elig].groupby(["peer_group", "plan_type"]):
             sg = score_group(g, C.horizon_protocol(h, g.category.iloc[0]))
             df.loc[sg.index, f"score_{h}"] = sg["score"]

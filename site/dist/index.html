@@ -105,6 +105,10 @@ section.tint{background:var(--band);border-block:1px solid var(--rule)}
 .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+.sortbtn{all:unset;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.sortbtn .arr{font-size:9px;opacity:.45}
+th[aria-sort="ascending"] .arr,th[aria-sort="descending"] .arr{opacity:1;color:var(--teal)}
+.sortbtn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
 th{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);background:var(--surface);position:sticky;top:0}
 td.l,th.l{text-align:left}
 td.fund{white-space:normal;min-width:230px}
@@ -305,6 +309,7 @@ footer.site a{color:var(--ink-2)}
       <input type="search" id="q" placeholder="Search fund or AMC" aria-label="Search">
     </div>
     <div class="note" id="hzNote"></div>
+    <details class="faq" id="colHelp" style="margin-top:10px;max-width:90ch"></details>
     <div id="tables" style="margin-top:18px" class="stack"></div>
   </div></section>
 </div>
@@ -368,6 +373,14 @@ const mon=m=>{if(!m)return'–';const[y,mm]=m.split('-');return new Date(+y,+mm-
 const tcls=t=>({'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'}[t]||'t-u');
 const tier=t=>`<span class="tier ${tcls(t)}" title="Track-record rating">${esc(t&&t!=='Unrated'?t:'–')}</span>`;
 const sg=v=>v==null?'':v>0?'pos':'neg';
+const CAPF={mandate_breach:1,closet_indexer:1,deep_drawdown:1,turnaround_unproven:1,chronic_underperformer:1,risk_without_reward:1};
+function capNote(f){const fs=(f.flags||'').split(', ').filter(x=>CAPF[x]);if(!fs.length)return'';
+  const mb=(f.mandate_breaches||'').split('; ').filter(Boolean).map(x=>{const m=x.match(/^(\w+) (\d+) \(needs >=(\d+)\)/);return m?`${m[2]}% in ${m[1]==='equity'?'equities':m[1]+' caps'}; SEBI requires at least ${m[3]}%`:x}).join(', ');
+  const hm=f.holdings_month||S.meta.holdings_month;
+  const why=fs.map(x=>x==='mandate_breach'&&mb?mb+(hm?` (${mon(hm)} portfolio)`:''):FL[x]).join('; ');
+  const cap=fs.some(x=>x==='chronic_underperformer'||x==='risk_without_reward')?'C':'B';
+  return `Capped at ${cap}: ${why}.`}
+const tierT=f=>{const c=capNote(f);return `<span class="tier ${tcls(f.tier)}" title="${esc((f.score!=null?'Score '+num(f.score,1)+' of 100. ':'')+(c||'Track-record rating'))}">${esc(f.tier&&f.tier!=='Unrated'?f.tier:'–')}</span>`};
 const FL={chronic_underperformer:'Persistent underperformer',risk_without_reward:'Falls more than its index without extra return',turnaround_unproven:'Recent turnaround, long record weak',deep_drawdown:'Deeper falls than peers',mandate_breach:'Outside SEBI category limits',closet_indexer:'Close to its index without extra return',recent_underperformance:'Weak last 12 months'};
 const flags=f=>(f.flags||'').split(', ').filter(Boolean).map(x=>FL[x]||x);
 const tip=$('#tip');
@@ -623,25 +636,54 @@ function ratings(){
   const h=S.hz, idx=S.cat==='Index Fund';
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
   $('#hzNote').innerHTML=h==='Overall'?'<b>Track record</b> needs at least 3 years of history (1 year for index funds). Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
-    :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Funds with persistent long-term underperformance are left out of period ranks.`;
+    :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Every fund that existed for the whole period is ranked; a red note by the name flags a weak long-term record.`;
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
   const sk=h==='Overall'?'score':'score_'+h;
+  const YRS={'6M':.5,'1Y':1,'3Y':3,'5Y':5};
+  const fmtPct2=v=>v==null?'–':num(v,2)+'%';
+  const shortH=x=>x.replace(' months',' mo').replace(' years',' yrs').replace(' year',' yr');
+  const first=f=>{if(h==='Overall')return tierT(f);if(f[sk]!=null)return `<span class="mono">${f['rank_'+h]}</span><span class="muted mono" style="font-size:12px"> / ${f['peers_'+h]}</span>`;
+    return `<span class="muted" style="font-size:12.5px;white-space:nowrap">${String(f.gate||'').startsWith('stale')?'NAV not updating':(f.age_years||0)<YRS[h]?'Under '+shortH(HZN[h]):'–'}</span>`};
+  const r=h==='Overall'?'ret_3Y':'ret_'+h, ex=h==='Overall'?'excess_3Y':'excess_'+h;
+  const COLS=idx?[
+    ['Fund','name',null,'Fund name, fund house and age'],
+    [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
+    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period, a year beyond 1 year'],
+    ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
+    ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
+    ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
+    ['AUM','aum_cr',f=>cr(f.aum_cr),'Assets under management, quarterly average']]
+   :[
+    ['Fund','name',null,'Fund name, fund house and age'],
+    [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
+    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Return a year (point to point for 6 months)'],
+    [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'Return minus the index (TRI) return, a year. Positive = ahead of the index'],
+    ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
+    ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
+    ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
+    ['AUM','aum_cr',f=>cr(f.aum_cr),'Assets under management, quarterly average']];
   const order={'A+':0,'A':1,'B':2,'C':3};
+  const srt=S.sort&&COLS.some(c=>c[1]===S.sort.key)?S.sort:null;
+  const keyOf=(f,k)=>k==='name'?f.name:k==='first'?(h==='Overall'?(f.tier&&order[f.tier]!=null?-(order[f.tier]*1000)+(f.score??0):null):(f[sk]!=null?-f['rank_'+h]:null)):f[k];
+  const sorter=(a,b)=>{if(!srt)return h==='Overall'?((order[a.tier]??9)-(order[b.tier]??9)||(b.score??-1)-(a.score??-1)):((b[sk]??-1)-(a[sk]??-1));
+    const x=keyOf(a,srt.key),y=keyOf(b,srt.key); if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
+    const c=typeof x==='string'?x.localeCompare(y):x-y; return srt.dir==='asc'?c:-c};
   $('#tables').innerHTML=Object.keys(groups).sort().map(g=>{
-    const L=groups[g].sort((a,b)=>h==='Overall'?((order[a.tier]??9)-(order[b.tier]??9)||(b.score??-1)-(a.score??-1)):((b[sk]??-1)-(a[sk]??-1)));
+    const L=groups[g].sort(sorter);
     const bench=L.find(f=>f.benchmark)?.benchmark||'Peer median';
-    const rk=h==='Overall'?null:'rank_'+h, r=h==='Overall'?'ret_3Y':'ret_'+h, ex=h==='Overall'?'excess_3Y':'excess_'+h;
     const n=L.filter(f=>f[sk]!=null).length;
-    const head=idx?['Fund','Rating','Return','Tracking difference','Tracking error 1Y','Expense ratio','AUM']:['Fund',h==='Overall'?'Rating':'Rank',h==='Overall'?'3Y return':'Return',h==='Overall'?'3Y vs index':'vs index','Down capture 3Y','Max fall 5Y','Expense ratio','AUM'];
-    let pos=0;
-    const rows=L.map(f=>{const has=f[sk]!=null; if(has)pos++;
-      const fl=flags(f); const first=has&&h!=='Overall'?`<span class="mono">${f[rk]}</span><span class="muted mono" style="font-size:12px"> / ${f['peers_'+h]}</span>`:tier(f.tier);
+    const rows=L.map(f=>{const has=f[sk]!=null, fl=flags(f);
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
-      if(idx) return `<tr class="${has?'':'dim'}">${name}<td>${tier(f.tier)}</td><td class="num">${pct(f[r==='ret_3Y'?'ret_1Y':r])}</td><td class="num">${f.tracking_diff_1y==null?'–':num(f.tracking_diff_1y,2)+'%'}</td><td class="num">${f.tracking_err_1y==null?'–':num(f.tracking_err_1y,2)+'%'}</td><td class="num">${f.ter==null?'–':num(f.ter,2)+'%'}</td><td class="num">${cr(f.aum_cr)}</td></tr>`;
-      return `<tr class="${has?'':'dim'}">${name}<td>${first}</td><td class="num">${pct(f[r])}</td><td class="num ${sg(f[ex])}">${spct(f[ex])}</td><td class="num">${num(f.downside_capture_3y,0)}</td><td class="num">${pct(f.max_drawdown_5y)}</td><td class="num">${f.ter==null?'–':num(f.ter,2)+'%'}</td><td class="num">${cr(f.aum_cr)}</td></tr>`}).join('');
+      return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
+    const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1];return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}">${c[0]}<span class="arr">${on?(srt.dir==='asc'?'▲':'▼'):'↕'}</span></button></th>`}).join('');
     return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
-    <div class="tablewrap"><table><thead><tr>${head.map((x,i)=>`<th class="${i?'':'l'}">${x}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
+    <div class="tablewrap"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
+  $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${c[0]}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
+  const lowFirst={name:1,ter:1,downside_capture_3y:1,tracking_err_1y:1};
+  $$('#tables .sortbtn').forEach(b=>b.onclick=()=>{const k=b.dataset.k,cur=S.sort&&S.sort.key===k?S.sort:null;
+    S.sort={key:k,dir:cur?(cur.dir==='asc'?'desc':'asc'):(lowFirst[k]?'asc':'desc')};ratings()});
+  const rs=$('#sortReset'); if(rs)rs.onclick=e=>{e.preventDefault();S.sort=null;ratings()};
 }
 
 /* ---------- fund page ---------- */
@@ -665,7 +707,7 @@ async function fund(code){
       <div><div class="muted" style="font-size:13px">1-day change</div><div class="mono ${sg(f.nav_chg_1d)}" style="font-size:20px">${spct(f.nav_chg_1d,2)}</div></div>
       <div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">${f.ter==null?'–':num(f.ter,2)+'%'}</div></div>
       <div><div class="muted" style="font-size:13px">AUM</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
-    <div class="card row" style="gap:18px"><div>${tier(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}</p></div></div>
+    <div class="card row" style="gap:18px"><div>${tier(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}</p></div></div>
   </div>
   <h2 style="margin-top:40px;font-size:26px">Returns against the index</h2>
   <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>${per}</tbody></table></div>

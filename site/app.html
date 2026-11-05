@@ -128,7 +128,10 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:right;whi
  .controls .seg button{flex:1;padding:9px 8px}
  .controls select,.controls input[type=search]{flex:1 1 100%;max-width:none}
 }
-.sortbtn{all:unset;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.rt th{white-space:normal;vertical-align:bottom;line-height:1.35;padding:10px 9px}
+.rt td{padding:10px 9px}
+.rt td.fund{min-width:200px}
+.sortbtn{all:unset;cursor:pointer;display:inline-flex;gap:5px;align-items:flex-end}
 .sortbtn .arr{font-size:9px;opacity:.45}
 th[aria-sort="ascending"] .arr,th[aria-sort="descending"] .arr{opacity:1;color:var(--teal)}
 .sortbtn:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:3px}
@@ -143,6 +146,8 @@ tr.dim td{color:var(--ink-3)}
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 14px}
 select,input[type=search]{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:9px 12px;min-width:0}
 input[type=search]{flex:1 1 220px;max-width:340px}
+.rate-controls input[type=search]{max-width:none}
+#hzNote{max-width:none}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
 .seg button{border:0;background:none;padding:9px 13px;cursor:pointer;font-size:14px;color:var(--ink-2)}
 .seg button[aria-pressed="true"]{background:var(--teal);color:var(--paper)}
@@ -325,16 +330,16 @@ footer.site a{color:var(--ink-2)}
 <div data-view="ratings" hidden>
   <section class="band" style="padding-top:44px"><div class="wrap">
     <div class="eyebrow">Ratings</div>
-    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds, by category</h1>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds</h1>
     <p class="lede" style="margin-top:12px" id="rateLede"></p>
-    <div class="controls">
+    <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
       <div class="seg" id="plan" role="group" aria-label="Plan"><button aria-pressed="true" data-v="Regular">Regular</button><button aria-pressed="false" data-v="Direct">Direct</button></div>
       <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
       <input type="search" id="q" placeholder="Search fund or AMC" aria-label="Search">
     </div>
     <div class="note" id="hzNote"></div>
-    <details class="faq" id="colHelp" style="margin-top:10px;max-width:90ch"></details>
+    <details class="faq" id="colHelp" style="margin-top:10px"></details>
     <label class="mob-only" style="gap:8px;align-items:center;margin-top:12px;font-size:14px"><span class="muted">Sort by</span><select id="mobSort" style="flex:1"></select></label>
     <div id="tables" style="margin-top:18px" class="stack"></div>
   </div></section>
@@ -699,6 +704,7 @@ function ratings(){
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
     [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Return a year (point to point for 6 months)'],
     [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'Return minus the index (TRI) return, a year. Positive = ahead of the index'],
+    ['Up capture 3Y','upside_capture_3y',f=>num(f.upside_capture_3y,0),'In months the index rose, how much of the rise the fund caught. 100 = as much as the index; 110 = 10% more; 90 = only 90%. Higher is better'],
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],

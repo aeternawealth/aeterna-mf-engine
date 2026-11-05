@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v5
+        with: { fetch-depth: 30 }   # enough history to rebase onto commits pushed during the run
       - uses: actions/setup-python@v6
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
@@ -44,4 +45,5 @@ jobs:
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
           git add outputs data site/data site/dist && git commit -m "Monthly ratings $(date -u +%F)" || echo "nothing to commit"
           # main may have moved during the run (code pushes, the office-PC upload): rebase our data commit onto it
-          for i in 1 2 3; do git push && break; git pull --rebase origin main || { git rebase --abort; exit 1; }; done
+          for i in 1 2 3; do git push && exit 0; git pull --rebase origin main || { git rebase --abort; exit 1; }; done
+          echo "push failed 3 times"; exit 1

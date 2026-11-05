@@ -124,13 +124,20 @@ th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:right;whi
  .card.navbox .mono{font-size:17px!important}
  th,td{padding:9px 8px;font-size:13px}
  th{font-size:10.5px;letter-spacing:.03em}
- .rt td[data-l]::before{content:attr(data-l);display:block;font:500 10px/1.5 var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+ .rt td[data-l]::before{content:attr(data-l);display:block;font:500 11.5px/1.3 var(--f-body);color:var(--ink-3);margin-bottom:3px;white-space:normal;overflow-wrap:anywhere}
  .rt tbody tr:hover td{background:none}
  .controls .seg{width:100%;overflow-x:auto}
  .controls .seg button{flex:1;padding:9px 8px}
  .controls select,.controls input[type=search]{flex:1 1 100%;max-width:none}
 }
-.rt th{white-space:normal;vertical-align:bottom;line-height:1.35;padding:10px 9px}
+.rt th{white-space:nowrap;vertical-align:bottom;padding:12px 9px 10px;font:600 12.5px/1.3 var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink-2)}
+.rt th .hl{display:inline-flex;flex-direction:column;align-items:inherit;text-align:inherit}
+.rt th:not(.l) .hl{align-items:flex-end}
+.rt th .h2{font:400 11px/1.3 var(--f-mono);color:var(--ink-3)}
+.rt th .arr{opacity:0;transition:opacity .15s;font-size:9px;margin-bottom:2px}
+.rt th:hover .arr,.rt th .sortbtn:focus-visible .arr{opacity:.5}
+.rt th[aria-sort="ascending"] .arr,.rt th[aria-sort="descending"] .arr{opacity:1}
+.rt th:hover{color:var(--teal)}
 .rt td{padding:10px 9px}
 .rt td.fund{min-width:200px}
 .sortbtn{all:unset;cursor:pointer;display:inline-flex;gap:5px;align-items:flex-end}
@@ -700,7 +707,7 @@ function ratings(){
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>cr(f.aum_cr),'Assets under management, quarterly average']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, quarterly average']]
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
@@ -710,7 +717,14 @@ function ratings(){
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>cr(f.aum_cr),'Assets under management, quarterly average']];
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, quarterly average']];
+  const hp=h==='Overall'?'':h;
+  const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
+    'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
+    'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
+    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
+  const hd=c=>HD[c[0]]||[c[0],''];
+  const lbl=c=>{const [a,b]=hd(c);return b?`${a} (${b})`:a};
   const order={'A+':0,'A':1,'B':2,'C':3};
   const srt=S.sort&&COLS.some(c=>c[1]===S.sort.key)?S.sort:null;
   const keyOf=(f,k)=>k==='name'?f.name:k==='first'?(h==='Overall'?(f.tier&&order[f.tier]!=null?-(order[f.tier]*1000)+(f.score??0):null):(f[sk]!=null?-f['rank_'+h]:null)):f[k];
@@ -723,16 +737,16 @@ function ratings(){
     const n=L.filter(f=>f[sk]!=null).length;
     const rows=L.map(f=>{const has=f[sk]!=null, fl=flags(f);
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
-      return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(c[0])}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
-    const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1];return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}">${c[0]}<span class="arr">${on?(srt.dir==='asc'?'▲':'▼'):'↕'}</span></button></th>`}).join('');
+      return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(hd(c).filter(Boolean).join(' · '))}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
+    const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1],[m1,m2]=hd(c);return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}"><span class="hl"><span class="h1">${m1}</span><span class="h2">${m2||'&nbsp;'}</span></span><span class="arr" aria-hidden="true">${on?(srt.dir==='asc'?'▲':'▼'):'▾'}</span></button></th>`}).join('');
     return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
     <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
-  $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${c[0]}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
+  $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${esc(lbl(c))}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,downside_capture_3y:1,tracking_err_1y:1};
   $$('#tables .sortbtn').forEach(b=>b.onclick=()=>{const k=b.dataset.k,cur=S.sort&&S.sort.key===k?S.sort:null;
     S.sort={key:k,dir:cur?(cur.dir==='asc'?'desc':'asc'):(lowFirst[k]?'asc':'desc')};ratings()});
   const rs=$('#sortReset'); if(rs)rs.onclick=e=>{e.preventDefault();S.sort=null;ratings()};
-  const ms=$('#mobSort'); const opts=[['','Default order']].concat(COLS.flatMap(c=>[[c[1]+':'+(lowFirst[c[1]]?'asc':'desc'),c[0]+(lowFirst[c[1]]?' (low to high)':' (high to low)')],[c[1]+':'+(lowFirst[c[1]]?'desc':'asc'),c[0]+(lowFirst[c[1]]?' (high to low)':' (low to high)')]]));
+  const ms=$('#mobSort'); const opts=[['','Default order']].concat(COLS.flatMap(c=>[[c[1]+':'+(lowFirst[c[1]]?'asc':'desc'),lbl(c)+(lowFirst[c[1]]?', low to high':', high to low')],[c[1]+':'+(lowFirst[c[1]]?'desc':'asc'),lbl(c)+(lowFirst[c[1]]?', high to low':', low to high')]]));
   ms.innerHTML=opts.map(o=>`<option value="${o[0]}">${esc(o[1].replace('Fund (','Name ('))}</option>`).join(''); ms.value=srt?srt.key+':'+srt.dir:'';
   ms.onchange=()=>{const [k,d]=ms.value.split(':');S.sort=k?{key:k,dir:d}:null;ratings()};
 }

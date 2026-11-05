@@ -1,9 +1,6 @@
-Aeterna MF Engine run 2026-11-05 16:48
+Aeterna MF Engine run 2026-11-05 19:04
 [1/7] Universe (AMFI NAVAll)
   1687 equity + index schemes (growth, Direct & Regular)
-[2/7] AMFI extras: TER, AUM, market-cap list
-  TER: 1672/1687 plans matched
-  AUM (July - September 2026): 838 schemes
 [3/7] Benchmarks (Nifty TRI)
   TRI: 145 indices, 2013-01-01 -> 2026-11-05
 [4/7] NAV history (mfapi)
@@ -24,62 +21,8 @@ Aeterna MF Engine run 2026-11-05 16:48
   NAV 1500/1687
   NAV 1600/1687
   1687 NAV histories
-[5/7] Holdings for 2026-09
-  holdings inbox: Angel-One-Mutual-Fund from the office PC
-  holdings inbox: HDFC-Mutual-Fund from the office PC
-  holdings inbox: HSBC-Mutual-Fund from the office PC
-  holdings inbox: WhiteOak-Capital-Mutual-Fund from the office PC
-  OK      360-ONE-Mutual-Fund  
-  OK      Abakkus-Mutual-Fund  
-  OK      Aditya-Birla-Sun-Life-Mutual-Fund  
-  OK      Axis-Mutual-Fund  
-  OK      Bajaj-Finserv-Mutual-Fund  
-  FAILED  Bandhan-Mutual-Fund  no 2026-09 file found on https://bandhanmutual.com/downloads/disclosures
-  OK      Bank-of-India-Mutual-Fund  
-  OK      Baroda-BNP-Paribas-Mutual-Fund  
-  OK      Canara-Robeco-Mutual-Fund  
-  OK      Capitalmind-Mutual-Fund  
-  FAILED  Choice-Mutual-Fund  no 2026-09 file found on https://choicemf.com/disclosures/monthly-portfolio
-  OK      DSP-Mutual-Fund  
-  OK      Edelweiss-Mutual-Fund  
-  OK      Franklin-Templeton-Mutual-Fund  
-  OK      Groww-Mutual-Fund  
-  OK      Helios-Mutual-Fund  
-  OK      ICICI-Prudential-Mutual-Fund  
-  OK      Invesco-Mutual-Fund  
-  OK      ITI-Mutual-Fund  
-  FAILED  Jio-BlackRock-Mutual-Fund  no 2026-09 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure
-  FAILED  JM-Financial-Mutual-Fund  no 2026-09 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure
-  OK      Kotak-Mahindra-Mutual-Fund  
-  NOT_YET LIC-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet
-  FAILED  Mahindra-Mutual-Fund  no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure
-  OK      Mirae-Asset-Mutual-Fund  
-  OK      Motilal-Oswal-Mutual-Fund  
-  FAILED  Navi-Mutual-Fund  no 2026-09 file found on https://navi.com/mutual-fund/downloads/portfolio
-  OK      Nippon-India-Mutual-Fund  
-  OK      NJ-Mutual-Fund  
-  OK      Old-Bridge-Mutual-Fund  
-  OK      PGIM-India-Mutual-Fund  
-  OK      PPFAS-Mutual-Fund  
-  OK      Quant-Mutual-Fund  
-  OK      Quantum-Mutual-Fund  
-  OK      Samco-Mutual-Fund  
-  OK      SBI-Mutual-Fund  
-  OK      Shriram-Mutual-Fund  
-  NOT_YET Sundaram-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet
-  OK      Tata-Mutual-Fund  
-  FAILED  Taurus-Mutual-Fund  no 2026-09 file found on https://www.taurusmutualfund.com/index.php/monthly-portfolio
-  FAILED  The-Wealth-Company-Mutual-Fund  no 2026-09 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/
-  OK      Trust-Mutual-Fund  
-  OK      Unifi-Mutual-Fund  
-  FAILED  Union-Mutual-Fund  Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads#!#factsheets
-Call log:
-  - navigating to "https://www.unionmf.com
-  OK      UTI-Mutual-Fund  
-  OK      Zerodha-Mutual-Fund  
-  holdings download: 39/50 AMCs OK, 2 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09
-  holdings: 1181 portfolios parsed from 489 files, 671 mapped to schemes
-  holdings validation: 6 portfolios quarantined
+[5/7] Holdings for 2026-10
+  daily mode: re-using holdings of 2026-09
 [6/7] Metrics, protocols, ranking committee
   metrics 200/1687
   metrics 400/1687
@@ -89,8 +32,7 @@ Call log:
   metrics 1200/1687
   metrics 1400/1687
   metrics 1600/1687
-  flows: 36 quarters of AUM history on disk
-  wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/2026-11
+  wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                A  A+    B   C  Unrated
 category                                   
 Contra              3   1    2   0        5
@@ -101,7 +43,7 @@ Focused            12   6   20  16        2
 Index Fund         82  47  258  63       90
 Large & Mid Cap    10   6   19  17       20
 Large Cap          14   6   24  16        8
-Mid Cap            10   4   25  17       10
+Mid Cap            12   6   21  17       10
 Multi Cap           8   6   20  12       18
 Sectoral/Thematic  48  35  109  84      225
 Small Cap          10   6   19  15       20

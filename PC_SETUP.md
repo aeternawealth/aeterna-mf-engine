@@ -1,7 +1,8 @@
 # Office PC: monthly portfolio download for AMCs that block GitHub
 
 HDFC, Navi, Union, Angel One and WhiteOak block requests from GitHub's servers (403 Forbidden, a Cloudflare
-bot check, or a refused connection). A PC on an ordinary office or home connection can download their monthly
+bot check, or a refused connection). Sundaram, Mahindra Manulife, Bandhan, LIC and HSBC can't yet be downloaded
+from GitHub either (time-outs, encrypted APIs, or pages without file links), so the PC handles them too. A PC on an ordinary office or home connection can download their monthly
 portfolio files. `tools/pc_download.py` downloads them and uploads them to `data/holdings_inbox/<month>/` in this repo.
 The monthly run on the 12th picks them up automatically. If the PC misses a month, the engine keeps those funds'
 previous portfolio, and the ops log shows it.

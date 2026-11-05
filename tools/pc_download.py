@@ -19,7 +19,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-BLOCKED = ["HDFC-Mutual-Fund", "Navi-Mutual-Fund", "Union-Mutual-Fund", "Angel-One-Mutual-Fund", "WhiteOak-Capital-Mutual-Fund"]
+# Blocked from GitHub's servers (403 / bot check / refused / time-out), or not yet downloadable from there.
+BLOCKED = ["HDFC-Mutual-Fund", "Navi-Mutual-Fund", "Union-Mutual-Fund", "Angel-One-Mutual-Fund", "WhiteOak-Capital-Mutual-Fund",
+           "Sundaram-Mutual-Fund", "Mahindra-Mutual-Fund", "Bandhan-Mutual-Fund", "LIC-Mutual-Fund", "HSBC-Mutual-Fund"]
 EXT = (".xlsx", ".xls", ".xlsm", ".xlsb", ".zip")
 
 

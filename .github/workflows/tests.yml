@@ -1,0 +1,15 @@
+# Calculator maths tests (tests/calculators.test.mjs) on every change to the site or the tests.
+name: Tests
+on:
+  push:
+    paths: ["site/app.html", "tests/**", ".github/workflows/tests.yml"]
+  workflow_dispatch: {}
+jobs:
+  calculators:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: "20" }
+      - run: node tests/calculators.test.mjs

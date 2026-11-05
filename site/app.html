@@ -187,7 +187,8 @@ input[type=search]{flex:1 1 220px;max-width:340px}
 .palette .grp{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:10px 12px 4px}
 /* tools */
 .tool{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:start}
-@media (max-width:900px){.tool{grid-template-columns:1fr}}
+@media (max-width:900px){.tool{grid-template-columns:minmax(0,1fr)}}
+.tool>*{min-width:0}
 .field{display:grid;gap:6px}
 .field>span{font-size:13.5px;color:var(--ink-2)}
 .field .in{display:flex;align-items:center;gap:10px}
@@ -524,6 +525,9 @@ const TOOLS=[
  {id:'sipreal',t:'SIP backtest',d:'What a real SIP in any fund would be worth today, from actual NAVs.'},
  {id:'lump',t:'Lump sum',d:'Growth of a one-time investment at an assumed return.'},
  {id:'goal',t:'Goal planner',d:'The monthly SIP or lump sum a goal needs, after inflation.'},
+ {id:'swp',t:'SWP / retirement income',d:'How long a corpus lasts with a monthly withdrawal that rises each year.'},
+ {id:'emi',t:'Loan EMI',d:'Monthly EMI, total interest and the year-by-year payoff.'},
+ {id:'infl',t:'Inflation',d:"What today's money will cost, or be worth, in the future."},
  {id:'tax',t:'Capital-gains tax',d:'Estimate tax on selling mutual funds, bonds or unlisted shares.'}];
 function toolCards(){const el=$('#toolCards');if(el)el.outerHTML=TOOLS.map(t=>`<a class="card stack sol" href="#tools" data-tool="${t.id}" style="gap:6px;text-decoration:none;color:inherit"><b style="font:600 18px var(--f-display)">${t.t}</b><span class="muted" style="font-size:14px">${t.d}</span><span style="color:var(--teal);font-size:14px;margin-top:auto">Open →</span></a>`).join('');
   $$('a[data-tool]').forEach(a=>a.onclick=()=>{S.tool=a.dataset.tool})}
@@ -531,7 +535,7 @@ const fld=(id,label,val,min,max,step,suffix)=>`<label class="field"><span>${labe
 function bindPair(id,fn){const r=$('#'+id+'R'),n=$('#'+id);r.oninput=()=>{n.value=r.value;fn()};n.oninput=()=>{r.value=n.value;fn()}}
 const val=id=>+($('#'+id)?.value||0);
 function growthChart(rows){ // rows: [{y,inv,val}]
-  const W=620,H=220,L=58,R=12,T=14,B=28, mx=Math.max(...rows.map(r=>r.val),1);
+  const W=620,H=220,L=58,R=12,T=14,B=28, mx=Math.max(...rows.map(r=>Math.max(r.val,r.inv)),1);
   const x=i=>L+i*(W-L-R)/Math.max(rows.length-1,1), y=v=>T+(H-T-B)*(1-v/mx);
   const path=k=>rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(r[k]).toFixed(1)}`).join('');
   const area=k=>path(k)+`L${x(rows.length-1)},${y(0)}L${x(0)},${y(0)}Z`;
@@ -544,9 +548,35 @@ function growthChart(rows){ // rows: [{y,inv,val}]
    ${rows.map((r,i)=>i%step===0||i===rows.length-1?`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="10.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">Y${r.y}</text>`:'').join('')}
    <circle cx="${x(rows.length-1)}" cy="${y(rows[rows.length-1].val)}" r="4" fill="var(--teal)"/></svg>
    <div class="row" style="gap:16px;font-size:12.5px;margin-top:4px"><span><span style="display:inline-block;width:14px;height:3px;background:var(--teal);vertical-align:middle;margin-right:6px"></span>Value</span><span><span style="display:inline-block;width:14px;height:0;border-top:2px dashed var(--ink-3);vertical-align:middle;margin-right:6px"></span>Amount invested</span></div>`}
-function sipSim(m,yrs,r,step){const rm=Math.pow(1+r/100,1/12)-1;let bal=0,inv=0,amt=m;const rows=[];
-  for(let mo=1;mo<=yrs*12;mo++){bal=(bal+amt)*(1+rm);inv+=amt;if(mo%12===0){rows.push({y:mo/12,inv,val:bal});amt*=1+step/100}}return {bal,inv,rows}}
-const TAXR={eq:{n:'Equity mutual funds (65%+ equity)',lt:12,st:'rate',stR:20,ltR:12.5,ex:125000},debt:{n:'Debt mutual funds (bought from 1 Apr 2023)',lt:null,st:'slab'},lbond:{n:'Listed bonds and debentures',lt:12,st:'slab',ltR:12.5},unl:{n:'Unlisted shares',lt:24,st:'slab',ltR:12.5}};
+/* CALC-START: all calculator maths, pure functions, tested by tests/calculators.test.mjs */
+const CALC={
+ // yearly (CAGR) return -> equivalent monthly rate: (1+r)^(1/12)-1, so 12 months compound to exactly r
+ mrate:r=>Math.pow(1+r/100,1/12)-1,
+ // monthly SIP, instalment at the start of each month; step-up raises the instalment once a year
+ sip(m,yrs,r,step=0){const rm=CALC.mrate(r);let bal=0,inv=0,amt=m;const rows=[];
+  for(let mo=1;mo<=yrs*12;mo++){bal=(bal+amt)*(1+rm);inv+=amt;if(mo%12===0){rows.push({y:mo/12,inv,val:bal});amt*=1+step/100}}return {bal,inv,rows}},
+ lump:(a,yrs,r)=>a*Math.pow(1+r/100,yrs),
+ // goal: cost in today's money grown by inflation; existing savings grown at the return; SIP covers the rest
+ goal(target,yrs,inf,r,have=0){const fv=target*Math.pow(1+inf/100,yrs),hv=have*Math.pow(1+r/100,yrs),need=Math.max(0,fv-hv);
+  const rm=CALC.mrate(r),N=yrs*12,sip=rm?need/(((Math.pow(1+rm,N)-1)/rm)*(1+rm)):need/N;return {fv,hv,need,sip,lump:need/Math.pow(1+r/100,yrs)}},
+ // loan EMI, bank convention: annual rate / 12, monthly rests on the reducing balance
+ emi(P,rate,years){const i=rate/1200,n=Math.round(years*12);const e=i?P*i*Math.pow(1+i,n)/(Math.pow(1+i,n)-1):P/n;
+  let bal=P;const rows=[];let yi=0,yp=0;for(let k=1;k<=n;k++){const int=bal*i,pr=e-int;bal-=pr;yi+=int;yp+=pr;if(k%12===0||k===n){rows.push({y:Math.ceil(k/12),interest:yi,principal:yp,balance:Math.max(0,bal)});yi=yp=0}}
+  return {emi:e,total:e*n,interest:e*n-P,rows}},
+ // SWP: withdrawal at the start of each month (raised yearly by `rise`%), balance grows monthly at the equivalent of r
+ swp(corpus,w,r,rise=0,years=30){const rm=CALC.mrate(r);let bal=corpus,amt=w,out=0,lasted=null;const rows=[];
+  for(let mo=1;mo<=years*12;mo++){if(bal<=0){break}const take=Math.min(amt,bal);bal-=take;out+=take;if(take<amt&&lasted==null)lasted=mo;bal*=1+rm;
+   if(bal<=1e-9&&lasted==null)lasted=mo;if(mo%12===0){rows.push({y:mo/12,inv:out,val:Math.max(0,bal)});amt*=1+rise/100}}
+  return {bal:Math.max(0,bal),withdrawn:out,lastedMonths:lasted,rows}},
+ infl:(a,yrs,i)=>({future:a*Math.pow(1+i/100,yrs),today:a/Math.pow(1+i/100,yrs)}),
+ // capital-gains tax: Finance (No. 2) Act 2024 defaults; long term means held MORE than `lt` months
+ TAXR:{eq:{n:'Equity mutual funds (65%+ equity)',lt:12,st:'rate',ex:true},debt:{n:'Debt mutual funds (bought from 1 Apr 2023)',lt:null,st:'slab'},lbond:{n:'Listed bonds and debentures',lt:12,st:'slab'},unl:{n:'Unlisted shares',lt:24,st:'slab'}},
+ tax({asset,months,gain,slab,stcg=20,ltcg=12.5,exempt=125000,cess=4}){const a=CALC.TAXR[asset],g=Math.max(0,gain),lt=a.lt!=null&&months>a.lt;
+  const rate=lt?ltcg:(a.st==='slab'?slab:stcg),taxable=lt&&a.ex?Math.max(0,g-exempt):g;return {lt,rate,taxable,tax:taxable*rate/100*(1+cess/100)}}
+};
+/* CALC-END */
+const TAXR=CALC.TAXR;
+const sipSim=CALC.sip;
 function toolsPage(){
   const cur=S.tool||'sip';
   $('#toolsPage').innerHTML=`<div class="eyebrow">Tools</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Plan with numbers</h1>
@@ -558,28 +588,48 @@ function toolsPage(){
   const body=$('#toolBody');
   if(cur==='sipreal'){sipRealTool(body);return}
   if(cur==='sip'){
-    body.innerHTML=`<div class="tool"><div class="card stack">${fld('sM','Monthly SIP (₹)',10000,500,500000,500)}${fld('sY','Years',15,1,40,1)}${fld('sR','Assumed return a year (%)',12,1,20,0.5)}${fld('sS','Step-up every year (%)',0,0,25,1)}</div>
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('sM','Monthly SIP (₹)',10000,500,500000,500)}${fld('sY','Years',15,1,40,1)}${fld('sR','Assumed return a year (%)',12,1,20,0.5)}${fld('sS','Step-up every year (%)',0,0,25,1)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: the return is a yearly (CAGR) rate. Growth is applied every month at the equivalent monthly rate (12% a year = 0.949% a month, not 1%), with each instalment at the start of the month. The step-up raises the SIP once a year.</p></div>
     <div class="stack"><div class="out"><div><span>Amount invested</span><b id="oInv">–</b></div><div><span>Estimated value</span><b id="oVal">–</b></div><div><span>Estimated gain</span><b id="oGain">–</b></div></div><div class="card" id="oChart"></div></div></div>`;
     const f=()=>{const r=sipSim(val('sM'),Math.max(1,Math.round(val('sY'))),val('sR'),val('sS'));$('#oInv').textContent=inrS(r.inv);$('#oVal').textContent=inrS(r.bal);$('#oGain').textContent=inrS(r.bal-r.inv);$('#oChart').innerHTML=growthChart(r.rows)};
     ['sM','sY','sR','sS'].forEach(i=>bindPair(i,f));f();
   } else if(cur==='lump'){
-    body.innerHTML=`<div class="tool"><div class="card stack">${fld('lA','Investment (₹)',500000,10000,50000000,10000)}${fld('lY','Years',10,1,40,1)}${fld('lR','Assumed return a year (%)',12,1,20,0.5)}</div>
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('lA','Investment (₹)',500000,10000,50000000,10000)}${fld('lY','Years',10,1,40,1)}${fld('lR','Assumed return a year (%)',12,1,20,0.5)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: compounded once a year at the return you enter (the same as monthly compounding at the equivalent monthly rate).</p></div>
     <div class="stack"><div class="out"><div><span>Invested</span><b id="oInv">–</b></div><div><span>Estimated value</span><b id="oVal">–</b></div><div><span>Grows by</span><b id="oGain">–</b></div></div><div class="card" id="oChart"></div></div></div>`;
-    const f=()=>{const a=val('lA'),y=Math.max(1,Math.round(val('lY'))),r=val('lR')/100;const rows=[...Array(y)].map((_,i)=>({y:i+1,inv:a,val:a*Math.pow(1+r,i+1)}));const v=rows[rows.length-1].val;
+    const f=()=>{const a=val('lA'),y=Math.max(1,Math.round(val('lY')));const rows=[...Array(y)].map((_,i)=>({y:i+1,inv:a,val:CALC.lump(a,i+1,val('lR'))}));const v=rows[rows.length-1].val;
       $('#oInv').textContent=inrS(a);$('#oVal').textContent=inrS(v);$('#oGain').textContent=(v/a).toFixed(2)+'×';$('#oChart').innerHTML=growthChart(rows)};
     ['lA','lY','lR'].forEach(i=>bindPair(i,f));f();
   } else if(cur==='goal'){
     body.innerHTML=`<div class="tool"><div class="card stack"><label class="field"><span>Goal</span><select id="gG"><option>Child's education</option><option>Retirement corpus</option><option>Buying a home</option><option>Child's wedding</option><option>Other goal</option></select></label>
-      ${fld('gT',"Cost in today's money (₹)",2500000,100000,100000000,50000)}${fld('gY','Years to goal',12,1,40,1)}${fld('gI','Inflation for this goal (%)',7,0,15,0.5)}${fld('gR','Assumed return a year (%)',11,1,20,0.5)}${fld('gH','Already saved for it (₹)',0,0,100000000,10000)}</div>
+      ${fld('gT',"Cost in today's money (₹)",2500000,100000,100000000,50000)}${fld('gY','Years to goal',12,1,40,1)}${fld('gI','Inflation for this goal (%)',7,0,15,0.5)}${fld('gR','Assumed return a year (%)',11,1,20,0.5)}${fld('gH','Already saved for it (₹)',0,0,100000000,10000)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: today's cost grows by inflation, compounded yearly. Money already saved grows at the return, yearly. The SIP is monthly, at the start of each month, at the equivalent monthly rate.</p></div>
     <div class="stack"><div class="out"><div><span>Goal cost then</span><b id="oF">–</b></div><div><span>Monthly SIP needed</span><b id="oS">–</b></div><div><span>Or lump sum today</span><b id="oL">–</b></div></div>
       <div class="card stack" style="gap:8px"><b id="oTxt"></b><p class="muted" style="font-size:14px" id="oNote"></p><div><a class="btn primary" href="#contact" id="goalCta">Plan this goal with us</a></div></div></div></div>`;
-    const f=()=>{const y=Math.max(1,Math.round(val('gY'))),r=val('gR')/100,fv=val('gT')*Math.pow(1+val('gI')/100,y),have=val('gH')*Math.pow(1+r,y),need=Math.max(0,fv-have);
-      const rm=Math.pow(1+r,1/12)-1,N=y*12,sip=need/(((Math.pow(1+rm,N)-1)/rm)*(1+rm)),lump=need/Math.pow(1+r,y);
+    const f=()=>{const y=Math.max(1,Math.round(val('gY'))),G=CALC.goal(val('gT'),y,val('gI'),val('gR'),val('gH')),fv=G.fv,have=G.hv,need=G.need,sip=G.sip,lump=G.lump;
       $('#oF').textContent=inrS(fv);$('#oS').textContent=inrS(sip);$('#oL').textContent=inrS(lump);
       $('#oTxt').textContent=`${$('#gG').value}: about ${inrS(fv)} in ${y} years.`;
       $('#oNote').textContent=have>0?`Your ${inrS(val('gH'))} already saved could grow to ${inrS(have)} at the same return, so the SIP covers the remaining ${inrS(need)}.`:`A ${inrS(val('gT'))} cost today becomes ${inrS(fv)} at ${val('gI')}% inflation.`;
       $('#goalCta').onclick=()=>{S.topic=`planning for ${$('#gG').value.toLowerCase()} (about ${inrS(fv)} in ${y} years)`}};
     ['gT','gY','gI','gR','gH'].forEach(i=>bindPair(i,f));$('#gG').onchange=f;f();
+  } else if(cur==='swp'){
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('wC','Starting corpus (₹)',10000000,100000,500000000,100000)}${fld('wW','Monthly withdrawal (₹)',60000,1000,5000000,1000)}${fld('wR','Assumed return a year (%)',8,0,15,0.5)}${fld('wI','Raise the withdrawal every year by (%)',6,0,12,0.5)}${fld('wY','Years to show',30,5,50,1)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: each withdrawal comes out at the start of the month; what remains grows every month at the equivalent of the yearly return. The withdrawal rises once a year, for inflation.</p></div>
+    <div class="stack"><div class="out"><div><span>Money lasts</span><b id="oL">–</b></div><div><span>Total withdrawn</span><b id="oW">–</b></div><div><span>Left at the end</span><b id="oB">–</b></div></div><div class="card" id="oChart"></div><div class="card"><p id="oTxt" style="font-size:14.5px"></p></div></div></div>`;
+    const f=()=>{const y=Math.max(1,Math.round(val('wY'))),r=CALC.swp(val('wC'),val('wW'),val('wR'),val('wI'),y);
+      const yl=r.lastedMonths;$('#oL').textContent=yl==null?`${y}+ years`:`${Math.floor(yl/12)} yrs ${yl%12} mo`;$('#oW').textContent=inrS(r.withdrawn);$('#oB').textContent=inrS(r.bal);
+      $('#oChart').innerHTML=r.rows.length?growthChart(r.rows).replace('>Value<','>Corpus left<').replace('>Amount invested<','>Withdrawn so far<'):'';
+      $('#oTxt').textContent=yl==null?`At ${val('wR')}% a year, ${inrS(val('wC'))} supports ${inrS(val('wW'))} a month, rising ${val('wI')}% a year, for all ${y} years, with ${inrS(r.bal)} left.`:`At ${val('wR')}% a year, the money runs out after ${Math.floor(yl/12)} years and ${yl%12} months. A lower withdrawal, a smaller yearly rise or a larger corpus would stretch it.`};
+    ['wC','wW','wR','wI','wY'].forEach(i=>bindPair(i,f));f();
+  } else if(cur==='emi'){
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('eP','Loan amount (₹)',5000000,100000,200000000,100000)}${fld('eR','Interest rate a year (%)',8.5,1,24,0.05)}${fld('eY','Tenure (years)',20,1,30,1)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: the way banks quote EMIs. Interest is the yearly rate ÷ 12, charged every month on the outstanding balance (reducing balance), with equal monthly instalments.</p></div>
+    <div class="stack"><div class="out"><div><span>Monthly EMI</span><b id="oE">–</b></div><div><span>Total interest</span><b id="oI">–</b></div><div><span>Total paid</span><b id="oT">–</b></div></div>
+      <div class="tablewrap"><table><thead><tr><th class="l">Year</th><th>Interest paid</th><th>Principal paid</th><th>Balance left</th></tr></thead><tbody id="oRows"></tbody></table></div></div></div>`;
+    const f=()=>{const r=CALC.emi(val('eP'),val('eR'),val('eY'));$('#oE').textContent=inr(r.emi);$('#oI').textContent=inrS(r.interest);$('#oT').textContent=inrS(r.total);
+      $('#oRows').innerHTML=r.rows.map(x=>`<tr><td class="l">${x.y}</td><td class="num">${inr(x.interest)}</td><td class="num">${inr(x.principal)}</td><td class="num">${inr(x.balance)}</td></tr>`).join('')};
+    ['eP','eR','eY'].forEach(i=>bindPair(i,f));f();
+  } else if(cur==='infl'){
+    body.innerHTML=`<div class="tool"><div class="card stack">${fld('iA','Amount (₹)',100000,1000,100000000,1000)}${fld('iY','Years',10,1,50,1)}${fld('iI','Inflation a year (%)',6,0,15,0.5)}<p class="muted" style="font-size:12.5px;margin-top:6px">How it is calculated: inflation compounds once a year at the rate you enter. India’s consumer inflation has averaged roughly 5–7% a year over the last two decades; education and healthcare have often risen faster.</p></div>
+    <div class="stack"><div class="out" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><span>What it will cost then</span><b id="oF">–</b></div><div><span>What that sum is worth today</span><b id="oP">–</b></div></div><div class="card"><p id="oTxt" style="font-size:14.5px"></p></div></div></div>`;
+    const f=()=>{const y=Math.max(1,Math.round(val('iY'))),r=CALC.infl(val('iA'),y,val('iI'));$('#oF').textContent=inrS(r.future);$('#oP').textContent=inrS(r.today);
+      $('#oTxt').textContent=`Something that costs ${inrS(val('iA'))} today would cost about ${inrS(r.future)} in ${y} years at ${val('iI')}% inflation. Turned around, ${inrS(val('iA'))} received ${y} years from now buys what ${inrS(r.today)} buys today.`};
+    ['iA','iY','iI'].forEach(i=>bindPair(i,f));f();
   } else {
     body.innerHTML=`<div class="tool"><div class="card stack"><label class="field"><span>What are you selling?</span><select id="tA">${Object.entries(TAXR).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select></label>
       ${fld('tM','Months held',18,1,240,1)}<label class="field"><span>Gain (₹)</span><input type="number" id="tG" value="300000" min="0" step="1000"></label>
@@ -589,11 +639,11 @@ function toolsPage(){
        <label class="field"><span>Equity LTCG exemption a year (₹)</span><input type="number" id="rE" value="125000" step="5000"></label><label class="field"><span>Health and education cess (%)</span><input type="number" id="rC" value="4" step="1"></label></div>
        <p class="muted" style="font-size:12.5px;margin-top:8px">Defaults follow the Finance (No. 2) Act, 2024, for sales from 23 July 2024: equity funds long term after 12 months; listed bonds after 12 months; unlisted shares after 24 months; debt funds bought from 1 April 2023 always at slab.</p></details></div>
     <div class="stack"><div class="out"><div><span>Treated as</span><b id="oK">–</b></div><div><span>Taxable gain</span><b id="oTG">–</b></div><div><span>Estimated tax</span><b id="oT">–</b></div></div><div class="card"><p id="oW" style="font-size:14.5px"></p></div></div></div>`;
-    const f=()=>{const a=TAXR[$('#tA').value],m=val('tM'),g=Math.max(0,val('tG')),slab=+$('#tS').value,cess=val('rC')/100;
-      const lt=a.lt!=null&&m>a.lt;let taxable=g,rate,why;
-      if(!lt){rate=a.st==='slab'?slab:val('rS');why=a.lt==null?'Debt funds bought from 1 April 2023 are taxed at your slab rate however long you hold them.':`Held ${m} months, so short term (long term starts after ${a.lt} months). Taxed at ${a.st==='slab'?'your slab rate':val('rS')+'%'}.`}
-      else{rate=val('rL');if(a.ex){taxable=Math.max(0,g-val('rE'));why=`Held over ${a.lt} months, so long term: ${val('rL')}% on gains above ${inr(val('rE'))} a year (this assumes none of the exemption is used elsewhere).`}else why=`Held over ${a.lt} months, so long term: ${val('rL')}% without indexation.`}
-      const tax=taxable*rate/100*(1+cess);
+    const f=()=>{const a=TAXR[$('#tA').value],m=val('tM'),g=Math.max(0,val('tG')),slab=+$('#tS').value;
+      const T=CALC.tax({asset:$('#tA').value,months:m,gain:g,slab,stcg:val('rS'),ltcg:val('rL'),exempt:val('rE'),cess:val('rC')});
+      const lt=T.lt,taxable=T.taxable,tax=T.tax;let why;
+      if(!lt)why=a.lt==null?'Debt funds bought from 1 April 2023 are taxed at your slab rate however long you hold them.':`Held ${m} months, so short term (long term means held for more than ${a.lt} months). Taxed at ${a.st==='slab'?'your slab rate':val('rS')+'%'}.`;
+      else why=a.ex?`Held more than ${a.lt} months, so long term: ${val('rL')}% on gains above ${inr(val('rE'))} a year (this assumes none of the exemption is used elsewhere).`:`Held more than ${a.lt} months, so long term: ${val('rL')}% without indexation.`;
       $('#oK').textContent=lt?'Long term':'Short term';$('#oTG').textContent=inrS(taxable);$('#oT').textContent=inrS(tax);
       $('#oW').textContent=why+` Includes ${val('rC')}% cess; surcharge not included.`+(a.ex&&!lt&&m>=9?' Waiting a few more months would make this long term.':'')};
     bindPair('tM',f);['tG','rS','rL','rE','rC'].forEach(i=>$('#'+i).oninput=f);$('#tA').onchange=f;$('#tS').onchange=f;f();

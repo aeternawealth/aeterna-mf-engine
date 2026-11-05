@@ -42,18 +42,18 @@ def main():
     ap.add_argument("--no-push", action="store_true")
     a = ap.parse_args()
 
-    git("pull", "--ff-only", "origin", "main")
+    git("checkout", "--", "data/holdings", check=False)
+    git("pull", "--rebase", "--autostash", "origin", "main")
     inbox = ROOT / "data" / "holdings_inbox" / a.month
     amcs = [s for s in BLOCKED if not a.only or any(o.lower() in s.lower() for o in a.only.split(","))]
     todo = [s for s in amcs if not (inbox / s).exists() or not any(p.suffix.lower() in EXT for p in (inbox / s).rglob("*"))]
     if not todo:
-        print(f"All of {', '.join(amcs)} already in the inbox for {a.month}. Nothing to do.")
-        return 0
+        print(f"All of {', '.join(amcs)} already in the inbox for {a.month}; only uploading anything not yet pushed.")
 
     from engine import amc_downloader as D
     D.AMCS = todo
     D.list_amcs = lambda: todo   # only these, regardless of advisorkhoj's list
-    rows = D.run(a.month, show=a.show)
+    rows = D.run(a.month, show=a.show) if todo else []
 
     got = []
     for slug, status, info, _ in rows:
@@ -74,15 +74,24 @@ def main():
 
     if a.no_push:
         return 0
+    # the downloader rewrites data/holdings/<month>/_download_log.csv, which the GitHub runs track: put it back so
+    # pulls and rebases never stop on it (this PC's log is kept in the inbox instead)
+    git("checkout", "--", "data/holdings", check=False)
     git("add", "-f", str(inbox.relative_to(ROOT)))
-    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+        git("commit", "-m", f"PC portfolio download {a.month}: {', '.join(got) or 'none OK'}")
+    git("fetch", "origin", "main", check=False)
+    ahead = subprocess.run(["git", "rev-list", "--count", "origin/main..HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    if ahead == "0":
         print("Nothing new to upload.")
         return 0
-    git("commit", "-m", f"PC portfolio download {a.month}: {', '.join(got) or 'none OK'}")
     for i in range(3):   # the GitHub bot may have pushed meanwhile
         if git("push", "origin", "HEAD:main", check=False).returncode == 0:
             break
-        git("pull", "--rebase", "origin", "main")
+        git("pull", "--rebase", "--autostash", "origin", "main", check=False)
+    else:
+        print("PUSH FAILED: files are committed locally but not on GitHub. Sign in once with: git push origin HEAD:main")
+        return 2
     print(f"Done: {len(got)}/{len(rows)} AMCs uploaded for {a.month}.")
     return 0 if got else 1
 

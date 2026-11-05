@@ -694,7 +694,7 @@ function ratings(){
   const COLS=idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
-    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period, a year beyond 1 year'],
+    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period: CAGR for 1 year and longer, plain return for 6 months'],
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
@@ -702,8 +702,8 @@ function ratings(){
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
-    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Return a year (point to point for 6 months)'],
-    [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'Return minus the index (TRI) return, a year. Positive = ahead of the index'],
+    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Annualised return (CAGR) over the period, point to point. The 6-month figure is not annualised'],
+    [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'The fund’s CAGR minus its index’s CAGR (TRI, including dividends). Fund 15% a year vs index 12% a year = +3%. This is not alpha: alpha, on each fund page, also adjusts for the risk (beta) the fund took'],
     ['Up capture 3Y','upside_capture_3y',f=>num(f.upside_capture_3y,0),'In months the index rose, how much of the rise the fund caught. 100 = as much as the index; 110 = 10% more; 90 = only 90%. Higher is better'],
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],

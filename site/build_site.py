@@ -132,6 +132,8 @@ ORG_LD = {
                 "postalCode": ORG["pin"], "addressRegion": "Delhi", "addressCountry": "IN"},
     "areaServed": {"@type": "Country", "name": "India"},
     "sameAs": SOCIAL,
+    "founder": [dict({"@type": "Person", "name": t["name"], "sameAs": [t["linkedin"]]}, **({"jobTitle": t["role"]} if t.get("role") else {}))
+                for t in CFG.get("team", [])],
     "knowsAbout": ["Mutual funds", "Portfolio management services", "Alternative investment funds", "Bonds",
                    "Unlisted shares", "Tax planning"],
 }

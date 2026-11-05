@@ -10,7 +10,7 @@ KEEP = ["code","name","amc","category","peer_group","plan_type","benchmark","tie
  "downside_capture_3y","upside_capture_3y","max_drawdown_5y","max_drawdown_3y","vol_3y","beta_3y","tracking_diff_1y","tracking_err_1y",
  "hist3y_n","hist3y_median","hist3y_p10","hist3y_p90","hist3y_worst","hist3y_best","hist3y_pos","hist3y_gt7","hist3y_from",
  "flow_1q","flow_4q","flow_quarter","aum_1y_ago_cr","n_stocks","top10_pct","large_pct","mid_pct","small_pct","active_share",
- "cash_other_pct","top_sector","top_sector_pct","mandate_breaches"]
+ "cash_other_pct","top_sector","top_sector_pct","mandate_breaches","holdings_month"]
 for h in ["6M","1Y","3Y","5Y"]:
     KEEP += [f"ret_{h}", f"excess_{h}", f"rank_{h}", f"peers_{h}", f"score_{h}"]
 def clean(v):
@@ -25,7 +25,23 @@ for f in src["funds"]:
     funds.append(r)
 out = ROOT / "site" / "data"; out.mkdir(parents=True, exist_ok=True)
 (out / "funds.json").write_text(json.dumps(funds, separators=(",", ":")))
-(out / "holdings.json").write_text(json.dumps(src.get("holdings", {}), separators=(",", ":")))
+import re
+# AMC files mark footnotes on security names (e.g. 'HDFC Bank Ltd.£', 'Infosys Ltd.*'): drop trailing marks
+hold = {pk: [[r[0], re.sub(r"[\s£$#*@^~†‡§¥€]+$", "", str(r[1])), *r[2:]] for r in rows] for pk, rows in (src.get("holdings", {}) or {}).items()}
+src["holdings"] = hold
+(out / "holdings.json").write_text(json.dumps(hold, separators=(",", ":")))
 meta = dict(src.get("meta", {})); meta["as_of"] = src["as_of"]; meta["n_funds"] = len(funds)
+# Holdings coverage, for the methodology page and the 'holdings not available' note on fund pages
+H = src.get("holdings", {}) or {}
+schemes = {}
+for f in funds:
+    schemes.setdefault(f.get("pair_key"), f)
+by_amc = {}
+for pk, f in schemes.items():
+    a = by_amc.setdefault(f.get("amc", ""), [0, 0])
+    a[0] += 1
+    a[1] += bool(H.get(pk))
+meta["holdings_coverage"] = {"schemes": len(schemes), "with_holdings": sum(v[1] for v in by_amc.values())}
+meta["holdings_missing_amcs"] = sorted(([a, v[0]] for a, v in by_amc.items() if v[1] == 0), key=lambda x: -x[1])
 (out / "meta.json").write_text(json.dumps(meta))
 print("funds", len(funds), "holdings", len(src.get("holdings", {})), {p.name: p.stat().st_size // 1024 for p in out.glob("*.json")})

@@ -205,7 +205,7 @@ DISPLAY_COLS = ["code", "name", "amc", "category", "peer_group", "plan_type", "b
                 "tracking_diff_3y", "ter", "aum_cr",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",
-                "turnover_1m", "mandate_ok", "mandate_breaches", "coverage", "pair_key", "protocol", "as_of"]
+                "turnover_1m", "mandate_ok", "mandate_breaches", "holdings_month", "coverage", "pair_key", "protocol", "as_of"]
 
 
 def data_meta(holdings_month=None, tri_date=None):

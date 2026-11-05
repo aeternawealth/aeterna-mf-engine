@@ -104,6 +104,10 @@ def list_amcs() -> list[str]:
         return AMCS
     if "HDFC-Mutual-Fund" not in slugs:
         slugs.insert(0, "HDFC-Mutual-Fund")
+    firsts = {x.split("-")[0].lower() for x in slugs}
+    for name in amfi_directory():   # AMCs advisorkhoj doesn't list (e.g. AlphaGrep): from AMFI's directory
+        if name.lower().endswith("mutual fund") and name.split()[0].lower() not in firsts:
+            slugs.append(re.sub(r"\s+", "-", name.strip()))
     return list(dict.fromkeys(slugs))
 
 
@@ -203,13 +207,59 @@ def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = N
     return _download_generic(ctx, slug, month, out, override)
 
 
+AMFI_DIR = "https://www.amfiindia.com/online-center/portfolio-disclosure"
+_AMFI_CACHE: dict | None = None
+
+
+def amfi_directory() -> dict:
+    """{AMC name: official monthly-portfolio page} from AMFI's portfolio-disclosure directory (every AMC lists
+    its disclosure page there, as SEBI requires). Cached per run; {} if AMFI can't be read."""
+    global _AMFI_CACHE
+    if _AMFI_CACHE is None:
+        _AMFI_CACHE = {}
+        try:
+            h = _get(AMFI_DIR).text.replace('\\"', '"')
+            for o in re.findall(r'\{"mf_id":"\d+".*?"icons":\[', h):
+                n = re.search(r'"mf_name":"([^"]+)"', o)
+                u = re.search(r'"amc_monthly_portfolio_disclosure":"([^"]*)"', o)
+                if n and u and u.group(1).startswith("http"):
+                    _AMFI_CACHE[n.group(1)] = u.group(1).encode().decode("unicode_escape")
+        except Exception:
+            pass
+    return _AMFI_CACHE
+
+
+def amfi_url(slug: str) -> str | None:
+    want = {w for w in slug.lower().split("-") if w not in ("mutual", "fund", "the")}
+    first = slug.lower().split("-")[0]
+    hits = [(not n.lower().startswith(first), len(n), u) for n, u in amfi_directory().items()   # 'Mahindra' -> Mahindra Manulife, not Kotak Mahindra
+            if want <= {w for w in re.split(r"[^a-z0-9]+", n.lower()) if w}]
+    return min(hits)[2] if hits else None
+
+
 def _download_generic(ctx, slug: str, month: str, out: Path, override: str | None = None):
+    """advisorkhoj's month-specific link first; if that finds nothing, the AMC's official page from AMFI's directory."""
+    first = None
     try:
         url, label = (override, "override") if override else find_link(slug, month)
     except Exception as e:
-        return "FAILED", f"advisorkhoj: {type(e).__name__}", None
-    if not url:
-        return "NOT_YET", f"no '{pd.Period(month).strftime('%B %Y')}' entry on advisorkhoj yet", None
+        url, first = None, ("FAILED", f"advisorkhoj: {type(e).__name__}", None)
+    if url:
+        first = _download_page(ctx, slug, month, out, url)
+    elif first is None:
+        first = ("NOT_YET", f"no '{pd.Period(month).strftime('%B %Y')}' entry on advisorkhoj yet", None)
+    if first[0] == "OK":
+        return first
+    alt = amfi_url(slug)
+    if alt and alt != url:
+        second = _download_page(ctx, slug, month, out, alt.split("#")[0])
+        if second[0] == "OK" or (second[1].startswith("needs browser") and ctx is None):
+            return second[0], (second[1] + " (AMFI directory)") if second[0] == "OK" else second[1], second[2]
+        return first[0], f"{first[1]}; AMFI page {alt}: {second[1]}", None
+    return first
+
+
+def _download_page(ctx, slug: str, month: str, out: Path, url: str):
     if FILE_RE.search(url):
         try:
             p = _direct(url, out / slug)

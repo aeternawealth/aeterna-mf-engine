@@ -26,7 +26,13 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 - [Data dates and sources (JSON)](https://aeternawealth.com/data/meta.json)
 - [This month's insights (JSON)](https://aeternawealth.com/data/insights.json)
 
+## Tools and guides
+- [Calculators: SIP, lump sum, goal, SWP, EMI, inflation, capital-gains tax](https://aeternawealth.com/calculators/)
+- [Fund houses](https://aeternawealth.com/mutual-funds/amc/)
+- [Insights](https://aeternawealth.com/insights/)
+
 ## More
 - [Full text for language models](https://aeternawealth.com/llms-full.txt)
 - [Method and backtest](https://aeternawealth.com/#method)
-- [Disclosures](https://aeternawealth.com/#disclosures)
+- [Disclosures](https://aeternawealth.com/disclosures/)
+- [Privacy](https://aeternawealth.com/privacy/)

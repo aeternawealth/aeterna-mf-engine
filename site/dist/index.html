@@ -225,8 +225,8 @@ a.sol:hover{border-color:var(--teal)}
 .prose p+p{margin-top:12px}
 .prose h3{margin:28px 0 10px}
 footer.site{background:var(--surface);border-top:1px solid var(--rule);padding-block:44px 36px;font-size:13.5px;color:var(--ink-2)}
-footer.site .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
-@media (max-width:800px){footer.site .cols{grid-template-columns:1fr}}
+footer.site .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px}footer.site .cols>:first-child{grid-column:span 2}
+@media (max-width:800px){footer.site .cols{grid-template-columns:1fr 1fr}footer.site .cols>:first-child{grid-column:1/-1}}
 footer.site a{color:var(--ink-2)}
 .disc{margin-top:28px;padding-top:18px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);line-height:1.6}
 .copy{border:1px solid var(--rule);background:var(--surface);border-radius:var(--r);padding:4px 9px;font-size:12px;cursor:pointer;color:var(--ink-2)}
@@ -400,7 +400,8 @@ footer.site a{color:var(--ink-2)}
       <span>B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029</span>
       <span>+91 85959 93600 · contact@aeternawealth.com</span></div>
     <div class="stack" style="gap:6px"><b style="color:var(--ink)">Solutions</b><a href="#solutions">All solutions</a><a href="#ratings">Mutual fund ratings</a><a href="#compare">Compare and overlap</a><a href="#method">Method and backtest</a></div>
-    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="#about">About</a><a href="#contact">Contact</a><a href="#disclosures">Disclosures</a><a href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>
+    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/calculators/">Calculators</a></div>
+    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="#about">About</a><a href="#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a><a href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>
   </div>
   <p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Aeterna Wealth Private Limited is a mutual fund distributor (ARN-317889) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings on this site describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns. <span id="footAsOf"></span></p>
 </div></footer>
@@ -1043,6 +1044,7 @@ function staticPages(){
 function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
+  if(h.startsWith('tools-')){view='tools';S.tool=h.slice(6)}
   if(!['home','ratings','fund','compare','method','insights','solutions','tools','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));

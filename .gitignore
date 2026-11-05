@@ -30,3 +30,10 @@ site/dist/llms-full.txt
 site/dist/404.html
 site/dist/og.png
 site/dist/data/funds.csv
+site/dist/calculators/
+site/dist/compare/
+site/dist/insights/
+site/dist/disclosures/
+site/dist/privacy/
+site/dist/terms/
+site/dist/grievances/

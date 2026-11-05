@@ -122,6 +122,19 @@ def _direct(url: str, folder: Path) -> Path | None:
     if r.status_code != 200 or len(r.content) < 2000 or r.content[:15].lstrip().lower().startswith((b"<!doctype", b"<html")):
         return None
     name = re.sub(r"[?#].*$", "", url.rstrip("/").split("/")[-1]) or "portfolio.xlsx"
+    cd = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)', r.headers.get("Content-Disposition", ""), re.I)
+    if cd:
+        name = cd.group(1).strip()
+    if not re.search(r"\.(xlsx|xls|xlsm|xlsb|zip)$", name, re.I):   # e.g. viewfile.php (NJ): name it by its content
+        head = r.content[:8]
+        if head.startswith(b"\xd0\xcf\x11\xe0"):
+            ext = ".xls"
+        elif head.startswith(b"PK"):
+            z = r.content[:4000]
+            ext = ".xlsb" if b"xl/workbook.bin" in z else ".xlsx" if b"xl/" in z or b"[Content_Types]" in z else ".zip"
+        else:
+            return None
+        name = re.sub(r"\.[A-Za-z0-9]{1,5}$", "", name) + "_" + re.sub(r"\W", "", url[-24:]) + ext
     folder.mkdir(parents=True, exist_ok=True)
     p = folder / re.sub(r"%20|[^A-Za-z0-9._-]", "_", name)
     p.write_bytes(r.content)

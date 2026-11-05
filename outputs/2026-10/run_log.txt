@@ -1,0 +1,34 @@
+Aeterna MF Engine run 2026-11-05 10:12
+[1/7] Universe (AMFI NAVAll)
+  1687 equity + index schemes (growth, Direct & Regular)
+[3/7] Benchmarks (Nifty TRI)
+[4/7] NAV history (mfapi)
+  1687 NAV histories
+[5/7] Holdings for 2026-09
+  holdings: 901 portfolios parsed from 241 files, 546 mapped to schemes
+  holdings validation: 5 portfolios quarantined
+[6/7] Metrics, protocols, ranking committee
+  metrics 200/1687
+  metrics 400/1687
+  metrics 600/1687
+  metrics 800/1687
+  metrics 1000/1687
+  metrics 1200/1687
+  metrics 1400/1687
+  metrics 1600/1687
+  wrote /home/claude/mfe/outputs/2026-10
+tier                A  A+    B   C  Unrated
+category                                   
+Contra              3   1    2   0        5
+Dividend Yield      4   2    8   4        6
+ELSS               16   8   25  25        2
+Flexi Cap          14   8   30  20       20
+Focused            12   6   20  16        2
+Index Fund         83  46  257  64       90
+Large & Mid Cap    10   6   20  16       20
+Large Cap          12   8   24  16        8
+Mid Cap             9   4   27  16       10
+Multi Cap           9   5   20  12       18
+Sectoral/Thematic  51  36  108  81      225
+Small Cap           8   6   18  14       24
+Value               6   5   15  15        6

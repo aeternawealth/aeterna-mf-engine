@@ -1,0 +1,26 @@
+# Weekday-morning refresh: AMFI publishes NAVs late at night and some AMCs only the next morning,
+# so this runs at 08:45 IST (03:15 UTC), Tuesday-Saturday, i.e. after each trading day.
+# Updates NAVs, index data, returns and period ranks. Overall tiers stay as set by the monthly run.
+name: Daily NAV refresh
+on:
+  schedule:
+    - cron: "15 3 * * 2-6"
+  workflow_dispatch: {}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - run: python run_monthly.py --daily
+      - run: python site/build_data.py && python site/build_site.py
+      - name: Health check
+        run: python -c "import pandas as p; d=p.read_csv('outputs/latest/rankings.csv'); assert len(d)>1500, 'too few funds'; print('ok', len(d))"
+      - name: Commit refreshed data
+        run: |
+          git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
+          git add outputs/latest data/raw data/nav site/data site/dist && git commit -m "Daily NAV refresh $(date -u +%F)" || echo "nothing to commit"
+          git push

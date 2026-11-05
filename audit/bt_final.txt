@@ -1,0 +1,88 @@
+PIT TER coverage 0.617
+/home/claude/mfe/audit/bt_score.py:63: UserWarning: obj.round has no effect with datetime, timedelta, or period dtypes. Use obj.dt.round(...) instead.
+  ic_by_date=ic.round(3).astype(str).values.tolist(),
+==== 1Y fwd | dates 13 obs 3523
+         n    mean  median    beat
+tier                              
+A+     359 -0.0077 -0.0107  0.4290
+A      664 -0.0019 -0.0034  0.4684
+B     1241 -0.0003 -0.0049  0.4674
+C     1209  0.0071 -0.0028  0.4739
+naive top10% {'n': 458, 'mean': 0.006010047693625664, 'beat': 0.5327510917030568} all {'mean': 0.0010922066954349857, 'beat': 0.4655123474311666}
+IC mean -0.035 t -1.39 p 0.189 | naive IC 0.017 | A+>C/Avoid MW p 0.9839236583797313
+/home/claude/mfe/audit/bt_score.py:63: UserWarning: obj.round has no effect with datetime, timedelta, or period dtypes. Use obj.dt.round(...) instead.
+  ic_by_date=ic.round(3).astype(str).values.tolist(),
+==== 3Y fwd | dates 9 obs 2299
+        n    mean  median    beat
+tier                             
+A+    220 -0.0150 -0.0160  0.3455
+A     421 -0.0050 -0.0046  0.4656
+B     783 -0.0030 -0.0044  0.4470
+C     833  0.0083  0.0040  0.5354
+naive top10% {'n': 298, 'mean': -0.00031269690222361955, 'beat': 0.4966442953020134} all {'mean': -0.0006737490292217511, 'beat': 0.47107438016528924}
+IC mean -0.078 t -2.61 p 0.031 | naive IC -0.029 | A+>C/Avoid MW p 0.9999999963253646
+/home/claude/mfe/audit/bt_score.py:63: UserWarning: obj.round has no effect with datetime, timedelta, or period dtypes. Use obj.dt.round(...) instead.
+  ic_by_date=ic.round(3).astype(str).values.tolist(),
+==== 5Y fwd | dates 5 obs 1243
+        n    mean  median    beat
+tier                             
+A+    110 -0.0084 -0.0098  0.4000
+A     218 -0.0068 -0.0079  0.4037
+B     412 -0.0072 -0.0063  0.4029
+C     481  0.0096  0.0066  0.5717
+naive top10% {'n': 158, 'mean': -0.002533882518779043, 'beat': 0.44936708860759494} all {'mean': -0.0008779760679049429, 'beat': 0.4682220434432824}
+IC mean -0.079 t -2.02 p 0.114 | naive IC -0.061 | A+>C/Avoid MW p 0.999948023185008
+/home/claude/mfe/audit/bt_score.py:74: RuntimeWarning: Mean of empty slice
+  'ic':np.nanmean([d.score.corr(d[col],method='spearman') for _,d in g.groupby(['as_of','peer_group']) if len(d)>=5])}))
+--- category 1Y
+                        n  aplus_n  aplus_beat  aplus_mean  low_mean  all_beat     ic
+cat                                                                                  
+Contra               39.0     13.0       0.385       0.009     0.139     0.590    NaN
+Dividend Yield       60.0      6.0       0.833       0.037     0.038     0.600 -0.009
+ELSS                417.0     51.0       0.451      -0.001    -0.008     0.441  0.071
+Flexi Cap           291.0     34.0       0.441      -0.013    -0.007     0.457  0.083
+Focused             232.0     29.0       0.414      -0.015     0.002     0.461 -0.103
+Large & Mid Cap     307.0     26.0       0.346      -0.015    -0.009     0.388  0.036
+Large Cap           343.0     23.0       0.391      -0.020    -0.004     0.423 -0.017
+Mid Cap             267.0     21.0       0.333      -0.055    -0.023     0.330 -0.065
+Multi Cap           113.0     14.0       0.500       0.017     0.009     0.522 -0.097
+Sectoral/Thematic  1032.0    103.0       0.408      -0.005     0.029     0.519 -0.050
+Small Cap           237.0     29.0       0.483      -0.001     0.017     0.481 -0.087
+Value               185.0     10.0       0.600       0.012     0.014     0.519  0.013
+/home/claude/mfe/audit/bt_score.py:74: RuntimeWarning: Mean of empty slice
+  'ic':np.nanmean([d.score.corr(d[col],method='spearman') for _,d in g.groupby(['as_of','peer_group']) if len(d)>=5])}))
+/home/claude/mfe/audit/bt_score.py:74: RuntimeWarning: Mean of empty slice
+  'ic':np.nanmean([d.score.corr(d[col],method='spearman') for _,d in g.groupby(['as_of','peer_group']) if len(d)>=5])}))
+--- category 3Y
+                       n  aplus_n  aplus_beat  aplus_mean  low_mean  all_beat     ic
+cat                                                                                 
+Contra              27.0      9.0       0.667       0.008     0.122     0.815    NaN
+Dividend Yield      36.0      2.0       1.000       0.007     0.043     0.889    NaN
+ELSS               287.0     35.0       0.400      -0.008    -0.005     0.397  0.014
+Flexi Cap          188.0     23.0       0.391      -0.015    -0.003     0.394  0.011
+Focused            145.0     18.0       0.167      -0.041     0.013     0.414 -0.375
+Large & Mid Cap    203.0     17.0       0.118      -0.028    -0.009     0.320 -0.090
+Large Cap          236.0     14.0       0.286      -0.022    -0.003     0.415 -0.022
+Mid Cap            183.0     13.0       0.077      -0.061    -0.023     0.257 -0.190
+Multi Cap           72.0      9.0       0.333      -0.009     0.007     0.472 -0.075
+Sectoral/Thematic  647.0     57.0       0.404      -0.006     0.029     0.615 -0.083
+Small Cap          155.0     19.0       0.316      -0.007    -0.004     0.368 -0.030
+Value              120.0      4.0       0.750       0.010     0.019     0.683  0.172
+                         1y     3y
+ter                  -0.009 -0.000
+capture_ratio_3y     -0.008 -0.058
+alpha_3y              0.014 -0.058
+roll3y_excess_median -0.062 -0.116
+roll3y_hit_rate      -0.083 -0.082
+info_ratio_3y         0.009 -0.028
+downside_capture_3y   0.058  0.116
+max_drawdown_3y      -0.109 -0.168
+roll3y_excess_p10    -0.075 -0.122
+roll1y_hit_rate      -0.042 -0.060
+excess_cagr_1y        0.048  0.050
+excess_cagr_3y        0.010 -0.052
+sortino_3y            0.018 -0.043
+upside_capture_3y     0.073  0.092
+excess_cagr_5y       -0.024 -0.047
+age_years             0.058  0.120
+{'funds_closed_in_sample': 39, 'obs_closed': 230, 'aplus_closed': 8}

@@ -1,0 +1,122 @@
+"""Aeterna MF Engine - monthly run (pure Python, no AI tokens).
+
+    python run_monthly.py                    # full run: data + AMC portfolios + ranking + dashboard
+    python run_monthly.py --no-download      # skip AMC portfolio downloads (use files already in data/holdings)
+    python run_monthly.py --offline          # reuse cached data only, no internet
+    python run_monthly.py --backtest         # also run walk-forward validation (~5-10 min)
+Results: outputs/<YYYY-MM>/dashboard.html, rankings.xlsx, rankings.csv, run_log.txt
+"""
+import argparse
+import sys
+from datetime import datetime
+
+import pandas as pd
+
+from engine import config as C
+from engine import ingest
+
+LOG = []
+
+
+def log(msg=""):
+    print(msg, flush=True)
+    LOG.append(str(msg))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--offline", action="store_true")
+    ap.add_argument("--no-download", action="store_true")
+    ap.add_argument("--daily", action="store_true",
+                    help="weekday-morning refresh: new NAVs/index -> returns & period ranks; Overall tiers frozen from the last monthly run")
+    ap.add_argument("--backtest", action="store_true")
+    ap.add_argument("--as-of", default=None)
+    ap.add_argument("--holdings-month", default=None, help="YYYY-MM (default: previous calendar month)")
+    a = ap.parse_args()
+    from engine.rank import assign_peers, rank_universe, write_outputs
+    from engine import holdings as H, dashboard
+
+    log(f"Aeterna MF Engine run {datetime.now():%Y-%m-%d %H:%M}")
+    log("[1/7] Universe (AMFI NAVAll)")
+    text = (C.RAW / "NAVAll.txt").read_text(encoding="utf-8") if a.offline else ingest.fetch_navall()
+    navall = ingest.parse_navall(text)
+    u = ingest.build_universe(navall)
+    log(f"  {len(u)} equity + index schemes (growth, Direct & Regular)")
+
+    if not a.offline and not a.daily:
+        log("[2/7] AMFI extras: TER, AUM, market-cap list")
+        from engine import extras
+        extras.run_all(u, log, navall)
+
+    log("[3/7] Benchmarks (Nifty TRI)")
+    tri = ingest.load_cached_tri() if a.offline else ingest.fetch_all_tri(log)
+
+    log("[4/7] NAV history (mfapi)")
+    navs = ingest.load_cached_navs(u.code) if a.offline else ingest.fetch_navs(u.code, log=log)
+    log(f"  {len(navs)} NAV histories")
+
+    hmonth = a.holdings_month or (pd.Period(datetime.now(), "M") - 1).strftime("%Y-%m")
+    log(f"[5/7] Holdings for {hmonth}")
+    if a.daily:   # use the latest month that has holdings on disk
+        done = sorted(p.name for p in (C.DATA / "holdings").glob("20??-??") if (p / "holdings_valid.csv").exists())
+        hmonth = done[-1] if done else hmonth
+        log(f"  daily mode: re-using holdings of {hmonth}")
+    if not (a.offline or a.no_download or a.daily):
+        try:
+            from engine import amc_downloader
+            amc_downloader.run(hmonth, log=log)
+        except Exception as e:
+            log(f"  downloader failed: {type(e).__name__}: {e}")
+    up = assign_peers(u, tri)
+    hold = H.load_cached(hmonth) if a.daily else pd.DataFrame()
+    if not len(hold):
+        hold = H.analyse(hmonth, up, prev_month=(pd.Period(hmonth) - 1).strftime("%Y-%m"), log=log)
+
+    log("[6/7] Metrics, protocols, ranking committee")
+    out = rank_universe(u, navs, tri, as_of=a.as_of, ter=ingest.load_manual("ter"),
+                        aum=ingest.load_manual("aum"), flags=ingest.load_manual("flags"), holdings=hold, log=log)
+    from engine import flows as FL
+    if not (a.offline or a.daily):
+        try:
+            FL.fetch_latest(log)
+        except Exception as e:
+            log(f"  flows fetch failed: {type(e).__name__}")
+    fl = FL.compute(u, navall, navs)
+    if len(fl):
+        out = out.merge(fl, on="pair_key", how="left")
+    month = "latest" if a.daily else (pd.Timestamp(a.as_of) if a.as_of else tri.index.max()).strftime("%Y-%m")
+    snap = C.OUT / "ratings_snapshot.csv"
+    keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
+    if a.daily and snap.exists():   # Overall rating changes only monthly
+        s0 = pd.read_csv(snap)
+        out = out.drop(columns=[c for c in keep if c != "code" and c in out.columns]).merge(s0, on="code", how="left")
+        out["tier"] = out["tier"].fillna("Unrated")
+        out["flags"] = out["flags"].map(lambda f: f.split(", ") if isinstance(f, str) and f else [])
+    elif not a.daily:
+        o = out[[c for c in keep if c in out.columns]].copy()
+        o["flags"] = o["flags"].map(lambda f: ", ".join(f) if isinstance(f, list) else "")
+        C.OUT.mkdir(parents=True, exist_ok=True); o.to_csv(snap, index=False)
+    from engine.rank import data_meta
+    folder = write_outputs(out, C.OUT / month, holdings_top=hold.attrs.get("top") if len(hold) else None,
+                           meta=data_meta(hmonth if len(hold) else None, tri.index.max()))
+    dash = dashboard.build(folder)
+    if not a.daily:   # the website always reads outputs/latest
+        import shutil
+        shutil.copytree(folder, C.OUT / "latest", dirs_exist_ok=True)
+    log(f"  wrote {folder}")
+    log(out.groupby(["category", "tier"]).size().unstack(fill_value=0).to_string())
+
+    if a.backtest:
+        log("[7/7] Walk-forward backtest")
+        from engine.backtest import run_backtest
+        bt = run_backtest(up, navs, tri, log=log)
+        bt.to_csv(folder / "backtest.csv", index=False)
+        log(bt.drop(columns="as_of").mean().round(3).to_string())
+
+    (folder / "run_log.txt").write_text("\n".join(LOG), encoding="utf-8")
+    log(f"\nDONE. Open: {dash}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

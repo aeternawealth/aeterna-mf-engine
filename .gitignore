@@ -1,0 +1,23 @@
+# caches re-downloaded on every run
+data/nav/
+data/nav_dead/
+data/raw/tri.csv
+data/raw/NAVAll.txt
+# raw AMC portfolio files (100+ MB a month); parsed results are kept
+data/holdings/*/*/
+data/holdings/*/*.xls*
+data/holdings/*/*.zip
+# local/test leftovers
+outputs/2026-*/rankings.json
+outputs/2026-*/dashboard.html
+audit/bt_parts/
+audit/probe/
+audit/ter_hist/
+audit/aum_hist/
+*.log
+__pycache__/
+*.pyc
+setup.bat
+run_monthly.bat
+schedule_monthly.bat
+START_HERE.md

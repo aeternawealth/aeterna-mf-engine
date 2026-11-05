@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 233 226%22%3E%3Cpath d=%22M0 0H137V43H43V137H0Z%22 fill=%22%231c1a17%22/%3E%3Cpath d=%22M185 0H233V137H145V226H0V185H90V88H185Z%22 fill=%22%230b4a3c%22/%3E%3C/svg%3E"></head><body>
+<title>Aeterna Wealth</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Track-record ratings, comparisons and portfolio overlap for every Indian equity mutual fund. Aeterna Wealth Private Limited, AMFI-registered mutual fund distributor, ARN-317889.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: an annual-report reading column (max 1160px) with full-bleed tinted bands; data in mono, prose in Plex Sans, headlines in Spectral. */
+:root{
+  --paper:#f6f8f7; --surface:#ffffff; --ink:#14211e; --ink-2:#4b5b57; --ink-3:#7a8884; --rule:#dde5e2; --band:#e9f0ee;
+  --teal:#0b4a3c; --teal-2:#1f6b58; --teal-soft:#d6e7e3; --brass:#a6772f;
+  --good:#1d7a4f; --bad:#b0413e; --t-ap:#0e4a43; --t-a:#2f8473; --t-b:#8c8a3b; --t-c:#b06a34; --t-u:#8f9a97;
+  --f-display:"Spectral",Georgia,"Times New Roman",serif; --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px; --wrap:1160px; --logo-ink:#1c1a17; --logo-green:#0b4a3c;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --logo-ink:#e6eeeb; --logo-green:#4fb39f;
+  --paper:#0c1412; --surface:#121c1a; --ink:#e6eeeb; --ink-2:#a9b8b4; --ink-3:#7d8d89; --rule:#24322f; --band:#101a18;
+  --teal:#6cc0ae; --teal-2:#8fd3c4; --teal-soft:#16302b; --brass:#d3a861;
+  --good:#5cc38e; --bad:#e47a75; --t-ap:#4fb39f; --t-a:#3f8f80; --t-b:#9a9645; --t-c:#bf7a44; --t-u:#5f6c69; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --logo-ink:#e6eeeb; --logo-green:#4fb39f;
+  --paper:#0c1412; --surface:#121c1a; --ink:#e6eeeb; --ink-2:#a9b8b4; --ink-3:#7d8d89; --rule:#24322f; --band:#101a18;
+  --teal:#6cc0ae; --teal-2:#8fd3c4; --teal-soft:#16302b; --brass:#d3a861;
+  --good:#5cc38e; --bad:#e47a75; --t-ap:#4fb39f; --t-a:#3f8f80; --t-b:#9a9645; --t-c:#bf7a44; --t-u:#5f6c69; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+a{color:var(--teal)}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.2vw,58px);letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.2vw,36px)}
+h3{font-size:20px}
+p{margin:0}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:500 12px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+.lede{font-size:18px;color:var(--ink-2);max-width:62ch}
+.muted{color:var(--ink-3)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r);padding:11px 18px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid var(--teal);cursor:pointer;background:transparent;color:var(--teal)}
+.btn.primary{background:var(--teal);color:var(--paper)}
+.btn:hover{filter:brightness(1.08)}
+/* header */
+header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+header.site .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand b{font:600 19px var(--f-display);letter-spacing:.01em}
+.brand small{display:block;font:500 10px var(--f-mono);letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+nav.main{display:flex;gap:4px;margin-left:auto}
+nav.main a{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
+nav.main a[aria-current="page"],nav.main a:hover{color:var(--teal);background:var(--teal-soft)}
+.menu-btn{display:none;margin-left:auto;background:none;border:1px solid var(--rule);border-radius:var(--r);padding:8px 10px;cursor:pointer}
+@media (max-width:860px){nav.main{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-left,0px)) 12px}
+ nav.main.open{display:flex} .menu-btn{display:block} header .cta-top{display:none}}
+/* sections */
+section.band{padding-block:72px}
+section.tint{background:var(--band);border-block:1px solid var(--rule)}
+.grid{display:grid;gap:24px}
+.g2{grid-template-columns:1.05fr .95fr;align-items:center}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:22px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+/* hero */
+.hero{padding-block:64px 56px}
+.hero .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:34px;padding-top:20px;border-top:1px solid var(--rule)}
+.facts div b{display:block;font:500 22px var(--f-mono);color:var(--ink)}
+.facts div span{font-size:13px;color:var(--ink-3)}
+.strip{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 18px 10px;min-width:0}
+.strip svg{width:100%;height:auto;display:block}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font:12.5px/1.45 var(--f-body);padding:8px 10px;border-radius:6px;max-width:260px;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+/* tiers */
+.tier{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 7px;border-radius:5px;font:600 12.5px var(--f-mono);color:#fff;letter-spacing:.02em}
+.t-ap{background:var(--t-ap)}.t-a{background:var(--t-a)}.t-b{background:var(--t-b)}.t-c{background:var(--t-c)}.t-u{background:var(--t-u)}
+/* pillars */
+.pillars{display:flex;height:46px;border-radius:var(--r);overflow:hidden;border:1px solid var(--rule)}
+.pillars div{display:flex;align-items:center;padding:0 12px;font:500 12.5px var(--f-mono);color:var(--paper);white-space:nowrap;overflow:hidden}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px 24px;margin-top:20px}
+.legend b{font-weight:600}
+/* tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+th{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);background:var(--surface);position:sticky;top:0}
+td.l,th.l{text-align:left}
+td.fund{white-space:normal;min-width:230px}
+td.fund a{color:var(--ink);text-decoration:none;font-weight:500}
+td.fund a:hover{color:var(--teal);text-decoration:underline}
+td.fund small{display:block;color:var(--ink-3);font-size:12px}
+tbody tr:hover td{background:var(--band)}
+tr.dim td{color:var(--ink-3)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 14px}
+select,input[type=search]{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:9px 12px;min-width:0}
+input[type=search]{flex:1 1 220px;max-width:340px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:9px 13px;cursor:pointer;font-size:14px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--teal);color:var(--paper)}
+.note{border-left:3px solid var(--brass);background:var(--surface);padding:12px 16px;border-radius:0 var(--r) var(--r) 0;color:var(--ink-2);font-size:14px;max-width:90ch}
+/* fund page */
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 28px}
+.kv div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--rule);font-size:14px}
+.kv div span{color:var(--ink-2)} .kv div b{font:500 14px var(--f-mono)}
+.navbox{display:flex;gap:36px;flex-wrap:wrap;align-items:flex-end}
+.navbox .big{font:500 34px var(--f-mono)}
+.range svg{width:100%;height:auto;display:block}
+.mix{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--rule)}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:13px}
+.chip button{border:0;background:none;cursor:pointer;color:var(--ink-3);padding:0 2px;font-size:15px;line-height:1}
+.sugg{position:absolute;left:0;right:0;top:100%;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);margin-top:4px;max-height:320px;overflow:auto;z-index:15;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.sugg button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;cursor:pointer;font-size:14px}
+.sugg button:hover,.sugg button:focus{background:var(--band)}
+.flag{color:var(--bad);font-size:12.5px}
+.prose{max-width:72ch}
+.prose p+p{margin-top:12px}
+.prose h3{margin:28px 0 10px}
+footer.site{background:var(--surface);border-top:1px solid var(--rule);padding-block:44px 36px;font-size:13.5px;color:var(--ink-2)}
+footer.site .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+@media (max-width:800px){footer.site .cols{grid-template-columns:1fr}}
+footer.site a{color:var(--ink-2)}
+.disc{margin-top:28px;padding-top:18px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);line-height:1.6}
+.copy{border:1px solid var(--rule);background:var(--surface);border-radius:var(--r);padding:4px 9px;font-size:12px;cursor:pointer;color:var(--ink-2)}
+[data-view]{animation:fade .25s ease}
+@keyframes fade{from{opacity:.4}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){[data-view]{animation:none}}
+</style>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Aeterna Wealth home">
+      <svg width="34" height="33" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
+      <span><b>Aeterna Wealth</b><small>Wealth · Research</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
+    <nav class="main" id="nav">
+      <a href="#ratings">Ratings</a><a href="#compare">Compare</a><a href="#method">Method</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+    <a class="btn primary cta-top" href="#contact">Talk to us</a>
+  </div>
+</header>
+
+<main id="app">
+
+<!-- HOME -->
+<div data-view="home">
+  <section class="hero"><div class="wrap grid g2">
+    <div>
+      <div class="eyebrow">Equity mutual funds · India</div>
+      <h1 style="margin-top:14px">Fund ratings that show their working.</h1>
+      <p class="lede" style="margin-top:18px">Every equity and index fund in India, rated on its track record against the right benchmark. The method, the data and our own backtest are in the open.</p>
+      <div class="actions"><a class="btn primary" href="#ratings">Explore the ratings</a><a class="btn" href="#compare">Compare funds and overlap</a></div>
+      <div class="facts" id="facts"></div>
+    </div>
+    <figure class="strip" style="margin:0">
+      <div class="row" style="justify-content:space-between;margin-bottom:6px"><b style="font-size:14px">Flexi Cap funds vs the Nifty 500 TRI</b><span class="muted mono" style="font-size:12px" id="stripAsOf"></span></div>
+      <p class="muted" style="font-size:13px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. Hover to see which.</p>
+      <div id="strip"></div>
+    </figure>
+  </div></section>
+
+  <section class="band tint"><div class="wrap">
+    <div class="eyebrow">What you can do here</div>
+    <h2 style="margin-top:10px">Three questions, answered with data</h2>
+    <div class="grid g3" style="margin-top:28px">
+      <div class="card stack"><h3>How has this fund really done?</h3><p class="muted">Returns over 6 months to 5 years against its index, its rank in the category, and how it held up in falls.</p><a href="#ratings">Browse by category →</a></div>
+      <div class="card stack"><h3>Do my funds own the same stocks?</h3><p class="muted">Put up to four funds side by side. See costs, risk and how much of each portfolio they share.</p><a href="#compare">Compare funds →</a></div>
+      <div class="card stack"><h3>What range of outcomes is realistic?</h3><p class="muted">Every 3-year holding period in a fund's history: the typical result, the bad case and the good case.</p><a href="#fund-101762">See an example →</a></div>
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <div class="eyebrow">How a rating is built</div>
+    <h2 style="margin-top:10px">Measured against the category's own index, then against peers</h2>
+    <p class="lede" style="margin-top:14px">A fund is compared only with funds in its SEBI category and plan type, using the total-return version of the category's benchmark. Each measure becomes a percentile among peers, and the weighted result sets the tier.</p>
+    <div class="pillars" style="margin-top:26px" id="pillars"></div>
+    <div class="legend" id="pillarLegend"></div>
+  </div></section>
+
+  <section class="band tint"><div class="wrap grid g2">
+    <div class="stack">
+      <div class="eyebrow">We tested our own ratings</div>
+      <h2>Past winners did not keep winning</h2>
+      <p class="lede">We rebuilt our ratings at 13 dates from 2019 to 2025 using only data available at the time, then checked what happened next. Top-rated funds beat their index over the following three years less often than the average fund. Rankings by trailing returns did no better.</p>
+      <p class="muted">That is why our tiers describe a fund's track record and are not forecasts. Use them to understand a fund, then decide on cost, fit and diversification.</p>
+      <a href="#method">Read the method and full backtest →</a>
+    </div>
+    <div class="card"><b style="font-size:14px">Beat the benchmark over the next 3 years, by tier at the time</b><div id="btChart" style="margin-top:12px"></div><p class="muted" style="font-size:12.5px;margin-top:8px">Regular plans, 9 rating dates Jun 2019–Jun 2023, 2,257 fund-date observations, closed funds included.</p></div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><div class="eyebrow">This month</div><h2 style="margin-top:10px">Strongest track records by category</h2></div>
+      <a href="#ratings">All categories →</a>
+    </div>
+    <p class="muted" style="margin-top:10px;max-width:80ch">Top three Regular plans by track-record score. Not a recommendation to buy; past performance does not guarantee future returns.</p>
+    <div class="grid g4" style="margin-top:24px" id="leaders"></div>
+  </div></section>
+
+  <section class="band tint"><div class="wrap grid g2" style="align-items:start">
+    <div class="stack">
+      <div class="eyebrow">Working with Aeterna</div>
+      <h2>Research is free. Help goes beyond mutual funds.</h2>
+      <p class="lede">Aeterna Wealth is led by a Chartered Accountant and an advocate. We help families, professionals and business owners across mutual funds, PMS, AIFs and bonds, with insurance coming soon.</p>
+      <div class="row" style="margin-top:6px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#about">About us</a></div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))" id="services"></div>
+  </div></section>
+</div>
+
+<!-- RATINGS -->
+<div data-view="ratings" hidden>
+  <section class="band" style="padding-top:44px"><div class="wrap">
+    <div class="eyebrow">Ratings</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds, by category</h1>
+    <p class="lede" style="margin-top:12px" id="rateLede"></p>
+    <div class="controls">
+      <select id="cat" aria-label="Category"></select>
+      <div class="seg" id="plan" role="group" aria-label="Plan"><button aria-pressed="true" data-v="Regular">Regular</button><button aria-pressed="false" data-v="Direct">Direct</button></div>
+      <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
+      <input type="search" id="q" placeholder="Search fund or AMC" aria-label="Search">
+    </div>
+    <div class="note" id="hzNote"></div>
+    <div id="tables" style="margin-top:18px" class="stack"></div>
+  </div></section>
+</div>
+
+<!-- FUND -->
+<div data-view="fund" hidden><section class="band" style="padding-top:36px"><div class="wrap" id="fundPage"></div></section></div>
+
+<!-- COMPARE -->
+<div data-view="compare" hidden>
+  <section class="band" style="padding-top:44px"><div class="wrap">
+    <div class="eyebrow">Compare</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Compare funds and portfolio overlap</h1>
+    <p class="lede" style="margin-top:12px">Add up to four funds, from any category. Overlap shows how much of each portfolio is the same stocks, from the latest monthly disclosures.</p>
+    <div style="position:relative;max-width:520px;margin-top:22px"><input type="search" id="cq" placeholder="Type a fund name to add it" aria-label="Add a fund" style="width:100%;max-width:none"><div class="sugg" id="sugg" hidden></div></div>
+    <div class="row" id="chips" style="margin-top:14px"></div>
+    <div id="cmp" style="margin-top:22px"></div>
+  </div></section>
+</div>
+
+<!-- METHOD -->
+<div data-view="method" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="methodPage"></div></section></div>
+<!-- ABOUT -->
+<div data-view="about" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="aboutPage"></div></section></div>
+<!-- CONTACT -->
+<div data-view="contact" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="contactPage"></div></section></div>
+<!-- DISCLOSURES -->
+<div data-view="disclosures" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="discPage"></div></section></div>
+</main>
+
+<footer class="site"><div class="wrap">
+  <div class="cols">
+    <div class="stack" style="gap:8px"><b style="font:600 18px var(--f-display);color:var(--ink)">Aeterna Wealth Private Limited</b>
+      <span>AMFI-registered Mutual Fund Distributor · ARN-317889</span>
+      <span>B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029</span>
+      <span>+91 85959 93600 · contact@aeternawealth.com</span></div>
+    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Research</b><a href="#ratings">Ratings</a><a href="#compare">Compare and overlap</a><a href="#method">Method and backtest</a></div>
+    <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="#about">About</a><a href="#contact">Contact</a><a href="#disclosures">Disclosures</a><a href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>
+  </div>
+  <p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Aeterna Wealth Private Limited is a mutual fund distributor (ARN-317889) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings on this site describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns. <span id="footAsOf"></span></p>
+</div></footer>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const S={funds:[],byCode:new Map(),meta:{},holdings:null,cat:'Flexi Cap',plan:'Regular',hz:'Overall',q:'',cmp:[]};
+try{const c=JSON.parse(localStorage.getItem('aw_cmp')||'[]');if(Array.isArray(c))S.cmp=c.slice(0,4)}catch(e){}
+const saveCmp=()=>{try{localStorage.setItem('aw_cmp',JSON.stringify(S.cmp))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=(v,d=1)=>v==null?'–':(v*100).toFixed(d)+'%';
+const spct=(v,d=1)=>v==null?'–':(v>0?'+':'')+(v*100).toFixed(d)+'%';
+const num=(v,d=2)=>v==null?'–':(+v).toFixed(d);
+const cr=v=>v==null?'–':'₹'+Math.round(v).toLocaleString('en-IN')+' cr';
+const dmy=v=>{if(!v)return'–';const d=new Date(String(v).slice(0,10)+'T00:00:00');return isNaN(d)?String(v):d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})};
+const mon=m=>{if(!m)return'–';const[y,mm]=m.split('-');return new Date(+y,+mm-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})};
+const tcls=t=>({'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'}[t]||'t-u');
+const tier=t=>`<span class="tier ${tcls(t)}" title="Track-record rating">${esc(t&&t!=='Unrated'?t:'–')}</span>`;
+const sg=v=>v==null?'':v>0?'pos':'neg';
+const FL={chronic_underperformer:'Persistent underperformer',risk_without_reward:'Falls more than its index without extra return',turnaround_unproven:'Recent turnaround, long record weak',deep_drawdown:'Deeper falls than peers',mandate_breach:'Outside SEBI category limits',closet_indexer:'Close to its index without extra return',recent_underperformance:'Weak last 12 months'};
+const flags=f=>(f.flags||'').split(', ').filter(Boolean).map(x=>FL[x]||x);
+const tip=$('#tip');
+const showTip=(e,html)=>{tip.innerHTML=html;tip.hidden=false;const x=Math.min(e.clientX+14,innerWidth-280),y=e.clientY+14;tip.style.left=x+'px';tip.style.top=y+'px'};
+const hideTip=()=>{tip.hidden=true};
+
+/* ---------- data ---------- */
+async function load(){
+  const [f,m]=await Promise.all([fetch('data/funds.json').then(r=>r.json()),fetch('data/meta.json').then(r=>r.json())]);
+  S.funds=f;S.meta=m;f.forEach(x=>S.byCode.set(x.code,x));
+}
+async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdings.json').then(r=>r.json())}catch(e){S.holdings={}}}return S.holdings}
+const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund'];
+  const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
+
+/* ---------- home ---------- */
+function home(){
+  const m=S.meta, act=S.funds.filter(f=>f.plan_type==='Regular');
+  const rated=S.funds.filter(f=>f.tier&&f.tier!=='Unrated').length;
+  $('#facts').innerHTML=[[S.funds.length.toLocaleString('en-IN'),'fund plans tracked'],[rated.toLocaleString('en-IN'),'with a track-record rating'],[cats().length,'categories'],[dmy(m.as_of),'NAV data as of']].map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join('');
+  $('#stripAsOf').textContent='3Y to '+dmy(m.as_of);
+  drawStrip(S.funds.filter(f=>f.category==='Flexi Cap'&&f.plan_type==='Regular'&&f.excess_3Y!=null));
+  const P=[['Long-run excess',25,'Median rolling 3-year return over the index, and how often the fund was ahead'],['Risk-adjusted',35,'Information ratio, capture ratio (gains kept ÷ losses taken) and Jensen\'s alpha over 3 years'],['Consistency',20,'Worst rolling periods and how often the fund beat its index over 1-year windows'],['Cost',10,'Total expense ratio of the plan'],['Portfolio',10,'Active share, SEBI mandate fit, cash drag and turnover, from monthly holdings']];
+  const cols=['var(--teal)','var(--teal-2)','var(--t-a)','var(--brass)','var(--ink-2)'];
+  $('#pillars').innerHTML=P.map((p,i)=>`<div style="flex:${p[1]};background:${cols[i]}" title="${p[0]} ${p[1]}%">${p[0]} · ${p[1]}</div>`).join('');
+  $('#pillarLegend').innerHTML=P.map((p,i)=>`<div><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]};margin-right:8px"></span><b>${p[0]} (${p[1]}%)</b><div class="muted" style="font-size:13.5px;margin-top:4px">${p[2]}</div></div>`).join('');
+  drawBT();
+  const L=['Large Cap','Flexi Cap','Mid Cap','Small Cap'];
+  $('#leaders').innerHTML=L.map(c=>{const top=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.score!=null).sort((a,b)=>b.score-a.score).slice(0,3);
+    return `<div class="card stack" style="gap:10px"><b style="font:600 17px var(--f-display)">${c}</b>${top.map((f,i)=>`<a href="#fund-${f.code}" style="text-decoration:none;color:inherit;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--rule)"><span class="mono muted">${i+1}</span><span style="min-width:0"><span style="display:block;font-weight:500;line-height:1.3">${esc(f.name)}</span><span class="muted mono" style="font-size:12px">3Y ${pct(f.ret_3Y)} · vs index ${spct(f.excess_3Y)}</span></span>${tier(f.tier)}</a>`).join('')}<a href="#ratings" data-cat="${c}" style="font-size:13.5px">Full ${c} table →</a></div>`}).join('');
+  $$('#leaders a[data-cat]').forEach(a=>a.onclick=()=>{S.cat=a.dataset.cat});
+  const SV=[['Mutual funds','Equity, hybrid and debt funds across fund houses, with portfolio construction and periodic review.',''],['PMS','Portfolio management services for eligible investors, with manager due diligence.',''],['AIFs','Category I–III alternative investment funds: access, documentation and monitoring.',''],['Bonds','Listed bonds and debt instruments to match income and maturity needs.',''],['Tax-aware planning','CA-led: capital-gains harvesting, redemption order, NRI and business-owner situations.',''],['Insurance','Term and health cover, chosen for protection, not investment.','Coming soon']];
+  $('#services').innerHTML=SV.map(s=>`<div class="card stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${s[0]}</b>${s[2]?`<span class="mono" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px">${s[2]}</span>`:''}</div><span class="muted" style="font-size:14px">${s[1]}</span></div>`).join('');
+}
+function drawStrip(F){
+  const W=560,H=190,L=34,R=14,T=16,B=40;
+  if(!F.length){$('#strip').innerHTML='<p class="muted">No data</p>';return}
+  const v=F.map(f=>f.excess_3Y), lo=Math.min(-0.06,Math.min(...v)), hi=Math.max(0.08,Math.max(...v));
+  const x=e=>L+(e-lo)/(hi-lo)*(W-L-R);
+  const sorted=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y); const lanes=[];
+  const pts=sorted.map(f=>{const px=x(f.excess_3Y);let lane=0;while(lanes[lane]!=null&&px-lanes[lane]<11)lane++;lanes[lane]=px;return {f,px,lane}});
+  const maxLane=Math.max(...pts.map(p=>p.lane)), base=T+(H-T-B)/2;
+  const y=l=>base+((l%2?1:-1)*Math.ceil(l/2))*10;
+  const ticks=[];for(let t=Math.ceil(lo*50)/50;t<=hi;t+=0.02)ticks.push(+t.toFixed(2));
+  $('#strip').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Flexi Cap funds' 3-year excess return over the Nifty 500 TRI">
+  ${ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${T}" y2="${H-B}" stroke="var(--rule)" stroke-width="1"/><text x="${x(t)}" y="${H-B+16}" text-anchor="middle" font-size="11" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t>0?'+':''}${Math.round(t*100)}%</text>`).join('')}
+  <line x1="${x(0)}" x2="${x(0)}" y1="${T-4}" y2="${H-B}" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="${x(0)+6}" y="${T+6}" font-size="11.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif">Index</text>
+  <text x="${L}" y="${H-6}" font-size="11.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">← behind the index</text>
+  <text x="${W-R}" y="${H-6}" text-anchor="end" font-size="11.5" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">ahead of the index →</text>
+  ${pts.map(p=>`<circle cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="5.2" fill="var(--${({'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'}[p.f.tier]||'t-u')})" stroke="var(--surface)" stroke-width="1.2" data-c="${p.f.code}" style="cursor:pointer"/>`).join('')}
+  </svg><div class="row" style="gap:14px;font-size:12px;margin-top:4px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t==='Unrated'?'Unrated':t}</span>`).join('')}</div>`;
+  $$('#strip circle').forEach(c=>{const f=S.byCode.get(+c.dataset.c);
+    c.onmousemove=e=>showTip(e,`<b>${esc(f.name)}</b><br>3Y ${pct(f.ret_3Y)} a year · ${spct(f.excess_3Y)} vs index<br>Track record: ${esc(f.tier)}`);
+    c.onmouseleave=hideTip;c.onclick=()=>{hideTip();location.hash='fund-'+f.code}});
+}
+function drawBT(){
+  const D=[['A+',34.5,220],['A',46.6,421],['B',44.7,783],['C',53.5,833]], ref=47.1, W=460,H=200,L=10,B=34,T=24;
+  const bw=(W-L*2-70)/D.length, y=v=>T+(H-T-B)*(1-v/70);
+  $('#btChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Share of funds beating the benchmark over the next 3 years, by tier" style="width:100%;height:auto">
+  ${D.map((d,i)=>`<rect x="${70+L+i*bw+bw*.2}" y="${y(d[1])}" width="${bw*.6}" height="${H-B-y(d[1])}" rx="3" fill="${d[0]==='A+'?'var(--teal)':'var(--rule)'}"/><text x="${70+L+i*bw+bw/2}" y="${y(d[1])-6}" text-anchor="middle" font-size="13" font-family="IBM Plex Mono,monospace" fill="var(--ink)">${d[1]}%</text><text x="${70+L+i*bw+bw/2}" y="${H-B+18}" text-anchor="middle" font-size="12.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-2)">${d[0]}</text>`).join('')}
+  <line x1="${L}" x2="${W-L}" y1="${y(ref)}" y2="${y(ref)}" stroke="var(--brass)" stroke-dasharray="4 4"/><text x="${L+2}" y="${y(ref)-6}" font-size="11.5" fill="var(--brass)" font-family="IBM Plex Sans,sans-serif">All funds ${ref}%</text></svg>`;
+}
+
+/* ---------- ratings ---------- */
+const HZN={Overall:'Track record',"6M":'6 months',"1Y":'1 year',"3Y":'3 years',"5Y":'5 years'};
+function ratingsInit(){
+  $('#cat').innerHTML=cats().map(c=>`<option>${c}</option>`).join('');
+  $('#cat').onchange=e=>{S.cat=e.target.value;ratings()};
+  const seg=(id,key)=>$$(`#${id} button`).forEach(b=>b.onclick=()=>{S[key]=b.dataset.v;$$(`#${id} button`).forEach(x=>x.setAttribute('aria-pressed',x===b));ratings()});
+  seg('plan','plan');seg('hz','hz');
+  $('#q').oninput=e=>{S.q=e.target.value.toLowerCase();ratings()};
+}
+function ratings(){
+  $('#cat').value=S.cat;
+  $$('#plan button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.plan));
+  $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
+  const h=S.hz, idx=S.cat==='Index Fund';
+  $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
+  $('#hzNote').innerHTML=h==='Overall'?'<b>Track record</b> needs at least 3 years of history (1 year for index funds). Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
+    :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Funds with persistent long-term underperformance are left out of period ranks.`;
+  const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
+  const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
+  const sk=h==='Overall'?'score':'score_'+h;
+  const order={'A+':0,'A':1,'B':2,'C':3};
+  $('#tables').innerHTML=Object.keys(groups).sort().map(g=>{
+    const L=groups[g].sort((a,b)=>h==='Overall'?((order[a.tier]??9)-(order[b.tier]??9)||(b.score??-1)-(a.score??-1)):((b[sk]??-1)-(a[sk]??-1)));
+    const bench=L.find(f=>f.benchmark)?.benchmark||'Peer median';
+    const rk=h==='Overall'?null:'rank_'+h, r=h==='Overall'?'ret_3Y':'ret_'+h, ex=h==='Overall'?'excess_3Y':'excess_'+h;
+    const n=L.filter(f=>f[sk]!=null).length;
+    const head=idx?['Fund','Rating','Return','Tracking difference','Tracking error 1Y','Expense ratio','AUM']:['Fund',h==='Overall'?'Rating':'Rank',h==='Overall'?'3Y return':'Return',h==='Overall'?'3Y vs index':'vs index','Down capture 3Y','Max fall 5Y','Expense ratio','AUM'];
+    let pos=0;
+    const rows=L.map(f=>{const has=f[sk]!=null; if(has)pos++;
+      const fl=flags(f); const first=has&&h!=='Overall'?`<span class="mono">${f[rk]}</span><span class="muted mono" style="font-size:12px"> / ${f['peers_'+h]}</span>`:tier(f.tier);
+      const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
+      if(idx) return `<tr class="${has?'':'dim'}">${name}<td>${tier(f.tier)}</td><td class="num">${pct(f[r==='ret_3Y'?'ret_1Y':r])}</td><td class="num">${f.tracking_diff_1y==null?'–':num(f.tracking_diff_1y,2)+'%'}</td><td class="num">${f.tracking_err_1y==null?'–':num(f.tracking_err_1y,2)+'%'}</td><td class="num">${f.ter==null?'–':num(f.ter,2)+'%'}</td><td class="num">${cr(f.aum_cr)}</td></tr>`;
+      return `<tr class="${has?'':'dim'}">${name}<td>${first}</td><td class="num">${pct(f[r])}</td><td class="num ${sg(f[ex])}">${spct(f[ex])}</td><td class="num">${num(f.downside_capture_3y,0)}</td><td class="num">${pct(f.max_drawdown_5y)}</td><td class="num">${f.ter==null?'–':num(f.ter,2)+'%'}</td><td class="num">${cr(f.aum_cr)}</td></tr>`}).join('');
+    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
+    <div class="tablewrap"><table><thead><tr>${head.map((x,i)=>`<th class="${i?'':'l'}">${x}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
+}
+
+/* ---------- fund page ---------- */
+async function fund(code){
+  const f=S.byCode.get(code); const el=$('#fundPage');
+  if(!f){el.innerHTML='<p>Fund not found. <a href="#ratings">Back to ratings</a></p>';return}
+  const twin=S.funds.find(x=>x.pair_key===f.pair_key&&x.code!==f.code);
+  const H=await holdings(); const top=(H[f.pair_key]||[]).slice(0,10);
+  const fl=flags(f);
+  const per=['6M','1Y','3Y','5Y'].map(h=>{const r=f['ret_'+h],e=f['excess_'+h];return `<tr><td class="l">${HZN[h]}${h!=='6M'&&h!=='1Y'?' <span class="muted" style="font-size:12px">a year</span>':''}</td><td class="num">${pct(r)}</td><td class="num">${r==null||e==null?'–':pct(r-e)}</td><td class="num ${sg(e)}">${spct(e)}</td><td class="num">${f['rank_'+h]!=null?f['rank_'+h]+' / '+f['peers_'+h]:'–'}</td></tr>`}).join('');
+  const kv=(rows)=>`<div class="kv">${rows.filter(r=>r[1]!=='–').map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>`;
+  el.innerHTML=`<a href="#ratings" style="font-size:14px">← ${esc(f.category)} ratings</a>
+  <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:16px;gap:20px">
+    <div style="min-width:0"><div class="eyebrow">${esc(f.category)} · ${esc(f.plan_type)} plan · Growth</div><h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">${esc(f.name)}</h1>
+    <p class="muted" style="margin-top:8px">${esc(f.amc)} · benchmark ${esc(f.benchmark||'peer median')} TRI · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
+    ${fl.length?`<p class="flag" style="margin-top:6px">${fl.map(esc).join(' · ')}</p>`:''}</div>
+    <div class="row">${twin?`<a class="btn" href="#fund-${twin.code}">See ${esc(twin.plan_type)} plan</a>`:''}<button class="btn primary" id="addCmp">Add to compare</button></div>
+  </div>
+  <div class="grid g2" style="margin-top:26px;align-items:stretch">
+    <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on ${dmy(f.nav_date)}</div><div class="big">₹${f.nav_latest==null?'–':(+f.nav_latest).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:4})}</div></div>
+      <div><div class="muted" style="font-size:13px">1-day change</div><div class="mono ${sg(f.nav_chg_1d)}" style="font-size:20px">${spct(f.nav_chg_1d,2)}</div></div>
+      <div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">${f.ter==null?'–':num(f.ter,2)+'%'}</div></div>
+      <div><div class="muted" style="font-size:13px">AUM</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
+    <div class="card row" style="gap:18px"><div>${tier(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}</p></div></div>
+  </div>
+  <h2 style="margin-top:40px;font-size:26px">Returns against the index</h2>
+  <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>${per}</tbody></table></div>
+  ${f.hist3y_n?rangeBlock(f):''}
+  <div class="grid g2" style="margin-top:40px;align-items:start">
+    <div><h2 style="font-size:26px">Risk</h2><div style="margin-top:12px">${kv([['Volatility, 3Y',pct(f.vol_3y)],['Max fall, 5Y',pct(f.max_drawdown_5y)],['Max fall, 3Y',pct(f.max_drawdown_3y)],['Downside capture, 3Y',num(f.downside_capture_3y,0)],['Upside capture, 3Y',num(f.upside_capture_3y,0)],['Capture ratio',num(f.capture_ratio_3y,2)],['Beta, 3Y',num(f.beta_3y,2)],['Sharpe, 3Y',num(f.sharpe_3y,2)],['Sortino, 3Y',num(f.sortino_3y,2)],['Information ratio, 3Y',num(f.info_ratio_3y,2)],['Jensen\'s alpha, 3Y',spct(f.alpha_3y)],['Rolling 3Y windows ahead of index',pct(f.roll3y_hit_rate,0)],['Tracking difference, 1Y',f.tracking_diff_1y==null?'–':num(f.tracking_diff_1y,2)+'%'],['Tracking error, 1Y',f.tracking_err_1y==null?'–':num(f.tracking_err_1y,2)+'%']])}</div></div>
+    <div><h2 style="font-size:26px">Portfolio</h2>${top.length?portfolioBlock(f,top):`<p class="muted" style="margin-top:12px">Holdings for this scheme are not available yet. We add AMC disclosures as we bring each one online.</p>`}
+      ${f.flow_4q!=null?`<h3 style="margin-top:28px">Money flows</h3><div style="margin-top:8px">${kv([[`Net flow, quarter to ${esc(f.flow_quarter||'')}`,spct(f.flow_1q)+' of AUM'],['Net flow, last 4 quarters',spct(f.flow_4q)+' of AUM'],['AUM a year earlier',cr(f.aum_1y_ago_cr)]])}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing market returns. In our 2019–25 test, flows did not predict future returns, so they are not part of the rating.</p>`:''}</div>
+  </div>
+  <div class="card" style="margin-top:40px"><b>Data as of</b><div style="margin-top:8px">${kv([['NAV and returns',dmy(f.nav_date)],['Benchmark index',dmy(S.meta.tri_date)],['Expense ratio',f.ter_date?'effective '+dmy(f.ter_date):'–'],['AUM',S.meta.aum_period||'–'],['Holdings',top.length?mon(S.meta.holdings_month)+' month-end':'not available'],['Market-cap classes','AMFI list '+(S.meta.mcap_period||'')]])}</div>
+  <p class="muted" style="font-size:12.5px;margin-top:10px">Returns are for the Growth option, point to point on the NAV date shown, a year compounded for periods over 1 year. Other sites may differ if they use another date, plan, option or a price index instead of TRI.</p></div>`;
+  $('#addCmp').onclick=()=>{if(!S.cmp.includes(f.code)){S.cmp=[...S.cmp,f.code].slice(-4);saveCmp()}location.hash='compare'};
+}
+function rangeBlock(f){
+  const v=[f.hist3y_worst,f.hist3y_p10,f.hist3y_median,f.hist3y_p90,f.hist3y_best];
+  const lo=Math.min(-0.05,v[0]),hi=Math.max(0.25,v[4]),W=760,H=110,L=20,R=20,x=e=>L+(e-lo)/(hi-lo)*(W-L-R),y=52;
+  const lab=(e,t,anchor,dy)=>`<text x="${x(e)}" y="${y+dy}" text-anchor="${anchor}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-2)">${t}</text>`;
+  return `<h2 style="margin-top:40px;font-size:26px">Range of past outcomes</h2>
+  <p class="muted" style="margin-top:8px">Every 3-year holding period since ${dmy(f.hist3y_from)} (${f.hist3y_n} weekly start dates), as a yearly return. History, not a forecast.</p>
+  <div class="card range" style="margin-top:14px"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Range of 3-year returns">
+   <line x1="${x(0)}" x2="${x(0)}" y1="${y-26}" y2="${y+26}" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${x(0)}" y="${y-32}" text-anchor="middle" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">0%</text>
+   <line x1="${x(v[0])}" x2="${x(v[4])}" y1="${y}" y2="${y}" stroke="var(--teal-soft)" stroke-width="6" stroke-linecap="round"/>
+   <rect x="${x(v[1])}" y="${y-12}" width="${x(v[3])-x(v[1])}" height="24" rx="4" fill="var(--teal)" opacity=".85"/>
+   <line x1="${x(v[2])}" x2="${x(v[2])}" y1="${y-18}" y2="${y+18}" stroke="var(--brass)" stroke-width="3"/>
+   ${lab(v[0],'worst '+pct(v[0]),'start',40)}${lab(v[4],'best '+pct(v[4]),'end',40)}${lab(v[2],'typical '+pct(v[2]),'middle',-24)}
+  </svg><div class="row" style="gap:24px;margin-top:6px;font-size:14px"><span>Bad case (worst 10%): <b class="mono">${pct(v[1])}</b></span><span>Good case (best 10%): <b class="mono">${pct(v[3])}</b></span><span>Periods with a gain: <b class="mono">${pct(f.hist3y_pos,0)}</b></span><span>Above 7% a year: <b class="mono">${pct(f.hist3y_gt7,0)}</b></span></div></div>`;
+}
+function portfolioBlock(f,top){
+  const mix=[['Large',f.large_pct,'var(--teal)'],['Mid',f.mid_pct,'var(--t-a)'],['Small',f.small_pct,'var(--brass)']];
+  const other=Math.max(0,100-mix.reduce((s,m)=>s+(m[1]||0),0));
+  return `<div style="margin-top:12px"><div class="mix">${mix.map(m=>`<div style="width:${m[1]||0}%;background:${m[2]}" title="${m[0]} cap ${num(m[1],0)}%"></div>`).join('')}</div>
+  <div class="row" style="gap:16px;font-size:13px;margin-top:8px">${mix.map(m=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${m[2]};margin-right:6px"></span>${m[0]} ${num(m[1],0)}%</span>`).join('')}<span class="muted">Other / cash ${num(other,0)}%</span></div>
+  <div class="kv" style="margin-top:12px">${[['Stocks held',f.n_stocks??'–'],['Top 10 weight',f.top10_pct==null?'–':num(f.top10_pct,1)+'%'],['Active share',f.active_share==null?'–':num(f.active_share,0)+'%'],['Largest sector',f.top_sector?esc(f.top_sector)+' '+num(f.top_sector_pct,0)+'%':'–']].map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
+  <h3 style="margin-top:22px">Top 10 holdings</h3><div class="kv" style="margin-top:8px;grid-template-columns:1fr">${top.map(t=>`<div><span>${esc(t[1])}</span><b>${num(t[2],1)}%</b></div>`).join('')}</div></div>`;
+}
+
+/* ---------- compare ---------- */
+function compareInit(){
+  const q=$('#cq'), sugg=$('#sugg');
+  q.oninput=()=>{const s=q.value.toLowerCase().trim();if(s.length<2){sugg.hidden=true;return}
+    const M=S.funds.filter(f=>(f.name+' '+f.amc).toLowerCase().includes(s)).slice(0,12);
+    sugg.innerHTML=M.map(f=>`<button data-c="${f.code}">${esc(f.name)} <span class="muted">· ${f.plan_type} · ${esc(f.category)}</span></button>`).join('')||'<div class="muted" style="padding:10px">No match</div>';
+    sugg.hidden=false;$$('#sugg button').forEach(b=>b.onclick=()=>{const c=+b.dataset.c;if(!S.cmp.includes(c)&&S.cmp.length<4){S.cmp.push(c);saveCmp()}q.value='';sugg.hidden=true;compare()})};
+  document.addEventListener('click',e=>{if(!e.target.closest('#sugg')&&e.target!==q)sugg.hidden=true});
+}
+async function compare(){
+  const fs=S.cmp.map(c=>S.byCode.get(c)).filter(Boolean);
+  $('#chips').innerHTML=fs.map(f=>`<span class="chip">${esc(f.name)} · ${f.plan_type}<button data-c="${f.code}" aria-label="Remove ${esc(f.name)}">×</button></span>`).join('')+(fs.length<4?`<span class="muted" style="font-size:13px">${4-fs.length} more can be added</span>`:'');
+  $$('#chips button').forEach(b=>b.onclick=()=>{S.cmp=S.cmp.filter(c=>c!==+b.dataset.c);saveCmp();compare()});
+  if(!fs.length){$('#cmp').innerHTML='<div class="note">Start typing a fund name above. Tip: you can also press "Add to compare" on any fund page.</div>';return}
+  const H=await holdings();
+  const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tier(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr),f=>f.aum_cr]]],
+    ['Returns (a year beyond 1Y)',[['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
+    ['Against its index',[['1 year',f=>spct(f.excess_1Y),f=>f.excess_1Y,1],['3 years',f=>spct(f.excess_3Y),f=>f.excess_3Y,1],['5 years',f=>spct(f.excess_5Y),f=>f.excess_5Y,1],['3Y rank in category',f=>f.rank_3Y!=null?f.rank_3Y+' / '+f.peers_3Y:'–']]],
+    ['Risk',[['Max fall, 5Y',f=>pct(f.max_drawdown_5y),f=>f.max_drawdown_5y,1],['Downside capture',f=>num(f.downside_capture_3y,0),f=>f.downside_capture_3y,-1],['Sharpe, 3Y',f=>num(f.sharpe_3y,2),f=>f.sharpe_3y,1],['Volatility, 3Y',f=>pct(f.vol_3y),f=>f.vol_3y,-1]]],
+    ['Past 3-year outcomes',[['Typical',f=>pct(f.hist3y_median),f=>f.hist3y_median,1],['Bad case (worst 10%)',f=>pct(f.hist3y_p10),f=>f.hist3y_p10,1],['Periods with a gain',f=>pct(f.hist3y_pos,0),f=>f.hist3y_pos,1]]],
+    ['Portfolio',[['Large / mid / small',f=>f.large_pct==null?'–':`${num(f.large_pct,0)} / ${num(f.mid_pct,0)} / ${num(f.small_pct,0)}`],['Stocks held',f=>f.n_stocks??'–'],['Top 10 weight',f=>f.top10_pct==null?'–':num(f.top10_pct,0)+'%'],['Active share',f=>f.active_share==null?'–':num(f.active_share,0)+'%']]]];
+  let html=`<div class="tablewrap"><table><thead><tr><th class="l"></th>${fs.map(f=>`<th style="white-space:normal;min-width:160px;color:var(--ink);text-transform:none;letter-spacing:0;font:600 13.5px var(--f-body)"><a href="#fund-${f.code}" style="color:inherit">${esc(f.name)}</a></th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(([sec,rs])=>{html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">${sec}</td></tr>`;
+    rs.forEach(([lab,fmt,val,dir])=>{let best=null;if(dir&&fs.length>1){const v=fs.map(val).filter(x=>x!=null);if(v.length>1)best=dir>0?Math.max(...v):Math.min(...v)}
+      html+=`<tr><td class="l">${lab}</td>${fs.map(f=>`<td class="num" style="${best!=null&&val(f)===best?'color:var(--teal);font-weight:600':''}">${fmt(f)}</td>`).join('')}</tr>`})});
+  if(fs.length>1){html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">Portfolio overlap (share of portfolio in common stocks)</td></tr>`;
+    const ov=(a,b)=>{const A=H[a.pair_key],B=H[b.pair_key];if(!A||!B)return null;const m={};A.forEach(x=>m[x[0]]=x[2]);let s=0;B.forEach(x=>{if(m[x[0]]!=null)s+=Math.min(m[x[0]],x[2])});return s};
+    fs.forEach(a=>{html+=`<tr><td class="l">${esc(a.name)}</td>${fs.map(b=>{if(a===b)return'<td class="muted">—</td>';const o=a.pair_key===b.pair_key?100:ov(a,b);return `<td class="num">${o==null?'<span class="muted">no holdings yet</span>':num(o,0)+'%'}</td>`}).join('')}</tr>`})}
+  html+=`</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Teal = best among the selected funds on that row. Overlap uses each fund's latest monthly portfolio (${mon(S.meta.holdings_month)}).</p>`;
+  $('#cmp').innerHTML=html;
+}
+
+/* ---------- static pages ---------- */
+function staticPages(){
+  $('#methodPage').innerHTML=`<div class="eyebrow">Method</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">How we rate funds, and how well it works</h1>
+  <p class="lede" style="margin-top:14px">Ratings describe a fund's track record against its benchmark and its peers. We publish how they are built and how they performed historically, including where they fall short.</p>
+  <h3>1. Peer groups and benchmarks</h3><p>Funds are compared only within their SEBI category and plan type (Regular with Regular, Direct with Direct). Each category is measured against the total-return version of its index, which includes dividends: Nifty 100 for large caps, Nifty Midcap 150, Nifty Smallcap 250, Nifty LargeMidcap 250, Nifty 500 Multicap 50:25:25, and Nifty 500 for flexi cap, focused, value, contra, dividend yield and ELSS. Value and contra funds share one peer group, since an AMC may run one or the other. Sector and thematic funds are compared within their theme, against a sector index where one exists. Index funds are judged only on how closely and cheaply they track their own index.</p>
+  <h3>2. What is measured</h3>
+  <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Pillar</th><th class="l">Measures</th><th>Weight</th></tr></thead><tbody>
+  <tr><td class="l">Long-run excess</td><td class="l" style="white-space:normal">Median return over the index across rolling 3-year windows; share of windows ahead of the index</td><td>25%</td></tr>
+  <tr><td class="l">Risk-adjusted</td><td class="l" style="white-space:normal">Information ratio, capture ratio (upside ÷ downside capture), Jensen's alpha, all over 3 years</td><td>35%</td></tr>
+  <tr><td class="l">Consistency</td><td class="l" style="white-space:normal">Worst 10% of rolling 3-year windows; share of rolling 1-year windows ahead of the index</td><td>20%</td></tr>
+  <tr><td class="l">Cost</td><td class="l" style="white-space:normal">Total expense ratio</td><td>10%</td></tr>
+  <tr><td class="l">Portfolio</td><td class="l" style="white-space:normal">Active share, SEBI mandate fit, cash drag, turnover (when holdings are available)</td><td>10%</td></tr></tbody></table></div>
+  <p style="margin-top:12px">Every fund is measured over the same windows, so a young fund is not judged on a friendlier period. Measures that duplicate each other are counted once: within a category, 3-year return, Sortino and information ratio move almost in lockstep, so only the information ratio is used. Raw downside capture and drawdown mostly reward low beta, so the score uses the beta-neutral capture ratio and alpha instead; both raw measures are still shown on fund pages.</p>
+  <h3>3. Tiers and checks</h3><p>Each measure becomes a percentile within the peer group; the weighted average is the score out of 100. A+ is the top 10% of a peer group with a score of 70 or more, A the top 30% with 55 or more, then B and C. An A+ must also have beaten its index over 3 years and in its median rolling 3-year window; an A at least one of the two. Funds that persistently trail their index and their peers are capped at C. A fund needs 3 years of history for a rating (1 year for index funds).</p>
+  <h3>4. Did it work? Our backtest</h3><p>We rebuilt the ratings every six months from June 2019 to June 2025 using only information available on each date, including 39 funds that later closed or merged. Over the following three years, A+ funds beat their index 34.5% of the time, A funds 46.6%, B funds 44.7% and C funds 53.5%, against 47.1% for all funds. The rank correlation between rating and future excess return was −0.08. Ranking by trailing 3-year return showed no predictive value either. Indian fund performance mean-reverted strongly over this period, in line with industry studies that find only about a quarter of top-quartile funds stay top-quartile over the next three years.</p>
+  <p>We did not tune the weights to improve this result: that would fit one market cycle and fail in the next. Instead we present ratings as an assessment of the record so far and repeat the test each year.</p>
+  <h3>5. Limitations</h3><p>Categories and benchmarks are today's; SEBI recategorised funds in 2018 and redefined multi cap in 2020. Fund manager changes are not yet tracked. Holdings are available for about two-thirds of schemes and are one month behind. Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and AMC monthly portfolio disclosures.</p>
+  <h3>6. Updates</h3><p>NAVs, returns and period ranks refresh every weekday morning after AMFI publishes the previous day's NAVs. Track-record ratings, holdings, expense ratios and AUM refresh monthly, after AMCs publish portfolios.</p>`;
+  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A distributor that shows its research</h1>
+  <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889) based in New Delhi. We work across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs) and bonds. Insurance is coming soon.</p>
+  <h3>Who we are</h3><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
+  <h3>How we work</h3><p>We build the research on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
+  <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
+  <div class="row" style="margin-top:22px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>`;
+  $('#contactPage').innerHTML=`<div class="eyebrow">Contact</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Talk to us</h1>
+  <p class="lede" style="margin-top:12px">Tell us what you are trying to do. We usually reply within one working day.</p>
+  <div class="grid g2" style="margin-top:28px;align-items:start">
+    <form class="card stack" id="cform"><label class="stack" style="gap:6px"><span>Name</span><input id="cn" required style="background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px"></label>
+      <label class="stack" style="gap:6px"><span>What would you like help with?</span><textarea id="cm" rows="5" required style="background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px;font:inherit;color:inherit"></textarea></label>
+      <button class="btn primary" type="submit" style="justify-content:center">Continue on WhatsApp</button>
+      <p class="muted" style="font-size:12.5px">Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site.</p><p id="cout" hidden></p></form>
+    <div class="stack">${[['Phone and WhatsApp','+91 85959 93600'],['Email','contact@aeternawealth.com'],['Office','B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029']].map(([k,v])=>`<div class="card"><div class="muted" style="font-size:13px">${k}</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">${v}</b><button class="copy" data-v="${v}">Copy</button></div></div>`).join('')}</div>
+  </div>`;
+  $('#cform').onsubmit=e=>{e.preventDefault();const t=`Hello Aeterna, I'm ${$('#cn').value}. ${$('#cm').value}`;const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;o.innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a>`};
+  $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.v).then(()=>{b.textContent='Copied'},()=>{b.textContent='Select and copy'})});
+  $('#discPage').innerHTML=`<div class="eyebrow">Disclosures</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Disclosures</h1>
+  <h3>Registration</h3><p>Aeterna Wealth Private Limited is registered with the Association of Mutual Funds in India as a mutual fund distributor, ARN-317889. We are not registered with SEBI as an investment adviser or research analyst.</p>
+  <h3>Commission</h3><p>We receive commission from asset management companies for investments in Regular plans. Commission rates differ across schemes and fund houses and are disclosed in your Consolidated Account Statement. Direct plans of the same schemes carry a lower expense ratio and pay no distributor commission.</p>
+  <h3>About the ratings and data</h3><p>Ratings and statistics on this site are computed from public data (AMFI, NSE Indices and AMC disclosures) using the method described on the Method page. They describe past performance and are not investment advice, a recommendation to buy, sell or hold any scheme, or a forecast of future returns. Data may contain errors or delays; check scheme documents before investing.</p>
+  <h3>Risk</h3><p>Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Past performance may or may not be sustained in future.</p>`;
+}
+
+/* ---------- router ---------- */
+function route(){
+  const h=(location.hash||'#home').slice(1); let view=h, code=null;
+  if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
+  if(!['home','ratings','fund','compare','method','about','contact','disclosures'].includes(view))view='home';
+  $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
+  $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
+  $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
+  if(view==='ratings')ratings(); if(view==='fund')fund(code); if(view==='compare')compare();
+  window.scrollTo(0,0);
+}
+$('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
+load().then(()=>{home();ratingsInit();compareInit();staticPages();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
+ .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});
+})();
+</script>
+
+</body></html>

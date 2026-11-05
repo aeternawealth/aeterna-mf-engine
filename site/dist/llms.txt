@@ -1,0 +1,11 @@
+# Aeterna Wealth - Indian mutual fund research
+
+> Track-record ratings, returns vs total-return benchmarks, risk, costs, holdings and portfolio overlap for every Indian equity and index mutual fund. Published by Aeterna Wealth Private Limited, AMFI-registered mutual fund distributor (ARN-317889). Ratings describe past track records and are not forecasts or investment advice.
+
+## Open data
+- [All funds, latest metrics (JSON)](https://aeternawealth.com/data/funds.json)
+- [Dataset dates and sources (JSON)](https://aeternawealth.com/data/meta.json)
+
+## Pages
+- [Method and backtest](https://aeternawealth.com/#method)
+- [Disclosures](https://aeternawealth.com/#disclosures)

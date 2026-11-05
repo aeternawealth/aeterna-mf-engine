@@ -1,0 +1,15 @@
+  FAILED  Bandhan-Mutual-Fund  no 2026-09 file found on https://bandhanmutual.com/downloads/disclosures
+  FAILED  Choice-Mutual-Fund  no 2026-09 file found on https://choicemf.com/disclosures/monthly-portfolio
+  OK      HSBC-Mutual-Fund  
+  FAILED  Jio-BlackRock-Mutual-Fund  no 2026-09 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure
+  FAILED  JM-Financial-Mutual-Fund  no 2026-09 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure
+  OK      Kotak-Mahindra-Mutual-Fund  
+  OK      LIC-Mutual-Fund  
+  FAILED  Mahindra-Mutual-Fund  no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure; AMFI page https://www.mahindramanulife.com/downloads#mandatory-disclosures: no 2026-09 file found on https://www.mahindramanulife.com/downloads
+  OK      Old-Bridge-Mutual-Fund  
+  NOT_YET Sundaram-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: no 2026-09 file found on https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios
+  FAILED  Taurus-Mutual-Fund  no 2026-09 file found on https://www.taurusmutualfund.com/index.php/monthly-portfolio; AMFI page https://taurusmutualfund.com/monthly-portfolio: no 2026-09 file found on https://taurusmutualfund.com/monthly-portfolio
+  FAILED  The-Wealth-Company-Mutual-Fund  no 2026-09 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/
+  OK      Zerodha-Mutual-Fund  
+  NOT_YET AlphaGrep-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-09 file found on https://www.alphagrepmf.ai/disclosures
+  holdings download: 5/14 AMCs OK, 2 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09

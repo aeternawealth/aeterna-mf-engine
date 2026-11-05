@@ -1,0 +1,30 @@
+# Manual tool: inspect AMC portfolio pages from GitHub's servers (used to build direct download adapters).
+# Results are pushed to the `probe-results` branch; nothing on main changes.
+name: Probe AMC pages
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Space-separated page URLs"
+        required: true
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
+      - name: Probe
+        env: { URLS: "${{ inputs.urls }}" }
+        run: python tools/probe_amc.py /tmp/probe $URLS
+      - name: Push results to probe-results branch
+        run: |
+          git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
+          git fetch origin probe-results && git checkout probe-results || git checkout --orphan probe-results
+          git rm -rq --cached . 2>/dev/null || true
+          mkdir -p probe && cp /tmp/probe/*.json probe/
+          git add probe && git commit -m "Probe $(date -u +%F_%H%M)" && git push origin probe-results

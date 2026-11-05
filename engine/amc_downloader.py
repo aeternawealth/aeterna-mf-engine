@@ -150,6 +150,21 @@ _SKIP = re.compile(r"fortnight|half.?year|debt|liquid|overnight|money.?market|gi
                    r"dividend|overlap|exposure.*derivative|annual|\bter\b|\bkim\b|\bsid\b", re.I)
 
 
+_MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+
+
+def _name_fits_month(name: str, month: str) -> bool:
+    """False when a saved file's name names a different month or year than the one wanted."""
+    n = name.lower()
+    p = pd.Period(month)
+    years = set(re.findall(r"(?<!\d)(20\d\d)(?!\d)", n))
+    if years and str(p.year) not in years:
+        return False
+    named = {i + 1 for i, m in enumerate(_MONTHS) if re.search(rf"(?<![a-z]){m}(?![a-z])", n)
+             or re.search(rf"(?<![a-z]){m[:3]}(?![a-z])", n) or (m == "september" and re.search(r"(?<![a-z])sept(?![a-z])", n))}
+    return not named or p.month in named
+
+
 def _download_all(html: str, base: str, month: str, folder: Path) -> list[Path]:
     from urllib.parse import urljoin, unquote
     toks = month_tokens(month)
@@ -163,6 +178,9 @@ def _download_all(html: str, base: str, month: str, folder: Path) -> list[Path]:
     for u in sorted(pick)[:200]:
         try:
             p = _direct(u, folder)
+            if p and not _name_fits_month(p.name, month):   # page lists several months behind opaque links (NJ)
+                p.unlink(missing_ok=True)
+                continue
             if p:
                 got.append(p)
         except Exception:

@@ -110,7 +110,27 @@ def pgim(month: str) -> list[str]:
     return out
 
 
+def groww(month: str) -> list[str]:
+    """growwmf.in compliance-docs tree API: Statutory Disclosure/Portfolio/<FY>/'Monthly Portfolio- Sep 30 2026.xlsx'."""
+    full, abbr, y = _month(month)
+    r = requests.get("https://mapi.growwmf.in/v1/api/mf-data/v1/files", headers=UA, timeout=60)
+    out = []
+
+    def walk(node, path):
+        for f in node.get("files", []):
+            n = (f.get("name") or "").lower()
+            if "portfolio" in path.lower() and n.startswith("monthly portfolio") and str(y) in n \
+                    and (full in n or re.search(rf"\b{abbr}\b", n)) and f.get("publicUrl"):
+                out.append(f["publicUrl"])
+        for sub in node.get("folders", []):
+            walk(sub, path + "/" + (sub.get("name") or ""))
+    if r.ok:
+        walk(r.json().get("data", {}), "")
+    return out
+
+
 AMC_ADAPTERS = {
+    "Groww-Mutual-Fund": groww,
     "Motilal-Oswal-Mutual-Fund": motilal,
     "PGIM-India-Mutual-Fund": pgim,
     "Invesco-Mutual-Fund": invesco,

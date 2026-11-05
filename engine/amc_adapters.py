@@ -129,7 +129,29 @@ def groww(month: str) -> list[str]:
     return out
 
 
+def canara(month: str) -> list[str]:
+    """canararobeco.com scheme-monthly-portfolio listing: one file per scheme, ~10 per page (&pagination=N)."""
+    from urllib.parse import urljoin
+    full, abbr, y = _month(month)
+    base = "https://www.canararobeco.com/documents/statutory-disclosures/scheme-dashboard/scheme-monthly-portfolio/"
+    out, seen_pages = [], set()
+    for page in range(1, 16):
+        r = requests.get(base, params={"filteryear": y, "filtermonth": f"{pd.Period(month).month:02d}", "pagination": page},
+                         headers=UA, timeout=60)
+        if not r.ok:
+            break
+        links = [urljoin(base, l) for l in re.findall(r'href="([^"]+\.xlsx?)"', r.text, re.I)]
+        new = [l for l in links if l not in out]
+        key = tuple(sorted(links))
+        if not new or key in seen_pages:   # past the last page
+            break
+        seen_pages.add(key)
+        out += [l for l in new if full in l.lower() and str(y) in l and not _SKIP.search(l.rsplit("/", 1)[-1].replace("-", " "))]
+    return list(dict.fromkeys(out))
+
+
 AMC_ADAPTERS = {
+    "Canara-Robeco-Mutual-Fund": canara,
     "Groww-Mutual-Fund": groww,
     "Motilal-Oswal-Mutual-Fund": motilal,
     "PGIM-India-Mutual-Fund": pgim,

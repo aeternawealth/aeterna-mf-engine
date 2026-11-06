@@ -140,7 +140,7 @@ def jsonld(obj):
 
 ORG_LD = {
     "@context": "https://schema.org", "@type": "FinancialService", "@id": SITE + "/#org",
-    "name": ORG["brand"], "legalName": ORG["name"], "url": SITE + "/", "logo": SITE + "/og.png", "image": SITE + "/og.png",
+    "name": ORG["brand"], "legalName": ORG["name"], "url": SITE + "/", "logo": SITE + "/icon-512.png", "image": SITE + "/og.png",
     "telephone": ORG["phone"], "email": ORG["email"],
     "description": "Wealth management for families across India: mutual funds, PMS, AIFs, bonds, unlisted shares and "
                    "tax-aware planning. AMFI-registered mutual fund distributor (ARN-317889). Its website compares every Indian equity and "
@@ -171,9 +171,8 @@ def analytics_head():
     return out
 
 
-FAVICON = ('<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 233 226%22%3E'
-           '%3Cpath d=%22M0 0H137V43H43V137H0Z%22 fill=%22%231c1a17%22/%3E%3Cpath d=%22M185 0H233V137H145V226H0V185H90V88H185Z%22 '
-           'fill=%22%230b4a3c%22/%3E%3C/svg%3E">')
+FAVICON = ('<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">'
+           '<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
 
 
 def fit_title(t, n=65):
@@ -305,6 +304,9 @@ def main():
     css = app[app.index("<style>") + 7: app.index("</style>")]
     (DIST / "assets").mkdir(parents=True, exist_ok=True)
     (DIST / "assets" / "site.css").write_text(css, encoding="utf-8")
+    for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-512.png"):
+        if (S / icon).exists():
+            shutil.copy(S / icon, DIST / icon)
     if (S / "og.png").exists():
         shutil.copy(S / "og.png", DIST / "og.png")
 

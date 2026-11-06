@@ -578,6 +578,16 @@ def main():
                             "<section class='band'><div class='wrap'><h1>Page not found</h1><p class='lede' style='margin-top:12px'>The page you asked for isn't here. "
                             "Try the <a href='/mutual-funds/'>fund categories</a>, the <a href='/#tools'>calculators</a> or the <a href='/'>home page</a>.</p></div></section>"))
     (DIST / "CNAME").write_text("aeternawealth.com\n")
+    # 301s from the old WordPress site's genuine pages, so any ranking they earned carries over
+    # (its ~1,760 injected spam pages are deliberately left to 404 so search engines drop them)
+    old = {"/about-us/": "/#about", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",
+           "/contact-us/": "/#contact", "/thankyou-page/": "/", "/sip/": "/calculators/sip/", "/lumpsum/": "/calculators/lumpsum/",
+           "/terms-conditions/": "/terms/", "/privacy-policy-2/": "/privacy/", "/pms/": "/invest/pms/", "/aif/": "/invest/aif/",
+           "/debt-products/": "/invest/bonds/", "/loan-against-mf/": "/invest/mutual-funds/", "/succession-planning/": "/invest/",
+           "/taxation-services/": "/invest/tax-planning/", "/the-magic-of-compounding-let-your-money-work-for-you/": "/calculators/sip/",
+           "/mitigating-short-term-market-volatility/": "/insights/", "/tax-efficient-strategies-for-long-term-growth/": "/invest/tax-planning/",
+           "/category/blog/": "/insights/", "/wp-sitemap.xml": "/sitemap.xml", "/sitemap_index.xml": "/sitemap.xml"}
+    (DIST / "_redirects").write_text("".join(f"{a} {b} 301\n{a.rstrip('/')} {b} 301\n" if a.endswith("/") else f"{a} {b} 301\n" for a, b in old.items()), encoding="utf-8")
     csp = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com; "
            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; "
            "img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://www.google.co.in; "

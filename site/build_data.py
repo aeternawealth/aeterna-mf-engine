@@ -19,12 +19,22 @@ def clean(v):
         return round(v, 5)
     return v
 funds = []
+import datetime as _dt
+_dates = [str(f.get("nav_date"))[:10] for f in src["funds"] if f.get("nav_date")]
+_latest = max(_dates) if _dates else None
+dropped = []
 for f in src["funds"]:
+    # a scheme with no NAV for 90+ days has been merged or wound up: keep it out of the public site
+    d = str(f.get("nav_date") or "")[:10]
+    if _latest and d and (_dt.date.fromisoformat(_latest) - _dt.date.fromisoformat(d)).days > 90:
+        dropped.append(f.get("name")); continue
     r = {k: clean(f.get(k)) for k in KEEP if f.get(k) not in (None, "")}
     if r.get("category") in ("Value", "Contra"): r["category"] = "Value / Contra"
     funds.append(r)
 out = ROOT / "site" / "data"; out.mkdir(parents=True, exist_ok=True)
 (out / "funds.json").write_text(json.dumps(funds, separators=(",", ":")))
+if dropped:
+    print(f"dropped {len(dropped)} closed or merged plans (no NAV for 90+ days): {sorted(set(dropped))}")
 import re
 # AMC files mark footnotes on security names (e.g. 'HDFC Bank Ltd.£', 'Infosys Ltd.*'): drop trailing marks
 hold = {pk: [[r[0], re.sub(r"[\s£$#*@^~†‡§¥€]+$", "", str(r[1])), *r[2:]] for r in rows] for pk, rows in (src.get("holdings", {}) or {}).items()}

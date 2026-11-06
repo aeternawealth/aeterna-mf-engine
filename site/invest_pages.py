@@ -11,12 +11,14 @@ NAMES = {"mutual-funds": "Mutual funds", "pms": "PMS", "aif": "AIFs", "bonds": "
          "tax-planning": "Tax planning", "portfolio-review": "Portfolio review"}
 
 CSS = """<style>
+.inv-page{max-width:none}
+.inv-page .note{max-width:none}
 .inv-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start}
-.inv-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.inv-facts{align-self:center;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
 .inv-facts>div{background:var(--surface);padding:16px 18px}.inv-facts b{display:block;font:600 22px/1.2 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
 .inv-facts span{display:block;color:var(--ink-3);font-size:13px;margin-top:4px}
-.inv-sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;padding:30px 0;border-top:1px solid var(--rule)}
-.inv-sec h2{font-size:22px;line-height:1.25}.inv-sec .body{max-width:72ch;display:grid;gap:12px}.inv-sec .body p{margin:0}
+.inv-sec{display:grid;grid-template-columns:300px minmax(0,1fr);gap:48px;padding:30px 0;border-top:1px solid var(--rule);align-items:start}
+.inv-sec h2{font-size:22px;line-height:1.25;margin:0}.inv-sec .body{display:grid;gap:12px;min-width:0}.inv-sec .body p{margin:0}.inv-sec .faq:first-child{margin-top:0}
 .inv-sec ul{margin:0;padding-left:20px;display:grid;gap:6px}
 .inv-steps{list-style:none;padding:0;margin:0;display:grid;gap:14px;counter-reset:st}
 .inv-steps li{display:grid;grid-template-columns:30px 1fr;column-gap:12px;counter-increment:st}
@@ -25,6 +27,7 @@ CSS = """<style>
 .inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:#fff;margin-top:34px}
 .inv-cta h2{color:#fff;font-size:24px}.inv-cta p{margin:6px 0 0;color:rgba(255,255,255,.85)}.inv-cta .btn{background:#fff;color:var(--teal);border-color:#fff}
 .inv-more{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+@media (max-width:520px){.inv-facts b{font-size:18px}.inv-facts>div{padding:14px}}
 @media (max-width:860px){.inv-hero{grid-template-columns:1fr;gap:22px}.inv-sec{grid-template-columns:1fr;gap:10px;padding:24px 0}}
 </style>"""
 
@@ -433,7 +436,7 @@ def invest_pages(B, funds, hold, ins, urls):
         faq = "".join(f"<details class='faq'><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in c["faq"])
         more = "".join(f"<a class='btn' href='{u}'>{e(t)}</a>" for u, t in c["links"])
         others = " · ".join(f"<a href='/invest/{s}/'>{e(NAMES[s])}</a>" for s in PAGES if s != slug)
-        body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap">
+        body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/invest/">Invest</a> › {e(NAMES[slug])}</nav>
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
 <h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">{e(c['title'])}</h1>
@@ -447,7 +450,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-more">{more}</div>
 <p class="note" style="margin-top:26px">Investments are subject to market risks; returns are not guaranteed. Read the offer documents before investing. Tax rules described are those in force for 2025-26 and can change; they are general information, not tax advice for your situation. See our <a href="/disclosures/">disclosures</a>.</p>
 <p style="margin-top:16px;font-size:14.5px">Also: {others} · <a href="/#solutions">All solutions</a> · <a href="/#contact">Contact</a></p>
-</div></section>"""
+</div></div></section>"""
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in c["faq"]]}
         svc_ld = {"@context": "https://schema.org", "@type": "Service", "name": c["title"], "serviceType": NAMES[slug],
@@ -458,12 +461,12 @@ def invest_pages(B, funds, hold, ins, urls):
         urls.append((path, "monthly", "0.8"))
     cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 19px var(--f-display)'>{e(NAMES[s])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(C[s]['lede'][:150].rsplit(' ', 1)[0])}…</span></a>" for s in PAGES)
-    body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
+    body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <div class="eyebrow">Invest</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Everything you invest in, with one team</h1>
 <p class="lede" style="margin-top:12px;max-width:70ch">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in PMS, AIFs, bonds and unlisted shares where they fit, with tax planned in and the whole portfolio reviewed together.</p>
 <div class="grid g3" style="margin-top:26px">{cards}</div>
 <p style="margin-top:22px"><a class="btn primary" href="/#contact">Talk to us</a> <a class="btn" href="/#solutions">Compare the products side by side</a></p>
-</div></section>"""
+</div></div></section>"""
     B.write("/invest/", B.page("Invest with Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares | Aeterna Wealth",
                                "Mutual funds, PMS, AIFs, bonds, unlisted shares, tax planning and portfolio reviews from Aeterna Wealth, AMFI-registered mutual fund distributor (ARN-317889).",
                                "/invest/", body, (B.crumbs([("Invest", "/invest/")]),)))

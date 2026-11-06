@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-06 04:00
+Aeterna MF Engine run 2026-11-06 04:49
 [1/7] Universe (AMFI NAVAll)
   1687 equity + index schemes (growth, Direct & Regular)
 [3/7] Benchmarks (Nifty TRI)
@@ -21,6 +21,7 @@ Aeterna MF Engine run 2026-11-06 04:00
   NAV 1500/1687
   NAV 1600/1687
   1687 NAV histories
+  26 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
 [5/7] Holdings for 2026-10
   daily mode: re-using holdings of 2026-09
 [6/7] Metrics, protocols, ranking committee

@@ -31,3 +31,9 @@ Search Console and Bing Webmaster Tools.
 ## Analytics
 `site/site_config.json`: `cloudflare_beacon_token` (Cloudflare Web Analytics, cookieless) and `ga4_id` (Google Analytics 4,
 standard tag, no cookie banner; disclose it in the privacy notice). Empty = not loaded.
+
+## How the site is published (set up 6 Nov 2026)
+Cloudflare Pages project `aeterna-wealth` (direct upload, https://aeterna-wealth.pages.dev). The GitHub workflow
+`.github/workflows/deploy.yml` builds the site and uploads it on every push to main and after each successful daily or
+monthly data run. It needs the repository secret `CLOUDFLARE_API_TOKEN` (a Cloudflare API token with Account ·
+Cloudflare Pages · Edit). Without the secret the workflow builds the site and stops with a warning.

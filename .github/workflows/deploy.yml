@@ -1,0 +1,37 @@
+# Publishes the website to Cloudflare Pages (project "aeterna-wealth").
+# Runs on every push to main (code and copy changes) and after each daily / monthly data run
+# (their data commits are pushed by the workflow token, which does not trigger push events).
+# Needs the repository secret CLOUDFLARE_API_TOKEN (Cloudflare Pages: Edit). Without it the job is skipped.
+name: Deploy website
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Daily NAV refresh", "Monthly ratings"]
+    types: [completed]
+  workflow_dispatch: {}
+concurrency: { group: deploy, cancel-in-progress: true }
+jobs:
+  deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v5
+        with: { ref: main }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12" }
+      - name: Build the static site
+        run: python site/build_site.py
+      - name: Upload to Cloudflare Pages
+        if: env.HAS_TOKEN == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: f5933230e8e718e0702500f52aa945cf
+          command: pages deploy site/dist --project-name aeterna-wealth --branch main --commit-dirty=true
+      - name: No Cloudflare token yet
+        if: env.HAS_TOKEN != 'true'
+        run: echo "::warning::CLOUDFLARE_API_TOKEN secret not set; site built but not published"

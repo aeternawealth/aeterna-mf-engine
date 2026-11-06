@@ -206,12 +206,12 @@ TORD = {"A+": 0, "A": 1, "B": 2, "C": 3}
 def fund_table(B, L, index=False, sub="amc"):
     L = sorted(L, key=lambda f: (TORD.get(f.get("tier"), 9), -(f.get("score") or -1), f["name"]))
     if index:
-        head = "<th class='l'>Fund</th><th>Rating</th><th>Expense ratio</th><th>Tracking difference, 1Y</th><th>Tracking error, 1Y</th><th>1Y return</th><th>AUM</th>"
+        head = "<th class='l'>Fund</th><th>Rating</th><th>Expense ratio</th><th>Tracking difference, 1Y</th><th>Tracking error, 1Y</th><th>1Y return</th><th>Avg AUM</th>"
         rows = "".join(f"<tr><td class='fund l'><a href='{f['_url']}'>{B.e(f['_name'])}</a><small>{B.e(f.get('amc', ''))}</small></td><td>{B.tier_badge(f.get('tier'))}</td>"
                        f"<td class='num'>{B.num(f.get('ter'), 2)}%</td><td class='num'>{B.num(f.get('tracking_diff_1y'))}%</td><td class='num'>{B.num(f.get('tracking_err_1y'))}%</td>"
                        f"<td class='num'>{B.pct(f.get('ret_1Y'))}</td><td class='num'>{B.cr(f.get('aum_cr'))}</td></tr>" for f in L)
     else:
-        head = "<th class='l'>Fund</th><th>Rating</th><th>1Y return</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>AUM</th>"
+        head = "<th class='l'>Fund</th><th>Rating</th><th>1Y return</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>Avg AUM</th>"
         rows = "".join(f"<tr><td class='fund l'><a href='{f['_url']}'>{B.e(f['_name'])}</a><small>{B.e(f.get(sub) or '')} · {B.num(f.get('age_years'), 1)} yrs</small></td>"
                        f"<td>{B.tier_badge(f.get('tier'))}</td><td class='num'>{B.pct(f.get('ret_1Y'))}</td><td class='num'>{B.pct(f.get('ret_3Y'))}</td>"
                        f"<td class='num {'pos' if (f.get('excess_3Y') or 0) > 0 else 'neg' if f.get('excess_3Y') is not None else ''}'>{B.spct(f.get('excess_3Y'))}</td>"
@@ -370,7 +370,7 @@ def compare_pages(B, funds, hold, urls, as_of):
             rows = [("Category", a["category"], b["category"]), ("Fund house", a.get("amc"), b.get("amc")),
                     ("Benchmark (TRI)", B.iname(a.get("benchmark")), B.iname(b.get("benchmark"))),
                     ("Age", f"{B.num(a.get('age_years'), 1)} years", f"{B.num(b.get('age_years'), 1)} years"),
-                    ("AUM", B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
+                    ("Average AUM" + (f" ({B.AUMQ})" if B.AUMQ else ""), B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
             for plan, X, Y in (("Direct", a, b), ("Regular", A.get("Regular"), Bp.get("Regular"))):
                 if not X or not Y:
                     continue

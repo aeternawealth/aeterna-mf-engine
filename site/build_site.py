@@ -28,6 +28,7 @@ SITE = "https://aeternawealth.com"
 CFG = json.loads((S / "site_config.json").read_text()) if (S / "site_config.json").exists() else {}
 LAUNCHED = (S / "LAUNCHED").exists()
 SOCIAL = CFG.get("social", [])
+AUMQ = ""   # e.g. "Jul–Sep 2026": the quarter AMFI's average AUM covers, set in main()
 INDEXNOW_KEY = "8f3c2a9e5b7d41c6a0e4f9b2d6c8a1e3"   # public by design: IndexNow verifies ownership by fetching /<key>.txt
 ORG = {
     "name": "Aeterna Wealth Private Limited", "brand": "Aeterna Wealth", "arn": "ARN-317889",
@@ -290,6 +291,9 @@ def main():
     hold = json.loads((S / "data" / "holdings.json").read_text()) if (S / "data" / "holdings.json").exists() else {}
     ins = json.loads((S / "data" / "insights.json").read_text()) if (S / "data" / "insights.json").exists() else {"items": []}
     as_of = meta.get("as_of")
+    global AUMQ
+    _p = re.sub(r"\s*\(.*\)\s*$", "", str(meta.get("aum_period") or ""))
+    AUMQ = re.sub(r"(\w{3})\w* - (\w{3})\w* (\d{4})", r"\1–\2 \3", _p)
     if DIST.exists():
         for sub in ("mutual-funds", "assets", "invest", "learn", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
             shutil.rmtree(DIST / sub, ignore_errors=True)
@@ -411,7 +415,7 @@ def main():
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · benchmark {e(bench)} TRI · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
- <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div></div><div><div class="muted" style="font-size:13px">AUM</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
+ <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div></div><div><div class="muted" style="font-size:13px">Average AUM{(', ' + AUMQ) if AUMQ else ''}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
@@ -461,7 +465,7 @@ def main():
             trs = "".join(f"<tr><td class='fund l'><a href='{f['_url']}'>{e(f['_name'])}</a><small>{e(f.get('amc', ''))} · {num(f.get('age_years'), 1)} yrs</small></td>"
                           f"<td>{tier_badge(f.get('tier'))}</td><td class='num'>{pct(f.get('ret_3Y'))}</td><td class='num {'pos' if (f.get('excess_3Y') or 0) > 0 else 'neg' if f.get('excess_3Y') is not None else ''}'>{spct(f.get('excess_3Y'))}</td>"
                           f"<td class='num'>{num(f.get('ter'), 2)}%</td><td class='num'>{cr(f.get('aum_cr'))}</td></tr>" for f in P)
-            tabs += (f"<h2 style='font-size:24px;margin-top:32px'>{plan} plans ({len(P)})</h2><div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Fund</th><th>Rating</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>AUM</th></tr></thead><tbody>{trs}</tbody></table></div>")
+            tabs += (f"<h2 style='font-size:24px;margin-top:32px'>{plan} plans ({len(P)})</h2><div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Fund</th><th>Rating</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>Avg AUM</th></tr></thead><tbody>{trs}</tbody></table></div>")
         faq = [(f"What does a {lc} fund invest in?", f"SEBI requires {lc} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
                (f"How many {lc} funds beat their index over 3 years?",
                 f"{beat} of {len(e3)} {lc} funds (Regular plans with 3 years of history) beat {('the ' + bench + ' total-return index') if bench else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),

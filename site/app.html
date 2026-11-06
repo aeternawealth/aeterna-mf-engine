@@ -265,10 +265,10 @@ footer.site a{color:var(--ink-2)}
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     <nav class="main" id="nav">
       <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
-        <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual funds<small>Our largest practice, from a first SIP up</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
+        <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual fund investing<small>How we choose and manage funds for you</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund data</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All categories<small>A page for each category, index and theme</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
-      <a href="#tools">Calculators</a><a href="#about">About</a><a href="#contact">Contact</a>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Every equity and index fund, compared</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+      <a href="/calculators/">Calculators</a><a href="#about">About</a><a href="#contact">Contact</a>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
     <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener" title="Opens your Centricity client account in a new tab">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
@@ -335,13 +335,13 @@ footer.site a{color:var(--ink-2)}
 
   <section class="band"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
-      <div><div class="eyebrow">Plan with numbers</div><h2 style="margin-top:10px">Calculators</h2></div><a href="#tools">All tools →</a></div>
+      <div><div class="eyebrow">Plan with numbers</div><h2 style="margin-top:10px">Calculators</h2></div><a href="/calculators/">All calculators →</a></div>
     <div class="grid g4" style="margin-top:24px"><div id="toolCards" style="display:contents"></div></div>
   </div></section>
 
   <section class="band tint"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
-      <div><div class="eyebrow">This month in numbers</div><h2 style="margin-top:10px">What the data says right now</h2></div><a href="#insights">All insights →</a></div>
+      <div><div class="eyebrow">This month in numbers</div><h2 style="margin-top:10px">What the data says right now</h2></div><a href="/insights/">All insights →</a></div>
     <div class="grid g3" style="margin-top:24px" id="insCards"></div>
   </div></section>
 
@@ -553,7 +553,7 @@ function solutionsPage(){
    <tr><td>What you pay</td><td>Expense ratio, inside the NAV</td><td>Fixed and/or performance fee</td><td>Management fee and carry</td><td>Built into the price or yield</td><td>The spread in the deal price</td></tr>
    <tr><td>How gains are taxed</td><td>Equity funds: 20% short term, 12.5% long term above ₹1.25 lakh</td><td>As if you held each stock yourself</td><td>Cat I/II pass through to you; Cat III taxed in the fund</td><td>Interest at your slab; gains depend on listing</td><td>12.5% after 24 months; slab rate before</td></tr>
   </tbody></table></div>
-  <p class="muted" style="font-size:12.5px;margin-top:8px">Tax rates as per the Finance (No. 2) Act, 2024; surcharge and cess extra. Try the <a href="#tools" data-tool="tax">capital-gains calculator</a>.</p>
+  <p class="muted" style="font-size:12.5px;margin-top:8px">Tax rates as per the Finance (No. 2) Act, 2024; surcharge and cess extra. Try the <a href="/calculators/capital-gains-tax/">capital-gains calculator</a>.</p>
   <div class="stack" style="gap:18px;margin-top:40px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
     <p style="margin-top:10px;max-width:70ch">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
     <div class="row" style="align-self:center;justify-content:flex-end">${SLUG[s.id]?`<a class="btn" href="/invest/${SLUG[s.id]}/">Read more</a>`:''}${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
@@ -585,7 +585,8 @@ const TOOLS=[
  {id:'emi',t:'Loan EMI',d:'Monthly EMI, total interest and the year-by-year payoff.'},
  {id:'infl',t:'Inflation',d:"What today's money will cost, or be worth, in the future."},
  {id:'tax',t:'Capital-gains tax',d:'Estimate tax on selling mutual funds, bonds or unlisted shares.'}];
-function toolCards(){const el=$('#toolCards');if(el)el.outerHTML=TOOLS.map(t=>`<a class="card stack sol" href="#tools" data-tool="${t.id}" style="gap:6px;text-decoration:none;color:inherit"><b style="font:600 18px var(--f-display)">${t.t}</b><span class="muted" style="font-size:14px">${t.d}</span><span style="color:var(--teal);font-size:14px;margin-top:auto">Open →</span></a>`).join('');
+const TOOLPAGE={sip:'/calculators/sip/',lump:'/calculators/lumpsum/',goal:'/calculators/goal/',swp:'/calculators/swp/',emi:'/calculators/emi/',infl:'/calculators/inflation/',tax:'/calculators/capital-gains-tax/'};
+function toolCards(){const el=$('#toolCards');if(el)el.outerHTML=TOOLS.map(t=>`<a class="card stack sol" href="${TOOLPAGE[t.id]||'#tools-'+t.id}" data-tool="${t.id}" style="gap:6px;text-decoration:none;color:inherit"><b style="font:600 18px var(--f-display)">${t.t}</b><span class="muted" style="font-size:14px">${t.d}</span><span style="color:var(--teal);font-size:14px;margin-top:auto">Open →</span></a>`).join('');
   $$('a[data-tool]').forEach(a=>a.onclick=()=>{S.tool=a.dataset.tool})}
 const fld=(id,label,val,min,max,step,suffix)=>`<label class="field"><span>${label}</span><span class="in"><input type="range" id="${id}R" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"><input type="number" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}${suffix?' ('+suffix+')':''}"></span></label>`;
 function bindPair(id,fn){const r=$('#'+id+'R'),n=$('#'+id);r.oninput=()=>{n.value=r.value;fn()};n.oninput=()=>{r.value=n.value;fn()}}
@@ -787,7 +788,7 @@ async function insightsPage(){const I=await insights(),el=$('#insPage');
   bindTry(el)}
 
 /* ---------- search ---------- */
-const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity and index fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['Solutions','#solutions','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Tools','#tools','SIP, lump sum, goal and capital-gains calculators'],['SIP backtest','#tools','Real SIP results from actual NAVs'],['Insights','#insights','This month in numbers'],['SIP calculator','#tools','Tools'],['Capital-gains tax','#tools','Tools'],['PMS','#solutions','Solutions'],['AIFs','#solutions','Solutions'],['Bonds','#solutions','Solutions'],['Unlisted shares','#solutions','Solutions'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
+const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity and index fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['What we offer','/invest/','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Calculators','/calculators/','SIP, lump sum, goal, SWP, EMI and tax calculators'],['SIP backtest','#tools-sipreal','Real SIP results from actual NAVs'],['Insights','/insights/','This month in numbers'],['Investor guides','/learn/','Regular vs Direct, SIP vs lump sum, tax'],['All funds, by category','/mutual-funds/','Every equity and index fund'],['Mutual fund investing','/invest/mutual-funds/','How we choose funds for you'],['SIP calculator','/calculators/sip/','Calculators'],['Capital-gains tax','/calculators/capital-gains-tax/','Calculators'],['PMS','/invest/pms/','Invest'],['AIFs','/invest/aif/','Invest'],['Bonds','/invest/bonds/','Invest'],['Unlisted shares','/invest/unlisted-shares/','Invest'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
 function openSearch(){const o=$('#srch');o.hidden=false;const q=$('#srchQ');q.value='';drawSearch('');setTimeout(()=>q.focus(),10)}
 function closeSearch(){$('#srch').hidden=true}
 function drawSearch(q){
@@ -809,7 +810,7 @@ function searchInit(){
   $('#srchQ').oninput=e=>drawSearch(e.target.value);
   $('#srchQ').onkeydown=e=>{const as=$$('#srchRes a');let i=as.findIndex(a=>a.getAttribute('aria-selected')==='true');
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();i=(i+(e.key==='ArrowDown'?1:-1)+as.length)%as.length;as.forEach((a,j)=>a.setAttribute('aria-selected',j===i));as[i]?.scrollIntoView({block:'nearest'})}
-    else if(e.key==='Enter'&&as[i]){e.preventDefault();as[i].click();if(!as[i].target)location.hash=as[i].getAttribute('href').slice(1)}
+    else if(e.key==='Enter'&&as[i]){e.preventDefault();as[i].click();if(!as[i].target){const h=as[i].getAttribute('href');if(h.startsWith('#'))location.hash=h.slice(1);else location.href=h}}
     else if(e.key==='Escape')closeSearch()};
   document.addEventListener('keydown',e=>{if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();openSearch()}else if(e.key==='Escape'&&!$('#srch').hidden)closeSearch()});
 }
@@ -1137,6 +1138,8 @@ function staticPages(){
 function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
+  if(h==='insights'){location.replace('/insights/');return}
+  if(h==='tools'||(h.startsWith('tools-')&&TOOLPAGE[h.slice(6)])){location.replace(h==='tools'?'/calculators/':TOOLPAGE[h.slice(6)]);return}
   if(h.startsWith('tools-')){view='tools';S.tool=h.slice(6)}
   const SOLMAP={mf:'mutual-funds',pms:'pms',aif:'aif',bonds:'bonds',unlisted:'unlisted-shares',tax:'tax-planning',review:'portfolio-review'};
   if(h==='solutions'||h.startsWith('solutions-')){location.replace('/invest/'+(SOLMAP[h.slice(10)]?SOLMAP[h.slice(10)]+'/':''));return}

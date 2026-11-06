@@ -97,8 +97,8 @@ def _content(B, d):
     pms_drag = _fee_drag(5e6, 10, 0.13, 0.025) - _fee_drag(5e6, 10, 0.13, 0.01)
     return {
         "mutual-funds": dict(
-            title="Mutual funds: chosen with data, reviewed every year",
-            seo="Mutual fund investment in India, chosen with data | Aeterna Wealth",
+            title="Mutual fund investing with Aeterna: chosen with data, reviewed every year",
+            seo="Mutual fund investment services: funds chosen with data | Aeterna Wealth",
             desc="Mutual fund portfolios built and reviewed by Aeterna Wealth, an AMFI-registered distributor (ARN-317889): every equity fund in India measured against its index, overlap and cost checked, tax planned in.",
             lede="Our largest practice. We measure every equity and index fund in India against the right index every weekday, and use that to choose a small set of funds that fit your goals, don't duplicate each other and are reviewed every year.",
             facts=[(f"{d['plans']:,}", "equity and index fund plans we track"),
@@ -442,7 +442,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
 <h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">{e(c['title'])}</h1>
 <p class="lede" style="margin-top:14px">{e(c['lede'])}</p>
-<div class="row" style="margin-top:20px"><a class="btn primary" href="/#contact">Talk to us</a><a class="btn" href="/invest/">All solutions</a></div></div>
+<div class="row" style="margin-top:20px"><a class="btn primary" href="/#contact">Talk to us</a>{'<a class="btn" href="/mutual-funds/">Browse every fund</a>' if slug == 'mutual-funds' else '<a class="btn" href="/invest/">All solutions</a>'}</div></div>
 <div class="inv-facts">{facts}</div></div>
 <div style="margin-top:34px">{secs}
 <div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{steps}</ol></div></div>

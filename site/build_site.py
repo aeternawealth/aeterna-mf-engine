@@ -489,6 +489,7 @@ def main():
 <h1 style="font-size:clamp(30px,4vw,44px)">Every equity mutual fund in India, compared</h1>
 <p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right index and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cat_cards)}</div>
+<div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:600 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
 <p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/#method">how the ratings work</a>.</p>
 </div></section>"""

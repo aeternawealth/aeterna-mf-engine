@@ -52,6 +52,16 @@ nav.main{display:flex;gap:4px}
 nav.main a,.ddbtn{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
 nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.ddbtn:hover{color:var(--teal);background:var(--teal-soft)}
 .dd{position:relative}
+.ab-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:44px;align-items:center}
+.ab-journey{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 18px 12px}
+.ab-journey svg{width:100%;max-width:560px;height:auto;display:block}@media (max-width:600px){.ab-journey .jh{font-size:25px}.ab-journey .js{font-size:16px}}.ab-journey figcaption{font-size:12.5px;margin-top:6px}
+.ab-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-top:36px}
+.ab-facts>div{background:var(--surface);padding:16px 18px}.ab-facts b{display:block;font:600 20px/1.2 var(--f-mono);color:var(--ink)}.ab-facts span{display:block;color:var(--ink-3);font-size:13px;margin-top:4px}
+.ab-sec{display:grid;grid-template-columns:300px minmax(0,1fr);gap:48px;padding:30px 0;border-top:1px solid var(--rule);align-items:start}
+.ab-sec:first-of-type{margin-top:36px}.ab-sec h2{font-size:22px;margin:0}.ab-sec .body{display:grid;gap:14px;min-width:0}.ab-sec .body p{margin:0}
+.inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:#fff;margin-top:34px}
+.inv-cta h2{color:#fff;font-size:24px}.inv-cta p{margin:6px 0 0;color:rgba(255,255,255,.85)}.inv-cta .btn{background:#fff;color:var(--teal);border-color:#fff}.inv-cta .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+@media (max-width:900px){.ab-hero{grid-template-columns:1fr;gap:26px}.ab-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-sec{grid-template-columns:1fr;gap:10px;padding:24px 0}}
 .founders>*{margin:0!important}
 .sol-row{scroll-margin-top:84px}
 .ddbtn{background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
@@ -426,7 +436,7 @@ footer.site a{color:var(--ink-2)}
 <!-- TOOLS -->
 <div data-view="tools" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="toolsPage"></div></section></div>
 <!-- ABOUT -->
-<div data-view="about" hidden><section class="band" style="padding-top:44px"><div class="wrap prose" id="aboutPage"></div></section></div>
+<div data-view="about" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="aboutPage"></div></section></div>
 <!-- CONTACT -->
 <div data-view="contact" hidden><section class="band" style="padding-top:44px"><div class="wrap" id="contactPage"></div></section></div>
 <!-- DISCLOSURES -->
@@ -1049,6 +1059,11 @@ async function compare(){
 }
 
 /* ---------- static pages ---------- */
+function abJourney(){const g=document.getElementById('abStops');if(!g)return;
+  const stops=[[70,420,'Start','First SIP, an emergency fund'],[140,330,'Build','Goal plans, step-up SIPs'],[70,240,'Grow','PMS, AIFs, bonds, unlisted shares'],[140,150,'Protect','Tax planning, yearly reviews'],[70,60,'Pass on','Nominations, the next generation']];
+  g.innerHTML=stops.map(([x,y,h,sub],i)=>`<line x1="${x+18}" y1="${y}" x2="196" y2="${y}" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="2 4"/>
+   <circle cx="${x}" cy="${y}" r="13" fill="var(--teal)" stroke="var(--surface)" stroke-width="4"/><text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" font-family="IBM Plex Mono,monospace">${i+1}</text>
+   <text x="206" y="${y-3}" class="jh" font-size="21" font-weight="600" fill="var(--ink)" font-family="Spectral,Georgia,serif">${h}</text><text class="js" x="206" y="${y+18}" font-size="14" fill="var(--ink-3)" font-family="IBM Plex Sans,sans-serif">${sub}</text>`).join('')}
 function staticPages(){
   $('#methodPage').innerHTML=`<div class="eyebrow">Method</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">How we rate funds, and how well it works</h1>
   <p class="lede" style="margin-top:14px">Ratings describe a fund's track record against its benchmark and its peers. We publish how they are built and how they performed historically, including where they fall short.</p>
@@ -1066,17 +1081,30 @@ function staticPages(){
   <p>We did not tune the weights to improve this result: that would fit one market cycle and fail in the next. Instead we present ratings as an assessment of the record so far and repeat the test each year.</p>
   <h3>5. Limitations</h3><p>Categories and benchmarks are today's; SEBI recategorised funds in 2018 and redefined multi cap in 2020. Fund manager changes are not yet tracked. ${holdCov()} Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and AMC monthly portfolio disclosures.</p>
   <h3>6. Updates</h3><p>NAVs, returns and period ranks refresh every weekday morning after AMFI publishes the previous day's NAVs. Track-record ratings, holdings, expense ratios and AUM refresh twice a month, on the 11th and the 16th, after fund houses publish their monthly portfolios (due by the 10th).</p>`;
-  $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A wealth partner that shows its working</h1>
-  <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889), headquartered in New Delhi and working with families across India. We help families manage their wealth across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and unlisted shares, with tax-aware planning throughout. Insurance is coming soon.</p>
-  <h3>Who we are</h3><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
-  <div class="grid g2 founders" style="margin-top:14px;align-items:stretch">
+  $('#aboutPage').innerHTML=`<div class="ab-hero">
+   <div><div class="eyebrow">About</div><h1 style="font-size:clamp(32px,4.4vw,50px);margin-top:10px">A wealth partner that shows its working</h1>
+    <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889), headquartered in New Delhi and working with families across India. We help families manage their wealth across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and unlisted shares, with tax-aware planning throughout. Insurance is coming soon.</p>
+    <div class="row" style="margin-top:20px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="/invest/">What we offer</a></div></div>
+   <figure class="ab-journey" aria-label="The wealth journey: start, build, grow, protect, pass on">
+    <svg viewBox="0 0 470 470" role="img"><title>The wealth journey we walk with families</title>
+     <path id="abRoad" d="M70 462 L70 420 C70 375 140 375 140 330 C140 285 70 285 70 240 C70 195 140 195 140 150 C140 105 70 105 70 60 L70 22" fill="none" stroke="var(--teal-soft)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+     <path d="M70 462 L70 420 C70 375 140 375 140 330 C140 285 70 285 70 240 C70 195 140 195 140 150 C140 105 70 105 70 60 L70 22" fill="none" stroke="var(--surface)" stroke-width="2" stroke-dasharray="8 10" stroke-linecap="round"/>
+     <g id="abStops"></g>
+    </svg>
+    <figcaption class="muted">The journey we walk with families. Every stage is planned with the numbers, and with tax in mind.</figcaption>
+   </figure>
+  </div>
+  <div class="ab-facts"><div><b>${S.funds.length.toLocaleString('en-IN')}</b><span>fund plans measured every weekday</span></div><div><b>ARN-317889</b><span>AMFI-registered distributor</span></div><div><b>CA + Advocate</b><span>a founding team for tax and paperwork</span></div><div><b>6 asset types</b><span>mutual funds, PMS, AIFs, bonds, unlisted shares, tax planning</span></div></div>
+  <div class="ab-sec"><h2>Who we are</h2><div class="body"><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
+   <div class="grid g2 founders" style="align-items:stretch">
     <div class="card stack" style="gap:4px"><b style="font:600 19px var(--f-display)">CA Harshit Aggarwal</b><span class="muted">Co-founder · Chartered Accountant</span><a href="https://www.linkedin.com/in/harshit-aggarwal/" target="_blank" rel="noopener">LinkedIn profile →</a></div>
     <div class="card stack" style="gap:4px"><b style="font:600 19px var(--f-display)">Adv. Shantnu Singh Sangwan</b><span class="muted">Co-founder · Advocate</span><a href="https://www.linkedin.com/in/shantnusangwan/" target="_blank" rel="noopener">LinkedIn profile →</a></div>
-  </div>
-  <h3>How we work</h3><p>We build the fund data on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
-  <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
-  <h3>Follow us</h3><p><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a> · <a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a> · <a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></p>
-  <div class="row" style="margin-top:22px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>`;
+   </div></div></div>
+  <div class="ab-sec"><h2>How we work</h2><div class="body"><p>We build the fund data on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p><p><a href="#method">How our ratings work, and how they tested →</a></p></div></div>
+  <div class="ab-sec"><h2>How we are paid</h2><div class="body"><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p><p><a href="/disclosures/">Our disclosures →</a></p></div></div>
+  <div class="ab-sec"><h2>Follow us</h2><div class="body"><p><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a> · <a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a> · <a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></p></div></div>
+  <div class="inv-cta"><div><h2>Start with a conversation</h2><p>Tell us where you are on the journey. We reply within one working day.</p></div><div class="row"><a class="btn" href="#contact">Talk to us</a><a class="btn ghost" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div>`;
+  abJourney();
   $('#contactPage').innerHTML=`<div class="eyebrow">Contact</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Talk to us</h1>
   <p class="lede" style="margin-top:12px">Tell us a little about what you're planning. We'll reply within one working day, usually on WhatsApp.</p>
   <div class="grid g2" style="margin-top:28px;align-items:start">
@@ -1117,6 +1145,7 @@ function route(){
   const cur={ddMf:['ratings','compare','method','fund','insights'],ddInv:['solutions']};
   for(const id in cur){const b=$('#'+id+' .ddbtn');if(cur[id].includes(view))b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');$('#'+id).classList.remove('open');b.setAttribute('aria-expanded','false')}
   if(view==='contact'&&S.topic){const m=$('#cm');$$('#ci input').forEach(i=>{if(S.topic.toLowerCase().includes(i.value.toLowerCase()))i.checked=true});if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
+  if(view==='about')requestAnimationFrame(abJourney);
   if(view==='tools')toolsPage();
   if(view==='insights')insightsPage();
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');

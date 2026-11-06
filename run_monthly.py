@@ -54,6 +54,7 @@ def main():
     log("[4/7] NAV history (mfapi)")
     navs = ingest.load_cached_navs(u.code) if a.offline else ingest.fetch_navs(u.code, log=log)
     log(f"  {len(navs)} NAV histories")
+    ingest.top_up_from_navall(navs, u, log)
 
     hmonth = a.holdings_month or (pd.Period(datetime.now(), "M") - 1).strftime("%Y-%m")
     log(f"[5/7] Holdings for {hmonth}")

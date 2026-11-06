@@ -150,6 +150,27 @@ def fetch_navs(codes, workers=8, log=print) -> dict:
     return out
 
 
+def top_up_from_navall(navs: dict, universe: pd.DataFrame, log=print) -> int:
+    """mfapi.in can lag AMFI by a day for some schemes. AMFI's NAVAll (already downloaded for the universe)
+    carries each scheme's latest official NAV: append it when it is newer than the last mfapi date."""
+    n = 0
+    for code, nav, dt in universe[["code", "nav", "nav_date"]].itertuples(index=False):
+        d = navs.get(int(code))
+        if d is None or d.empty or pd.isna(dt) or not (nav and nav > 0):
+            continue
+        if pd.Timestamp(dt) > pd.Timestamp(d["date"].max()):
+            d = pd.concat([d, pd.DataFrame({"date": [pd.Timestamp(dt)], "nav": [float(nav)]})], ignore_index=True)
+            navs[int(code)] = d
+            try:
+                d.to_csv(C.NAV_DIR / f"{int(code)}.csv", index=False)
+            except OSError:
+                pass
+            n += 1
+    if n:
+        log(f"  {n} schemes topped up with AMFI's newer NAV (mfapi was a day behind)")
+    return n
+
+
 def load_cached_navs(codes) -> dict:
     out = {}
     for c in codes:

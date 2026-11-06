@@ -28,6 +28,7 @@ SITE = "https://aeternawealth.com"
 CFG = json.loads((S / "site_config.json").read_text()) if (S / "site_config.json").exists() else {}
 LAUNCHED = (S / "LAUNCHED").exists()
 SOCIAL = CFG.get("social", [])
+INDEXNOW_KEY = "8f3c2a9e5b7d41c6a0e4f9b2d6c8a1e3"   # public by design: IndexNow verifies ownership by fetching /<key>.txt
 ORG = {
     "name": "Aeterna Wealth Private Limited", "brand": "Aeterna Wealth", "arn": "ARN-317889",
     "phone": "+91-85959-93600", "email": "contact@aeternawealth.com",
@@ -240,10 +241,10 @@ def footer():
     soc = " · ".join('<a href="%s" target="_blank" rel="noopener me">%s</a>' % (e(u), label(u)) for u in SOCIAL)
     return f"""<footer class="site"><div class="wrap"><div class="cols">
  <div class="stack" style="gap:8px"><b style="font:600 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/#method">Method and backtest</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
- </div><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
+ </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
 def page(title, desc, path, body, ld=()):
@@ -291,7 +292,7 @@ def main():
     ins = json.loads((S / "data" / "insights.json").read_text()) if (S / "data" / "insights.json").exists() else {"items": []}
     as_of = meta.get("as_of")
     if DIST.exists():
-        for sub in ("mutual-funds", "assets", "invest", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
+        for sub in ("mutual-funds", "assets", "invest", "learn", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
             shutil.rmtree(DIST / sub, ignore_errors=True)
     (DIST / "data").mkdir(parents=True, exist_ok=True)
 
@@ -335,6 +336,8 @@ def main():
     P.legal_pages(Bm, urls)
     import invest_pages as IP
     IP.invest_pages(Bm, funds, hold, ins, urls)
+    import learn_pages as LP
+    LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
     cmp_by = {}
     for (ka, kb), pth in cmp_map.items():
         cmp_by.setdefault(ka, []).append((kb, pth))
@@ -475,7 +478,7 @@ def main():
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell. Read the scheme documents before investing.</p>
 </div></section>"""
-        write(path, page(f"{c} mutual funds: ratings, returns and costs | Aeterna Wealth", desc, path, body,
+        write(path, page(f"{c} mutual funds: top-rated by track record, {mon(as_of[:7]) if as_of else ''}".replace("Index Fund mutual funds", "Index funds").replace("Sectoral/Thematic mutual funds", "Sectoral and thematic funds") + " | Aeterna Wealth", desc, path, body,
                          (faq_ld, crumbs([("Mutual funds", "/mutual-funds/"), (c, path)]))))
         urls.append((path, "daily", "0.8"))
         cat_cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{len(L)} plans · {f'{beat} of {len(e3)} beat the index over 3Y' if e3 else 'new category'}</span></a>")
@@ -504,7 +507,6 @@ def main():
              + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body
-             + '\n<nav aria-label="All fund categories" style="position:absolute;left:-9999px">' + "".join(f'<a href="/mutual-funds/{slug(c)}/">{e(c)} funds</a>' for c in cats) + '</nav>'
              + '\n</body></html>\n')
     (DIST / "index.html").write_text(index, encoding="utf-8")
 
@@ -578,6 +580,7 @@ def main():
                             "<section class='band'><div class='wrap'><h1>Page not found</h1><p class='lede' style='margin-top:12px'>The page you asked for isn't here. "
                             "Try the <a href='/mutual-funds/'>fund categories</a>, the <a href='/#tools'>calculators</a> or the <a href='/'>home page</a>.</p></div></section>"))
     (DIST / "CNAME").write_text("aeternawealth.com\n")
+    (DIST / f"{INDEXNOW_KEY}.txt").write_text(INDEXNOW_KEY, encoding="utf-8")
     # 301s from the old WordPress site's genuine pages, so any ranking they earned carries over
     # (its ~1,760 injected spam pages are deliberately left to 404 so search engines drop them)
     old = {"/about-us/": "/#about", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",

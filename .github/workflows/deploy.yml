@@ -35,6 +35,18 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: f5933230e8e718e0702500f52aa945cf
           command: pages deploy site/dist --project-name aeterna-wealth --branch ${{ env.TARGET }} --commit-dirty=true
+      - name: Tell search engines what changed (IndexNow; live site only, after launch)
+        if: env.HAS_TOKEN == 'true' && env.TARGET == 'main' && hashFiles('site/LAUNCHED') != ''
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          import json, re, urllib.request
+          key = re.search(r'INDEXNOW_KEY = "([0-9a-f]+)"', open("site/build_site.py").read()).group(1)
+          urls = re.findall(r"<loc>([^<]+)</loc>", open("site/dist/sitemap.xml").read())[:10000]
+          body = json.dumps({"host": "aeternawealth.com", "key": key, "keyLocation": f"https://aeternawealth.com/{key}.txt", "urlList": urls}).encode()
+          req = urllib.request.Request("https://api.indexnow.org/indexnow", data=body, headers={"Content-Type": "application/json; charset=utf-8"})
+          print("IndexNow:", urllib.request.urlopen(req, timeout=30).status, len(urls), "URLs")
+          PY
       - name: No Cloudflare token yet
         if: env.HAS_TOKEN != 'true'
         run: echo "::warning::CLOUDFLARE_API_TOKEN secret not set; site built but not published"

@@ -467,7 +467,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="grid g3" style="margin-top:26px">{cards}</div>
 <p style="margin-top:22px"><a class="btn primary" href="/#contact">Talk to us</a> <a class="btn" href="/#solutions">Compare the products side by side</a></p>
 </div></div></section>"""
-    B.write("/invest/", B.page("Invest with Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares | Aeterna Wealth",
+    B.write("/invest/", B.page("Invest: mutual funds, PMS, AIFs, bonds, unlisted shares | Aeterna Wealth",
                                "Mutual funds, PMS, AIFs, bonds, unlisted shares, tax planning and portfolio reviews from Aeterna Wealth, AMFI-registered mutual fund distributor (ARN-317889).",
                                "/invest/", body, (B.crumbs([("Invest", "/invest/")]),)))
     urls.append(("/invest/", "monthly", "0.8"))

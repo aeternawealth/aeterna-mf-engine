@@ -173,7 +173,38 @@ FAVICON = ('<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www
            'fill=%22%230b4a3c%22/%3E%3C/svg%3E">')
 
 
+def fit_title(t, n=65):
+    """Search results show about 60-65 characters: drop the brand suffix first, then trim long fund names."""
+    if len(t) <= n:
+        return t
+    t = re.sub(r"\s*[\(\-]?\s*\(?(formerly|erstwhile)\b[^:)|]*\)?", "", t, flags=re.I)
+    if len(t) <= n:
+        return t
+    t2 = t.replace(" | Aeterna Wealth insights", "").replace(" | Aeterna Wealth", "")
+    if len(t2) <= n:
+        return t2
+    for long, short in ((": NAV, returns, rating, holdings", ": NAV, returns, rating"), (": returns, risk, cost and overlap", ": returns, cost, overlap"),
+                        (": ratings, returns and costs", ": ratings and returns"), (" compared: tracking error, expense ratio", " compared")):
+        if long in t2:
+            t2 = t2.replace(long, short)
+            if len(t2) <= n:
+                return t2
+    return t2
+
+
+def fit_desc(d, n=158):
+    """Descriptions over ~160 characters are cut by search engines: end at a full sentence, else a word."""
+    if len(d) <= n:
+        return d
+    cut = d[:n]
+    dot = cut.rfind(". ")
+    if dot > 90:
+        return cut[:dot + 1]
+    return cut[:cut.rfind(" ")].rstrip(",;:") + "…"
+
+
 def head(title, desc, path, extra_ld=(), og_type="website"):
+    title, desc = fit_title(title), fit_desc(desc)
     url = SITE + path
     robots = '<meta name="robots" content="noindex,nofollow">' if not LAUNCHED else '<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">'
     return (f'<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
@@ -468,7 +499,7 @@ def main():
     app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
     index = ('<!doctype html>\n<html lang="en-IN"><head>'
-             + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds and unlisted shares | Fund ratings for India", home_desc, "/", (ORG_LD, site_ld))
+             + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body
              + '\n<nav aria-label="All fund categories" style="position:absolute;left:-9999px">' + "".join(f'<a href="/mutual-funds/{slug(c)}/">{e(c)} funds</a>' for c in cats) + '</nav>'
@@ -545,6 +576,23 @@ def main():
                             "<section class='band'><div class='wrap'><h1>Page not found</h1><p class='lede' style='margin-top:12px'>The page you asked for isn't here. "
                             "Try the <a href='/mutual-funds/'>fund categories</a>, the <a href='/#tools'>calculators</a> or the <a href='/'>home page</a>.</p></div></section>"))
     (DIST / "CNAME").write_text("aeternawealth.com\n")
+    csp = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com; "
+           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; "
+           "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
+           "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; "
+           "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests")
+    (DIST / "_headers").write_text(
+        "/*\n"
+        f"  Content-Security-Policy: {csp}\n"
+        "  X-Frame-Options: DENY\n"
+        "  X-Content-Type-Options: nosniff\n"
+        "  Referrer-Policy: strict-origin-when-cross-origin\n"
+        "  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()\n"
+        "  Strict-Transport-Security: max-age=31536000; includeSubDomains\n"
+        "  Cross-Origin-Opener-Policy: same-origin\n"
+        "/assets/*\n  Cache-Control: public, max-age=3600\n"
+        "/data/*\n  Cache-Control: public, max-age=300\n"
+        "/og.png\n  Cache-Control: public, max-age=86400\n", encoding="utf-8")
     print(f"built {DIST}: {len(funds)} fund pages, {len(cats)} categories, {len(urls)} URLs in sitemap, launched={LAUNCHED}")
 
 

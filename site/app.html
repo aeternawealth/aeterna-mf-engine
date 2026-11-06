@@ -52,6 +52,7 @@ nav.main{display:flex;gap:4px}
 nav.main a,.ddbtn{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
 nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.ddbtn:hover{color:var(--teal);background:var(--teal-soft)}
 .dd{position:relative}
+.sol-row{scroll-margin-top:84px}
 .ddbtn{background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .ddbtn::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
 .ddmenu{position:absolute;top:calc(100% + 6px);left:0;min-width:240px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);box-shadow:0 12px 30px rgba(0,0,0,.08);padding:6px;display:none;flex-direction:column}
@@ -249,10 +250,11 @@ footer.site a{color:var(--ink-2)}
     <button class="srch-btn" id="srchBtn" type="button" aria-label="Search funds and pages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="srch-lbl">Search</span><kbd>/</kbd></button>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     <nav class="main" id="nav">
-      <a href="#home">Home</a>
-      <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Mutual funds</button>
+      <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
+        <div class="ddmenu"><a href="#solutions-mf">Mutual funds<small>Our largest practice, from a first SIP up</small></a><a href="#solutions-pms">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="#solutions-aif">AIFs<small>Private equity, credit and long-short funds</small></a><a href="#solutions-bonds">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="#solutions-unlisted">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="#solutions-tax">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="#solutions-review">Portfolio review<small>Everything you hold, in one view</small></a><a href="#solutions">All solutions<small>How the products compare</small></a></div></div>
+      <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund data</button>
         <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All categories<small>A page for each category, index and theme</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
-      <a href="#solutions">Solutions</a><a href="#tools">Tools</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <a href="#tools">Calculators</a><a href="#about">About</a><a href="#contact">Contact</a>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
     <div class="hdr-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener" title="Opens your Centricity client account in a new tab">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
@@ -1087,21 +1089,23 @@ function route(){
   const h=(location.hash||'#home').slice(1); let view=h, code=null;
   if(h.startsWith('fund-')){view='fund';code=+h.slice(5)}
   if(h.startsWith('tools-')){view='tools';S.tool=h.slice(6)}
+  let solAt=null;if(h.startsWith('solutions-')){view='solutions';solAt=h.slice(10)}
   if(!['home','ratings','fund','compare','method','insights','solutions','tools','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-  const mfv=['ratings','compare','method','fund','insights'].includes(view); const ddb=$('#ddMf .ddbtn'); if(mfv)ddb.setAttribute('aria-current','page');else ddb.removeAttribute('aria-current');
-  $('#ddMf').classList.remove('open');ddb.setAttribute('aria-expanded','false');
+  const cur={ddMf:['ratings','compare','method','fund','insights'],ddInv:['solutions']};
+  for(const id in cur){const b=$('#'+id+' .ddbtn');if(cur[id].includes(view))b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');$('#'+id).classList.remove('open');b.setAttribute('aria-expanded','false')}
   if(view==='contact'&&S.topic){const m=$('#cm');$$('#ci input').forEach(i=>{if(S.topic.toLowerCase().includes(i.value.toLowerCase()))i.checked=true});if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
   if(view==='tools')toolsPage();
   if(view==='insights')insightsPage();
   $('#nav').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false');
   if(view==='ratings')ratings(); if(view==='fund')fund(code); if(view==='compare')compare();
+  if(solAt){const el=document.getElementById('sol-'+solAt);if(el){requestAnimationFrame(()=>el.scrollIntoView({block:'start'}));return}}
   window.scrollTo(0,0);
 }
-$('#ddMf .ddbtn').onclick=e=>{const d=$('#ddMf'),o=d.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',o)};
-document.addEventListener('click',e=>{if(!e.target.closest('#ddMf')){$('#ddMf').classList.remove('open');$('#ddMf .ddbtn').setAttribute('aria-expanded','false')}});
+$$('.dd').forEach(d=>{const b=d.querySelector('.ddbtn');b.onclick=e=>{$$('.dd').forEach(x=>{if(x!==d){x.classList.remove('open');x.querySelector('.ddbtn').setAttribute('aria-expanded','false')}});const o=d.classList.toggle('open');b.setAttribute('aria-expanded',o)}});
+document.addEventListener('click',e=>{$$('.dd').forEach(d=>{if(!d.contains(e.target)){d.classList.remove('open');d.querySelector('.ddbtn').setAttribute('aria-expanded','false')}})});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
 load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});

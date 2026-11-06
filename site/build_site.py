@@ -192,9 +192,10 @@ def crumbs(items):
 
 
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
-HEADER_JS = ("<script>(function(){var d=document.getElementById('ddMf'),b=d&&d.querySelector('.ddbtn'),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
-             "if(b)b.onclick=function(e){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);e.stopPropagation()};"
-             "document.addEventListener('click',function(e){if(d&&!d.contains(e.target)){d.classList.remove('open');b&&b.setAttribute('aria-expanded','false')}});"
+HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll('.dd')),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
+             "function shut(x){x.classList.remove('open');var y=x.querySelector('.ddbtn');if(y)y.setAttribute('aria-expanded','false')}"
+             "dd.forEach(function(d){var b=d.querySelector('.ddbtn');if(b)b.onclick=function(e){dd.forEach(function(x){if(x!==d)shut(x)});var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);e.stopPropagation()}});"
+             "document.addEventListener('click',function(e){dd.forEach(function(d){if(!d.contains(e.target))shut(d)})});"
              "if(m)m.onclick=function(){var o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};"
              "var h=(document.querySelector('a.brand')||{}).href||'/',go=function(){location.href=h.split('#')[0]+'?q='};var s=document.getElementById('srchBtn');if(s)s.onclick=go;"
              "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}})})();</script>")

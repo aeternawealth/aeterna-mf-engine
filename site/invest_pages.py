@@ -3,6 +3,7 @@ Each page: what it is, who it suits, costs, tax, risks, how we help, common ques
 where we have it. Rules and tax rates are as of the Finance (No. 2) Act 2024 and SEBI rules in force in 2026.
 Called from build_site.main() with its helpers as B."""
 import itertools
+import re
 import json
 import statistics as st
 
@@ -441,7 +442,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
 <h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">{e(c['title'])}</h1>
 <p class="lede" style="margin-top:14px">{e(c['lede'])}</p>
-<div class="row" style="margin-top:20px"><a class="btn primary" href="/#contact">Talk to us</a><a class="btn" href="/#solutions">All solutions</a></div></div>
+<div class="row" style="margin-top:20px"><a class="btn primary" href="/#contact">Talk to us</a><a class="btn" href="/invest/">All solutions</a></div></div>
 <div class="inv-facts">{facts}</div></div>
 <div style="margin-top:34px">{secs}
 <div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{steps}</ol></div></div>
@@ -449,7 +450,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-cta"><div><h2>Talk to us about {e(NAMES[slug].lower() if slug not in ('pms', 'aif') else NAMES[slug])}</h2><p>A first conversation is free. We reply within one working day.</p></div><a class="btn" href="/#contact">Talk to us</a></div>
 <div class="inv-more">{more}</div>
 <p class="note" style="margin-top:26px">Investments are subject to market risks; returns are not guaranteed. Read the offer documents before investing. Tax rules described are those in force for 2025-26 and can change; they are general information, not tax advice for your situation. See our <a href="/disclosures/">disclosures</a>.</p>
-<p style="margin-top:16px;font-size:14.5px">Also: {others} · <a href="/#solutions">All solutions</a> · <a href="/#contact">Contact</a></p>
+<p style="margin-top:16px;font-size:14.5px">Also: {others} · <a href="/invest/">All solutions</a> · <a href="/#contact">Contact</a></p>
 </div></div></section>"""
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in c["faq"]]}
@@ -459,16 +460,26 @@ def invest_pages(B, funds, hold, ins, urls):
         B.write(path, B.page(c["seo"], c["desc"], path, body,
                              (svc_ld, faq_ld, B.crumbs([("Invest", "/invest/"), (NAMES[slug], path)]))))
         urls.append((path, "monthly", "0.8"))
-    cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 19px var(--f-display)'>{e(NAMES[s])}</b>"
+    cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit{';grid-column:1/-1' if s == 'portfolio-review' else ''}'><b style='font:600 19px var(--f-display)'>{e(NAMES[s])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(C[s]['lede'][:150].rsplit(' ', 1)[0])}…</span></a>" for s in PAGES)
+    app = open(__file__.replace("invest_pages.py", "app.html"), encoding="utf-8").read()
+    a = app.index('<h2 style="font-size:26px;margin-top:40px">How they compare</h2>')
+    b = app.index('capital-gains calculator</a>.</p>', a) + len('capital-gains calculator</a>.</p>')
+    table = app[a:b].replace('href="#tools" data-tool="tax"', 'href="/calculators/capital-gains-tax/"')
+    qa = re.findall(r"\['([^']+)','([^']+)'\]", app[app.index("['Do you give stock tips"):app.index(".map(q=>`<details class=\"faq\">")])
+    faq_html = "".join(f"<details class='faq'><summary>{q}</summary><p>{a_}</p></details>" for q, a_ in qa)
+    hub_faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
+                  "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a_}} for q, a_ in qa]}
     body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
-<div class="eyebrow">Invest</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Everything you invest in, with one team</h1>
+<div class="eyebrow">What we offer</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Everything you invest in, with one team</h1>
 <p class="lede" style="margin-top:12px;max-width:70ch">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in PMS, AIFs, bonds and unlisted shares where they fit, with tax planned in and the whole portfolio reviewed together.</p>
 <div class="grid g3" style="margin-top:26px">{cards}</div>
-<p style="margin-top:22px"><a class="btn primary" href="/#contact">Talk to us</a> <a class="btn" href="/#solutions">Compare the products side by side</a></p>
+{table}
+<h2 style="font-size:26px;margin-top:40px">Common questions</h2><div style="margin-top:8px">{faq_html}</div>
+<div class="inv-cta"><div><h2>Not sure where to start?</h2><p>Most families start with mutual funds. Tell us what you are planning and we'll suggest the right mix.</p></div><a class="btn" href="/#contact">Talk to us</a></div>
 </div></div></section>"""
     B.write("/invest/", B.page("Invest: mutual funds, PMS, AIFs, bonds, unlisted shares | Aeterna Wealth",
                                "Mutual funds, PMS, AIFs, bonds, unlisted shares, tax planning and portfolio reviews from Aeterna Wealth, AMFI-registered mutual fund distributor (ARN-317889).",
-                               "/invest/", body, (B.crumbs([("Invest", "/invest/")]),)))
+                               "/invest/", body, (hub_faq_ld, B.crumbs([("Invest", "/invest/")]))))
     urls.append(("/invest/", "monthly", "0.8"))
     return d

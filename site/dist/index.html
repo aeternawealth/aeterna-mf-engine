@@ -821,7 +821,7 @@ function home(){
   const rated=S.funds.filter(f=>f.tier&&f.tier!=='Unrated').length;
   $('#facts').innerHTML=[[S.funds.length.toLocaleString('en-IN'),'fund plans tracked'],[rated.toLocaleString('en-IN'),'with a track-record rating'],[cats().length,'categories'],[dmy(m.as_of),'NAV data as of']].map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join('');
   $('#stripAsOf').textContent='3Y to '+dmy(m.as_of);
-  const SC=['Large Cap','Mid Cap','Small Cap','Flexi Cap','ELSS'].filter(c=>S.funds.some(f=>f.category===c));
+  const SC=['Large Cap','Mid Cap','Small Cap','Flexi Cap','Multi Cap'].filter(c=>S.funds.some(f=>f.category===c));
   S.stripCat=S.stripCat||'Flexi Cap';
   const drawTabs=()=>{$('#stripTabs').innerHTML=SC.map(c=>`<button role="tab" aria-selected="${c===S.stripCat}" data-c="${c}">${c}</button>`).join('');
     $$('#stripTabs button').forEach(b=>b.onclick=()=>{S.stripCat=b.dataset.c;drawTabs();drawStrip(S.stripCat)})};
@@ -991,7 +991,7 @@ async function fund(code){
   $('#addCmp').onclick=()=>{if(!S.cmp.includes(f.code)){S.cmp=[...S.cmp,f.code].slice(-4);saveCmp()}location.hash='compare'};
 }
 function gapBlock(){const el=$('#gapRows');if(!el)return;
-  const cats=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Flexi Cap','Focused','ELSS'];
+  const cats=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused'];
   const rows=cats.map(c=>{const F=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.ret_3Y!=null).sort((a,b)=>a.ret_3Y-b.ret_3Y);if(F.length<8)return null;
     const lo=F[0],hi=F[F.length-1];return {c,lo,hi,gap:1e6*(Math.pow(1+hi.ret_3Y,3)-Math.pow(1+lo.ret_3Y,3))}}).filter(Boolean);
   if(!rows.length){el.closest('section').hidden=true;return}

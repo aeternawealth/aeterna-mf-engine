@@ -54,7 +54,7 @@ def _data(funds, hold, ins):
     gaps = sorted(p["Regular"] - p["Direct"] for p in pairs.values() if "Regular" in p and "Direct" in p)
     d["ter_gap"] = gaps[len(gaps) // 2] if gaps else None
     gap_best = None
-    for c in ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Flexi Cap", "Focused", "ELSS"]:
+    for c in ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused"]:
         r = sorted([f for f in reg if f["category"] == c and f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
         if len(r) >= 8:
             g = 1e6 * ((1 + r[-1]["ret_3Y"]) ** 3 - (1 + r[0]["ret_3Y"]) ** 3)

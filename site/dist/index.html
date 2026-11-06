@@ -227,6 +227,9 @@ a.sol:hover{border-color:var(--teal)}
 .prose h3{margin:28px 0 10px}
 footer.site{background:var(--surface);border-top:1px solid var(--rule);padding-block:44px 36px;font-size:13.5px;color:var(--ink-2)}
 
+.how{display:flex;flex-direction:column;gap:14px;margin-top:6px}.how ol{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:st}
+.how li{display:grid;grid-template-columns:30px 1fr;column-gap:12px;counter-increment:st}.how li::before{content:counter(st);grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--teal-soft);color:var(--teal);font:600 14px/28px var(--f-mono);text-align:center}
+.how li b{font:600 16px/1.3 var(--f-display);color:var(--ink)}.how li span{color:var(--ink-2);font-size:14.5px}
 .why{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}.why b{font:600 17px/1.3 var(--f-display);color:var(--ink)}.why p{margin:4px 0 0;color:var(--ink-2);font-size:14.5px}
 @media (max-width:640px){.why{grid-template-columns:1fr}}
 .gaprow{display:grid;grid-template-columns:118px 1fr 88px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px}
@@ -301,7 +304,15 @@ footer.site a{color:var(--ink-2)}
         <div><b>Numbers before stories</b><p>Every fund is measured against its total-return index and its peers. When one you hold falls behind, it comes up in your review.</p></div>
         <div><b>Clear about what we earn</b><p>Commission on Regular plans, fees on PMS and AIFs. We tell you what we earn on a product before you invest.</p></div>
       </div>
-      <a class="btn primary" href="#contact" style="align-self:flex-start;margin-top:4px">Talk to us</a>
+      <div class="card how">
+        <div class="eyebrow">How we work</div>
+        <ol>
+          <li><b>A first conversation</b><span>Your goals, what you already hold and your tax position. No forms to fill first.</span></li>
+          <li><b>A review of everything you own</b><span>Overlap, cost, tax and gaps across funds, bonds and other holdings, wherever they are held.</span></li>
+          <li><b>A plan you can follow</b><span>What to keep, change or add, and why. Reviewed with you every year, or sooner when something changes.</span></li>
+        </ol>
+        <a class="btn primary" href="#contact" style="align-self:flex-start">Talk to us</a>
+      </div>
     </div>
   </div></section>
 

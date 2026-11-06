@@ -37,3 +37,11 @@ Cloudflare Pages project `aeterna-wealth` (direct upload, https://aeterna-wealth
 `.github/workflows/deploy.yml` builds the site and uploads it on every push to main and after each successful daily or
 monthly data run. It needs the repository secret `CLOUDFLARE_API_TOKEN` (a Cloudflare API token with Account ·
 Cloudflare Pages · Edit). Without the secret the workflow builds the site and stops with a warning.
+
+## Change protocol (agreed 6 Nov 2026)
+1. Website changes (design, copy, features) are pushed to the `staging` branch. The deploy workflow publishes them to
+   https://staging.aeterna-wealth.pages.dev, a Cloudflare preview that search engines do not index.
+2. The owner checks the staging site and approves ("publish").
+3. `staging` is merged into `main`; the deploy workflow publishes the live site (aeternawealth.com).
+Data refreshes (daily and monthly runs) commit to `main` and publish to the live site automatically; staging is rebased
+onto main before each new round of changes so it carries the latest data.

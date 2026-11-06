@@ -1,16 +1,18 @@
 # Publishes the website to Cloudflare Pages (project "aeterna-wealth").
-# Runs on every push to main (code and copy changes) and after each daily / monthly data run
+# Protocol: website changes are pushed to the `staging` branch first -> https://staging.aeterna-wealth.pages.dev
+# (a Cloudflare preview, not indexed). After the owner approves, staging is merged into main -> the live site.
+# main is also published after each daily / monthly data run
 # (their data commits are pushed by the workflow token, which does not trigger push events).
 # Needs the repository secret CLOUDFLARE_API_TOKEN (Cloudflare Pages: Edit). Without it the job is skipped.
 name: Deploy website
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_run:
     workflows: ["Daily NAV refresh", "Monthly ratings"]
     types: [completed]
   workflow_dispatch: {}
-concurrency: { group: deploy, cancel-in-progress: true }
+concurrency: { group: "deploy-${{ github.event_name == 'push' && github.ref_name || 'main' }}", cancel-in-progress: true }
 jobs:
   deploy:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
@@ -18,9 +20,10 @@ jobs:
     timeout-minutes: 20
     env:
       HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+      TARGET: ${{ github.event_name == 'push' && github.ref_name || 'main' }}
     steps:
       - uses: actions/checkout@v5
-        with: { ref: main }
+        with: { ref: "${{ env.TARGET }}" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: Build the static site
@@ -31,7 +34,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: f5933230e8e718e0702500f52aa945cf
-          command: pages deploy site/dist --project-name aeterna-wealth --branch main --commit-dirty=true
+          command: pages deploy site/dist --project-name aeterna-wealth --branch ${{ env.TARGET }} --commit-dirty=true
       - name: No Cloudflare token yet
         if: env.HAS_TOKEN != 'true'
         run: echo "::warning::CLOUDFLARE_API_TOKEN secret not set; site built but not published"

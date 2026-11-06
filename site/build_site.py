@@ -162,9 +162,11 @@ def analytics_head():
                 f"data-cf-beacon='{{\"token\": \"{e(CFG['cloudflare_beacon_token'])}\"}}'></script>")
     if CFG.get("ga4_id"):   # Google Analytics 4, standard tag (disclosed in the privacy notice; no cookie banner)
         gid = json.dumps(CFG["ga4_id"])
-        out += (f"<script async src='https://www.googletagmanager.com/gtag/js?id={e(CFG['ga4_id'])}'></script>"
-                "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}"
-                f"gtag('js',new Date());gtag('config',{gid});</script>")
+        # only on the real domain: staging and preview visits stay out of the numbers
+        out += ("<script>(function(){if(!/(^|\\.)aeternawealth\\.com$/.test(location.hostname))return;"
+                f"var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+{gid};document.head.appendChild(s);"
+                "window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};"
+                f"gtag('js',new Date());gtag('config',{gid})}})();</script>")
     return out
 
 
@@ -578,8 +580,8 @@ def main():
     (DIST / "CNAME").write_text("aeternawealth.com\n")
     csp = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com; "
            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; "
-           "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; "
-           "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; "
+           "img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://www.google.co.in; "
+           "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com; "
            "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests")
     (DIST / "_headers").write_text(
         "/*\n"

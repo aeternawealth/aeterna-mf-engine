@@ -209,7 +209,7 @@ def footer():
  <div class="stack" style="gap:8px"><b style="font:600 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/#solutions">Solutions</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
  </div><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
@@ -258,7 +258,7 @@ def main():
     ins = json.loads((S / "data" / "insights.json").read_text()) if (S / "data" / "insights.json").exists() else {"items": []}
     as_of = meta.get("as_of")
     if DIST.exists():
-        for sub in ("mutual-funds", "assets", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
+        for sub in ("mutual-funds", "assets", "invest", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
             shutil.rmtree(DIST / sub, ignore_errors=True)
     (DIST / "data").mkdir(parents=True, exist_ok=True)
 
@@ -300,6 +300,8 @@ def main():
     P.calculator_pages(Bm, urls, P.calc_js(app))
     P.insight_pages(Bm, ins, urls, as_of)
     P.legal_pages(Bm, urls)
+    import invest_pages as IP
+    IP.invest_pages(Bm, funds, hold, ins, urls)
     cmp_by = {}
     for (ka, kb), pth in cmp_map.items():
         cmp_by.setdefault(ka, []).append((kb, pth))

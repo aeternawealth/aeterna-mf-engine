@@ -38,6 +38,23 @@ if dropped:
 import re
 # AMC files mark footnotes on security names (e.g. 'HDFC Bank Ltd.£', 'Infosys Ltd.*'): drop trailing marks
 hold = {pk: [[r[0], re.sub(r"[\s£$#*@^~†‡§¥€]+$", "", str(r[1])), *r[2:]] for r in rows] for pk, rows in (src.get("holdings", {}) or {}).items()}
+# some AMC files carry the ISIN but no security name: borrow the name another fund uses for that ISIN
+_bad = lambda n: str(n).strip().lower() in ("nan", "none", "", "-")
+_names = {}
+for rows in hold.values():
+    for r in rows:
+        if r and not _bad(r[1]) and r[0]:
+            _names.setdefault(r[0], r[1])
+_fixed = _left = 0
+for pk, rows in hold.items():
+    for r in rows:
+        if _bad(r[1]):
+            if _names.get(r[0]):
+                r[1] = _names[r[0]]; _fixed += 1
+            else:
+                r[1] = "Unnamed holding (" + str(r[0]) + ")" if r[0] else "Unnamed holding"; _left += 1
+if _fixed or _left:
+    print(f"holdings: {_fixed} security names filled from other funds by ISIN, {_left} left unnamed")
 src["holdings"] = hold
 (out / "holdings.json").write_text(json.dumps(hold, separators=(",", ":")))
 meta = dict(src.get("meta", {})); meta["as_of"] = src["as_of"]; meta["n_funds"] = len(funds)

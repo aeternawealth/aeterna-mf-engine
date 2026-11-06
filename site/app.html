@@ -52,6 +52,7 @@ nav.main{display:flex;gap:4px}
 nav.main a,.ddbtn{padding:8px 12px;border-radius:var(--r);text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px}
 nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.ddbtn:hover{color:var(--teal);background:var(--teal-soft)}
 .dd{position:relative}
+.founders>*{margin:0!important}
 .sol-row{scroll-margin-top:84px}
 .ddbtn{background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .ddbtn::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
@@ -254,7 +255,7 @@ footer.site a{color:var(--ink-2)}
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     <nav class="main" id="nav">
       <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
-        <div class="ddmenu"><a href="#solutions-mf">Mutual funds<small>Our largest practice, from a first SIP up</small></a><a href="#solutions-pms">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="#solutions-aif">AIFs<small>Private equity, credit and long-short funds</small></a><a href="#solutions-bonds">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="#solutions-unlisted">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="#solutions-tax">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="#solutions-review">Portfolio review<small>Everything you hold, in one view</small></a><a href="#solutions">All solutions<small>How the products compare</small></a></div></div>
+        <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual funds<small>Our largest practice, from a first SIP up</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="#solutions">All solutions<small>How the products compare</small></a></div></div>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund data</button>
         <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All categories<small>A page for each category, index and theme</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#insights">Insights<small>Facts from this month's data</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <a href="#tools">Calculators</a><a href="#about">About</a><a href="#contact">Contact</a>
@@ -437,7 +438,8 @@ footer.site a{color:var(--ink-2)}
     <div class="stack" style="gap:8px"><b style="font:600 18px var(--f-display);color:var(--ink)">Aeterna Wealth Private Limited</b>
       <span>AMFI-registered Mutual Fund Distributor · ARN-317889</span>
       <span>B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029</span>
-      <span>+91 85959 93600 · contact@aeternawealth.com</span></div>
+      <span>+91 85959 93600 · contact@aeternawealth.com</span>
+      <span><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a> · <a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a> · <a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></span></div>
     <div class="stack" style="gap:6px"><b style="color:var(--ink)">Solutions</b><a href="#solutions">All solutions</a><a href="#ratings">Mutual fund ratings</a><a href="#compare">Compare and overlap</a><a href="#method">Method and backtest</a></div>
     <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/calculators/">Calculators</a></div>
     <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="#about">About</a><a href="#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a><a href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>
@@ -526,6 +528,7 @@ const SOL=[
  {id:'ins',t:'Insurance',tag:'Coming soon',short:'Term and health cover, chosen for protection, not investment.',
   body:'Term life and health cover sized to what your family would need, kept separate from investing.',
   who:'Coming soon.'}];
+const SLUG={"mf": "mutual-funds", "pms": "pms", "aif": "aif", "bonds": "bonds", "unlisted": "unlisted-shares", "tax": "tax-planning", "review": "portfolio-review"};
 function solutionsPage(){
   $('#solPage').innerHTML=`<div class="eyebrow">Solutions</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Everything you invest in, with one team</h1>
   <p class="lede" style="margin-top:12px">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in the products that fit and keep the whole picture in view.</p>
@@ -542,7 +545,7 @@ function solutionsPage(){
   <p class="muted" style="font-size:12.5px;margin-top:8px">Tax rates as per the Finance (No. 2) Act, 2024; surcharge and cess extra. Try the <a href="#tools" data-tool="tax">capital-gains calculator</a>.</p>
   <div class="stack" style="gap:18px;margin-top:40px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
     <p style="margin-top:10px;max-width:70ch">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
-    <div class="row" style="align-self:center;justify-content:flex-end">${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
+    <div class="row" style="align-self:center;justify-content:flex-end">${SLUG[s.id]?`<a class="btn" href="/invest/${SLUG[s.id]}/">Read more</a>`:''}${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
 
   <h2 style="font-size:26px;margin-top:40px">Common questions</h2>
   <div style="margin-top:8px">${[
@@ -1066,8 +1069,13 @@ function staticPages(){
   $('#aboutPage').innerHTML=`<div class="eyebrow">About</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">A wealth partner that shows its working</h1>
   <p class="lede" style="margin-top:14px">Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889), headquartered in New Delhi and working with families across India. We help families manage their wealth across mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and unlisted shares, with tax-aware planning throughout. Insurance is coming soon.</p>
   <h3>Who we are</h3><p>Aeterna was co-founded by <b>CA Harshit Aggarwal</b>, a Chartered Accountant, and <b>Adv. Shantnu Singh Sangwan</b>, a practising advocate. That mix shapes how we work: tax and paperwork are part of investing, not an afterthought.</p>
+  <div class="grid g2 founders" style="margin-top:14px;align-items:stretch">
+    <div class="card stack" style="gap:4px"><b style="font:600 19px var(--f-display)">CA Harshit Aggarwal</b><span class="muted">Co-founder · Chartered Accountant</span><a href="https://www.linkedin.com/in/harshit-aggarwal/" target="_blank" rel="noopener">LinkedIn profile →</a></div>
+    <div class="card stack" style="gap:4px"><b style="font:600 19px var(--f-display)">Adv. Shantnu Singh Sangwan</b><span class="muted">Co-founder · Advocate</span><a href="https://www.linkedin.com/in/shantnusangwan/" target="_blank" rel="noopener">LinkedIn profile →</a></div>
+  </div>
   <h3>How we work</h3><p>We build the fund data on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p>
   <h3>How we are paid</h3><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p>
+  <h3>Follow us</h3><p><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a> · <a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a> · <a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></p>
   <div class="row" style="margin-top:22px"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div>`;
   $('#contactPage').innerHTML=`<div class="eyebrow">Contact</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Talk to us</h1>
   <p class="lede" style="margin-top:12px">Tell us a little about what you're planning. We'll reply within one working day, usually on WhatsApp.</p>
@@ -1082,7 +1090,8 @@ function staticPages(){
       <button class="btn primary" type="submit" style="justify-content:center">Continue on WhatsApp</button>
       <p class="muted" style="font-size:12.5px">Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site. Prefer email? Write to contact@aeternawealth.com.</p><p id="cout" hidden></p></form>
     <div class="stack">${[['Phone and WhatsApp','+91 85959 93600'],['Email','contact@aeternawealth.com'],['Office','B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029']].map(([k,v])=>`<div class="card"><div class="muted" style="font-size:13px">${k}</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">${v}</b><button class="copy" type="button" data-v="${v}">Copy</button></div></div>`).join('')}
-      <div class="card"><div class="muted" style="font-size:13px">Already a client?</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">See your holdings and statements</b><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div></div>
+      <div class="card"><div class="muted" style="font-size:13px">Already a client?</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">See your holdings and statements</b><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div>
+      <div class="card"><div class="muted" style="font-size:13px">Follow us</div><div class="row" style="gap:16px;margin-top:6px"><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a><a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a><a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></div></div></div>
   </div>`;
   $('#cform').onsubmit=e=>{e.preventDefault();const ints=$$('#ci input:checked').map(i=>i.value);
     const t=[`Hello Aeterna, I'm ${$('#cn').value.trim()}.`,`Planning for: ${$('#cg').value}.`,`Amount: ${$('#ca').value}. Time frame: ${$('#ch').value}.`,ints.length?`Interested in: ${ints.join(', ')}.`:'',$('#cp').value.trim()?`My number: ${$('#cp').value.trim()}.`:'',$('#cm').value.trim()].filter(Boolean).join('\n');

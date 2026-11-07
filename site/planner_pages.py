@@ -273,7 +273,7 @@ function compute(){const res=PM.plan(S,MKT,{nConf:900});const sim=PM.simulate(re
   return {res,sim,m90,alt,ages}}
 function dashboard(){
   $('#plBody').innerHTML=`<div class="card"><p>Running your plan through 19 years of real market months…</p></div>`;
-  setTimeout(()=>{const {res,sim,m90,alt,ages}=compute();$('#plBody').innerHTML=dashHtml(res,sim,m90,alt,ages);bindDash(res)},20);
+  setTimeout(()=>{const {res,sim,m90,alt,ages}=compute();SW.amount=null;$('#plBody').innerHTML=dashHtml(res,sim,m90,alt,ages);bindDash(res);bindSwp(res)},20);
 }
 function flagsOf(m){
   const s=m.s, f=[], tot=m.total, sh=k=>tot?m.cur[k]/tot:0;
@@ -339,6 +339,15 @@ function retireHtml(m,sim,ages){
   <p style="font-size:14.5px;margin-top:6px;max-width:80ch">Planning to an older age costs more each month now, and is the surest protection against outliving your money.</p>
   <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Plan for the money to last</th><th>Corpus needed at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${ageRows}</tbody></table></div>
 
+  <h3 style="margin-top:22px">Your SWP: how the money is withdrawn, and how long it lasts</h3>
+  <div class="card pl-noprint" id="swpBox" style="margin-top:10px">
+   <div class="pl-ctrl" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+    <label class="pl-f"><span>Monthly withdrawal</span><div class="seg" role="group" aria-label="Withdrawal type"><button type="button" data-sw="inflation" aria-pressed="true">Rises with prices</button><button type="button" data-sw="fixed" aria-pressed="false">Fixed rupees</button></div></label>
+    <label class="pl-f"><span id="swAmtL">Amount, in today's money</span><input type="number" id="swAmt" min="0" step="5000" value="${Math.round(R.monthlyToday)}"><small id="swAmtH"></small></label>
+    <label class="pl-f"><span>Show amounts in</span><select id="swView"><option value="real">Today's money</option><option value="nom">Actual rupees</option></select></label>
+    <label class="pl-f"><span>Guardrail</span><select id="swGuard"><option value="0">Off</option><option value="1">Skip the increase after a losing year</option></select></label></div>
+   <div id="swOut" style="margin-top:14px"></div></div>
+
   <h3 style="margin-top:22px">At ${s.retireAge}: turning the corpus into a monthly income</h3>
   <div class="grid g3" style="margin-top:10px">
    <div class="card"><div class="eyebrow">Bucket 1 · next 2 years</div><div class="pl-k" style="font-size:22px;margin-top:6px">${inrS(b1)}</div><p style="font-size:14px;margin-top:6px">Liquid and arbitrage funds. A monthly SWP of ${inr(R.monthlyThen)} is paid from here, so a market fall never forces you to sell.</p></div>
@@ -353,6 +362,44 @@ function retireHtml(m,sim,ages){
    <li><b>A lifetime annuity for the essentials.</b><p>At ${s.retireAge}, part of the corpus can buy an annuity from an insurer that pays a fixed amount for life, however long you live: roughly ₹${annuity.toLocaleString('en-IN')} a month for every ₹1 crore at about 7% a year today. It does not rise with prices, so it suits the essentials${R.other>0?' alongside your rent':''}, not the whole lifestyle. Rates vary by insurer and age; check current quotes before deciding.</p></li>
    ${R.other>0?`<li><b>Keep the property and its rent.</b><p>The plan counts its ${inr(R.other)} a month (today's money) as income and never assumes you sell it. Raise the rent in line with the market to keep its value rising with prices.</p></li>`:''}
    <li><b>Keep health cover going after you stop working.</b><p>Medical costs are the most common reason retirement money runs out early. Keep a family floater plus a super top-up into your 80s.</p></li></ol>`;
+}
+let SW={mode:'inflation',amount:null,view:'real',guard:false};
+function swpRender(m){
+  const box=$('#swOut');if(!box||!m.retire)return;
+  const s=m.s, infl=s.infl/100, yrsTo=m.retire.y;
+  if(SW.amount==null)SW.amount=Math.round(m.retire.monthlyToday);
+  const w=PM.swp(m,MKT,{mode:SW.mode,amount:SW.amount,guard:SW.guard,n:500});if(!w)return;
+  const real=SW.view==='real', k=real?'r':'', Y=w.years, W=760,H=300,L=64,Rp=16,T=16,B=34;
+  const maxV=Math.max(...Y.map(y=>y['p90'+k]))*1.05||1, x=i=>L+(W-L-Rp)*i/(Y.length-1), y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
+  const pts=q=>Y.map((r,i)=>`${x(i)},${y(r[q+k])}`);
+  const band=pts('p90').concat(pts('p10').reverse()).join(' ');
+  const ticks=[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-Rp}" y1="${y(maxV*f)}" y2="${y(maxV*f)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(maxV*f)+4}" text-anchor="end">${inrS(maxV*f).replace('₹','')}</text>`).join('');
+  const xt=Y.map((r,i)=>r.age%5===0?`<text x="${x(i)}" y="${H-14}" text-anchor="middle">${r.age}</text>`:'').join('')+`<text x="${(L+W)/2}" y="${H-1}" text-anchor="middle">Your age</text>`;
+  const endMark=(a,lab,col)=>isFinite(a)&&a<100?`<line x1="${x(a-s.retireAge)}" x2="${x(a-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="${col}" stroke-dasharray="4 3"/><text x="${x(a-s.retireAge)+(a>90?-4:4)}" y="${T+12}" text-anchor="${a>90?'end':'start'}" style="fill:${col}">${lab} ${Math.floor(a)}</text>`:'';
+  const life=`<line x1="${x(s.lifeExp-s.retireAge)}" x2="${x(s.lifeExp-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="var(--teal)" stroke-width=".8"/><text x="${x(s.lifeExp-s.retireAge)+4}" y="${H-B-6}" style="fill:var(--teal)">plan age ${s.lifeExp}</text>`;
+  const chart=`<svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Corpus during retirement">${ticks}<polygon points="${band}" fill="var(--c-band)"/><polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${life}${endMark(w.ends.p10,'Runs out in weak markets at','var(--c-bad)')}${endMark(w.ends.p50,'Runs out in typical markets at','var(--brass)')}${xt}</svg>
+   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>Corpus: 8 in 10 outcomes</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical</span><span class="muted">${real?"In today's money":'In actual rupees'}</span></div>`;
+  const A=a=>isFinite(a)?Math.floor(a):'100+';
+  const first=w.wd[0], at85=w.wd.find(r=>r.age===85)||w.wd[w.wd.length-1];
+  const sum=SW.mode==='fixed'
+    ?`<b>${inr(first.monthly)} every month, never increased.</b> At ${s.retireAge} that buys what ${inr(first.real)} buys today; by 85 it buys only what ${inr(at85.real)} buys today. The money ${w.to[100]>.9?'very likely never runs out':w.ends.p10<100?`runs out at about ${A(w.ends.p10)} in weak markets`:'lasts past 100'}, but your lifestyle shrinks with every year of inflation.`
+    :`<b>${inr(SW.amount)} a month in today's money: ${inr(first.monthly)} a month at ${s.retireAge}, ${inr(at85.monthly)} at 85</b>, rising ${s.infl}% a year so your lifestyle stays the same. The money lasts until about <b>${A(w.ends.p10)} in weak markets</b> (1 in 10), ${A(w.ends.p25)} in 1 market in 4, and ${A(w.ends.p50)} in typical markets.`;
+  const lasts=`<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Chance the money lasts until</th><th>85</th><th>90</th><th>95</th><th>100</th></tr></thead><tbody><tr><td class="l">This SWP</td>${[85,90,95,100].map(a=>`<td class="num">${pc(w.to[a])}</td>`).join('')}</tr></tbody></table></div>`;
+  const rows=w.wd.filter(r=>(r.age-s.retireAge)%5===0||r.age===85||r.age===90).filter((r,i,a)=>a.findIndex(z=>z.age===r.age)===i).map(r=>{const yy=Y[r.age-s.retireAge]||{};return `<tr><td class="l">${r.age}</td><td class="num">${inr(r.monthly)}</td><td class="num">${inr(r.real)}</td><td class="num">${inrS(real?yy.p50r:yy.p50)}</td><td class="num">${(real?yy.p10r:yy.p10)>0?inrS(real?yy.p10r:yy.p10):'<span style="color:var(--c-bad)">run out</span>'}</td></tr>`}).join('');
+  const tbl=`<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Age</th><th>SWP a month, actual ₹</th><th>Worth in today's money</th><th>Corpus left, typical</th><th>Corpus left, weak markets</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <p class="muted" style="font-size:12.5px;margin-top:6px">Corpus columns in ${real?"today's money":'actual rupees'}. The corpus starts from what your plan builds by ${s.retireAge} (typical ${inrS(real?Y[0].p50r:Y[0].p50)}), invested ${pc(PM.RMIX(m.E).eq)} in equity and the rest mainly in debt, through 500 sequences of real market months since 2007. The SWP is paid monthly from bucket 1.</p>`;
+  box.innerHTML=`<p style="font-size:14.5px">${sum}</p>${chart}${lasts}${tbl}`;
+  $('#swAmtL').textContent=SW.mode==='fixed'?'Amount, actual rupees every month':"Amount, in today's money";
+  $('#swAmtH').textContent=SW.mode==='fixed'?`At ${s.retireAge}, worth ${inr(first.real)} today`:`${inr(first.monthly)} a month at ${s.retireAge}`;
+}
+function bindSwp(m){
+  if(!$('#swpBox'))return;
+  $$('#swpBox [data-sw]').forEach(b=>b.onclick=()=>{const was=SW.mode;SW.mode=b.dataset.sw;$$('#swpBox [data-sw]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    if(was!==SW.mode){const f=Math.pow(1+m.s.infl/100,m.retire.y);SW.amount=SW.mode==='fixed'?Math.round(m.retire.monthlyToday/5000)*5000:Math.round(m.retire.monthlyToday);$('#swAmt').value=SW.amount}swpRender(m)});
+  let t=null;$('#swAmt').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{SW.amount=Math.max(0,+e.target.value||0);swpRender(m)},250)};
+  $('#swView').onchange=e=>{SW.view=e.target.value;swpRender(m)};
+  $('#swGuard').onchange=e=>{SW.guard=e.target.value==='1';swpRender(m)};
+  swpRender(m);
 }
 function dashHtml(m,sim,m90,alt,ages){
   const s=m.s, flags=flagsOf(m), tot=m.total, tt=m.tgtTotal||1, hasCur=tot>0&&s.investing!=='no';
@@ -414,7 +461,7 @@ function dashHtml(m,sim,m90,alt,ages){
    <div class="tablewrap"><table><thead><tr><th class="l">Where it goes, by fund category</th>${two?`<th>Months 1–${m.phaseMonths}</th><th>From month ${m.phaseMonths+1}</th>`:'<th>A month</th>'}</tr></thead><tbody>${catRows||'<tr><td class="l" colspan="3">Nothing to invest yet.</td></tr>'}<tr><td class="l"><b>Total</b></td>${two?`<td class="num"><b>${inr(m.invest1)}</b></td>`:''}<td class="num"><b>${inr(m.invest)}</b></td></tr></tbody></table></div></div>
 
   <h2>How your money could grow</h2>
-  <p class="muted" style="font-size:13.5px;margin-top:6px;max-width:80ch">All your investments together, with this plan, across 500 sequences of real market months since 2007 (including 2008 and 2020). In today's money, so ₹1 lakh on the chart buys what ₹1 lakh buys now. The line drops when a goal is paid for; after retirement the corpus pays your monthly spending until ${s.lifeExp}.</p>
+  <p class="muted" style="font-size:13.5px;margin-top:6px;max-width:80ch">All your investments together, with this plan, across 500 sequences of real market months since 2007 (including 2008 and 2020). In today's money, so ₹1 lakh on the chart buys what ₹1 lakh buys now. The line drops when a goal is paid for; after retirement it includes any extra you invest beyond your goals. The SWP simulator above shows the retirement corpus on its own, withdrawal by withdrawal, to age 100.</p>
   <div class="card" style="margin-top:12px">${fan(sim,m)}</div>
 
   <h2>Roadmap</h2><div class="pl-tl">

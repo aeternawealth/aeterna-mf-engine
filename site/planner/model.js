@@ -328,6 +328,43 @@
     return Infinity;
   }
 
+  // SWP from the retirement corpus, path by path: save until the retirement date as planned, then withdraw monthly until
+  // age 100. mode 'inflation': amount is in today's money and rises with prices every year; mode 'fixed': amount is
+  // the same rupees every month from retirement. Returns yearly percentiles (actual rupees and today's money).
+  function swp(res, mkt, opts = {}) {
+    const s = res.s, g = res.G.find(x => x.ret); if (!g) return null;
+    const n = opts.n || 500, infl = s.infl / 100, step = s.stepup / 100, top = 100, acc = Math.round(g.y * 12), yrs = top - s.retireAge;
+    const Ps = paths(mkt, acc + yrs * 12, n, (opts.seed || 31337)), rm = RMIX(res.E), mx = mixSeries(acc, res.p, mkt), xg = s.epfGrowth / 100;
+    const mode = opts.mode || 'inflation', amt = opts.amount > 0 ? opts.amount : retireMonthly(s), guard = !!opts.guard;
+    const vals = Array.from({ length: yrs + 1 }, () => []), ends = [], wdYear = [];
+    for (const P of Ps) {
+      let v = g.have, W = 0, yr = 1, ended = Infinity;
+      for (let t = 0; t < acc; t++) {
+        const left = (acc - t) / 12, m = mx[t], rd = left < 2 ? P.l[t] : P.d[t], up = Math.pow(1 + step, Math.floor(t / 12));
+        v = v * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * rd) + (t < g.ph ? g.f1 : g.f2) * up + s.epfMonthly * Math.pow(1 + xg, Math.floor(t / 12));
+      }
+      vals[0].push(v);
+      W = mode === 'fixed' ? amt : amt * Math.pow(1 + infl, acc / 12);
+      for (let k = 0; k < yrs * 12; k++) {
+        const t = acc + k;
+        if (k > 0 && k % 12 === 0) { if (mode !== 'fixed' && !(guard && yr < 1)) W *= 1 + infl; yr = 1; }
+        const g1 = 1 + rm.eq * P.e[t] + rm.gold * P.g[t] + rm.debt * P.d[t]; yr *= g1;
+        if (v > 0) { v = v * g1 - W; if (v <= 0) { v = 0; if (ended === Infinity) ended = s.retireAge + (k + 1) / 12; } }
+        if ((k + 1) % 12 === 0) vals[(k + 1) / 12].push(v);
+      }
+      ends.push(ended);
+    }
+    // the withdrawal schedule is the same on every path (it does not depend on returns unless the guardrail is on)
+    let W = mode === 'fixed' ? amt : amt * Math.pow(1 + infl, acc / 12);
+    for (let y = 0; y < yrs; y++) { wdYear.push({ age: s.retireAge + y, monthly: W, real: W / Math.pow(1 + infl, (acc / 12) + y) }); if (mode !== 'fixed') W *= 1 + infl; }
+    ends.sort((a, b) => a - b);
+    const q = (a, x) => a[Math.floor(x * (a.length - 1))];
+    const years = vals.map((a, y) => { a.sort((x1, x2) => x1 - x2); const d = Math.pow(1 + infl, acc / 12 + y);
+      return { age: s.retireAge + y, p10: q(a, .1), p50: q(a, .5), p90: q(a, .9), p10r: q(a, .1) / d, p50r: q(a, .5) / d, p90r: q(a, .9) / d }; });
+    const to = x => ends.filter(a => a >= x).length / n;
+    return { mode, amount: amt, years, wd: wdYear, ends: { p10: q(ends, .1), p25: q(ends, .25), p50: q(ends, .5) }, to: { 85: to(85), 90: to(90), 95: to(95), 100: to(100) }, n };
+  }
+
   function simulate(res, mkt, opts = {}) {
     const n = opts.n || 600, seed = opts.seed || 20261107, step = res.s.stepup / 100;
     const maxY = Math.max(15, ...res.G.map(g => g.y)), months = Math.round(Math.min(40, maxY) * 12);
@@ -413,6 +450,6 @@
     return hi;
   }
 
-  const api = { retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
+  const api = { swp, retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PlannerModel = api;
 })(typeof window !== 'undefined' ? window : globalThis);

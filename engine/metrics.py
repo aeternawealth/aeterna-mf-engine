@@ -8,6 +8,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from . import config as C
+
 RF = 0.065          # risk-free (approx. 91-day T-bill / overnight), annual
 ROLL_LOOKBACK = 3   # years of rolling-window end dates used for every fund
 ROLL_MIN_COVERAGE = 0.9
@@ -121,6 +123,43 @@ def fund_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp) -> dict:
         m["max_drawdown_5y"] = float((n5 / n5.cummax() - 1).min())
         b5 = _cut(bench, as_of, 5)
         m["bench_max_drawdown_5y"] = float((b5 / b5.cummax() - 1).min())
+    return m
+
+
+def arbitrage_metrics(nav: pd.Series, bench: pd.Series, liquid: pd.Series | None, as_of: pd.Timestamp) -> dict:
+    """Arbitrage funds: return over the arbitrage index (rolling 1Y and 3Y), steadiness, and the comparison
+    investors actually make: against the median liquid fund."""
+    nav, bench = _cut(nav, as_of), _cut(bench, as_of)
+    m = {}
+    if len(nav) < 30 or len(bench) < 30:
+        return m
+    m["age_years"] = (nav.index[-1] - nav.index[0]).days / 365.25
+    m["nav_date"] = nav.index[-1]
+    for y in (1, 3, 5):
+        m[f"cagr_{y}y"] = _cagr(nav, y)
+        m[f"bench_cagr_{y}y"] = _cagr(bench, y)
+        m[f"excess_cagr_{y}y"] = m[f"cagr_{y}y"] - m[f"bench_cagr_{y}y"]
+    j = pd.concat([_weekly(nav), _weekly(bench)], axis=1, keys=["f", "b"]).dropna()
+    need = int(W * ROLL_LOOKBACK * ROLL_MIN_COVERAGE)
+    if len(j) > W + 10:
+        _, ex1 = _roll(j.f, j.b, 1, ROLL_LOOKBACK, as_of)
+        if len(ex1) >= need:
+            m["roll1y_hit_rate"] = float((ex1 > 0).mean())
+            m["roll1y_excess_median"] = float(ex1.median())
+    n3 = _cut(nav, as_of, 3)
+    if len(n3) > 1 and (n3.index[-1] - n3.index[0]).days > 365 * 2.9:
+        mo = n3.resample("ME").last().pct_change().dropna()
+        if len(mo) >= 30:
+            m["vol_3y"] = float(mo.std() * np.sqrt(12))
+            m["neg_months_3y"] = float((mo < 0).mean())
+        m["max_drawdown_3y"] = float((n3 / n3.cummax() - 1).min())
+    if liquid is not None:
+        liq = _cut(liquid, as_of)
+        for y in (1, 3):
+            lc = _cagr(liq, y)
+            m[f"liq_cagr_{y}y"] = lc
+            m[f"excess_vs_liquid_{y}y"] = m[f"cagr_{y}y"] - lc
+            m[f"excess_vs_liquid_post_tax_{y}y"] = m[f"cagr_{y}y"] * (1 - C.TAX_EQUITY_LTCG) - lc * (1 - C.TAX_SLAB_TOP)
     return m
 
 

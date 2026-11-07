@@ -36,6 +36,8 @@ def normalise_category(raw: str) -> str | None:
     low = raw.lower()
     if any(k in low for k in C.INDEX_CATEGORY_KEYS):
         return "Index Fund"
+    if "hybrid scheme" in low:
+        return next((cat for key, cat in C.HYBRID_RULES if key in low), None)
     if "equity scheme" not in low:
         return None
     for key, cat in C.CATEGORY_RULES:
@@ -73,7 +75,7 @@ def parse_navall(text: str) -> pd.DataFrame:
 
 
 def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
-    """Open-ended equity + equity index funds, Growth option, Direct & Regular."""
+    """Open-ended equity, equity index and arbitrage funds, Growth option, Direct & Regular."""
     u = navall[navall["category"].notna()].copy()
     u = u[u["raw_category"].str.startswith("Open Ended")]
     is_growth = u["option"].str.contains("growth", case=False) | (
@@ -85,6 +87,7 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
         case=False, regex=True)
     u = u[~((u["category"] == "Index Fund") & debt_like)]
     u["plan_type"] = u["plan"].str.contains("direct", case=False).map({True: "Direct", False: "Regular"})
+    u["asset_class"] = u["category"].map(C.ASSET_CLASS).fillna("Equity")
     # pairing key so Direct and Regular of the same scheme sit side by side
     base = (u["name"].str.replace(r"(?i)\b(direct|regular)\s*plan\b", "", regex=True)
             .str.replace(r"(?i)\bgrowth( option| plan)?\b", "", regex=True)
@@ -93,6 +96,35 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     # some schemes list two growth lines per plan (e.g. legacy + current); keep the oldest code
     u = u.sort_values("code").drop_duplicates(["pair_key", "plan_type"], keep="first")
     return u.reset_index(drop=True)
+
+
+def liquid_universe(navall: pd.DataFrame) -> pd.DataFrame:
+    """Open-ended liquid funds, Growth option, Direct & Regular: the yardstick for arbitrage funds."""
+    u = navall[navall["raw_category"].fillna("").str.lower().str.contains(C.LIQUID_CATEGORY_KEY)
+               & navall["raw_category"].fillna("").str.startswith("Open Ended")].copy()
+    growth = u["option"].str.contains("growth", case=False) & ~u["option"].str.contains("idcw|dividend|bonus", case=False)
+    u = u[growth & ~u["name"].str.contains(r"\bETF\b|BeES|segregated|unclaimed|institutional|retail", case=False, regex=True)]
+    u = u.assign(plan_type=u["plan"].str.contains("direct", case=False).map({True: "Direct", False: "Regular"}))
+    return u.reset_index(drop=True)
+
+
+def liquid_yardstick(navs: dict, liq: pd.DataFrame, as_of=None) -> dict:
+    """Median liquid fund, per plan type: cumulated median daily return of every liquid fund with a live NAV."""
+    out = {}
+    for plan, g in liq.groupby("plan_type"):
+        rets = []
+        for c in g["code"]:
+            d = navs.get(int(c))
+            if d is None or len(d) < 250:
+                continue
+            s = d.set_index("date")["nav"]
+            if as_of is not None and (pd.Timestamp(as_of) - s.index[-1]).days > 10:
+                continue   # stale: merged or wound up
+            rets.append(s.pct_change())
+        if len(rets) >= 5:
+            med = pd.concat(rets, axis=1).median(axis=1, skipna=True).fillna(0)
+            out[plan] = (1 + med).cumprod()
+    return out
 
 
 def fetch_navall(s=None) -> str:

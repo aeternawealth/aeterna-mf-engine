@@ -36,11 +36,15 @@ def fetch_ter(universe: pd.DataFrame, log=print):
     x.columns = [str(c).strip() for c in x.columns]
     reg = next(c for c in x.columns if c.startswith("Regular") and "Total TER" in c)
     dirc = next(c for c in x.columns if c.startswith("Direct") and "Total TER" in c)
+    # SEBI's 2026 format splits Total TER into the fund's fee (Base Expense Ratio) + brokerage + transaction cost
+    # + statutory levies. For arbitrage funds the levies (mostly STT on their trades) dwarf the fee.
+    reg_b = next((c for c in x.columns if c.startswith("Regular") and "Base Expense" in c), None)
+    dir_b = next((c for c in x.columns if c.startswith("Direct") and "Base Expense" in c), None)
     x["TER Date"] = pd.to_datetime(x["TER Date"], errors="coerce")
     x = x.dropna(subset=[reg, dirc], how="all").sort_values("TER Date").groupby("Scheme Name").tail(1)
     x["k"] = x["Scheme Name"].map(_nm)
     x["ter_date"] = x["TER Date"].dt.strftime("%Y-%m-%d")
-    ter = x.set_index("k")[[reg, dirc, "ter_date"]]
+    ter = x.set_index("k")[[reg, dirc, "ter_date"] + [c for c in (reg_b, dir_b) if c]]
     ter = ter[~ter.index.duplicated(keep="last")]
     u = universe.copy()
     u["k"] = u["name"].map(_nm)
@@ -54,8 +58,12 @@ def fetch_ter(universe: pd.DataFrame, log=print):
         return ter.at[row.k2, reg if row.plan_type == "Regular" else dirc]
     u["ter"] = pd.to_numeric(u.apply(pick, axis=1), errors="coerce")
     u.loc[u["ter"] > 5, "ter"] = None   # data-entry errors
+    if reg_b and dir_b:
+        u["ter_base"] = pd.to_numeric(u.apply(lambda r: ter.at[r.k2, reg_b if r.plan_type == "Regular" else dir_b]
+                                              if isinstance(r.k2, str) else None, axis=1), errors="coerce")
+        u.loc[u["ter_base"] > u["ter"], "ter_base"] = None
     u["ter_date"] = u["k2"].map(lambda k: ter.at[k, "ter_date"] if isinstance(k, str) else None)
-    out = u.dropna(subset=["ter"])[["code", "ter", "ter_date"]]
+    out = u.dropna(subset=["ter"])[["code", "ter", "ter_date"] + (["ter_base"] if "ter_base" in u else [])]
     C.MANUAL.mkdir(parents=True, exist_ok=True)
     out.to_csv(C.MANUAL / "ter.csv", index=False)
     log(f"  TER: {len(out)}/{len(u)} plans matched")
@@ -114,7 +122,7 @@ def fetch_aum_qavg(universe: pd.DataFrame, log=print, navall: pd.DataFrame | Non
 # AMFI fund-performance tool (run for AMFI by CRISIL): scheme-level daily AUM, the figure fund factsheets,
 # Value Research and Groww quote. One call per SEBI sub-category covers every fund house.
 _FP = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/"
-_FP_SUBS = ((1, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 44, 45)), (5, (38,)))   # equity sub-categories; index funds & ETFs
+_FP_SUBS = ((1, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 44, 45)), (3, (33,)), (5, (38,)))   # equity; hybrid: arbitrage; index funds & ETFs
 
 
 def _aum_key(s: str) -> str:

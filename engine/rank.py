@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from . import config as C
-from .metrics import fund_metrics, horizon_metrics, index_metrics
+from .metrics import arbitrage_metrics, fund_metrics, horizon_metrics, index_metrics
 from .protocols import assign_tiers, score_group
 
 
@@ -68,12 +68,19 @@ def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
               for t, n, a in zip(tracked, u.loc[ix, "name"], u.loc[ix, "amc"])]
     u.loc[ix, "benchmark"] = tracked
     u.loc[ix, "peer_group"] = ["Index: " + l for l in labels]
+    # arbitrage: the Nifty 50 Arbitrage index if niftyindices lists it (name matched loosely), else a peer proxy
+    ar = u["category"] == "Arbitrage"
+    if ar.any():
+        arb = next((c for c in tri.columns if _key(c) == _key(C.CATEGORY_BENCHMARK["Arbitrage"])), None) or \
+            next((c for c in tri.columns if "arbitrage" in c.lower()), None)
+        u.loc[ar, "benchmark"] = arb
     return u
 
 
 # ------------------------------------------------------------- metrics
-def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Timestamp, log=print):
+def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Timestamp, log=print, liquid=None):
     rows = []
+    liquid = liquid or {}
     # proxy benchmark for index groups without a Nifty TRI: median daily return of peers
     proxies = {}
     for pg, g in u[(u.category == "Index Fund") & u.benchmark.isna()].groupby("peer_group"):
@@ -81,6 +88,11 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
         if len(series) >= 2:
             med = pd.concat(series, axis=1).median(axis=1).fillna(0)
             proxies[pg] = (1 + med).cumprod()
+    arb = u[(u.category == "Arbitrage") & u.benchmark.isna()]
+    if len(arb):   # no arbitrage TRI: median arbitrage fund (Regular and Direct together) as the index
+        series = [navs[c].set_index("date")["nav"].pct_change() for c in arb.code if c in navs]
+        if len(series) >= 2:
+            proxies["Arbitrage"] = (1 + pd.concat(series, axis=1).median(axis=1).fillna(0)).cumprod()
     for n, r in enumerate(u.itertuples(index=False), 1):
         d = navs.get(r.code)
         if d is None or d.empty:
@@ -99,6 +111,16 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
             m["bench_type"] = btype
             if bser is not None:
                 m.update(horizon_metrics(nav, bser, as_of))
+        elif r.category == "Arbitrage":
+            if isinstance(r.benchmark, str) and r.benchmark in tri:
+                bser, btype = tri[r.benchmark].dropna(), "TRI"
+            elif "Arbitrage" in proxies:
+                bser, btype = proxies["Arbitrage"], "peer-median proxy"
+            else:
+                continue
+            m = arbitrage_metrics(nav, bser, liquid.get(r.plan_type), as_of)
+            m["bench_type"] = btype
+            m.update(horizon_metrics(nav, bser, as_of))
         else:
             bname = r.benchmark if isinstance(r.benchmark, str) and r.benchmark in tri else None
             if bname is None:
@@ -145,19 +167,24 @@ def score_horizons(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------- full ranking
-def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, holdings=None, log=print):
+def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, holdings=None, log=print, liquid=None):
     as_of = pd.Timestamp(as_of) if as_of is not None else tri.index.max()
     u = assign_peers(u, tri)
-    met = compute_metrics(u, navs, tri, as_of, log)
+    met = compute_metrics(u, navs, tri, as_of, log, liquid=liquid)
     df = u.drop(columns=["nav_date", "nav"], errors="ignore").merge(met, on="code", how="inner")
     if ter is not None:
-        df = df.merge(ter[[c for c in ("code", "ter", "ter_date") if c in ter.columns]], on="code", how="left")
+        df = df.merge(ter[[c for c in ("code", "ter", "ter_date", "ter_base") if c in ter.columns]], on="code", how="left")
     if aum is not None:
         key = "code" if "code" in aum.columns else "pair_key"
         df = df.merge(aum[[key, "aum_cr"] + (["aum_asof"] if "aum_asof" in aum.columns else [])], on=key, how="left")
         df["aum_capacity_penalty"] = df["aum_cr"]
+        df["aum_size"] = df["aum_cr"].clip(upper=C.ARB_AUM_CAP)
     if holdings is not None and len(holdings):
         df = df.merge(holdings, on="pair_key", how="left")
+        # arbitrage funds hold stocks hedged with futures: the stock list (and active share, market-cap mix,
+        # mandate checks) says nothing about their risk, so it is not used or shown
+        hc = [c for c in holdings.columns if c != "pair_key" and c in df.columns]
+        df.loc[df["category"].eq("Arbitrage"), hc] = np.nan
 
     # gates
     df["gate"] = "ok"
@@ -197,13 +224,15 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
 
 
 # ------------------------------------------------------------- outputs
-DISPLAY_COLS = ["code", "name", "amc", "category", "peer_group", "plan_type", "benchmark", "bench_type",
+DISPLAY_COLS = ["code", "name", "amc", "asset_class", "category", "peer_group", "plan_type", "benchmark", "bench_type",
                 "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
                 "cagr_1y", "cagr_3y", "cagr_5y", "excess_cagr_3y", "excess_cagr_5y",
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",
                 "max_drawdown_5y", "max_drawdown_3y", "excess_cagr_1y", "capture_ratio_3y", "alpha_3y", "sharpe_3y", "vol_3y", "beta_3y", "tracking_diff_1y", "tracking_err_1y",
-                "tracking_diff_3y", "ter", "aum_cr", "aum_asof",
+                "tracking_diff_3y", "ter", "ter_base", "aum_cr", "aum_asof",
+                "roll1y_excess_median", "neg_months_3y", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
+                "excess_vs_liquid_post_tax_1y", "excess_vs_liquid_post_tax_3y",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",
                 "turnover_1m", "mandate_ok", "mandate_breaches", "holdings_month", "coverage", "pair_key", "protocol", "as_of"]

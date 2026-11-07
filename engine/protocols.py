@@ -83,6 +83,8 @@ def red_flags(g: pd.DataFrame) -> pd.Series:
         # informational only (no tier change): recent deterioration worth watching
         q20 = g["excess_cagr_1y"].quantile(0.2)
         add((g["excess_cagr_1y"] <= q20) & (g["excess_cagr_1y"] < -0.03), "recent_underperformance")
+    if "excess_vs_liquid_post_tax_3y" in g.columns:
+        add(g["excess_vs_liquid_post_tax_3y"] < 0, "trails_liquid_after_tax")
     if "active_share" in g.columns:
         thr = g["category"].map(C.CLOSET_INDEX_BY_CATEGORY).fillna(C.CLOSET_INDEX_ACTIVE_SHARE) if "category" in g else C.CLOSET_INDEX_ACTIVE_SHARE
         no_alpha = g["excess_cagr_3y"].fillna(0) <= 0 if "excess_cagr_3y" in g.columns else True
@@ -102,7 +104,18 @@ def assign_tiers(g: pd.DataFrame) -> pd.DataFrame:
     hard = g["flags"].map(lambda f: any(x in f for x in C.HARD_FLAGS))
     soft = g["flags"].map(lambda f: any(x in f for x in ("deep_drawdown", "mandate_breach", "closet_indexer", "turnaround_unproven")))
     tier[soft & tier.isin(["A+", "A"])] = "B"
-    if C.ABSOLUTE_GUARD and {"excess_cagr_3y", "roll3y_excess_median"} <= set(g.columns):
+    arb = g["category"].eq("Arbitrage").all() if "category" in g else False
+    if C.ABSOLUTE_GUARD and arb and "excess_vs_liquid_post_tax_3y" in g.columns:
+        # arbitrage: the arbitrage index has no costs, so nearly every fund trails it; the real test is the
+        # alternative investors weigh, the median liquid fund, after tax (config.TAX_*). A+ must beat it over
+        # 3Y and 1Y; A over 3Y or 1Y.
+        e3 = g["excess_vs_liquid_post_tax_3y"]
+        e1 = g["excess_vs_liquid_post_tax_1y"] if "excess_vs_liquid_post_tax_1y" in g.columns else pd.Series(np.nan, index=g.index)
+        both, one = (e3 > 0) & (e1.isna() | (e1 > 0)), (e3 > 0) | (e1 > 0)
+        g["guard_capped"] = (tier.eq("A+") & ~both) | (tier.eq("A") & ~one)
+        tier[tier.eq("A+") & ~both] = "A"
+        tier[tier.eq("A") & ~one] = "B"
+    elif C.ABSOLUTE_GUARD and not arb and {"excess_cagr_3y", "roll3y_excess_median"} <= set(g.columns):
         e3, rm = g["excess_cagr_3y"], g["roll3y_excess_median"]
         idx = g["category"].eq("Index Fund") if "category" in g else False
         both = idx | ((e3 > 0) & (rm.isna() | (rm > 0)))

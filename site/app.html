@@ -916,7 +916,7 @@ function ratings(){
     ['3Y vs liquid after tax','excess_vs_liquid_post_tax_3y',f=>spct(f.excess_vs_liquid_post_tax_3y,2),"The same after tax for an investor in the 30% slab holding over a year: liquid gains taxed at 31.2%, arbitrage gains at 13%"],
     ['Fund fee','ter_base',f=>fmtPct2(f.ter_base),'Base expense ratio: the fee the fund house charges'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),"AMFI's total expense ratio: the fee plus brokerage and statutory levies. For arbitrage funds the levies are mostly transaction tax on their trades, already reflected in returns"],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
@@ -924,7 +924,7 @@ function ratings(){
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
@@ -934,13 +934,13 @@ function ratings(){
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']];
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
     'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
     '1Y return':['Return','1Y'],'3Y vs liquid':['vs liquid','3Y'],'3Y vs liquid after tax':['vs liquid','3Y, after tax'],'Fund fee':['Fund fee','base TER'],
-    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled.'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
+    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
   const hd=c=>HD[c[0]]||[c[0],''];
   const lbl=c=>{const [a,b]=hd(c);return b?`${a} (${b})`:a};
   const order={'A+':0,'A':1,'B':2,'C':3};

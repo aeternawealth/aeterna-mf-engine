@@ -55,6 +55,7 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Dividend Yield": "invest at least 65% in dividend-yielding stocks",
     "Sectoral/Thematic": "invest at least 80% in one sector or theme, such as banking, technology or infrastructure",
     "Index Fund": "track an index such as the Nifty 50 as closely and cheaply as possible",
+    "Arbitrage": "invest at least 65% in equities hedged with derivatives, earning the price gap between the cash and futures markets",
 }
 CAT_PITCH = {   # what the category is for, in plain words
     "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
@@ -69,7 +70,17 @@ CAT_PITCH = {   # what the category is for, in plain words
     "Dividend Yield": "Mostly companies that pay high dividends, which has often made them steadier in falls.",
     "Sectoral/Thematic": "One sector or theme, such as banking, pharma or technology. These show the widest spread of results of any category: a theme can lag for years. Most investors keep them to a small slice.",
     "Index Fund": "Funds that follow an index at low cost. Between funds on the same index, the choice comes down to cost and how closely each one tracks it.",
+    "Arbitrage": "A low-risk place to park money for a few months or more. Each stock bought is matched by a futures sale, so returns track short-term interest rates rather than the stock market. Before tax they usually earn a little less than liquid funds; they are taxed as equity, so after tax they often come out ahead for investors in the higher slabs.",
 }
+ASSET_CLASSES = [   # the three master categories, in site order
+    ("Equity", "Funds that own shares: the long-term growth part of a portfolio."),
+    ("Hybrid", "Funds that mix asset classes or hedge their equity. Arbitrage funds first; the other hybrid categories are on the way."),
+    ("Debt", "Funds that lend: liquid, money market, short-term, corporate bond and gilt funds. Coming soon."),
+]
+def asset_class(c):
+    return "Hybrid" if c == "Arbitrage" else "Equity"
+# tax assumptions for the after-tax comparison with liquid funds (same as engine/config.py)
+TAX_SLAB_TOP, TAX_EQUITY_LTCG = 0.312, 0.13
 
 TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
@@ -251,7 +262,7 @@ def footer():
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
- </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
+ </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
 def page(title, desc, path, body, ld=()):
@@ -333,7 +344,7 @@ def main():
     for f in funds:
         by_cat.setdefault(f["category"], []).append(f)
     order = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused",
-             "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund"]
+             "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund", "Arbitrage"]
     cats = [c for c in order if c in by_cat] + sorted(set(by_cat) - set(order))
     urls = [("/", "daily", "1.0"), ("/mutual-funds/", "daily", "0.9")]
 
@@ -362,8 +373,11 @@ def main():
         bench = iname(f.get("benchmark")) or "peer median"
         rated = f.get("tier") not in (None, "", "Unrated")
         r3, e3 = f.get("ret_3Y"), f.get("excess_3Y")
+        arb = f["category"] == "Arbitrage"
         desc_bits = [f"{f['_name']} ({f['plan_type']}, Growth), {f['category'].lower()} fund from {f.get('amc', '')}."]
-        if r3 is not None and e3 is not None:
+        if arb and r3 is not None and f.get("liq_cagr_3y") is not None:
+            desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(f['liq_cagr_3y'])} for the median liquid fund (before tax).")
+        elif r3 is not None and e3 is not None:
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(r3 - e3)} for the {bench} TRI.")
         if rated:
             desc_bits.append(f"Track-record rating {f['tier']} ({int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)}).")
@@ -385,10 +399,34 @@ def main():
                 ("Beta, 3Y", num(f.get("beta_3y"))), ("Sharpe, 3Y", num(f.get("sharpe_3y"))),
                 ("Tracking difference, 1Y", (num(f.get("tracking_diff_1y")) + "%") if f.get("tracking_diff_1y") is not None else "–"),
                 ("Tracking error, 1Y", (num(f.get("tracking_err_1y")) + "%") if f.get("tracking_err_1y") is not None else "–")]
+        if arb:
+            risk = [("Volatility, 3Y (monthly returns)", pct(f.get("vol_3y"), 2)), ("Months with a loss, 3Y", pct(f.get("neg_months_3y"), 0)),
+                    ("Max fall, 3Y", pct(f.get("max_drawdown_3y"), 2)), ("Rolling 1-year return vs index, median", spct(f.get("roll1y_excess_median"), 2)),
+                    ("Rolling 1-year periods ahead of the index", pct(f.get("roll1y_hit_rate"), 0))]
         risk = "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in risk if v not in ("–", "–%"))
         hold_html = ("<div class='kv' style='grid-template-columns:1fr'>" + "".join(f"<div><span>{e(t[1])}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
                      f"<p class='muted' style='font-size:12.5px;margin-top:8px'>Top 10 holdings, {mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio.</p>") if top else \
             "<p class='muted'>Holdings for this scheme are not available yet; its rating uses the track record only.</p>"
+        if arb:
+            hold_html = ("<p class='muted'>An arbitrage fund buys shares and sells the same shares in the futures market, so its stock list "
+                         "says nothing about its risk; we leave it out. What matters is the return it earns over short-term rates, its costs and its size.</p>")
+        liq_html = ""
+        if arb:
+            lrows = ""
+            for y, lab in ((1, "1 year"), (3, "3 years (a year)")):
+                fr, lr = f.get(f"ret_{y}Y"), f.get(f"liq_cagr_{y}y")
+                if fr is None or lr is None:
+                    continue
+                fa, la = fr * (1 - TAX_EQUITY_LTCG), lr * (1 - TAX_SLAB_TOP)
+                lrows += (f"<tr><td class='l'>{lab}</td><td class='num'>{pct(fr, 2)}</td><td class='num'>{pct(lr, 2)}</td><td class='num {'pos' if fr > lr else 'neg'}'>{spct(fr - lr, 2)}</td>"
+                          f"<td class='num'>{pct(fa, 2)}</td><td class='num'>{pct(la, 2)}</td><td class='num {'pos' if fa > la else 'neg'}'>{spct(fa - la, 2)}</td></tr>")
+            if lrows:
+                liq_html = ("<h2 style='margin-top:36px;font-size:26px'>Against liquid funds</h2>"
+                            "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Period</th><th>Fund</th><th>Median liquid fund</th><th>Difference</th>"
+                            "<th>Fund, after tax</th><th>Liquid, after tax</th><th>Difference, after tax</th></tr></thead><tbody>" + lrows + "</tbody></table></div>"
+                            "<p class='muted' style='font-size:12.5px;margin-top:8px'>Median of every liquid fund's " + e(f['plan_type']) + " plan (Growth). After tax assumes the 30% slab and a holding of over a year: "
+                            "liquid-fund gains taxed at 31.2% (slab plus cess), arbitrage gains at 13% (long-term capital gains plus cess). Surcharge and the ₹1.25 lakh yearly exemption on equity gains are ignored; "
+                            "both favour arbitrage further. In a lower slab, or for less than a year (20% plus cess on arbitrage gains), the gap is smaller and can reverse.</p>")
         cn = cap_note(f)
         peers = sorted([x for x in by_cat[f["category"]] if x["plan_type"] == f["plan_type"] and x.get("peer_group") == f.get("peer_group") and x["code"] != f["code"]],
                        key=lambda x: abs((x.get("peer_rank") or 999) - (f.get("peer_rank") or 999)) if rated else -(x.get("aum_cr") or 0))[:6]
@@ -396,7 +434,10 @@ def main():
                (f"What is the expense ratio of {f['_name']} ({f['plan_type']})?", f"{num(f.get('ter'), 2)}% a year" + (f"; the {twin['plan_type']} plan's is {num(twin.get('ter'), 2)}%." if twin and twin.get('ter') is not None else "."))]
         if r3 is not None and e3 is not None:
             faq.append((f"What return has {f['_name']} given over 3 years?", f"{pct(r3)} a year ({f['plan_type']} plan) over the 3 years to {dmy(f.get('nav_date'))}, against {pct(r3 - e3)} for the {bench} total-return index."))
-        if top:
+        if arb:
+            faq.append((f"Is {f['_name']} better than a liquid fund?", "Before tax, arbitrage funds usually earn a little less than liquid funds. They are taxed as equity, so for an investor in the 30% slab who holds for over a year, they have usually come out ahead after tax; see the table above. For lower slabs or short holdings the gap narrows."))
+            faq.append(("How are arbitrage funds taxed?", "As equity funds: gains on units held over a year are taxed at 12.5% beyond ₹1.25 lakh a year (plus cess); held for a year or less, at 20%. Liquid fund gains are added to your income and taxed at your slab rate."))
+        if top and not arb:
             faq.append((f"What does {f['_name']} invest in?", f"Its largest holdings are {', '.join(t[1] for t in top[:3])}" + (f", with {num(f.get('n_stocks'), 0)} stocks in all" if f.get('n_stocks') else "") + f" ({mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio)."))
         if rated:
             faq.append((f"How is {f['_name']} rated?", f"{f['tier']}: {int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans in {f.get('peer_group')}, on its track record. This describes the past and is not a recommendation."))
@@ -419,12 +460,13 @@ def main():
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · benchmark {e(bench)} TRI · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
- <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div></div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
+ <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends.</p>
+{liq_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>
 <div><h2 style="font-size:26px">Portfolio</h2><div style="margin-top:12px">{hold_html}</div></div></div>
 {more}
@@ -452,7 +494,7 @@ def main():
         path = f"/mutual-funds/{slug(c)}/"
         r3 = sorted([f for f in reg if f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
         gap_html = ""
-        if len(r3) >= 8 and c not in ("Index Fund", "Sectoral/Thematic"):
+        if len(r3) >= 8 and c not in ("Index Fund", "Sectoral/Thematic", "Arbitrage"):
             lo, hi = r3[0], r3[-1]
             gap = 1e6 * ((1 + hi["ret_3Y"]) ** 3 - (1 + lo["ret_3Y"]) ** 3)
             gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>₹{gap / 1e5:.1f} lakh</div>"
@@ -464,23 +506,46 @@ def main():
         sub = ("<h2 style='font-size:24px;margin-top:30px'>" + ("By index tracked" if c == "Index Fund" else "By theme") + "</h2><div class='row' style='margin-top:12px;gap:8px;flex-wrap:wrap'>"
                + "".join(f"<a class='btn' href='{pth}'>{e(nm)} <span class='muted'>({n})</span></a>" for nm, pth, n in grp) + "</div>") if grp else ""
         tabs = ""
-        for plan in ("Regular", "Direct"):
+        arbc = c == "Arbitrage"
+        if arbc:
+            lq = [f for f in reg if f.get("excess_vs_liquid_post_tax_3y") is not None]
+            beat_l = sum(1 for f in lq if f["excess_vs_liquid_post_tax_3y"] > 0)
+            if lq:
+                gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>{beat_l} of {len(lq)}</div>"
+                            f"<p style='margin-top:6px'>arbitrage funds (Regular plans with 3 years of history) beat the median liquid fund over 3 years <b>after tax</b> for an investor in the 30% slab. "
+                            f"Before tax, {sum(1 for f in lq if (f.get('excess_vs_liquid_3y') or 0) > 0)} did.</p>"
+                            "<p class='muted' style='font-size:12.5px;margin-top:6px'>Liquid-fund gains taxed at 31.2%, arbitrage gains at 13% (held over a year). Past returns, not a forecast.</p></div>")
+        for plan in ("Regular", "Direct") if arbc else ():
+            P = sorted([f for f in L if f["plan_type"] == plan], key=lambda f: (tord.get(f.get("tier"), 9), -(f.get("score") or -1), f["name"]))
+            trs = "".join(f"<tr><td class='fund l'><a href='{f['_url']}'>{e(f['_name'])}</a><small>{e(f.get('amc', ''))} · {num(f.get('age_years'), 1)} yrs</small></td>"
+                          f"<td>{tier_badge(f.get('tier'))}</td><td class='num'>{pct(f.get('ret_1Y'), 2)}</td><td class='num'>{pct(f.get('ret_3Y'), 2)}</td>"
+                          f"<td class='num {'pos' if (f.get('excess_vs_liquid_post_tax_3y') or 0) > 0 else 'neg' if f.get('excess_vs_liquid_post_tax_3y') is not None else ''}'>{spct(f.get('excess_vs_liquid_post_tax_3y'), 2)}</td>"
+                          f"<td class='num'>{num(f.get('ter_base'), 2)}%</td><td class='num'>{num(f.get('ter'), 2)}%</td><td class='num'>{cr(f.get('aum_cr'))}</td></tr>" for f in P)
+            tabs += (f"<h2 style='font-size:24px;margin-top:32px'>{plan} plans ({len(P)})</h2><div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Fund</th><th>Rating</th><th>1Y return</th><th>3Y return</th><th>3Y vs liquid, after tax</th><th>Fund fee</th><th>Expense ratio</th><th>AUM</th></tr></thead><tbody>{trs}</tbody></table></div>")
+        if arbc:
+            tabs += ("<p class='muted' style='font-size:12.5px;margin-top:10px'><b>3Y vs liquid, after tax</b>: the fund's 3-year return minus the median liquid fund's, both after tax for the 30% slab. "
+                     "<b>Fund fee</b>: the base expense ratio the fund house charges. <b>Expense ratio</b>: AMFI's total, which adds brokerage and statutory levies; for arbitrage funds these are mostly "
+                     "securities transaction tax on their trades, already reflected in the returns.</p>")
+        for plan in ("Regular", "Direct") if not arbc else ():
             P = sorted([f for f in L if f["plan_type"] == plan], key=lambda f: (tord.get(f.get("tier"), 9), -(f.get("score") or -1), f["name"]))
             trs = "".join(f"<tr><td class='fund l'><a href='{f['_url']}'>{e(f['_name'])}</a><small>{e(f.get('amc', ''))} · {num(f.get('age_years'), 1)} yrs</small></td>"
                           f"<td>{tier_badge(f.get('tier'))}</td><td class='num'>{pct(f.get('ret_3Y'))}</td><td class='num {'pos' if (f.get('excess_3Y') or 0) > 0 else 'neg' if f.get('excess_3Y') is not None else ''}'>{spct(f.get('excess_3Y'))}</td>"
                           f"<td class='num'>{num(f.get('ter'), 2)}%</td><td class='num'>{cr(f.get('aum_cr'))}</td></tr>" for f in P)
             tabs += (f"<h2 style='font-size:24px;margin-top:32px'>{plan} plans ({len(P)})</h2><div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Fund</th><th>Rating</th><th>3Y return</th><th>3Y vs index</th><th>Expense ratio</th><th>AUM</th></tr></thead><tbody>{trs}</tbody></table></div>")
         faq = [(f"What does a {lc} fund invest in?", f"SEBI requires {lc} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
+               ("Arbitrage fund or liquid fund?", "Before tax, liquid funds have usually earned a little more. Arbitrage funds are taxed as equity (12.5% on gains held over a year, beyond ₹1.25 lakh), liquid funds at your slab rate, so for investors in the higher slabs who hold for over a year, arbitrage funds have usually come out ahead after tax. Liquid funds suit money you may need within days; arbitrage funds suit a few months or more."),
+               ("How are arbitrage funds rated?", "Against each other, Regular with Regular and Direct with Direct: return over the Nifty 50 Arbitrage index (rolling 1-year and 3-year), consistency (how often they stay ahead, volatility, months with a loss), the fund fee, and size, since a very small fund has fewer trades to spread its costs over. To be rated A or A+, a fund must also have beaten the median liquid fund after tax for a top-slab investor.")] if c == "Arbitrage" else [(f"What does a {lc} fund invest in?", f"SEBI requires {lc} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
                (f"How many {lc} funds beat their index over 3 years?",
                 f"{beat} of {len(e3)} {lc} funds (Regular plans with 3 years of history) beat {('the ' + bench + ' total-return index') if bench else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),
                ("How are these funds rated?", "Each fund is compared only with funds in its category and plan type, on its long-run return over the index, risk-adjusted return, consistency, cost and portfolio. The ratings describe the track record so far; our own backtest found they do not predict future returns.")]
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
-        desc = (f"All {len(L)} {lc} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
+        desc = (f"All {len(L)} arbitrage mutual fund plans in India compared: track-record ratings, returns vs liquid funds before and after tax, fund fees and AUM. Updated daily.")[:300] if arbc else \
+            (f"All {len(L)} {lc} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
                 f"{bench + ' TRI' if bench else 'their index'}, expense ratios and AUM. {beat} of {len(e3)} Regular plans beat the index over 3 years. Updated daily.")[:300]
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › {e(c)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{e(c)} funds in India</h1>
-<p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {('the ' + e(bench) + ' total-return index') if bench else 'their index'} and their peers. Data as of {dmy(as_of)}.</p>
+<p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {('the ' + e(bench) + ' total-return index') if bench else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
 <p style="margin-top:14px;max-width:72ch">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a></div>
@@ -491,18 +556,28 @@ def main():
         write(path, page(f"{c} mutual funds: top-rated by track record, {mon(as_of[:7]) if as_of else ''}".replace("Index Fund mutual funds", "Index funds").replace("Sectoral/Thematic mutual funds", "Sectoral and thematic funds") + " | Aeterna Wealth", desc, path, body,
                          (faq_ld, crumbs([("Mutual funds", "/mutual-funds/"), (c, path)]))))
         urls.append((path, "daily", "0.8"))
-        cat_cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{len(L)} plans · {f'{beat} of {len(e3)} beat the index over 3Y' if e3 else 'new category'}</span></a>")
+        sub_line = (f"{len(L)} plans · {beat_l} of {len(lq)} beat liquid funds after tax over 3Y" if arbc and lq else
+                    f"{len(L)} plans · {beat} of {len(e3)} beat the index over 3Y" if e3 and not arbc else f"{len(L)} plans")
+        cat_cards.append((asset_class(c), f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{sub_line}</span></a>"))
 
+    hub_sections = ""
+    for ac, blurb in ASSET_CLASSES:
+        cards = [h for a, h in cat_cards if a == ac]
+        n_ac = sum(1 for f in funds if asset_class(f["category"]) == ac)
+        cnt = f" <span class='muted' style='font-size:16px;font-weight:400'>{n_ac:,} plans</span>" if n_ac else ""
+        hub_sections += (f"<h2 id='{ac.lower()}' style='font-size:28px;margin-top:34px'>{ac} funds{cnt}</h2>"
+                         f"<p class='muted' style='margin-top:6px'>{e(blurb)}</p>"
+                         + (f"<div class='grid g3' style='margin-top:16px'>{''.join(cards)}</div>" if cards else ""))
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
-<h1 style="font-size:clamp(30px,4vw,44px)">Every equity mutual fund in India, compared</h1>
-<p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right index and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
-<div class="grid g3" style="margin-top:26px">{''.join(cat_cards)}</div>
+<h1 style="font-size:clamp(30px,4vw,44px)">Mutual funds in India, compared</h1>
+<p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right yardstick and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
+{hub_sections}
 <div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:600 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
 <p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/#method">how the ratings work</a>.</p>
 </div></section>"""
     write("/mutual-funds/", page("Every mutual fund in India compared: ratings, returns and costs | Aeterna Wealth",
-                                 f"Compare {len(funds):,} Indian equity and index mutual fund plans: track-record ratings, returns vs total-return indices, risk, expense ratios and holdings. Updated every weekday.",
+                                 f"Compare {len(funds):,} Indian mutual fund plans, equity, index and arbitrage funds: track-record ratings, returns vs the right yardstick, risk, expense ratios and holdings. Updated every weekday.",
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))
 
     # ---- the app (home page) with full head

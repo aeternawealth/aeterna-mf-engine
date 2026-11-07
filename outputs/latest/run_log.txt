@@ -1,38 +1,38 @@
-Aeterna MF Engine run 2026-11-06 04:49
+Aeterna MF Engine run 2026-11-07 03:58
 [1/7] Universe (AMFI NAVAll)
-  1687 equity + index schemes (growth, Direct & Regular)
+  1689 equity + index schemes (growth, Direct & Regular)
 [3/7] Benchmarks (Nifty TRI)
-  TRI: 145 indices, 2013-01-01 -> 2026-11-05
+  TRI: 145 indices, 2013-01-01 -> 2026-11-06
 [4/7] NAV history (mfapi)
-  NAV 100/1687
-  NAV 200/1687
-  NAV 300/1687
-  NAV 400/1687
-  NAV 500/1687
-  NAV 600/1687
-  NAV 700/1687
-  NAV 800/1687
-  NAV 900/1687
-  NAV 1000/1687
-  NAV 1100/1687
-  NAV 1200/1687
-  NAV 1300/1687
-  NAV 1400/1687
-  NAV 1500/1687
-  NAV 1600/1687
-  1687 NAV histories
-  26 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  NAV 100/1689
+  NAV 200/1689
+  NAV 300/1689
+  NAV 400/1689
+  NAV 500/1689
+  NAV 600/1689
+  NAV 700/1689
+  NAV 800/1689
+  NAV 900/1689
+  NAV 1000/1689
+  NAV 1100/1689
+  NAV 1200/1689
+  NAV 1300/1689
+  NAV 1400/1689
+  NAV 1500/1689
+  NAV 1600/1689
+  1689 NAV histories
+  24 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
 [5/7] Holdings for 2026-10
   daily mode: re-using holdings of 2026-09
 [6/7] Metrics, protocols, ranking committee
-  metrics 200/1687
-  metrics 400/1687
-  metrics 600/1687
-  metrics 800/1687
-  metrics 1000/1687
-  metrics 1200/1687
-  metrics 1400/1687
-  metrics 1600/1687
+  metrics 200/1689
+  metrics 400/1689
+  metrics 600/1689
+  metrics 800/1689
+  metrics 1000/1689
+  metrics 1200/1689
+  metrics 1400/1689
+  metrics 1600/1689
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                A  A+    B   C  Unrated
 category                                   
@@ -42,7 +42,7 @@ ELSS               16   8   24  26        2
 Flexi Cap          14   8   30  20       20
 Focused            12   6   20  16        2
 Index Fund         82  47  258  63       90
-Large & Mid Cap    10   6   19  17       20
+Large & Mid Cap    10   6   19  17       22
 Large Cap          14   6   24  16        8
 Mid Cap            12   6   21  17       10
 Multi Cap           8   6   20  12       18

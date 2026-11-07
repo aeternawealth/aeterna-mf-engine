@@ -109,9 +109,17 @@ def main():
     keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
     if a.daily and snap.exists():   # Overall rating changes only monthly
         s0 = pd.read_csv(snap)
+        # a category with no fund in the snapshot is new (added since the last monthly run): rate it today
+        # instead of showing every fund Unrated until the next monthly run
+        rated_cats = set(out.loc[out["code"].isin(s0["code"]), "category"])
+        fresh = out[~out["category"].isin(rated_cats)]
+        if len(fresh):
+            log(f"  new categories rated today (not in the monthly snapshot): {', '.join(sorted(fresh.category.unique()))}")
+        out = out[out["category"].isin(rated_cats)]
         out = out.drop(columns=[c for c in keep if c != "code" and c in out.columns]).merge(s0, on="code", how="left")
         out["tier"] = out["tier"].fillna("Unrated")
         out["flags"] = out["flags"].map(lambda f: f.split(", ") if isinstance(f, str) and f else [])
+        out = pd.concat([out, fresh], ignore_index=True)
     elif not a.daily:
         o = out[[c for c in keep if c in out.columns]].copy()
         o["flags"] = o["flags"].map(lambda f: ", ".join(f) if isinstance(f, list) else "")

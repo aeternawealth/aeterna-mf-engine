@@ -106,6 +106,17 @@ for (const [y, lab] of [[3, 'Car in 3y'], [5, 'Down payment in 5y'], [8, 'Educat
   must(Math.abs(hit / 2000 - .75) < .06, 'calibration off: a 75% SIP did not hit about 75% on fresh simulated markets', { lab, p, got: hit / 2000 });
 }
 
+// ------------------------------------------------------------- 4b. retirement end to end: save, then spend until life expectancy
+const retCal = [];
+for (const [age, ra, inc, have, lab] of [[30, 60, 2e5, 2e6, '30, retire 60'], [45, 60, 3e5, 1.5e7, '45, retire 60'], [52, 58, 4e5, 4e7, '52, retire 58']]) {
+  const inp = { age, retireAge: ra, lifeExp: 85, income: inc, expenses: inc * .5, efund: inc * 4, eqmf: have, healthCover: 1e6, termCover: inc * 150, retireIncome: inc * .4, stepup: 5, q: qOf(RISK.middle) };
+  const r = M.plan(inp, mkt, { nConf: 1200 }), g = r.G.find(x => x.ret), s = M.normalise(inp);
+  const yrs = Math.max(5, s.lifeExp - s.retireAge), fresh = M.paths(mkt, g.y * 12 + yrs * 12, 1500, 4242);
+  const lasts = fresh.filter(P => M.runRetire(P, s, r.p, r.E, mkt, g.have, g.f1, g.ph, g.sip, g.y, s.stepup / 100) >= s.lifeExp).length / 1500;
+  retCal.push([lab, Math.round(g.sip), lasts]);
+  must(g.sip === 0 || Math.abs(lasts - .75) < .07, 'retirement calibration off: a 3-in-4 SIP did not last to 85 about 75% of the time', { lab, lasts });
+}
+
 // ------------------------------------------------------------- 5. backtest on actual history (every start month)
 const [dates, EQ, DE, LI, GO] = mkt.months;
 const backtest = [];
@@ -166,6 +177,8 @@ console.log('\nEquity % by years to goal:      1y  2y  3y  4y  5y  7y 10y 15y 20
 for (const r of glideRows) console.log(`  ${r[0].padEnd(28)}` + r.slice(1).map(v => String(v).padStart(4)).join(''));
 console.log('\nCalibration (75% SIP on 2,000 fresh simulated markets):');
 for (const [l, p, sip, h] of calib) console.log(`  ${l.padEnd(20)} profile ${p}: SIP ${sip.toLocaleString('en-IN')} -> hit ${(h * 100).toFixed(1)}%`);
+console.log('\nRetirement, saving then spending to 85 (3-in-4 SIP, 1,500 fresh paths):');
+for (const [l, sip, h] of retCal) console.log(`  ${l.padEnd(16)} SIP ${sip.toLocaleString('en-IN')} -> money lasts to 85 in ${(h * 100).toFixed(1)}%`);
 console.log('\nBacktest on actual months since 2007 (every start month, ₹25 lakh target, SIP rising 10% a year):');
 for (const [l, sip, n, r2, w] of backtest) console.log(`  ${l.padEnd(24)} SIP ${sip.toLocaleString('en-IN')}: reached in ${(r2 * 100).toFixed(0)}% of ${n} real start months; worst ended at ${(w * 100).toFixed(0)}% of target`);
 console.log('\nSame finances (₹1.5 lakh take-home, ₹30 lakh invested) at every age: cautious / middle / bold answers');

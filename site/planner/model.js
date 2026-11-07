@@ -20,7 +20,7 @@
   const DEFAULTS = {
     age: 0, retireAge: 60, lifeExp: 85, dependants: 0, earners: 1, incomeType: 'salaried', slab: 30,
     income: 0, expenses: 0, homeEmi: 0, otherEmi: 0, loanOut: 0, hiDebt: 0, hiRate: 0, sipNow: 0, epfMonthly: 0,
-    efund: 0, termCover: 0, healthCover: 0, retireExpPct: 70,
+    efund: 0, termCover: 0, healthCover: 0, retireExpPct: 70, retireIncome: 0,
     goals: [], investing: 'yes',
     eqmf: 0, stocks: 0, topStock: 0, nfunds: 0, fd: 0, debtmf: 0, savings: 0, gold: 0, epf: 0, ppf: 0, nps: 0, npsEq: 50, realestate: 0, alt: 0,
     q: {}, rEq: 11, rDebt: 7, rGold: 8, rCash: 6, infl: 6, stepup: 10, confidence: 75, investShare: 85, epfGrowth: 6,
@@ -97,11 +97,13 @@
   }
   const fvSip = (sip, y, ret, step) => sip > 0 ? sip / (sipFor(1, y, ret, step) || Infinity) : 0;
 
-  // corpus needed at retirement: today's expenses x retireExpPct, inflated to the retirement date, spent for
-  // lifeExp - retireAge years while still earning 8% (a balanced retirement mix) and rising with inflation
+  // monthly spending in retirement, in today's rupees: what the investor entered, else retireExpPct of today's expenses
+  const retireMonthly = s => s.retireIncome > 0 ? s.retireIncome : s.expenses * s.retireExpPct / 100;
+  // corpus needed at retirement: that spending, inflated to the retirement date, paid for lifeExp - retireAge years
+  // (rising with inflation) from a corpus still invested in a balanced retirement mix earning 8%
   function corpus(s, retireAge) {
     const infl = s.infl / 100, y = Math.max(1, retireAge - s.age), yrs = Math.max(5, s.lifeExp - retireAge), rp = .08;
-    const annual = s.expenses * 12 * s.retireExpPct / 100 * Math.pow(1 + infl, y);
+    const annual = retireMonthly(s) * 12 * Math.pow(1 + infl, y);
     const f = Math.abs(rp - infl) < 1e-6 ? yrs : (1 - Math.pow((1 + infl) / (1 + rp), yrs)) / (rp - infl) * (1 + rp);
     return annual * f;
   }
@@ -128,19 +130,21 @@
     for (const k of ['savings', 'debtmf', 'fd']) { const t = Math.min(efNeed, src[k]); if (t > 0) { efFrom[k] = t; src[k] -= t; efNeed -= t; } }
     const efTop = efGap0 - efNeed, efGap = efNeed;
     const movable = s.eqmf + s.stocks + src.fd + src.debtmf + src.savings + s.gold;   // can be assigned to any goal
+    const bag = { savings: src.savings, debtmf: src.debtmf, fd: src.fd, eqmf: s.eqmf, stocks: s.stocks, gold: s.gold };
+    const PREF = y => y < 3 ? ['savings', 'debtmf', 'fd', 'gold', 'eqmf', 'stocks'] : y < 7 ? ['debtmf', 'fd', 'eqmf', 'savings', 'gold', 'stocks'] : ['eqmf', 'stocks', 'gold', 'debtmf', 'fd', 'savings'];
     const retLocked = s.epf + s.ppf + s.nps;                                           // retirement only
 
     // goals: essential ones (retirement, education, parents' care, health) are funded first
-    const ESS = /retire|educat|school|college|parent|medical|health|care/i;
+    const ESS = /retire|educat|school|college|parent|medical|health|care|wedding|marriage|shaadi/i;
     const G = s.goals.map(g => {
       const ret = g.type === 'retire';
       const y = ret ? (retired ? 0 : Math.max(1, s.retireAge - s.age)) : Math.max(0, Math.round(g.years));
       let fv, how = '';
       if (ret) {
         if (g.cost > 0) { fv = g.cost; how = 'your figure'; }
-        else { fv = corpus(s, s.retireAge); how = `${s.retireExpPct}% of today's expenses for ${Math.max(5, s.lifeExp - s.retireAge)} years, growing with inflation`; }
+        else { fv = corpus(s, s.retireAge); how = `${Math.round(retireMonthly(s)).toLocaleString('en-IN')} a month in today's money, until age ${s.lifeExp}`; }
       } else fv = g.cost * Math.pow(1 + infl, y);
-      return { name: g.name, ret, y, fv, how, essential: ret || ESS.test(g.name), mix: goalMix(y, p, mkt) };
+      return { name: g.name, ret, y, fv, how, essential: ret || ESS.test(g.name), mix: goalMix(y, p, mkt), today: ret ? 0 : g.cost };
     }).filter(g => g.fv > 0).sort((a, b) => a.y - b.y);
 
     // 2. today's money goes to the nearest goals first (they have the least time); EPF/PPF/NPS only to retirement
@@ -149,12 +153,13 @@
       g.r = mixReturn(g.mix, s);
       const pv = g.fv / Math.pow(1 + g.r, g.y);
       g.have = 0;
-      if (g.ret) { const a2 = Math.min(rp, pv); g.have += a2; rp -= a2; }
-      const b2 = Math.min(pool, Math.max(0, pv - g.have)); g.have += b2; pool -= b2;
+      g.sources = [];
+      if (g.ret) { const a2 = Math.min(rp, pv); g.have += a2; rp -= a2; if (a2 > 0) g.sources.push(['locked', a2]); }
+      for (const k of PREF(g.y)) { const t = Math.min(bag[k], Math.max(0, pv - g.have)); if (t > 0) { g.sources.push([k, t]); bag[k] -= t; g.have += t; pool -= t; } }
       g.extra = g.ret ? fvSip(s.epfMonthly, g.y, .08, s.epfGrowth / 100) : 0;   // future EPF/NPS, rising with salary
       g.left = Math.max(0, g.fv - g.have * Math.pow(1 + g.r, g.y) - g.extra);
     }
-    const wealthMix = goalMix(15, p, mkt), leftover = pool + rp;
+    const wealthMix = goalMix(15, p, mkt), leftover = pool + rp, unassigned = Object.assign({}, bag, { locked: rp });
 
     // 3. monthly money, in two phases: foundations (debt, emergency fund) first, then everything to goals
     const surplus = Math.max(0, r.surplus), buffer = surplus * (1 - clamp(s.investShare, 50, 100) / 100), avail = surplus - buffer;
@@ -207,8 +212,9 @@
     }
 
     // 5. target allocation of today's money: each goal's share at its mix now, the rest at the long-term mix
-    const tgt = { Equity: 0, Debt: 0, Gold: 0, Cash: 0, 'Real estate': cur['Real estate'], Other: cur.Other, 'Emergency fund': efTop };
-    const put = (amt, m) => { tgt.Equity += amt * m.eq; tgt.Gold += amt * m.gold; if (m.y < 2) tgt.Cash += amt * m.debt; else tgt.Debt += amt * m.debt; };
+    cur['Arbitrage & liquid'] = 0;
+    const tgt = { Equity: 0, Debt: 0, Gold: 0, Cash: 0, 'Arbitrage & liquid': 0, 'Real estate': cur['Real estate'], Other: cur.Other, 'Emergency fund': efTop };
+    const put = (amt, m) => { tgt.Equity += amt * m.eq; tgt.Gold += amt * m.gold; if (m.y < 3) tgt['Arbitrage & liquid'] += amt * m.debt; else tgt.Debt += amt * m.debt; };
     G.forEach(g => put(g.have, g.mix)); put(leftover, wealthMix);
     const tgtTotal = Object.values(tgt).reduce((a2, b2) => a2 + b2, 0);
 
@@ -229,7 +235,12 @@
     const invest1 = phaseMonths > 0 ? debtPay + efPay + G.reduce((a2, g) => a2 + (g.ph > 0 ? g.f1 : g.f2), 0) + wealth1 : null;
     const invest = G.reduce((a2, g) => a2 + g.f2, 0) + wealth2;
 
-    return { s, r, p, E, label: profileLabel(p), efMonths, efTarget, efGap0, efGap, efTop, efFrom, efReached, payDebt, termNeed, termGap, healthNeed, healthGap,
+    // 7. retirement in numbers
+    const RG = G.find(g => g.ret);
+    const retire = RG ? { monthlyToday: retireMonthly(s), monthlyThen: retireMonthly(s) * Math.pow(1 + infl, RG.y), corpus: RG.fv, years: Math.max(5, s.lifeExp - s.retireAge),
+      have: RG.have, haveThen: RG.have * Math.pow(1 + RG.r, RG.y), extra: RG.extra, sip: RG.sip, fund: RG.f2, f1: RG.f1, ph: RG.ph, y: RG.y, custom: s.retireIncome > 0 } : null;
+
+    return { retire, unassigned, s, r, p, E, label: profileLabel(p), efMonths, efTarget, efGap0, efGap, efTop, efFrom, efReached, payDebt, termNeed, termGap, healthNeed, healthGap,
       cur, total, tgt, tgtTotal, G, wealthMix, leftover, surplus, buffer, avail, debtPay, efPay, phaseMonths, need, wealth: wealth2, wealth1, later, option,
       cats: catList, invest, invest1 };
   }
@@ -288,42 +299,95 @@
     }
     return v;
   }
+  // retirement, end to end: save until the retirement date (de-risking on the glide path), then pay the monthly
+  // spending, rising with inflation, from a retirement mix. Returns the age the money runs out (Infinity = lasts).
+  const RMIX = E => { const eq = Math.min(.35, E); return { eq, gold: .05, debt: .95 - eq }; };
+  function runRetire(P, s, p, E, mkt, have, f1, ph, sip, y, step) {
+    const acc = Math.round(y * 12), yrs = Math.max(5, s.lifeExp - s.retireAge), T = acc + yrs * 12, mx = mixSeries(acc, p, mkt), rm = RMIX(E);
+    const infl = s.infl / 100, wd = retireMonthly(s), xg = s.epfGrowth / 100; let v = have;
+    for (let t = 0; t < T; t++) {
+      if (t < acc) {
+        const left = (acc - t) / 12, m = mx[t], rd = left < 2 ? P.l[t] : P.d[t], up = Math.pow(1 + step, Math.floor(t / 12));
+        v = v * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * rd) + (t < ph ? f1 : sip) * up + s.epfMonthly * Math.pow(1 + xg, Math.floor(t / 12));
+      } else {
+        v = v * (1 + rm.eq * P.e[t] + rm.gold * P.g[t] + rm.debt * P.d[t]) - wd * Math.pow(1 + infl, t / 12);
+        if (v <= 0) return s.age + t / 12;
+      }
+    }
+    return Infinity;
+  }
+
   function simulate(res, mkt, opts = {}) {
     const n = opts.n || 600, seed = opts.seed || 20261107, step = res.s.stepup / 100;
     const maxY = Math.max(15, ...res.G.map(g => g.y)), months = Math.round(Math.min(40, maxY) * 12);
     const Ps = paths(mkt, months, n, seed);
     const goals = res.G.map(g => {
       if (g.y <= 0) return { name: g.name, prob: g.left > 0 ? 0 : 1 };
+      if (g.ret) {
+        const yrs = Math.max(5, res.s.lifeExp - res.s.retireAge), PR = paths(mkt, Math.round(g.y * 12) + yrs * 12, n, seed + 7);
+        const ages = PR.map(P => runRetire(P, res.s, res.p, res.E, mkt, g.have, g.f1, g.ph, g.f2, g.y, step)).sort((a, b) => a - b);
+        return { name: g.name, ret: true, prob: ages.filter(a => a >= res.s.lifeExp).length / n, p10age: ages[Math.floor(n * .1)], p50age: ages[Math.floor(n * .5)] };
+      }
       const vals = Ps.map(P => runBucket(P, g.have, g.f2, g.y, step, res.p, mkt, g.ret ? res.s.epfMonthly : 0, res.s.epfGrowth / 100, g.f1, g.ph)).sort((a, b) => a - b);
       return { name: g.name, prob: vals.filter(v => v >= g.fv * .999).length / n, p10: vals[Math.floor(n * .1)], p50: vals[Math.floor(n * .5)], p90: vals[Math.floor(n * .9)], fv: g.fv };
     });
-    // total portfolio over time (goals paid out at their dates), yearly percentiles
-    const years = Math.round(months / 12), fan = [];
-    const totals = Ps.map(P => {
-      const row = []; const b = res.G.map(g => ({ g, v: g.have })); let w = res.leftover;
-      for (let t = 0; t < months; t++) {
+    // total portfolio over time: goals are paid out on their dates; the retirement corpus then pays the monthly
+    // spending (rising with inflation) from a retirement mix until life expectancy. Yearly percentiles.
+    const s0 = res.s, infl = s0.infl / 100, RG = res.G.find(g => g.ret);
+    const horizon = RG ? Math.max(maxY, RG.y + Math.max(5, s0.lifeExp - s0.retireAge)) : maxY;
+    const T = Math.round(Math.min(60, horizon) * 12), years = Math.round(T / 12), fan = [], lastAge = [];
+    const P2 = paths(mkt, T, n, seed + 1);
+    const rmix = { eq: Math.min(.35, res.E), gold: .05 }; rmix.debt = 1 - rmix.eq - rmix.gold;
+    const wd = RG ? retireMonthly(s0) : 0;
+    const totals = P2.map(P => {
+      const row = []; const b = res.G.map(g => ({ g, v: g.have, done: false })); let w = res.leftover, out = null;
+      for (let t = 0; t < T; t++) {
         const k = Math.floor(t / 12), up = Math.pow(1 + step, k);
         for (const x of b) {
-          const left = x.g.y - t / 12; if (left <= 0) { x.v = 0; continue; }
-          const m = goalMix(left, res.p, mkt), rd = left < 2 ? P.l[t] : P.d[t];
+          const m12 = Math.round(x.g.y * 12);
+          if (x.done && !(x.g.ret)) continue;
+          if (x.g.ret && t >= m12) {   // drawdown: spend, then grow at the retirement mix
+            if (x.v <= 0) continue;
+            x.v = x.v * (1 + rmix.eq * P.e[t] + rmix.gold * P.g[t] + rmix.debt * P.d[t]) - wd * Math.pow(1 + infl, t / 12);
+            if (x.v <= 0) { w += x.v; x.v = 0; if (out == null) out = t; }   // retirement money gone: spending comes from other savings
+            continue;
+          }
+          const left = (m12 - t) / 12, m = goalMix(left, res.p, mkt), rd = left < 2 ? P.l[t] : P.d[t];
           x.v = x.v * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * rd) + (t < x.g.ph ? x.g.f1 : x.g.f2) * up + (x.g.ret ? res.s.epfMonthly * Math.pow(1 + res.s.epfGrowth / 100, k) : 0);
+          if (!x.g.ret && t === m12 - 1) { x.v = 0; x.done = true; }   // spent on the goal at the end of its last month
         }
         const m = res.wealthMix;
-        w = w * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * P.d[t]) + (t < res.phaseMonths ? res.wealth1 : res.wealth) * up;
+        w = w * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * P.d[t]) + (RG && t >= Math.round(RG.y * 12) ? 0 : (t < res.phaseMonths ? res.wealth1 : res.wealth) * up);
         if ((t + 1) % 12 === 0) row.push(b.reduce((a, x) => a + x.v, 0) + w);
       }
+      lastAge.push(out == null ? Infinity : s0.age + out / 12);
       return row;
     });
     for (let yv = 0; yv < years; yv++) {
       const col = totals.map(r2 => r2[yv]).sort((a, b) => a - b);
-      fan.push({ year: yv + 1, p10: col[Math.floor(n * .1)], p50: col[Math.floor(n * .5)], p90: col[Math.floor(n * .9)] });
+      const d = Math.pow(1 + infl, yv + 1);   // in today's money
+      fan.push({ year: yv + 1, age: s0.age + yv + 1, p10: col[Math.floor(n * .1)] / d, p50: col[Math.floor(n * .5)] / d, p90: col[Math.floor(n * .9)] / d });
     }
-    return { goals, fan, n };
+    lastAge.sort((a, b) => a - b);
+    const lasts = RG ? { p10: lastAge[Math.floor(n * .1)], p50: lastAge[Math.floor(n * .5)], toLife: lastAge.filter(a => a >= s0.lifeExp).length / n, lifeExp: s0.lifeExp } : null;
+    const payouts = res.G.filter(g => !g.ret && g.y > 0 && g.y <= years).map(g => ({ name: g.name, y: g.y, amt: g.fv, today: g.fv / Math.pow(1 + infl, g.y) }));
+    return { goals, fan, n, lasts, payouts };
   }
   // monthly amount for one goal that reaches its target in `conf` of simulated markets (bisection)
   function sipForConf(s, p, g, mkt, conf, opts = {}) {
     if (g.y <= 0) return Infinity;
-    const n = opts.nConf || 1500, Ps = paths(mkt, Math.round(g.y * 12), n, opts.seed || 99), step = s.stepup / 100;
+    const step = s.stepup / 100;
+    if (g.ret && !opts.corpusOnly) {
+      const n = opts.nConf || 1500, yrs = Math.max(5, s.lifeExp - s.retireAge), Ps = paths(mkt, Math.round(g.y * 12) + yrs * 12, n, opts.seed || 99), E = equityCap(p);
+      const f1 = opts.f1 || 0, ph = opts.ph || 0, tgt = Math.min(.99, conf + .03);
+      const ok = sip => Ps.filter(P => runRetire(P, s, p, E, mkt, g.have, f1, ph, sip, g.y, step) >= s.lifeExp).length / n >= tgt;
+      if (ok(0)) return 0;
+      let lo = 0, hi = Math.max(1000, sipFor(g.left || g.fv, g.y, .08, step) * 2);
+      while (!ok(hi) && hi < 1e9) hi *= 2;
+      for (let i = 0; i < 20; i++) { const mid = (lo + hi) / 2; if (ok(mid)) hi = mid; else lo = mid; }
+      return hi;
+    }
+    const n = opts.nConf || 1500, Ps = paths(mkt, Math.round(g.y * 12), n, opts.seed || 99);
     // aim 3 points above the target in-sample: a SIP fitted exactly to one set of paths falls ~3 points short on fresh ones
     const f1 = opts.f1 || 0, ph = opts.ph || 0;
     const ok = sip => Ps.filter(P => runBucket(P, g.have, sip, g.y, step, p, mkt, g.ret ? s.epfMonthly : 0, s.epfGrowth / 100, f1, ph) >= g.fv).length / n >= Math.min(.99, conf + .03);
@@ -334,6 +398,6 @@
     return hi;
   }
 
-  const api = { corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
+  const api = { runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PlannerModel = api;
 })(typeof window !== 'undefined' ? window : globalThis);

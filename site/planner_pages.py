@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 
 CSS = r"""
 <style>
-:root{--c-eq:#0b4a3c;--c-debt:#7a9a91;--c-gold:#b08a3e;--c-cash:#b7c0bd;--c-re:#6b5a86;--c-alt:#c2795a;--c-ef:#4f7cac;--c-band:rgba(11,74,60,.16);--c-bad:#a4332a}
+:root{--c-eq:#0b4a3c;--c-debt:#7a9a91;--c-gold:#b08a3e;--c-cash:#b7c0bd;--c-re:#6b5a86;--c-alt:#c2795a;--c-ef:#4f7cac;--c-arb:#9fb7d6;--c-band:rgba(11,74,60,.16);--c-bad:#a4332a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-eq:#6cc0ae;--c-debt:#5d7a73;--c-gold:#d3a861;--c-cash:#56615e;--c-re:#9d8cc0;--c-alt:#d99a7f;--c-band:rgba(108,192,174,.2);--c-bad:#e0857b}}
 :root[data-theme="dark"]{--c-eq:#6cc0ae;--c-debt:#5d7a73;--c-gold:#d3a861;--c-cash:#56615e;--c-re:#9d8cc0;--c-alt:#d99a7f;--c-band:rgba(108,192,174,.2);--c-bad:#e0857b}
 .pl-wrap{max-width:980px}
@@ -57,6 +57,10 @@ CSS = r"""
 .pl-tl{display:grid;gap:14px;margin-top:12px}.pl-tl>div{border-left:2px solid var(--teal-soft);padding:2px 0 2px 16px}
 .pl-tl b{display:block;font:600 16px var(--f-display)}.pl-tl ul{margin:6px 0 0;padding-left:18px;font-size:14.5px}
 .pl-busy{opacity:.55;transition:opacity .15s}
+.pl-act{margin:14px 0 0;padding:0;list-style:none;counter-reset:a;display:grid;gap:10px}
+.pl-act li{counter-increment:a;position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px 14px 54px}
+.pl-act li::before{content:counter(a);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--paper);font:600 14px/26px var(--f-mono);text-align:center}
+.pl-act b{font:600 16px var(--f-display)}.pl-act p{margin:6px 0 0;font-size:14.5px}
 .pl-fan text{font:11px var(--f-mono);fill:var(--ink-3)}
 @media print{header,footer,.pl-nav,.pl-noprint{display:none!important}.card{break-inside:avoid}.pl-sticky{position:static}}
 </style>
@@ -99,7 +103,7 @@ const KEY='aeterna-plan-v2';
 const blank={age:'',retireAge:60,lifeExp:85,retireExpPct:70,dependants:'0',earners:'1',incomeType:'salaried',slab:'30',income:'',expenses:'',homeEmi:'',otherEmi:'',loanOut:'',hiDebt:'',hiRate:'',epfMonthly:'',
   efund:'',termCover:'',healthCover:'',goals:[{name:'Retirement',type:'retire',cost:'',years:''}],
   investing:'yes',eqmf:'',stocks:'',topStock:'',nfunds:'',fd:'',debtmf:'',savings:'',gold:'',epf:'',ppf:'',nps:'',npsEq:'50',realestate:'',alt:'',
-  q:{},rEq:11,rDebt:7,rGold:8,rCash:6,infl:6,stepup:10,confidence:75,investShare:85};
+  retireIncome:'',q:{},rEq:11,rDebt:7,rGold:8,rCash:6,infl:6,stepup:10,confidence:75,investShare:85};
 let S;try{S=Object.assign(JSON.parse(JSON.stringify(blank)),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S=JSON.parse(JSON.stringify(blank))}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const n=k=>{const v=parseFloat(String(S[k]??'').replace(/,/g,''));return isFinite(v)?v:0};
@@ -137,7 +141,7 @@ const STEPS=[
   h:()=>`<div id="plGoals">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
    <div class="row" style="margin-top:14px"><button type="button" class="btn" id="plAddG">Add a goal</button>
    <select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Start a business","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
-   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${F('retireExpPct','In retirement you expect to spend',{sel:[['50','Half of today’s expenses'],['60','60%'],['70','70% (typical: no EMIs or children’s costs)'],['85','85%'],['100','The same as today']]})}${F('lifeExp','Plan for money to last until age',{sel:[['80','80'],['85','85'],['90','90'],['95','95']]})}</div>`}`},
+   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, in today’s money',{hint:n('expenses')?'Leave blank to use 70% of today’s expenses: '+inrS(n('expenses')*.7)+' a month':''})}${F('lifeExp','Plan for the money to last until age',{sel:[['80','80'],['85','85'],['90','90'],['95','95']]})}</div>`}`},
  {t:'What you already hold',s:'Today\'s value of each. Leave out the home you live in. Rough figures are fine.',
   h:()=>`<div class="seg" role="group" aria-label="Investing already?" style="margin-top:14px"><button type="button" data-inv="yes" aria-pressed="${S.investing!=='no'}">I already invest</button><button type="button" data-inv="no" aria-pressed="${S.investing==='no'}">Not yet</button></div>
    ${S.investing==='no'?'<p class="muted" style="margin-top:14px">The plan will give you a starting mix and how much to invest each month. If you have EPF or PPF, add it; it counts towards retirement.</p><div class="pl-grid">'+M('epf','EPF / VPF')+M('ppf','PPF and Sukanya Samriddhi')+'</div>'
@@ -189,7 +193,7 @@ function check(){
 }
 
 /* ---------- charts ---------- */
-const COL={Equity:'var(--c-eq)',Debt:'var(--c-debt)',Gold:'var(--c-gold)',Cash:'var(--c-cash)','Emergency fund':'var(--c-ef)','Real estate':'var(--c-re)',Other:'var(--c-alt)'};
+const COL={Equity:'var(--c-eq)',Debt:'var(--c-debt)',Gold:'var(--c-gold)','Arbitrage & liquid':'var(--c-arb)',Cash:'var(--c-cash)','Emergency fund':'var(--c-ef)','Real estate':'var(--c-re)',Other:'var(--c-alt)'};
 function donut(o,title,sub){
   const t=Object.values(o).reduce((a,b)=>a+b,0)||1, R=52, C=2*Math.PI*R; let off=0;
   const arcs=Object.entries(o).filter(([,v])=>v>0).map(([k,v])=>{const len=v/t*C;const a=`<circle r="${R}" cx="64" cy="64" fill="none" stroke="${COL[k]}" stroke-width="20" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 64 64)"><title>${k} ${pc(v/t)}</title></circle>`;off+=len;return a}).join('');
@@ -200,29 +204,72 @@ const mixBar=m=>`<div class="pl-mix" role="img" aria-label="${pc(m.eq)} equity, 
 function gauge(p){const R=22,C=2*Math.PI*R,col=p>=.7?'var(--teal)':p>=.45?'var(--brass)':'var(--c-bad)';
   return `<svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle r="${R}" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="${R}" cx="28" cy="28" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)">${Math.round(p*100)}%</text></svg>`}
 function fan(sim,res){
-  const F=sim.fan, W=760, H=280, L=64, Rp=16, T=14, B=30; if(!F.length)return '';
-  const years=F.length, maxV=Math.max(...F.map(f=>f.p90))*1.05||1, x=i=>L+(W-L-Rp)*i/years, y=v=>T+(H-T-B)*(1-v/maxV);
-  const start=res.total-res.cur['Real estate']-res.cur.Other;
+  const nl=(sim.payouts||[]).length+(res.retire?1:0);
+  const F=sim.fan, W=760, H=300+nl*12, L=64, Rp=16, T=14+nl*13, B=34; if(!F.length)return '';
+  const years=F.length, maxV=Math.max(...F.map(f=>f.p90))*1.05||1, x=i=>L+(W-L-Rp)*i/years, y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
+  const start=res.total-res.cur['Real estate']-res.cur.Other, age0=res.s.age;
   const pts=k=>[`${x(0)},${y(start)}`].concat(F.map((f,i)=>`${x(i+1)},${y(f[k])}`));
   const band=pts('p90').concat(pts('p10').reverse()).join(' ');
-  // money put in (no returns), for comparison
-  let put=start; const putPts=[`${x(0)},${y(start)}`]; const su=res.s.stepup/100;
-  for(let i=0;i<years;i++){for(let mth=0;mth<12;mth++){const t=i*12+mth;put+=(t<res.phaseMonths?res.invest1-res.debtPay-res.efPay:res.invest)*Math.pow(1+su,i)}putPts.push(`${x(i+1)},${y(Math.min(put,maxV))}`)}
   const ticks=[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-Rp}" y1="${y(maxV*f)}" y2="${y(maxV*f)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(maxV*f)+4}" text-anchor="end">${inrS(maxV*f).replace('₹','')}</text>`).join('');
-  const step=years>24?5:years>12?2:1;
-  const xt=F.map((f,i)=>(i+1)%step===0?`<text x="${x(i+1)}" y="${H-10}" text-anchor="middle">${f.year}y</text>`:'').join('');
-  const gm=res.G.filter(g=>g.y>0&&g.y<=years).map(g=>`<line x1="${x(g.y)}" x2="${x(g.y)}" y1="${T}" y2="${H-B}" stroke="var(--brass)" stroke-dasharray="3 3"/><text x="${x(g.y)>W-150?x(g.y)-4:x(g.y)+4}" y="${T+10}" text-anchor="${x(g.y)>W-150?'end':'start'}" style="fill:var(--brass)">${esc(g.name.slice(0,22))}</text>`).join('');
-  return `<svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Range of outcomes for your investments over ${years} years">${ticks}<polygon points="${band}" fill="var(--c-band)"/>
-   <polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/><polyline points="${putPts.join(' ')}" fill="none" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="5 4"/>${gm}${xt}</svg>
-   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>8 in 10 outcomes fall in this band</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical outcome</span><span><b style="display:inline-block;width:14px;border-top:2px dashed var(--ink-3);vertical-align:middle;margin-right:6px"></b>Money put in</span><span style="color:var(--brass)">┆ Goal dates (each goal's money is spent then)</span></div>`;
+  const step=years>30?5:years>12?2:1;
+  const xt=F.map((f,i)=>(i+1)%step===0?`<text x="${x(i+1)}" y="${H-14}" text-anchor="middle">${f.age}</text>`:'').join('')+`<text x="${(L+W)/2}" y="${H-1}" text-anchor="middle">Your age</text>`;
+  const lab=(xx,txt,row,col)=>`<line x1="${xx}" x2="${xx}" y1="${10+row*13+3}" y2="${T}" stroke="${col}" stroke-width=".8"/><text x="${xx>W-260?xx-4:xx+4}" y="${10+row*13}" text-anchor="${xx>W-260?'end':'start'}" style="fill:${col}">${esc(txt)}</text>`;
+  const gm=(sim.payouts||[]).map((pp,i)=>`<line x1="${x(pp.y)}" x2="${x(pp.y)}" y1="${T}" y2="${H-B}" stroke="var(--brass)" stroke-dasharray="3 3"/>${lab(x(pp.y),`${pp.name.slice(0,24)}: −${inrS(pp.today)} (today's money)`,i,'var(--brass)')}`).join('');
+  const R=res.retire, rx=R?x(R.y):null;
+  const rm=R&&R.y<=years?`<rect x="${rx}" y="${T}" width="${W-Rp-rx}" height="${H-T-B}" fill="var(--band)" opacity=".6"/><line x1="${rx}" x2="${rx}" y1="${T}" y2="${H-B}" stroke="var(--teal)" stroke-dasharray="4 3"/>${lab(rx,`Retire at ${res.s.retireAge}: spend ${inrS(R.monthlyToday)} a month (today's money)`,(sim.payouts||[]).length,'var(--teal)')}`:'';
+  return `<svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Range of outcomes for your investments, to age ${age0+years}">${rm}${ticks}<polygon points="${band}" fill="var(--c-band)"/>
+   <polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${gm}${xt}</svg>
+   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>8 in 10 outcomes fall in this band</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical outcome</span><span style="color:var(--brass)">┆ Money spent on a goal</span>${R?'<span>Shaded: retirement, living off the corpus</span>':''}<span class="muted">All amounts in today's money</span></div>`;
+}
+
+/* ---------- what to do now ---------- */
+const SRCN={savings:'savings account',debtmf:'debt funds',fd:'FDs',eqmf:'equity funds',stocks:'shares',gold:'gold',locked:'EPF, PPF and NPS'};
+function actions(m,sim,m90){
+  const s=m.s, A=[], prob=Object.fromEntries(sim.goals.map(g=>[g.name,g])), arb=s.slab>=20;
+  const srcTxt=src=>src.map(([k,v])=>`${inrS(v)} from ${SRCN[k]}`).join(', ');
+  if(m.r.surplus<=0)A.push(['Create a monthly surplus first','Your EMIs and expenses use all of your income. Trim expenses, or refinance or prepay the costliest loan; nothing below works without it.']);
+  if(m.payDebt)A.push([`Pay off ${inrS(s.hiDebt)} of expensive debt`,`Put ${inr(m.debtPay)} a month towards it until it is gone (about ${Math.ceil(s.hiDebt/Math.max(1,m.debtPay))} months). At ${s.hiRate||'double-digit'}% interest, this beats any fund.`]);
+  if(m.efGap0>0)A.push([`Set up your emergency fund: ${inrS(m.efTarget)}`,(m.efTop>0?`This week, move ${srcTxt(Object.entries(m.efFrom))} into ${arb?'an arbitrage fund, keeping a month or two of expenses in a liquid fund for instant access':'a liquid fund'}. `:'')+(m.efGap>0?`Add ${inr(m.efPay)} a month for the remaining ${inrS(m.efGap)}.`:'')]);
+  for(const g of m.G){
+    if(g.ret||g.y<=0)continue;
+    const where=g.y<3?(arb?'arbitrage funds (or liquid funds for money needed within months)':'liquid or money market funds'):g.y<5?'equity savings funds':g.y<7?'balanced advantage funds':'the equity, debt and gold mix shown on the goal';
+    const fromEq=g.sources.filter(([k])=>k==='eqmf'||k==='stocks').reduce((a,[,v])=>a+v,0);
+    const pr=prob[g.name]||{};
+    let t=`${g.name}, in ${g.y} year${g.y>1?'s':''}: ${inrS(g.fv)} then (${inrS(g.today||0)} today).`;
+    let d=g.have>0?`Set aside ${inrS(g.have)} now: ${srcTxt(g.sources)}. Keep it in ${where}. `:'';
+    if(fromEq>0&&g.y<7)d+=`Switch the ${inrS(fromEq)} from equity ${g.y<3?'now: a fall now could not be recovered before the date':'over the next 3 to 6 months'}; long-term gains above ₹1.25 lakh a year are taxed at 12.5%. `;
+    if(g.sip>0)d+=g.funded>=.999?`Then invest ${inr(g.f2)} a month into the same.`:`It needs ${inr(g.sip)} a month; the plan can give it ${inr(g.f2)}.`;
+    else if(g.have>0)d+='Nothing more is needed each month.';
+    if(pr.prob!=null)d+=` Chance of having the full amount: ${pc(pr.prob)}.`;
+    A.push([t,d]);
+  }
+  const R=m.retire;
+  if(R){const g=m.G.find(x=>x.ret), pr=prob[g.name]||{};
+    let d=`${inrS(R.monthlyToday)} a month in today's money is ${inrS(R.monthlyThen)} a month when you retire, rising with inflation after that. To pay it until ${s.lifeExp}, you need about ${inrS(R.corpus)} at ${s.retireAge}. `;
+    d+=`Earmarked today: ${inrS(R.have)} (${srcTxt(g.sources)}), worth about ${inrS(R.haveThen)} by then${R.extra>0?`, plus ${inrS(R.extra)} from future EPF and NPS`:''}. `;
+    d+=R.sip>0?(g.funded>=.999?`<b>Invest ${inr(R.fund)} a month</b>${s.stepup?`, rising ${s.stepup}% a year`:''} towards it.`:`It needs ${inr(R.sip)} a month; the plan can give it ${inr(R.fund)} (${pc(g.funded)}).`):`Your earmarked money already covers it: nothing more is needed each month.`;
+    d+=` <b>Chance the money lasts until ${s.lifeExp}: ${pc(pr.prob)}</b>${pr.p10age!=null?`; in weak markets (1 in 10) it lasts until about ${isFinite(pr.p10age)?Math.floor(pr.p10age):s.lifeExp+'+'}`:''}.`;
+    A.push([`Retirement at ${s.retireAge}: ${inrS(R.monthlyToday)} a month in today's money`,d]);}
+  if(m.termGap>0)A.push([`Buy ${inrS(m.termGap)} more term life cover`,`Suggested total about ${inrS(m.termNeed)}; you have ${inrS(s.termCover)}. A plain term plan; please check with an insurance professional.`]);
+  if(m.healthGap>0)A.push([`Raise health cover to ${inrS(m.healthNeed)} or more`,`You have ${inrS(s.healthCover)}. A super top-up is a cheap way to add cover.`]);
+  if(s.nfunds>7)A.push([`Cut ${s.nfunds} equity funds down to 5 or 6`,'They overlap heavily. Keep one or two per category in the plan; switch the rest as part of the moves above, oldest units first to keep tax low.']);
+  if(s.topStock>10)A.push([`Trim the share that is ${s.topStock}% of your investments`,'Bring it under 10% over a few months; stop adding to it.']);
+  const short=m.G.filter(g=>g.sip>0&&g.funded<.999);
+  if(short.length){const o=m.option;
+    A.push([`Close the gap of ${inr(m.need-m.later.avail)} a month`,`Your goals need ${inr(m.need)} a month and ${inr(m.later.avail)} is available. `+(o&&!o.none?(o.retire?`Stop working ${o.years} year${o.years>1?'s':''} later, `:`Push "${esc(o.goal)}" out by ${o.years} year${o.years>1?'s':''}, `)+`or raise the yearly step-up, or use the ${100-s.investShare}% buffer.`:`Trim a goal, raise the yearly step-up${m.cur['Real estate']>0?`, or plan to sell part of your ${inrS(m.cur['Real estate'])} of property`:''}.`)]);}
+  if(m.wealth>500&&m.G.length)A.push([`Invest the remaining ${inr(m.wealth)} a month for the long term`,`After your goals, this is what is left of the money you can invest. It goes into ${pc(m.wealthMix.eq)} equity, ${pc(m.wealthMix.debt)} debt and ${pc(m.wealthMix.gold)} gold, and is a reserve for retirement if markets are weak.`]);
+  if(m90&&!short.length&&s.confidence<90){const extra=m90.need-m.need; if(extra>500)A.push([`For more margin: ${inr(extra)} a month more`,`That would give every goal a 9-in-10 chance (planning for bad markets too). `+(extra<=m.wealth?`It fits within the ${inr(m.wealth)} left over each month.`:m.wealth>500?`The ${inr(m.wealth)} left over each month covers ${pc(m.wealth/extra)} of it.`:'')]);}
+  return A;
 }
 
 /* ---------- dashboard ---------- */
 let lastRes=null;
-function compute(){const res=PM.plan(S,MKT,{nConf:900});const sim=PM.simulate(res,MKT,{n:500});lastRes=res;return {res,sim}}
+function compute(){const res=PM.plan(S,MKT,{nConf:900});const sim=PM.simulate(res,MKT,{n:500});lastRes=res;
+  let m90=null;try{if(+S.confidence<90)m90=PM.plan(Object.assign({},S,{confidence:90}),MKT,{nConf:600})}catch(e){}
+  return {res,sim,m90}}
 function dashboard(){
   $('#plBody').innerHTML=`<div class="card"><p>Running your plan through 19 years of real market months…</p></div>`;
-  setTimeout(()=>{const {res,sim}=compute();$('#plBody').innerHTML=dashHtml(res,sim);bindDash(res)},20);
+  setTimeout(()=>{const {res,sim,m90}=compute();$('#plBody').innerHTML=dashHtml(res,sim,m90);bindDash(res)},20);
 }
 function flagsOf(m){
   const s=m.s, f=[], tot=m.total, sh=k=>tot?m.cur[k]/tot:0;
@@ -242,20 +289,20 @@ function flagsOf(m){
   if(s.nfunds>7)f.push([`${s.nfunds} equity funds.`,'Beyond 5 or 6, funds overlap heavily; consolidating makes the portfolio easier to track and rebalance.']);
   return f;
 }
-function dashHtml(m,sim){
+function dashHtml(m,sim,m90){
   const s=m.s, flags=flagsOf(m), tot=m.total, tt=m.tgtTotal||1, hasCur=tot>0&&s.investing!=='no';
   const gap=Math.abs(m.r.tol-m.r.cap)>.2?(m.r.tol>m.r.cap?`You are comfortable with more risk than your finances can absorb right now (${m.r.why.slice(0,3).join('; ')}). The plan follows your finances; as these improve, it can take more equity.`
     :'Your finances could carry more risk than you are comfortable with. The plan follows your comfort: a plan you abandon in a fall does more harm than a careful one you keep.'):'Your comfort with risk and your financial capacity are broadly in line.';
   const prob=Object.fromEntries(sim.goals.map(g=>[g.name,g]));
   const goals=m.G.map(g=>{const pr=prob[g.name]||{prob:0};const fundedFull=g.funded>=.999;
-    const reach=!fundedFull&&g.y>0&&pr.p50!=null?(g.ret?`With this plan, typical markets get you about ${inrS(pr.p50)}: enough for about ${inr(pr.p50/g.fv*s.expenses*s.retireExpPct/100)} a month in retirement, in today's money.`:`With this plan, typical markets get you about ${inrS(pr.p50)} of the ${inrS(g.fv)}.`):'';
-    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${g.ret&&g.how&&g.how!=='your figure'?' (sized for you)':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
+    const reach=!fundedFull&&g.y>0&&pr.p50!=null?(g.ret?`With this plan, typical markets get you about ${inrS(pr.p50)}: enough for about ${inr(pr.p50/g.fv*m.retire.monthlyToday)} a month in retirement, in today's money.`:`With this plan, typical markets get you about ${inrS(pr.p50)} of the ${inrS(g.fv)}.`):'';
+    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${g.ret&&g.how&&g.how!=='your figure'?' (${esc(g.how)})':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
       ${mixBar(g.mix)}<div class="muted" style="font-size:12.5px">${pc(g.mix.eq)} equity · ${pc(g.mix.debt)} debt${g.mix.gold?' · '+pc(g.mix.gold)+' gold':''}${g.y>3?'; moves to safety as the date nears':''}</div>
-      <div class="kv" style="grid-template-columns:1fr"><div><span>Covered by today's money</span><b>${inrS(g.have)}</b></div>${g.extra>0?`<div><span>Future EPF / NPS</span><b>${inrS(g.extra)}</b></div>`:''}${g.ph>0&&g.f1>0?`<div><span>Months 1–${g.ph}, while foundations are built</span><b>${inr(g.f1)}</b></div>`:''}<div><span>Needs a month${g.ph>0?` from month ${g.ph+1}`:''} (${s.confidence===50?'typical markets':s.confidence===90?'9 in 10 markets':'3 in 4 markets'})</span><b>${g.sip>0?inr(g.sip):'Nothing more'}</b></div>${g.sip>0?`<div><span>In your plan</span><b>${inr(g.f2)}${fundedFull?'':` <span style="color:var(--c-bad)">(${pc(g.funded)})</span>`}</b></div>`:''}</div>
-      <p style="font-size:13px;margin:0">${g.y===0?(g.left>0?'Due now and not fully covered.':'Covered.'):`<b>${pc(pr.prob)}</b> chance of reaching it with this plan${pr.p10!=null&&fundedFull?`; in weak markets about ${inrS(pr.p10)}`:''}.`} ${reach}</p></div>`}).join('');
+      <div class="kv" style="grid-template-columns:1fr"><div><span>Set aside from today's money</span><b>${inrS(g.have)}</b></div>${g.sources&&g.sources.length?`<div style="border:0;padding-top:0"><span class="muted" style="font-size:12.5px">${g.sources.map(([k,v])=>inrS(v)+' '+SRCN[k]).join(' · ')}</span></div>`:''}${g.extra>0?`<div><span>Future EPF / NPS</span><b>${inrS(g.extra)}</b></div>`:''}${g.ph>0&&g.f1>0?`<div><span>Months 1–${g.ph}, while foundations are built</span><b>${inr(g.f1)}</b></div>`:''}<div><span>Needs a month${g.ph>0?` from month ${g.ph+1}`:''} (${s.confidence===50?'typical markets':s.confidence===90?'9 in 10 markets':'3 in 4 markets'})</span><b>${g.sip>0?inr(g.sip):'Nothing more'}</b></div>${g.sip>0?`<div><span>In your plan</span><b>${inr(g.f2)}${fundedFull?'':` <span style="color:var(--c-bad)">(${pc(g.funded)})</span>`}</b></div>`:''}</div>
+      <p style="font-size:13px;margin:0">${g.y===0?(g.left>0?'Due now and not fully covered.':'Covered.'):`${g.ret?`<b>${pc(pr.prob)}</b> chance your money lasts until ${s.lifeExp}${pr.p10age!=null?`; in weak markets until about ${isFinite(pr.p10age)?Math.floor(pr.p10age):s.lifeExp+'+'}`:''}.`:`<b>${pc(pr.prob)}</b> chance of reaching it with this plan${pr.p10!=null&&fundedFull?`; in weak markets about ${inrS(pr.p10)}`:''}.`}`} ${g.ret?'':reach}</p></div>`}).join('');
   const rows=Object.keys(COL).map(k=>{const c=m.cur[k],t=m.tgt[k],d=t-c;if(!c&&!t)return '';
-    const dp=tot?t/tt-c/tot:0;let act=Math.abs(d)<Math.max(5e4,.02*tot)?'On target':d>0?'Increase: direct new money here first':(Math.abs(dp)>.10?'Reduce: stop new money, then switch the excess gradually (mind tax and exit loads)':'Reduce: stop adding new money; the others will catch up');
-    if(k==='Real estate'||k==='Other')act='Kept as is';
+    const dp=tot?t/tt-c/tot:0;let act=Math.abs(d)<Math.max(5e4,.02*tot)?'On target':d>0?'Increase: through the moves and SIPs in the plan above':'Reduce: the plan above says which holdings move, and where';
+    if(k==='Real estate'||k==='Other')act='Kept as is';if(k==='Emergency fund')act='From idle savings, step 1 above';if(k==='Arbitrage & liquid')act='Money for goals within 3 years';
     return `<tr><td class="l"><b style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${COL[k]};margin-right:6px"></b>${k}</td><td class="num">${inrS(c)} <span class="muted" style="font-size:12px">${pc(c/tot)}</span></td><td class="num">${inrS(t)} <span class="muted" style="font-size:12px">${pc(t/tt)}</span></td><td class="num">${d>=0?'+':''}${inrS(d)}</td><td class="l" style="font-size:13.5px">${act}</td></tr>`}).join('');
   const locked=s.epf+s.ppf+s.nps;
   const two=m.invest1!=null;
@@ -271,13 +318,16 @@ function dashHtml(m,sim){
     <label class="pl-f"><span>Invest of surplus: <b id="cIsL">${s.investShare}%</b></span><input type="range" id="cIs" min="50" max="100" step="5" value="${s.investShare}"></label>
     ${retired()?'<span></span>':`<label class="pl-f"><span>Stop working at: <b id="cRaL">${s.retireAge}</b></span><input type="range" id="cRa" min="${Math.min(75,Math.max(n('age')+1,40))}" max="75" step="1" value="${s.retireAge}"></label>`}</div></div>
   <div id="plOut">
-  <div class="card" style="margin-top:16px"><div class="row" style="justify-content:space-between;gap:20px;align-items:flex-start">
+  <h2 style="margin-top:22px">What to do now</h2>
+  <p class="muted" style="font-size:13.5px;margin-top:6px">In order. Each step uses the numbers below; change the controls above and the steps update.</p>
+  <ol class="pl-act">${actions(m,sim,m90).map(([t,d])=>`<li><b>${t}</b><p>${d}</p></li>`).join('')}</ol>
+  <div class="card" style="margin-top:22px"><div class="row" style="justify-content:space-between;gap:20px;align-items:flex-start">
    <div><div class="eyebrow">Your profile</div><div class="pl-k" style="margin-top:6px">${m.label}</div><p class="muted" style="margin-top:4px;font-size:14px">Long-term money: up to ${pc(m.E)} in equity</p></div>
    <div style="flex:1;min-width:240px;max-width:430px"><div style="font-size:13.5px">Risk tolerance: how you feel about falls</div><div class="pl-meter"><i style="left:${(m.r.tol*100).toFixed(0)}%"></i></div>
    <div style="font-size:13.5px;margin-top:10px">Risk capacity: what your finances can absorb</div><div class="pl-meter"><i style="left:${(m.r.cap*100).toFixed(0)}%"></i></div><div class="pl-meter-l"><span>Low</span><span>High</span></div></div></div>
    <p style="margin-top:14px;font-size:14.5px">${esc(gap)}</p></div>
 
-  <h2>Before you invest</h2>${flags.length?flags.map(([a,b])=>`<div class="pl-flag"><b>${esc(a)}</b> ${esc(b)}</div>`).join(''):'<div class="pl-flag ok"><b>Foundations in place.</b> No expensive debt, an emergency fund on target and insurance that looks adequate.</div>'}
+  <h2>Checks</h2>${flags.length?flags.map(([a,b])=>`<div class="pl-flag"><b>${esc(a)}</b> ${esc(b)}</div>`).join(''):'<div class="pl-flag ok"><b>Foundations in place.</b> No expensive debt, an emergency fund on target and insurance that looks adequate.</div>'}
 
   <h2>${hasCur?'Your money today, and the suggested mix':'Your starting mix'}</h2>
   ${hasCur?`<p class="muted" style="font-size:13.5px;margin-top:6px">${inrS(tot)} invested, excluding your home and emergency fund${locked?`; ${inrS(locked)} of it in EPF, PPF and NPS, which stay where they are`:''}.</p>
@@ -296,7 +346,7 @@ function dashHtml(m,sim){
    <div class="tablewrap"><table><thead><tr><th class="l">Where it goes, by fund category</th>${two?`<th>Months 1–${m.phaseMonths}</th><th>From month ${m.phaseMonths+1}</th>`:'<th>A month</th>'}</tr></thead><tbody>${catRows||'<tr><td class="l" colspan="3">Nothing to invest yet.</td></tr>'}<tr><td class="l"><b>Total</b></td>${two?`<td class="num"><b>${inr(m.invest1)}</b></td>`:''}<td class="num"><b>${inr(m.invest)}</b></td></tr></tbody></table></div></div>
 
   <h2>How your money could grow</h2>
-  <p class="muted" style="font-size:13.5px;margin-top:6px;max-width:80ch">All your investments together, with this plan, across 500 sequences of real market months since 2007 (including 2008 and 2020). Each goal's money is spent on its date, so the line drops there.</p>
+  <p class="muted" style="font-size:13.5px;margin-top:6px;max-width:80ch">All your investments together, with this plan, across 500 sequences of real market months since 2007 (including 2008 and 2020). In today's money, so ₹1 lakh on the chart buys what ₹1 lakh buys now. The line drops when a goal is paid for; after retirement the corpus pays your monthly spending until ${s.lifeExp}.</p>
   <div class="card" style="margin-top:12px">${fan(sim,m)}</div>
 
   <h2>Roadmap</h2><div class="pl-tl">

@@ -48,6 +48,13 @@ def main():
         from engine import extras
         extras.run_all(u, log, navall)
 
+    if a.daily and not a.offline:   # month-end AUM changes once a month; the call is cheap, so check every day
+        from engine import extras
+        try:
+            extras.fetch_aum(u, log, navall, quarterly=False)
+        except Exception as e:
+            log(f"  AUM refresh failed: {type(e).__name__}: {str(e)[:160]}")
+
     log("[3/7] Benchmarks (Nifty TRI)")
     tri = ingest.load_cached_tri() if a.offline else ingest.fetch_all_tri(log)
 

@@ -1,4 +1,4 @@
-"""Agent 1b - AMFI extras via `amfipy`: TER (by ISIN), quarterly average AUM, market-cap list.
+"""Agent 1b - AMFI extras via `amfipy`: TER (by ISIN), month-end AUM (quarterly average as fallback), market-cap list.
 Writes data/manual/ter.csv, aum.csv and amfi_mcap.xlsx. Each step fails soft.
 """
 from __future__ import annotations
@@ -62,8 +62,9 @@ def fetch_ter(universe: pd.DataFrame, log=print):
     return out
 
 
-def fetch_aum(universe: pd.DataFrame, log=print, navall: pd.DataFrame | None = None):
-    """AMFI quarterly average AUM per plan (AMFI_Code, in Rs lakh) -> scheme AUM in Rs crore (all plans/options)."""
+def fetch_aum_qavg(universe: pd.DataFrame, log=print, navall: pd.DataFrame | None = None):
+    """AMFI quarterly average AUM per plan (AMFI_Code, in Rs lakh) -> scheme AUM in Rs crore (all plans/options).
+    Returns (DataFrame pair_key, aum_cr; period label). Fallback for fetch_aum."""
     import httpx
     h = {**C.HTTP_HEADERS, "Referer": "https://www.amfiindia.com/aum-data/average-aum"}
     url = "https://www.amfiindia.com/api/average-aum-schemewise"
@@ -106,10 +107,108 @@ def fetch_aum(universe: pd.DataFrame, log=print, navall: pd.DataFrame | None = N
         aum = aum.merge(universe[["code", "pair_key"]], on="code", how="inner")
     out = (aum.groupby("pair_key")["aum_lakh"].sum() / 100).rename("aum_cr").reset_index()
     out = out[out.pair_key.isin(universe.pair_key)]
+    log(f"  Quarterly average AUM ({label}): {len(out)} schemes")
+    return out, label
+
+
+# AMFI fund-performance tool (run for AMFI by CRISIL): scheme-level daily AUM, the figure fund factsheets,
+# Value Research and Groww quote. One call per SEBI sub-category covers every fund house.
+_FP = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/"
+_FP_SUBS = ((1, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 44, 45)), (5, (38,)))   # equity sub-categories; index funds & ETFs
+
+
+def _aum_key(s: str) -> str:
+    s = re.sub(r"\([^)]*\)?", " ", str(s).lower())          # "(Formerly ...)", "(MOFSP500)", unclosed "(Formerly ..."
+    s = re.sub(r"\b(erstwhile|formerly)\b.*", " ", s)
+    s = s.replace("&", " and ").replace("zerodha case", "zerodha")
+    s = re.sub(r"\b(direct|regular|plan|growth|option)\b", " ", s)
+    return re.sub(r"[^a-z0-9]+", "", s).replace("fund", "").replace("scheme", "")
+
+
+def fetch_aum_monthend(universe: pd.DataFrame, log=print, today: date | None = None):
+    """Month-end AUM (Rs crore, all plans) for the last month end AMFI has data for. Returns (pair_key, aum_cr), date."""
+    import difflib
+    import httpx
+    # this gateway rejects (406) a User-Agent carrying our engine tag, so send a plain browser one
+    h = {**C.HTTP_HEADERS, "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Referer": "https://www.amfiindia.com/otherdata/fund-performance"}
+    d = pd.Timestamp(today or date.today()).replace(day=1) - pd.Timedelta(days=1)   # last day of the previous month
+    for _ in range(6):   # walk back over a month-end weekend / holiday
+        rows = []
+        for cat, subs in _FP_SUBS:
+            for sc in subs:
+                body = {"maturityType": 1, "category": cat, "subCategory": sc, "mfid": 0, "reportDate": d.strftime("%d-%b-%Y")}
+                for attempt in range(3):
+                    try:
+                        data = httpx.post(_FP + "fundperformance", json=body, headers=h, timeout=120).json().get("data") or []
+                        break
+                    except Exception:
+                        data = []
+                rows += [(x.get("schemeName"), x.get("dailyAUM"), x.get("navDate")) for x in data]
+        rows = [r for r in rows if r[2] == d.strftime("%d-%b-%Y")]
+        if len(rows) > 500:
+            break
+        d -= pd.Timedelta(days=1)
+    else:
+        log("  Month-end AUM: no data")
+        return None, None
+    a = pd.DataFrame(rows, columns=["name", "aum_cr", "date"])
+    a["aum_cr"] = pd.to_numeric(a["aum_cr"], errors="coerce")
+    a["k"] = a["name"].map(_aum_key)
+    a = a.dropna(subset=["aum_cr"]).drop_duplicates("k", keep=False).set_index("k")
+    sch = universe.drop_duplicates("pair_key")[["pair_key", "name"]].copy()
+    sch["k"] = sch["name"].map(_aum_key)
+    keys = list(a.index)
+
+    def find(k):
+        if k in a.index:
+            return k
+        digits = re.findall(r"\d+", k)   # "nifty 50" vs "nifty 500" are different funds: numbers must agree exactly
+        c = [x for x in difflib.get_close_matches(k, keys, n=3, cutoff=0.94) if re.findall(r"\d+", x) == digits][:2]   # spelling slips ("Heathcare")
+        return c[0] if len(c) == 1 or (len(c) == 2 and difflib.SequenceMatcher(None, k, c[1]).ratio() < 0.94) else None
+    sch["hit"] = sch["k"].map(find)
+    sch = sch.dropna(subset=["hit"])
+    sch = sch[~sch["hit"].duplicated(keep=False)]   # one AMFI scheme must not feed two of ours
+    sch["aum_cr"] = sch["hit"].map(a["aum_cr"])
+    log(f"  Month-end AUM ({d:%d %b %Y}): {len(sch)}/{universe.pair_key.nunique()} schemes")
+    return sch[["pair_key", "aum_cr"]], d
+
+
+def fetch_aum(universe: pd.DataFrame, log=print, navall: pd.DataFrame | None = None, quarterly: bool = True):
+    """data/manual/aum.csv: month-end AUM from AMFI where available, else AMFI's quarterly average, labelled per fund
+    (aum_asof). quarterly=False (daily run) keeps the last quarterly figures already on file for the fallback."""
+    me, d = fetch_aum_monthend(universe, log)
+    if me is None or len(me) < 0.8 * universe.pair_key.nunique():
+        log("  Month-end AUM: too few matches, keeping the previous aum.csv")
+        return None
+    me = me.assign(aum_asof=f"{d.day} {d:%b %Y}")
+    qa, qlabel = (fetch_aum_qavg(universe, log, navall) if quarterly else (None, None))
+    if qa is None:   # reuse the quarterly fallback from the last file
+        prev = (pd.read_csv(C.MANUAL / "aum.csv") if (C.MANUAL / "aum.csv").exists() else pd.DataFrame())
+        if "aum_asof" in prev.columns:
+            qa = prev[prev["aum_asof"].astype(str).str.contains("average")][["pair_key", "aum_cr", "aum_asof"]]
+        elif len(prev) and (C.MANUAL / "aum.period.txt").exists():
+            qa = prev[["pair_key", "aum_cr"]].assign(aum_asof=_qavg_label((C.MANUAL / "aum.period.txt").read_text()))
+    elif qlabel:
+        qa = qa.assign(aum_asof=_qavg_label(qlabel))
+    out = me
+    if qa is not None and len(qa):
+        out = pd.concat([me, qa[~qa.pair_key.isin(me.pair_key)]], ignore_index=True)
+    # sanity: a month-end figure wildly off the quarterly average is more likely a mismatch than a real move
+    if qa is not None and len(qa):
+        chk = me.merge(qa[["pair_key", "aum_cr"]], on="pair_key", suffixes=("", "_q"))
+        odd = chk[(chk.aum_cr_q > 50) & ((chk.aum_cr / chk.aum_cr_q > 4) | (chk.aum_cr / chk.aum_cr_q < 0.25))]
+        for r in odd.itertuples():
+            log(f"  AUM check: {r.pair_key} month-end {r.aum_cr:,.0f} vs quarterly avg {r.aum_cr_q:,.0f} cr")
     out.to_csv(C.MANUAL / "aum.csv", index=False)
-    (C.MANUAL / "aum.period.txt").write_text(f"{label} (quarterly average, AMFI)")
-    log(f"  AUM ({label}): {len(out)} schemes")
+    (C.MANUAL / "aum.period.txt").write_text(f"{d.day} {d:%b %Y} (month-end, AMFI)")
+    log(f"  AUM: {len(me)} month-end, {len(out) - len(me)} quarterly-average fallback")
     return out
+
+
+def _qavg_label(period: str) -> str:
+    """'July - September 2026 (quarterly average, AMFI)' -> 'Jul–Sep 2026 average'."""
+    p = re.sub(r"\s*\(.*\)\s*$", "", str(period))
+    return re.sub(r"(\w{3})\w* - (\w{3})\w* (\d{4})", r"\1–\2 \3", p) + " average"
 
 
 def fetch_mcap_list(log=print):

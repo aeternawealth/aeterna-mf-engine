@@ -28,6 +28,14 @@ SITE = "https://aeternawealth.com"
 CFG = json.loads((S / "site_config.json").read_text()) if (S / "site_config.json").exists() else {}
 LAUNCHED = (S / "LAUNCHED").exists()
 SOCIAL = CFG.get("social", [])
+def aum_label(f):
+    """'AUM on 30 Oct 2026' (AMFI month end) or 'Average AUM, Jul–Sep 2026' (quarterly fallback)."""
+    a = str(f.get("aum_asof") or "")
+    if not a or a == "nan":
+        return "AUM"
+    return f"Average AUM, {a.replace(' average', '')}" if "average" in a else f"AUM on {a}"
+
+
 INDEXNOW_KEY = "8f3c2a9e5b7d41c6a0e4f9b2d6c8a1e3"   # public by design: IndexNow verifies ownership by fetching /<key>.txt
 ORG = {
     "name": "Aeterna Wealth Private Limited", "brand": "Aeterna Wealth", "arn": "ARN-317889",
@@ -411,7 +419,7 @@ def main():
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · benchmark {e(bench)} TRI · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
- <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div></div><div><div class="muted" style="font-size:13px">AUM</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
+ <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div></div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>

@@ -154,7 +154,7 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         df = df.merge(ter[[c for c in ("code", "ter", "ter_date") if c in ter.columns]], on="code", how="left")
     if aum is not None:
         key = "code" if "code" in aum.columns else "pair_key"
-        df = df.merge(aum[[key, "aum_cr"]], on=key, how="left")
+        df = df.merge(aum[[key, "aum_cr"] + (["aum_asof"] if "aum_asof" in aum.columns else [])], on=key, how="left")
         df["aum_capacity_penalty"] = df["aum_cr"]
     if holdings is not None and len(holdings):
         df = df.merge(holdings, on="pair_key", how="left")
@@ -203,7 +203,7 @@ DISPLAY_COLS = ["code", "name", "amc", "category", "peer_group", "plan_type", "b
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",
                 "max_drawdown_5y", "max_drawdown_3y", "excess_cagr_1y", "capture_ratio_3y", "alpha_3y", "sharpe_3y", "vol_3y", "beta_3y", "tracking_diff_1y", "tracking_err_1y",
-                "tracking_diff_3y", "ter", "aum_cr",
+                "tracking_diff_3y", "ter", "aum_cr", "aum_asof",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",
                 "turnover_1m", "mandate_ok", "mandate_breaches", "holdings_month", "coverage", "pair_key", "protocol", "as_of"]

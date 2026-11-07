@@ -501,6 +501,7 @@ async function load(){
   const [f,m]=await Promise.all([fetch('data/funds.json').then(r=>r.json()),fetch('data/meta.json').then(r=>r.json())]);
   S.funds=f;S.meta=m;f.forEach(x=>S.byCode.set(x.code,x));
 }
+const aumL=f=>!f.aum_asof?'AUM':/average/.test(f.aum_asof)?'Average AUM, '+f.aum_asof.replace(' average',''):'AUM on '+f.aum_asof;
 function holdCov(){const c=S.meta.holdings_coverage,m=S.meta.holdings_missing_amcs||[];if(!c)return'Holdings are one month behind.';
   return `Holdings are available for ${c.with_holdings} of ${c.schemes} schemes (${Math.round(c.with_holdings/c.schemes*100)}%) and are one month behind.`+(m.length?` We can't yet read these AMCs' monthly portfolio files automatically, so their funds are rated on track record only (schemes in brackets): ${m.map(a=>esc(a[0].replace(/ Mutual Fund$/,''))+' ('+a[1]+')').join(', ')}.`:'')}
 function noHoldings(f){
@@ -913,7 +914,7 @@ function ratings(){
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, quarterly average']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
@@ -923,12 +924,12 @@ function ratings(){
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, quarterly average']];
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
     'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
-    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
+    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled.'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
   const hd=c=>HD[c[0]]||[c[0],''];
   const lbl=c=>{const [a,b]=hd(c);return b?`${a} (${b})`:a};
   const order={'A+':0,'A':1,'B':2,'C':3};
@@ -977,7 +978,7 @@ async function fund(code){
     <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on ${dmy(f.nav_date)}</div><div class="big">₹${f.nav_latest==null?'–':(+f.nav_latest).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:4})}</div></div>
       <div><div class="muted" style="font-size:13px">1-day change</div><div class="mono ${sg(f.nav_chg_1d)}" style="font-size:20px">${spct(f.nav_chg_1d,2)}</div></div>
       <div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">${f.ter==null?'–':num(f.ter,2)+'%'}</div></div>
-      <div><div class="muted" style="font-size:13px">AUM</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
+      <div><div class="muted" style="font-size:13px">${aumL(f)}</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
     <div class="card row" style="gap:18px"><div>${tier(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}${watchNote(f)?`<br><span style="font-size:13.5px;color:var(--brass)">${esc(watchNote(f))}</span>`:''}</p></div></div>
   </div>
   <h2 style="margin-top:40px;font-size:26px">Returns against the index</h2>
@@ -986,9 +987,9 @@ async function fund(code){
   <div class="grid g2" style="margin-top:40px;align-items:start">
     <div><h2 style="font-size:26px">Risk</h2><div style="margin-top:12px">${kv([['Volatility, 3Y',pct(f.vol_3y)],['Max fall, 5Y',pct(f.max_drawdown_5y)],['Max fall, 3Y',pct(f.max_drawdown_3y)],['Downside capture, 3Y',num(f.downside_capture_3y,0)],['Upside capture, 3Y',num(f.upside_capture_3y,0)],['Capture ratio',num(f.capture_ratio_3y,2)],['Beta, 3Y',num(f.beta_3y,2)],['Sharpe, 3Y',num(f.sharpe_3y,2)],['Sortino, 3Y',num(f.sortino_3y,2)],['Information ratio, 3Y',num(f.info_ratio_3y,2)],['Jensen\'s alpha, 3Y',spct(f.alpha_3y)],['Rolling 3Y windows ahead of index',pct(f.roll3y_hit_rate,0)],['Tracking difference, 1Y',f.tracking_diff_1y==null?'–':num(f.tracking_diff_1y,2)+'%'],['Tracking error, 1Y',f.tracking_err_1y==null?'–':num(f.tracking_err_1y,2)+'%']])}</div></div>
     <div><h2 style="font-size:26px">Portfolio</h2>${top.length?portfolioBlock(f,top):noHoldings(f)}
-      ${f.flow_4q!=null?`<h3 style="margin-top:28px">Money flows</h3><div style="margin-top:8px">${kv([[`Net flow, quarter to ${esc(f.flow_quarter||'')}`,spct(f.flow_1q)+' of AUM'],['Net flow, last 4 quarters',spct(f.flow_4q)+' of AUM'],['AUM a year earlier',cr(f.aum_1y_ago_cr)]])}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing market returns. In our 2019–25 test, flows did not predict future returns, so they are not part of the rating.</p>`:''}</div>
+      ${f.flow_4q!=null?`<h3 style="margin-top:28px">Money flows</h3><div style="margin-top:8px">${kv([[`Net flow, quarter to ${esc(f.flow_quarter||'')}`,spct(f.flow_1q)+' of AUM'],['Net flow, last 4 quarters',spct(f.flow_4q)+' of AUM'],['Average AUM, same quarter last year',cr(f.aum_1y_ago_cr)]])}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing market returns. In our 2019–25 test, flows did not predict future returns, so they are not part of the rating.</p>`:''}</div>
   </div>
-  <div class="card" style="margin-top:40px"><b>Data as of</b><div style="margin-top:8px">${kv([['NAV and returns',dmy(f.nav_date)],['Benchmark index',dmy(S.meta.tri_date)],['Expense ratio',f.ter_date?'effective '+dmy(f.ter_date):'–'],['AUM',S.meta.aum_period||'–'],['Holdings',top.length?mon(f.holdings_month||S.meta.holdings_month)+' month-end'+(f.holdings_month&&S.meta.holdings_month&&f.holdings_month<S.meta.holdings_month?' (latest available for this scheme)':''):'not available'],['Market-cap classes','AMFI list '+(S.meta.mcap_period||'')]])}</div>
+  <div class="card" style="margin-top:40px"><b>Data as of</b><div style="margin-top:8px">${kv([['NAV and returns',dmy(f.nav_date)],['Benchmark index',dmy(S.meta.tri_date)],['Expense ratio',f.ter_date?'effective '+dmy(f.ter_date):'–'],['AUM',f.aum_asof?(/average/.test(f.aum_asof)?'Quarterly average, '+f.aum_asof.replace(' average',''):'Month end, '+f.aum_asof)+' (AMFI)':'–'],['Holdings',top.length?mon(f.holdings_month||S.meta.holdings_month)+' month-end'+(f.holdings_month&&S.meta.holdings_month&&f.holdings_month<S.meta.holdings_month?' (latest available for this scheme)':''):'not available'],['Market-cap classes','AMFI list '+(S.meta.mcap_period||'')]])}</div>
   <p class="muted" style="font-size:12.5px;margin-top:10px">Returns are for the Growth option, point to point on the NAV date shown, a year compounded for periods over 1 year. Other sites may differ if they use another date, plan, option or a price index instead of TRI.</p></div>`;
   $('#addCmp').onclick=()=>{if(!S.cmp.includes(f.code)){S.cmp=[...S.cmp,f.code].slice(-4);saveCmp()}location.hash='compare'};
 }
@@ -1045,7 +1046,7 @@ async function compare(){
   $$('#chips button').forEach(b=>b.onclick=()=>{S.cmp=S.cmp.filter(c=>c!==+b.dataset.c);saveCmp();compare()});
   if(!fs.length){$('#cmp').innerHTML='<div class="note">Start typing a fund name above. Tip: you can also press "Add to compare" on any fund page.</div>';return}
   const H=await holdings();
-  const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tier(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr),f=>f.aum_cr]]],
+  const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tier(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr)+(f.aum_asof?' <span class="muted" style="font-size:12px">'+esc(f.aum_asof)+'</span>':''),f=>f.aum_cr]]],
     ['Returns (a year beyond 1Y)',[['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
     ['Against its index',[['1 year',f=>spct(f.excess_1Y),f=>f.excess_1Y,1],['3 years',f=>spct(f.excess_3Y),f=>f.excess_3Y,1],['5 years',f=>spct(f.excess_5Y),f=>f.excess_5Y,1],['3Y rank in category',f=>f.rank_3Y!=null?f.rank_3Y+' / '+f.peers_3Y:'–']]],
     ['Risk',[['Max fall, 5Y',f=>pct(f.max_drawdown_5y),f=>f.max_drawdown_5y,1],['Downside capture',f=>num(f.downside_capture_3y,0),f=>f.downside_capture_3y,-1],['Sharpe, 3Y',f=>num(f.sharpe_3y,2),f=>f.sharpe_3y,1],['Volatility, 3Y',f=>pct(f.vol_3y),f=>f.vol_3y,-1]]],

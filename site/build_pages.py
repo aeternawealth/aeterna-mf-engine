@@ -370,7 +370,7 @@ def compare_pages(B, funds, hold, urls, as_of):
             rows = [("Category", a["category"], b["category"]), ("Fund house", a.get("amc"), b.get("amc")),
                     ("Benchmark (TRI)", B.iname(a.get("benchmark")), B.iname(b.get("benchmark"))),
                     ("Age", f"{B.num(a.get('age_years'), 1)} years", f"{B.num(b.get('age_years'), 1)} years"),
-                    ("AUM", B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
+                    (B.aum_label(a) if a.get("aum_asof") == b.get("aum_asof") else "AUM", B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
             for plan, X, Y in (("Direct", a, b), ("Regular", A.get("Regular"), Bp.get("Regular"))):
                 if not X or not Y:
                     continue

@@ -98,10 +98,10 @@ const PM=window.PlannerModel, MKT=window.PLANNER_MARKET;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const inr=v=>v==null||!isFinite(v)?'–':'₹'+Math.round(v).toLocaleString('en-IN');
-const inrS=v=>{if(v==null||!isFinite(v))return'–';const a=Math.abs(v),sg=v<0?'−':'';return sg+(a>=1e7?'₹'+(a/1e7).toFixed(2)+' cr':a>=1e5?'₹'+(a/1e5).toFixed(1)+' lakh':inr(a))};
+const inrS=v=>{if(v==null||!isFinite(v))return'–';const a=Math.abs(v),sg=v<0?'−':'';return sg+(a>=1e7?'₹'+(a/1e7).toFixed(2)+' cr':a>=1e5?'₹'+(a/1e5).toFixed(a<1e6?2:1).replace(/\.?0+$/,'')+' lakh':inr(a))};
 const pc=(v,d=0)=>v==null||!isFinite(v)?'–':(v*100).toFixed(d)+'%';
 const KEY='aeterna-plan-v2';
-const blank={age:'',retireAge:60,lifeExp:85,retireExpPct:70,dependants:'0',earners:'1',incomeType:'salaried',slab:'30',income:'',expenses:'',homeEmi:'',otherEmi:'',loanOut:'',hiDebt:'',hiRate:'',epfMonthly:'',
+const blank={age:'',retireAge:60,lifeExp:90,retireOther:'',retireExpPct:70,dependants:'0',earners:'1',incomeType:'salaried',slab:'30',income:'',expenses:'',homeEmi:'',otherEmi:'',loanOut:'',hiDebt:'',hiRate:'',epfMonthly:'',
   efund:'',termCover:'',healthCover:'',goals:[{name:'Retirement',type:'retire',cost:'',years:''}],
   investing:'yes',eqmf:'',stocks:'',topStock:'',nfunds:'',fd:'',debtmf:'',savings:'',gold:'',epf:'',ppf:'',nps:'',npsEq:'50',realestate:'',alt:'',
   retireIncome:'',q:{},rEq:11,rDebt:7,rGold:8,rCash:6,infl:6,stepup:10,confidence:75,investShare:85};
@@ -142,7 +142,7 @@ const STEPS=[
   h:()=>`<div id="plGoals">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
    <div class="row" style="margin-top:14px"><button type="button" class="btn" id="plAddG">Add a goal</button>
    <select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Start a business","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
-   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, in today’s money',{hint:n('expenses')?'Leave blank to use 70% of today’s expenses: '+inrS(n('expenses')*.7)+' a month':''})}${F('lifeExp','Plan for the money to last until age',{sel:[['80','80'],['85','85'],['90','90'],['95','95']]})}</div>`}`},
+   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, in today’s money',{hint:n('expenses')?'Leave blank to use 70% of today’s expenses: '+inrS(n('expenses')*.7)+' a month':''})}${M('retireOther','Rent, pension or other income that continues in retirement, a month',{hint:'In today’s money. Reduces what your investments must pay.'})}${F('lifeExp','Plan for the money to last until age',{sel:[['85','85'],['90','90 (suggested)'],['95','95'],['100','100']],full:1})}</div>`}`},
  {t:'What you already hold',s:'Today\'s value of each. Leave out the home you live in. Rough figures are fine.',
   h:()=>`<div class="seg" role="group" aria-label="Investing already?" style="margin-top:14px"><button type="button" data-inv="yes" aria-pressed="${S.investing!=='no'}">I already invest</button><button type="button" data-inv="no" aria-pressed="${S.investing==='no'}">Not yet</button></div>
    ${S.investing==='no'?'<p class="muted" style="margin-top:14px">The plan will give you a starting mix and how much to invest each month. If you have EPF or PPF, add it; it counts towards retirement.</p><div class="pl-grid">'+M('epf','EPF / VPF')+M('ppf','PPF and Sukanya Samriddhi')+'</div>'
@@ -246,18 +246,18 @@ function actions(m,sim,m90){
   }
   const R=m.retire;
   if(R){const g=m.G.find(x=>x.ret), pr=prob[g.name]||{};
-    let d=`${inrS(R.monthlyToday)} a month in today's money is ${inrS(R.monthlyThen)} a month when you retire, rising with inflation after that. To pay it until ${s.lifeExp}, you need about ${inrS(R.corpus)} at ${s.retireAge}. `;
+    let d=(R.other>0?`${inrS(R.spendToday)} a month, less ${inrS(R.other)} of rent or pension, leaves ${inrS(R.monthlyToday)} a month for your investments to pay (today's money); `:`${inrS(R.monthlyToday)} a month in today's money `)+`that is ${inrS(R.monthlyThen)} a month when you retire, rising with inflation after that. To pay it until ${s.lifeExp}, you need about ${inrS(R.corpus)} at ${s.retireAge}. `;
     d+=`Earmarked today: ${inrS(R.have)} (${srcTxt(g.sources)}), worth about ${inrS(R.haveThen)} by then${R.extra>0?`, plus ${inrS(R.extra)} from future EPF and NPS`:''}. `;
     d+=R.sip>0?(g.funded>=.999?`<b>Invest ${inr(R.fund)} a month</b>${s.stepup?`, rising ${s.stepup}% a year`:''} towards it.`:`It needs ${inr(R.sip)} a month; the plan can give it ${inr(R.fund)} (${pc(g.funded)}).`):`Your earmarked money already covers it: nothing more is needed each month.`;
     d+=` <b>Chance the money lasts until ${s.lifeExp}: ${pc(pr.prob)}</b>${pr.p10age!=null?`; in weak markets (1 in 10) it lasts until about ${isFinite(pr.p10age)?Math.floor(pr.p10age):s.lifeExp+'+'}`:''}.`;
-    A.push([`Retirement at ${s.retireAge}: ${inrS(R.monthlyToday)} a month in today's money`,d]);}
+    A.push([`Retirement at ${s.retireAge}: ${inrS(R.spendToday)} a month in today's money, until ${s.lifeExp}`,d+' The retirement income plan below shows how the money is drawn and what protects it if you live longer.']);}
   if(m.termGap>0)A.push([`Buy ${inrS(m.termGap)} more term life cover`,`Suggested total about ${inrS(m.termNeed)}; you have ${inrS(s.termCover)}. A plain term plan; please check with an insurance professional.`]);
   if(m.healthGap>0)A.push([`Raise health cover to ${inrS(m.healthNeed)} or more`,`You have ${inrS(s.healthCover)}. A super top-up is a cheap way to add cover.`]);
   if(s.nfunds>7)A.push([`Cut ${s.nfunds} equity funds down to 5 or 6`,'They overlap heavily. Keep one or two per category in the plan; switch the rest as part of the moves above, oldest units first to keep tax low.']);
   if(s.topStock>10)A.push([`Trim the share that is ${s.topStock}% of your investments`,'Bring it under 10% over a few months; stop adding to it.']);
   const short=m.G.filter(g=>g.sip>0&&g.funded<.999);
   if(short.length){const o=m.option;
-    A.push([`Close the gap of ${inr(m.need-m.later.avail)} a month`,`Your goals need ${inr(m.need)} a month and ${inr(m.later.avail)} is available. `+(o&&!o.none?(o.retire?`Stop working ${o.years} year${o.years>1?'s':''} later, `:`Push "${esc(o.goal)}" out by ${o.years} year${o.years>1?'s':''}, `)+`or raise the yearly step-up, or use the ${100-s.investShare}% buffer.`:`Trim a goal, raise the yearly step-up${m.cur['Real estate']>0?`, or plan to sell part of your ${inrS(m.cur['Real estate'])} of property`:''}.`)]);}
+    A.push([`Close the gap of ${inr(m.need-m.later.avail)} a month`,`Your goals need ${inr(m.need)} a month and ${inr(m.later.avail)} is available. `+(o&&!o.none?(o.retire?`Stop working ${o.years} year${o.years>1?'s':''} later, `:`Push "${esc(o.goal)}" out by ${o.years} year${o.years>1?'s':''}, `)+`or raise the yearly step-up, or use the ${100-s.investShare}% buffer.`:`Trim a goal, push one out, or raise the yearly step-up.`)]);}
   if(m.wealth>500&&m.G.length)A.push([`Optional: invest some of the remaining ${inr(m.wealth)} a month`,`Your goals are covered without it, so you may spend it. Whatever you do invest goes into ${pc(m.wealthMix.eq)} equity, ${pc(m.wealthMix.debt)} debt and ${pc(m.wealthMix.gold)} gold, and is a reserve if markets are weak in retirement.`]);
   if(m90&&!short.length&&s.confidence<90){const extra=m90.need-m.need; if(extra>500)A.push([`For more margin: ${inr(extra)} a month more`,`That would give every goal a 9-in-10 chance (planning for bad markets too). `+(extra<=m.wealth?`It fits within the ${inr(m.wealth)} left over each month.`:m.wealth>500?`The ${inr(m.wealth)} left over each month covers ${pc(m.wealth/extra)} of it.`:'')]);}
   return A;
@@ -267,12 +267,13 @@ function actions(m,sim,m90){
 let lastRes=null;
 function compute(){const res=PM.plan(S,MKT,{nConf:900});const sim=PM.simulate(res,MKT,{n:500});lastRes=res;
   let m90=null;try{if(+S.confidence<90)m90=PM.plan(Object.assign({},S,{confidence:90}),MKT,{nConf:600})}catch(e){}
-  let alt=[];try{if(res.retire){const b=res.retire.monthlyToday;alt=[1,1.25,1.5].map(k=>{const r2=k===1?res:PM.plan(Object.assign({},S,{retireIncome:Math.round(b*k/5000)*5000}),MKT,{nConf:600});
-    const g=r2.G.find(x=>x.ret);return {inc:r2.retire.monthlyToday,sip:g.sip,need:r2.need,ok:r2.need<=r2.avail+1,corpus:r2.retire.corpus}})}}catch(e){}
-  return {res,sim,m90,alt}}
+  let alt=[];try{if(res.retire){const b=res.retire.spendToday;alt=[1,1.25,1.5].map(k=>{const r2=k===1?res:PM.plan(Object.assign({},S,{retireIncome:Math.round(b*k/5000)*5000}),MKT,{nConf:600});
+    const g=r2.G.find(x=>x.ret);return {inc:r2.retire.spendToday,net:r2.retire.monthlyToday,sip:g.sip,need:r2.need,ok:r2.need<=r2.avail+1,corpus:r2.retire.corpus}})}}catch(e){}
+  let ages=[];try{if(res.retire)ages=[85,90,95,100].map(a=>{const r2=a===+S.lifeExp?res:PM.plan(Object.assign({},S,{lifeExp:a}),MKT,{nConf:500});const g=r2.G.find(x=>x.ret);return {age:a,sip:g.sip,need:r2.need,corpus:r2.retire.corpus}})}catch(e){}
+  return {res,sim,m90,alt,ages}}
 function dashboard(){
   $('#plBody').innerHTML=`<div class="card"><p>Running your plan through 19 years of real market months…</p></div>`;
-  setTimeout(()=>{const {res,sim,m90,alt}=compute();$('#plBody').innerHTML=dashHtml(res,sim,m90,alt);bindDash(res)},20);
+  setTimeout(()=>{const {res,sim,m90,alt,ages}=compute();$('#plBody').innerHTML=dashHtml(res,sim,m90,alt,ages);bindDash(res)},20);
 }
 function flagsOf(m){
   const s=m.s, f=[], tot=m.total, sh=k=>tot?m.cur[k]/tot:0;
@@ -286,7 +287,7 @@ function flagsOf(m){
   if(m.healthGap>0)f.push([`Health cover of ${inrS(s.healthCover)} may be low.`,`${inrS(m.healthNeed)} or more for ${+s.dependants>0||+s.earners>1?'a family':'one person'} is a common starting point; one hospital stay can use up years of savings.`]);
   if(m.r.emiRatio>.4)f.push([`EMIs are ${pc(m.r.emiRatio)} of your income.`,'Above 40% leaves little room for shocks. Avoid new loans; prepay the costliest one when you can.']);
   if(s.topStock>10)f.push([`One share is ${s.topStock}% of your investments.`,'A single company above 10% is a concentration risk; stop adding to it and trim it over time.']);
-  if(sh('Real estate')>.5)f.push([`Property is ${pc(sh('Real estate'))} of your investments.`,'It cannot be sold in parts or in a hurry; build liquid investments around it rather than more property.']);
+  if(sh('Real estate')>.5)f.push([`Property is ${pc(sh('Real estate'))} of your investments.`,'It cannot be sold in parts or in a hurry, so the plan never counts on selling it; build liquid investments around it rather than more property.']);
   if(sh('Gold')>.15)f.push([`Gold is ${pc(sh('Gold'))} of your investments.`,'5 to 10% is usually enough to cushion equity falls; beyond that it adds swings without income.']);
   if(m.cur.Cash>m.r.out*12)f.push([`${inrS(m.cur.Cash)} is idle in savings beyond your emergency fund.`,'More than a year of expenses in a savings account loses to inflation; the plan moves it to your goals.']);
   if(s.nfunds>7)f.push([`${s.nfunds} equity funds.`,'Beyond 5 or 6, funds overlap heavily; consolidating makes the portfolio easier to track and rebalance.']);
@@ -304,30 +305,76 @@ function verdict(m,alt){
   else {const gap=goalNeed-sur;cls='bad';
     h=`<b>Your goals need ${inr(goalNeed)} a month; your surplus is ${inr(sur)}. You are short by ${inr(gap)} a month.</b> ${per}. Essential goals are funded first; the steps below show what to change.`}
   let tbl='';
-  if(alt&&alt.length>1)tbl=`<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Retirement spending, today's money</th><th>Corpus at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${alt.map(a=>`<tr><td class="l">${inr(a.inc)} a month</td><td class="num">${inrS(a.corpus)}</td><td class="num">${inr(a.sip)}</td><td class="num">${inr(a.need)}</td><td class="l">${a.need<=sur?`Reachable; ${inr(sur-a.need)} a month to spare`:`Short by ${inr(a.need-sur)} a month`}</td></tr>`).join('')}</tbody></table></div>`;
+  if(alt&&alt.length>1)tbl=`<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Retirement spending, today's money (to ${s.lifeExp})</th><th>Corpus at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${alt.map(a=>`<tr><td class="l">${inr(a.inc)} a month${a.net<a.inc?` <span class="muted" style="font-size:12px">(${inr(a.net)} from investments)</span>`:''}</td><td class="num">${inrS(a.corpus)}</td><td class="num">${inr(a.sip)}</td><td class="num">${inr(a.need)}</td><td class="l">${a.need<=sur?`Reachable; ${inr(sur-a.need)} a month to spare`:`Short by ${inr(a.need-sur)} a month`}</td></tr>`).join('')}</tbody></table></div>`;
   return `<div class="card pl-verdict ${cls}" style="margin-top:18px"><div class="eyebrow">The answer</div><p style="font-size:16px;margin-top:8px;line-height:1.55">${h}</p>${tbl}</div>`;
 }
-function dashHtml(m,sim,m90,alt){
+function retireHtml(m,sim,ages){
+  const R=m.retire,s=m.s;if(!R)return '';
+  const g=sim.goals.find(x=>x.ret)||{},gg=g.guarded||{},infl=s.infl/100,dfl=Math.pow(1+infl,R.y);
+  const A=a=>a==null?'–':isFinite(a)?Math.floor(a):'100+';
+  const yearly=R.monthlyThen*12, corp=g.corp50||R.corpus, wr=yearly/corp;
+  const b1=yearly*2, b2=yearly*5*Math.pow(1+infl,3.5), b3=Math.max(0,corp-b1-b2);
+  const sur=Math.max(0,m.r.surplus);
+  const ageRows=(ages||[]).map(a=>`<tr${a.age==s.lifeExp?' style="font-weight:600"':''}><td class="l">Until ${a.age}${a.age==s.lifeExp?' (your plan)':''}</td><td class="num">${inrS(a.corpus)}</td><td class="num">${inr(a.sip)}</td><td class="num">${inr(a.need)}</td><td class="l">${a.need<=sur?`Reachable; ${inr(sur-a.need)} a month to spare`:`Short by ${inr(a.need-sur)} a month`}</td></tr>`).join('');
+  const lastRow=(lab,o)=>`<tr><td class="l">${lab}</td>${[85,90,95,100].map(a=>`<td class="num">${o.to?pc(o.to[a]):'–'}</td>`).join('')}<td class="num">${A(o.p10age)}</td></tr>`;
+  const annuity=Math.round(1e7*.07/12/1000)*1000;
+  return `<h2>Your retirement income plan</h2>
+  <div class="grid g2" style="margin-top:12px;align-items:start">
+   <div class="card"><div class="kv" style="grid-template-columns:1fr">
+    <div><span>Spending you want, today's money</span><b>${inr(R.spendToday)}</b></div>
+    ${R.other>0?`<div><span>Less rent / pension that continues</span><b>−${inr(R.other)}</b></div>`:''}
+    <div><span><b style="color:var(--ink)">Your investments must pay</b> (today's money)</span><b>${inr(R.monthlyToday)}</b></div>
+    <div><span>The same at ${s.retireAge}, after inflation</span><b>${inr(R.monthlyThen)} a month</b></div>
+    <div><span>Corpus at ${s.retireAge}, typical markets</span><b>${inrS(g.corp50)}</b></div>
+    <div><span>Corpus at ${s.retireAge}, weak markets (1 in 10)</span><b>${inrS(g.corp10)}</b></div>
+    <div><span>First-year withdrawal, as a share of the corpus</span><b>${pc(wr,1)}</b></div></div></div>
+   <div class="card"><b>Why the money can run out</b><p style="font-size:14.5px;margin-top:8px">You start by taking ${pc(wr,1)} of the corpus in the first year, and that amount rises ${s.infl}% a year with prices: ${inrS(yearly)} in year 1, ${inrS(yearly*Math.pow(1+infl,10))} in year 10, ${inrS(yearly*Math.pow(1+infl,20))} in year 20. A retirement mix (${pc(PM.RMIX(m.E).eq)} equity, the rest mainly debt) has earned about 9% a year since 2007, only about 3% more than inflation. So the corpus shrinks in real terms every year, and a bad market early in retirement, when the corpus is largest, does the most damage. That is why the plan is tested to ${s.lifeExp}, not to an average life expectancy.</p></div></div>
+
+  <h3 style="margin-top:22px">Will it last?</h3>
+  <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Chance your money lasts until</th><th>85</th><th>90</th><th>95</th><th>100</th><th>Weak markets (1 in 10): lasts until</th></tr></thead><tbody>
+   ${lastRow('Spending rises with inflation every year',g)}${lastRow('With the guardrail below',gg)}</tbody></table></div>
+  <p class="muted" style="font-size:12.5px;margin-top:6px">From 800 sequences of real market months since 2007, saving until ${s.retireAge} and spending after it.</p>
+
+  <h3 style="margin-top:22px">How long should you plan for?</h3>
+  <p style="font-size:14.5px;margin-top:6px;max-width:80ch">Planning to an older age costs more each month now, and is the surest protection against outliving your money.</p>
+  <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Plan for the money to last</th><th>Corpus needed at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${ageRows}</tbody></table></div>
+
+  <h3 style="margin-top:22px">At ${s.retireAge}: turning the corpus into a monthly income</h3>
+  <div class="grid g3" style="margin-top:10px">
+   <div class="card"><div class="eyebrow">Bucket 1 · next 2 years</div><div class="pl-k" style="font-size:22px;margin-top:6px">${inrS(b1)}</div><p style="font-size:14px;margin-top:6px">Liquid and arbitrage funds. A monthly SWP of ${inr(R.monthlyThen)} is paid from here, so a market fall never forces you to sell.</p></div>
+   <div class="card"><div class="eyebrow">Bucket 2 · years 3 to 7</div><div class="pl-k" style="font-size:22px;margin-top:6px">${inrS(b2)}</div><p style="font-size:14px;margin-top:6px">Conservative hybrid, short-duration and corporate bond funds. Refills bucket 1 each year.</p></div>
+   <div class="card"><div class="eyebrow">Bucket 3 · year 8 onwards</div><div class="pl-k" style="font-size:22px;margin-top:6px">${inrS(b3)}</div><p style="font-size:14px;margin-top:6px">Large cap, flexi cap and balanced advantage funds, plus gold: the growth that keeps pace with prices for the next 20 years and more.</p></div></div>
+  <p style="font-size:14.5px;margin-top:12px;max-width:80ch"><b>Each year:</b> top bucket 1 back up to 2 years of spending, from bucket 3 if equity had a good year, from bucket 2 if it fell. Re-split the rest once a year. Amounts are for typical markets; rework them with us at ${s.retireAge - 1}.</p>
+
+  <h3 style="margin-top:22px">Safeguards for a long life</h3>
+  <ol class="pl-act" style="margin-top:10px">
+   <li><b>The guardrail: after a year in which your portfolio lost money, skip that year's increase.</b><p>${gg.skipped50!=null?`In the simulations this happened about ${gg.skipped50} time${gg.skipped50===1?'':'s'} in a typical retirement and left spending at 85 about ${pc(1-(gg.real85||1))} lower in today's money, while raising the chance of the money lasting to ${s.lifeExp} from ${pc(g.prob)} to ${pc(gg.prob)}.`:''}</p></li>
+   <li><b>Plan to ${Math.max(95,+s.lifeExp+5)}, not ${s.lifeExp}, if you can.</b><p>See the table above for the extra monthly amount. Money left at the end is a legacy; money running out at 88 is a crisis.</p></li>
+   <li><b>A lifetime annuity for the essentials.</b><p>At ${s.retireAge}, part of the corpus can buy an annuity from an insurer that pays a fixed amount for life, however long you live: roughly ₹${annuity.toLocaleString('en-IN')} a month for every ₹1 crore at about 7% a year today. It does not rise with prices, so it suits the essentials${R.other>0?' alongside your rent':''}, not the whole lifestyle. Rates vary by insurer and age; check current quotes before deciding.</p></li>
+   ${R.other>0?`<li><b>Keep the property and its rent.</b><p>The plan counts its ${inr(R.other)} a month (today's money) as income and never assumes you sell it. Raise the rent in line with the market to keep its value rising with prices.</p></li>`:''}
+   <li><b>Keep health cover going after you stop working.</b><p>Medical costs are the most common reason retirement money runs out early. Keep a family floater plus a super top-up into your 80s.</p></li></ol>`;
+}
+function dashHtml(m,sim,m90,alt,ages){
   const s=m.s, flags=flagsOf(m), tot=m.total, tt=m.tgtTotal||1, hasCur=tot>0&&s.investing!=='no';
   const gap=Math.abs(m.r.tol-m.r.cap)>.2?(m.r.tol>m.r.cap?`You are comfortable with more risk than your finances can absorb right now (${m.r.why.slice(0,3).join('; ')}). The plan follows your finances; as these improve, it can take more equity.`
     :'Your finances could carry more risk than you are comfortable with. The plan follows your comfort: a plan you abandon in a fall does more harm than a careful one you keep.'):'Your comfort with risk and your financial capacity are broadly in line.';
   const prob=Object.fromEntries(sim.goals.map(g=>[g.name,g]));
   const goals=m.G.map(g=>{const pr=prob[g.name]||{prob:0};const fundedFull=g.funded>=.999;
     const reach=!fundedFull&&g.y>0&&pr.p50!=null?(g.ret?`With this plan, typical markets get you about ${inrS(pr.p50)}: enough for about ${inr(pr.p50/g.fv*m.retire.monthlyToday)} a month in retirement, in today's money.`:`With this plan, typical markets get you about ${inrS(pr.p50)} of the ${inrS(g.fv)}.`):'';
-    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${g.ret&&g.how&&g.how!=='your figure'?' (${esc(g.how)})':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
+    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${g.ret&&g.how&&g.how!=='your figure'?' ('+esc(g.how)+')':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
       ${mixBar(g.mix)}<div class="muted" style="font-size:12.5px">${pc(g.mix.eq)} equity · ${pc(g.mix.debt)} debt${g.mix.gold?' · '+pc(g.mix.gold)+' gold':''}${g.y>3?'; moves to safety as the date nears':''}</div>
       <div class="kv" style="grid-template-columns:1fr"><div><span>Set aside from today's money</span><b>${inrS(g.have)}</b></div>${g.sources&&g.sources.length?`<div style="border:0;padding-top:0"><span class="muted" style="font-size:12.5px">${g.sources.map(([k,v])=>inrS(v)+' '+SRCN[k]).join(' · ')}</span></div>`:''}${g.extra>0?`<div><span>Future EPF / NPS</span><b>${inrS(g.extra)}</b></div>`:''}${g.ph>0&&g.f1>0?`<div><span>Months 1–${g.ph}, while foundations are built</span><b>${inr(g.f1)}</b></div>`:''}<div><span>Needs a month${g.ph>0?` from month ${g.ph+1}`:''} (${s.confidence===50?'typical markets':s.confidence===90?'9 in 10 markets':'3 in 4 markets'})</span><b>${g.sip>0?inr(g.sip):'Nothing more'}</b></div>${g.sip>0?`<div><span>In your plan</span><b>${inr(g.f2)}${fundedFull?'':` <span style="color:var(--c-bad)">(${pc(g.funded)})</span>`}</b></div>`:''}</div>
       <p style="font-size:13px;margin:0">${g.y===0?(g.left>0?'Due now and not fully covered.':'Covered.'):`${g.ret?`<b>${pc(pr.prob)}</b> chance your money lasts until ${s.lifeExp}${pr.p10age!=null?`; in weak markets until about ${isFinite(pr.p10age)?Math.floor(pr.p10age):s.lifeExp+'+'}`:''}.`:`<b>${pc(pr.prob)}</b> chance of reaching it with this plan${pr.p10!=null&&fundedFull?`; in weak markets about ${inrS(pr.p10)}`:''}.`}`} ${g.ret?'':reach}</p></div>`}).join('');
   const rows=Object.keys(COL).map(k=>{const c=m.cur[k],t=m.tgt[k],d=t-c;if(!c&&!t)return '';
     const dp=tot?t/tt-c/tot:0;let act=Math.abs(d)<Math.max(5e4,.02*tot)?'On target':d>0?'Increase: through the moves and SIPs in the plan above':'Reduce: the plan above says which holdings move, and where';
-    if(k==='Real estate'||k==='Other')act='Kept as is';if(k==='Emergency fund')act='From idle savings, step 1 above';if(k==='Arbitrage & liquid')act='Money for goals within 3 years';
+    if(k==='Real estate'||k==='Other')act=k==='Real estate'&&+S.retireOther>0?'Kept: its rent counts towards retirement income':'Kept as is';if(k==='Emergency fund')act='From idle savings, step 1 above';if(k==='Arbitrage & liquid')act='Money for goals within 3 years';
     return `<tr><td class="l"><b style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${COL[k]};margin-right:6px"></b>${k}</td><td class="num">${inrS(c)} <span class="muted" style="font-size:12px">${pc(c/tot)}</span></td><td class="num">${inrS(t)} <span class="muted" style="font-size:12px">${pc(t/tt)}</span></td><td class="num">${d>=0?'+':''}${inrS(d)}</td><td class="l" style="font-size:13.5px">${act}</td></tr>`}).join('');
   const locked=s.epf+s.ppf+s.nps;
   const two=m.invest1!=null;
   const catRows=m.cats.map(c=>`<tr><td class="l">${c.url?`<a href="${c.url}">${esc(c.name)}</a>`:esc(c.name)}</td>${two?`<td class="num">${c.v1?inr(c.v1):'–'}</td>`:''}<td class="num">${c.v?inr(c.v):'–'}</td></tr>`).join('');
   const later=m.phaseMonths>0?`For the first ${m.phaseMonths} month${m.phaseMonths>1?'s':''}, ${inr(m.debtPay+m.efPay)} a month goes to ${[m.debtPay?'clearing debt':'',m.efPay?'the emergency fund':''].filter(Boolean).join(' and ')}; your goals get the rest. From month ${m.phaseMonths+1}, everything goes to your goals.`:'';
   const opt=m.option;
-  const shortTxt=m.need>m.later.avail+1?`Your goals need ${inr(m.need)} a month; ${inr(m.later.avail)} is available after the buffer. Essential goals are funded first.${opt&&!opt.none?` <b>One way to close the gap:</b> ${opt.retire?`stop working ${opt.years} year${opt.years>1?'s':''} later`:`push "${esc(opt.goal)}" out by ${opt.years} year${opt.years>1?'s':''}`}, which brings its monthly need to ${inr(opt.sip)}.`:opt&&opt.none?` "${esc(opt.goal)}" stays out of reach even 20 years later at this surplus: it needs a smaller target${m.cur['Real estate']>0?`, or part of your ${inrS(m.cur['Real estate'])} of property if you are willing to sell it`:''}, or a bigger surplus.`:''}`:'';
+  const shortTxt=m.need>m.later.avail+1?`Your goals need ${inr(m.need)} a month; ${inr(m.later.avail)} is available after the buffer. Essential goals are funded first.${opt&&!opt.none?` <b>One way to close the gap:</b> ${opt.retire?`stop working ${opt.years} year${opt.years>1?'s':''} later`:`push "${esc(opt.goal)}" out by ${opt.years} year${opt.years>1?'s':''}`}, which brings its monthly need to ${inr(opt.sip)}.`:opt&&opt.none?` "${esc(opt.goal)}" stays out of reach even 20 years later at this surplus: it needs a smaller target or a bigger surplus.`:''}`:'';
   const review=new Date();review.setFullYear(review.getFullYear()+1);
   const startMix=hasCur?null:m.wealthMix;
   return `<div class="pl-sticky pl-noprint"><div class="pl-ctrl">
@@ -358,6 +405,8 @@ function dashHtml(m,sim,m90,alt){
   <p class="muted" style="font-size:13.5px;margin-top:6px">Costs grow at ${s.infl}% inflation. The chance of success comes from replaying real market months since 2007 with your plan.</p>
   <div class="pl-goals">${goals||'<div class="card">No goals yet: everything goes to long-term wealth.</div>'}</div>
 
+  ${retireHtml(m,sim,ages)}
+
   <h2>Your monthly plan</h2>
   <div class="grid g2" style="margin-top:12px;align-items:start">
    <div class="card"><div class="kv" style="grid-template-columns:1fr"><div><span>Monthly surplus (income − expenses − EMIs)</span><b>${inr(Math.max(0,m.r.surplus))}</b></div><div><span>Kept as a buffer for irregular costs (${100-s.investShare}%)</span><b>${inr(m.buffer)}</b></div><div><span><b style="color:var(--ink)">Invested or set aside</b></span><b>${inr(m.invest)}</b></div></div>
@@ -372,7 +421,7 @@ function dashHtml(m,sim,m90,alt){
    <div><b>Next 3 months</b><ul>${[m.payDebt&&'Pay down the expensive debt first.',m.efGap>0&&`Build the emergency fund towards ${inrS(m.efTarget)}.`,(m.termGap>0||m.healthGap>0)&&'Sort out term and health cover.',m.r.surplus>0&&'Start the SIPs above; schedule them for the day after salary.',m.cur.Cash>m.r.out*12&&'Move idle savings into the goals they belong to.'].filter(Boolean).map(x=>`<li>${x}</li>`).join('')}</ul></div>
    <div><b>3 to 12 months</b><ul><li>Steer new money into what is underweight before selling anything.</li>${s.nfunds>7?'<li>Consolidate overlapping equity funds.</li>':''}<li>Check each SIP is in the category its goal's timeline needs.</li></ul></div>
    <div><b>1 to 3 years</b><ul><li>Raise SIPs by ${s.stepup}% with each raise.</li><li>Rebalance once a year, or when an asset class is 5 points off; use the ₹1.25 lakh yearly tax-free equity gain to do it.</li></ul></div>
-   <div><b>Later</b><ul><li>As each goal comes within 3 years, move its money out of equity in stages.</li><li>Revisit the plan after marriage, a child, a new job or loan, or an inheritance.</li></ul></div></div>
+   <div><b>Later</b><ul><li>As each goal comes within 3 years, move its money out of equity in stages.</li>${m.retire?`<li>At ${s.retireAge-1}: set up the three retirement buckets and the monthly SWP; consider an annuity for the essentials.</li>`:''}<li>Revisit the plan after marriage, a child, a new job or loan, or an inheritance.</li></ul></div></div>
   <div class="pl-flag ok" style="margin-top:18px"><b>Review by ${review.toLocaleDateString('en-IN',{month:'long',year:'numeric'})},</b> or sooner if your income, family or goals change.</div>
 
   <div class="inv-cta pl-noprint"><div><h2>Want us to look at it with you?</h2><p>We can review this plan against your actual funds and choose the schemes for each category. The first conversation is free.</p></div>

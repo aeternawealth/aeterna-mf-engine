@@ -59,9 +59,13 @@ def main():
     tri = ingest.load_cached_tri() if a.offline else ingest.fetch_all_tri(log)
 
     log("[4/7] NAV history (mfapi)")
-    navs = ingest.load_cached_navs(u.code) if a.offline else ingest.fetch_navs(u.code, log=log)
-    log(f"  {len(navs)} NAV histories")
-    ingest.top_up_from_navall(navs, u, log)
+    liq = ingest.liquid_universe(navall)   # yardstick for arbitrage funds, not ranked
+    codes = list(u.code) + [c for c in liq.code if c not in set(u.code)]
+    navs = ingest.load_cached_navs(codes) if a.offline else ingest.fetch_navs(codes, log=log)
+    log(f"  {len(navs)} NAV histories ({len(liq)} of them liquid funds, the arbitrage yardstick)")
+    ingest.top_up_from_navall(navs, pd.concat([u, liq], ignore_index=True), log)
+    liquid = ingest.liquid_yardstick(navs, liq, as_of=tri.index.max())
+    log(f"  liquid-fund yardstick: {', '.join(f'{k} {len(v)} days' for k, v in liquid.items()) or 'none'}")
 
     hmonth = a.holdings_month or (pd.Period(datetime.now(), "M") - 1).strftime("%Y-%m")
     log(f"[5/7] Holdings for {hmonth}")
@@ -90,7 +94,7 @@ def main():
 
     log("[6/7] Metrics, protocols, ranking committee")
     out = rank_universe(u, navs, tri, as_of=a.as_of, ter=ingest.load_manual("ter"),
-                        aum=ingest.load_manual("aum"), flags=ingest.load_manual("flags"), holdings=hold, log=log)
+                        aum=ingest.load_manual("aum"), flags=ingest.load_manual("flags"), holdings=hold, log=log, liquid=liquid)
     from engine import flows as FL
     if not (a.offline or a.daily):
         try:
@@ -105,9 +109,17 @@ def main():
     keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
     if a.daily and snap.exists():   # Overall rating changes only monthly
         s0 = pd.read_csv(snap)
+        # a category with no fund in the snapshot is new (added since the last monthly run): rate it today
+        # instead of showing every fund Unrated until the next monthly run
+        rated_cats = set(out.loc[out["code"].isin(s0["code"]), "category"])
+        fresh = out[~out["category"].isin(rated_cats)]
+        if len(fresh):
+            log(f"  new categories rated today (not in the monthly snapshot): {', '.join(sorted(fresh.category.unique()))}")
+        out = out[out["category"].isin(rated_cats)]
         out = out.drop(columns=[c for c in keep if c != "code" and c in out.columns]).merge(s0, on="code", how="left")
         out["tier"] = out["tier"].fillna("Unrated")
         out["flags"] = out["flags"].map(lambda f: f.split(", ") if isinstance(f, str) and f else [])
+        out = pd.concat([out, fresh], ignore_index=True)
     elif not a.daily:
         o = out[[c for c in keep if c in out.columns]].copy()
         o["flags"] = o["flags"].map(lambda f: ", ".join(f) if isinstance(f, list) else "")

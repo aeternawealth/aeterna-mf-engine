@@ -46,6 +46,12 @@ CATEGORY_RULES = [
     ("thematic", "Sectoral/Thematic"),
 ]
 INDEX_CATEGORY_KEYS = ["index funds - equity", "other scheme - index funds"]
+# Hybrid categories handled so far (AMFI raw-category keyword -> our category). Debt and the other hybrid
+# categories follow; each needs its own yardstick and protocol before it is added.
+HYBRID_RULES = [("arbitrage", "Arbitrage")]
+# Three master categories for the site: every category maps to one
+ASSET_CLASS = {"Arbitrage": "Hybrid"}   # everything else (equity categories, equity index funds) -> "Equity"
+LIQUID_CATEGORY_KEY = "liquid fund"     # AMFI raw category of the liquid funds used as the arbitrage yardstick
 
 # Benchmark (Total Return Index) per category - SEBI tier-1 style benchmarks.
 CATEGORY_BENCHMARK = {
@@ -61,6 +67,7 @@ CATEGORY_BENCHMARK = {
     "Contra": "NIFTY 500",
     "Dividend Yield": "NIFTY 500",
     "Sectoral/Thematic": "NIFTY 500",
+    "Arbitrage": "NIFTY 50 ARBITRAGE",   # SEBI tier-1 benchmark; falls back to the median arbitrage fund if absent
 }
 
 # Thematic sub-buckets so a pharma fund is compared with pharma funds.
@@ -145,7 +152,30 @@ INDEX_PROTOCOL = {
     "ter":                  ("Cost", 20, False),
 }
 
+# Arbitrage funds (hybrid): cash-futures arbitrage, so returns sit close to short-term rates. They are compared
+# with each other on return over the arbitrage index (which has no costs, so most funds trail it), consistency,
+# cost and size; the absolute guard for A/A+ is beating the median liquid fund (protocols.assign_tiers).
+ARBITRAGE_PROTOCOL = {
+    "roll1y_excess_median": ("Return", 25, True),    # median rolling 1-year return over the arbitrage index
+    "excess_cagr_3y":       ("Return", 15, True),
+    "roll1y_hit_rate":      ("Consistency", 10, True),
+    "vol_3y":               ("Consistency", 10, False),   # monthly-return volatility, annualised
+    "neg_months_3y":        ("Consistency", 5, False),    # share of months with a negative return
+    "ter_base":             ("Cost", 25, False),   # the fund's fee; trading taxes are already in the returns above
+    "aum_size":             ("Size", 10, True),           # AUM capped at ARB_AUM_CAP: below it, too few trades to spread costs
+}
+ARB_AUM_CAP = 5000   # Rs crore; above this, size earns no more credit
+# Investors pick arbitrage over liquid funds for tax: liquid-fund gains are taxed at the slab rate, arbitrage gains
+# as equity. The liquid comparison that decides A/A+ is after tax for a top-slab investor holding over a year:
+# 30% + 4% cess on liquid gains; 12.5% LTCG + 4% cess on arbitrage gains (surcharge and the Rs 1.25 lakh
+# exemption ignored, both of which only widen the gap). Before-tax figures are shown as well.
+TAX_SLAB_TOP = 0.312
+TAX_EQUITY_LTCG = 0.13
+
+
 def protocol_for(category: str):
+    if category == "Arbitrage":
+        return "Arbitrage protocol", ARBITRAGE_PROTOCOL
     if category == "Index Fund":
         return "Index protocol", INDEX_PROTOCOL
     if category in ("Small Cap", "Mid Cap"):
@@ -163,6 +193,7 @@ RED_FLAGS = {
     "mandate_breach": "Portfolio violates SEBI category mandate in two consecutive months (e.g. small cap fund <65% in small caps) -> capped at B",
     "mandate_watch": "Portfolio violates SEBI category mandate in the latest month only (informational, no cap)",
     "closet_indexer": "Active share below threshold (50%; 30% for large caps) AND no 3Y excess return - paying active fees for index returns",
+    "trails_liquid_after_tax": "Arbitrage fund: 3Y return after tax below the median liquid fund's after tax, top slab (cannot be rated A or A+)",
 }
 CLOSET_INDEX_ACTIVE_SHARE = 50          # default threshold
 CLOSET_INDEX_BY_CATEGORY = {"Large Cap": 30}   # large caps structurally hug the index (80% in top 100)
@@ -184,6 +215,8 @@ def horizon_protocol(h: str, category: str) -> dict:
     dominates; Sortino dropped everywhere (0.98 rank-correlated with excess return within a peer group)."""
     if category == "Index Fund":
         return {f"excess_{h}": ("Tracking", 45, True), f"te_{h}": ("Tracking", 35, False), "ter": ("Cost", 20, False)}
+    if category == "Arbitrage":
+        return {f"excess_{h}": ("Return", 60, True), f"hit_{h}": ("Consistency", 15, True), "ter_base": ("Cost", 25, False)}
     w = {"6M": (50, 0, 10, 10, 20), "1Y": (40, 10, 10, 10, 20), "3Y": (25, 15, 15, 10, 25), "5Y": (25, 15, 15, 10, 25)}[h]
     p = {f"excess_{h}": ("Return", w[0], True), f"ir_{h}": ("Return", w[1], True),
          f"dcap_{h}": ("Risk", w[2], False), f"mdd_{h}": ("Risk", w[3], True),

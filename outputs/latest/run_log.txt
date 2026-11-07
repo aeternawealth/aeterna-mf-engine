@@ -1,41 +1,48 @@
-Aeterna MF Engine run 2026-11-07 03:58
+Aeterna MF Engine run 2026-11-07 11:16
 [1/7] Universe (AMFI NAVAll)
-  1689 equity + index schemes (growth, Direct & Regular)
+  1766 equity + index schemes (growth, Direct & Regular)
+  Month-end AUM (30 Oct 2026): 878/889 schemes
+  AUM: 878 month-end, 4 quarterly-average fallback
 [3/7] Benchmarks (Nifty TRI)
   TRI: 145 indices, 2013-01-01 -> 2026-11-06
 [4/7] NAV history (mfapi)
-  NAV 100/1689
-  NAV 200/1689
-  NAV 300/1689
-  NAV 400/1689
-  NAV 500/1689
-  NAV 600/1689
-  NAV 700/1689
-  NAV 800/1689
-  NAV 900/1689
-  NAV 1000/1689
-  NAV 1100/1689
-  NAV 1200/1689
-  NAV 1300/1689
-  NAV 1400/1689
-  NAV 1500/1689
-  NAV 1600/1689
-  1689 NAV histories
-  24 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  NAV 100/1870
+  NAV 200/1870
+  NAV 300/1870
+  NAV 400/1870
+  NAV 500/1870
+  NAV 600/1870
+  NAV 700/1870
+  NAV 800/1870
+  NAV 900/1870
+  NAV 1000/1870
+  NAV 1100/1870
+  NAV 1200/1870
+  NAV 1300/1870
+  NAV 1400/1870
+  NAV 1500/1870
+  NAV 1600/1870
+  NAV 1700/1870
+  NAV 1800/1870
+  1870 NAV histories (104 of them liquid funds, the arbitrage yardstick)
+  30 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  liquid-fund yardstick: Direct 7075 days, Regular 7494 days
 [5/7] Holdings for 2026-10
   daily mode: re-using holdings of 2026-09
 [6/7] Metrics, protocols, ranking committee
-  metrics 200/1689
-  metrics 400/1689
-  metrics 600/1689
-  metrics 800/1689
-  metrics 1000/1689
-  metrics 1200/1689
-  metrics 1400/1689
-  metrics 1600/1689
+  metrics 200/1766
+  metrics 400/1766
+  metrics 600/1766
+  metrics 800/1766
+  metrics 1000/1766
+  metrics 1200/1766
+  metrics 1400/1766
+  metrics 1600/1766
+  new categories rated today (not in the monthly snapshot): Arbitrage
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                A  A+    B   C  Unrated
 category                                   
+Arbitrage          12   4   22  14       25
 Contra              3   1    2   0        5
 Dividend Yield      4   2    8   4        6
 ELSS               16   8   24  26        2

@@ -19,6 +19,7 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 - [ELSS funds](https://aeternawealth.com/mutual-funds/elss/)
 - [Sectoral/Thematic funds](https://aeternawealth.com/mutual-funds/sectoral-thematic/)
 - [Index Fund funds](https://aeternawealth.com/mutual-funds/index-fund/)
+- [Arbitrage funds](https://aeternawealth.com/mutual-funds/arbitrage/)
 
 ## Downloadable data
 - [All funds, latest metrics (CSV)](https://aeternawealth.com/data/funds.csv)

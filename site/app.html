@@ -397,7 +397,7 @@ footer.site a{color:var(--ink-2)}
 <div data-view="ratings" hidden>
   <section class="band" style="padding-top:44px"><div class="wrap">
     <div class="eyebrow">Ratings</div>
-    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds</h1>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Mutual fund ratings</h1>
     <p class="lede" style="margin-top:12px" id="rateLede"></p>
     <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
@@ -896,7 +896,7 @@ function ratings(){
   $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
   const h=S.hz, idx=S.cat==='Index Fund', arb=S.cat==='Arbitrage';
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
-  $('#hzNote').innerHTML=h==='Overall'?'<b>Track record</b> needs at least 3 years of history (1 year for index funds). Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
+  $('#hzNote').innerHTML=h==='Overall'?(arb?'<b>Track record</b>: arbitrage funds are compared on return over the index, consistency, fee and size, and need to beat liquid funds after tax for A or A+. 3 years of history needed.':'<b>Track record</b> needs at least 3 years of history (1 year for index funds).')+' Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
     :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Every fund that existed for the whole period is ranked; a red note by the name flags a weak long-term record.`;
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
@@ -957,7 +957,7 @@ function ratings(){
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
       return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(hd(c).filter(Boolean).join(' · '))}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
     const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1],[m1,m2]=hd(c);return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}"><span class="hl"><span class="h1">${m1}</span><span class="h2">${m2||'&nbsp;'}</span></span><span class="arr" aria-hidden="true">${on?(srt.dir==='asc'?'▲':'▼'):'▾'}</span></button></th>`}).join('');
-    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
+    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · ${arb&&bench==='Peer median'?'benchmark: the median arbitrage fund':'benchmark '+esc(bench)+' TRI'}</span></div>
     <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
   $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${esc(lbl(c))}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,ter_base:1,downside_capture_3y:1,tracking_err_1y:1};
@@ -986,7 +986,7 @@ async function fund(code){
   el.innerHTML=`<a href="#ratings" style="font-size:14px">← ${esc(f.category)} ratings</a>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:16px;gap:20px">
     <div style="min-width:0"><div class="eyebrow">${esc(f.category)} · ${esc(f.plan_type)} plan · Growth</div><h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">${esc(f.name)}</h1>
-    <p class="muted" style="margin-top:8px">${esc(f.amc)} · benchmark ${esc(f.benchmark||'peer median')} TRI · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
+    <p class="muted" style="margin-top:8px">${esc(f.amc)} · ${f.category==='Arbitrage'&&!f.benchmark?'benchmark: the median arbitrage fund':'benchmark '+esc(f.benchmark||'peer median')+' TRI'} · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
     ${fl.length?`<p class="flag" style="margin-top:6px">${fl.map(esc).join(' · ')}</p>`:''}</div>
     <div class="row">${twin?`<a class="btn" href="#fund-${twin.code}">See ${esc(twin.plan_type)} plan</a>`:''}<button class="btn primary" id="addCmp">Add to compare</button></div>
   </div>

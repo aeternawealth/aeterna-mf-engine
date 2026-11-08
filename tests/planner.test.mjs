@@ -159,6 +159,14 @@ for (const [age, inc, exp, emi, goalsT, label] of [
       if (!okPath || !(x.equityFall < 0) || (x.worstGap > 1)) bad++; } }
   must(bad === 0, 'replay produced an invalid path', { bad }); }
 
+// ------------------------------------------------------------- 6c. the withdrawal-rate table matches the model's market data
+{ const sw = JSON.parse(fs.readFileSync(new URL('../site/planner/swr.json', import.meta.url)));
+  const { table } = await import('../tools/planner_swr.mjs');
+  const t = table(35, M.paths(mkt, 600, 1500, 777));
+  for (const r of [3, 4, 5]) { const a = sw.mixes['35'].find(x => x.rate === r), b = t.find(x => x.rate === r);
+    must(Math.abs(a.last30 - b.last30) <= 4 && Math.abs(a.last50 - b.last50) <= 5, 'swr.json out of date: run node tools/planner_swr.mjs', { r, a, b }); }
+  const x = sw.mixes['35']; must(x.every((r, i) => !i || (r.last30 <= x[i - 1].last30 && r.last50 <= x[i - 1].last50 && r.kept50 <= x[i - 1].kept50)), 'higher withdrawal lasted longer', {}); }
+
 // ------------------------------------------------------------- 7. the same finances at every age
 const ageRows = [];
 for (const age of [22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72]) {

@@ -198,7 +198,54 @@ def guides(d, f):
              ("Are index funds safe?", "They carry the full risk of the market they track; they remove the risk of a fund manager underperforming.")],
         links=[("/mutual-funds/index-fund/nifty-50/", "Nifty 50 index funds compared"), ("/insights/scoreboard/", "Active funds vs their index")],
     ))
+    sw = _swr()
+    if sw:
+        a, b = sw["mixes"]["35"], sw["mixes"]["60"]
+        r = lambda t, x: next(z for z in t if abs(z["rate"] - x) < .01)
+        y0 = sw["from"][:4]
+        rows = [[f"{z['multiple']:g}× ({z['rate']:g}%)", f"{z['last30']}%", f"{z['last40']}%", f"{z['last50']}%", f"{z['kept50']}%",
+                 f"{r(b, z['rate'])['last50']}%"] for z in a]
+        G.append(dict(
+            slug="4-percent-rule-india",
+            title="The 4% rule in India: how big a corpus lasts for life",
+            seo="The 4% rule in India: retirement corpus, safe withdrawal rate and your freedom number",
+            desc=f"Does taking 4% a year from a retirement corpus work in India? Tested on Indian market returns since {y0}: how long 25×, 33× and 40× your yearly spending last, and which to aim for.",
+            answer=(f"The 4% rule says: take 4% of your corpus in the first year of retirement, raise it with inflation every year, and the money should last about 30 years. "
+                    f"That needs a corpus of 25 times your yearly spending. On Indian market returns since {y0}, with inflation at {sw['inflation']:g}%, 25× lasted 30 years in {r(a, 4)['last30']} of 100 cases "
+                    f"but 50 years in only {r(a, 4)['last50']}, so it is not 'forever' in India. For money that lasts for life, even if you stop work early, aim for about 33× (3% a year): "
+                    f"it lasted 50 years in {r(a, 3)['last50']} of 100. To pass the corpus on with its value intact, aim for about 40× (2.5%)."),
+            sections=[
+                ("Where the 4% rule comes from", ["It comes from US research in the 1990s (William Bengen, then the 'Trinity study'): a mix of US shares and bonds, from which 4% a year rising with inflation survived every 30-year period in US history.",
+                                                  f"India is different. Inflation has been higher (we assume {sw['inflation']:g}% a year), so the withdrawal grows faster, and debt returns are only a little above inflation. Both make a given rate run out sooner."]),
+                ("The multiples, in plain words", ["ul", ["Yearly spending means what your investments must pay: your expenses in retirement, less any rent or pension. Not your house, not your income.",
+                                                          f"20× (5% a year): lasted 30 years in {r(a, 5)['last30']} of 100 cases. Enough only for a late, short retirement.",
+                                                          f"25× (4% a year): lasted 30 years in {r(a, 4)['last30']} of 100, and 40 years in {r(a, 4)['last40']}. Suits retiring at about 60.",
+                                                          f"33× (3% a year): lasted 50 years in {r(a, 3)['last50']} of 100. Enough for life at almost any retirement age: a sensible 'freedom number'.",
+                                                          f"40× (2.5% a year): after 50 years the corpus was still worth what it started with, in today's money, in {r(a, 2.5)['kept50']} of 100. This is the number for passing wealth on."]]),
+                ("Tested on Indian markets", ["table", ["Corpus (year-1 withdrawal)", "Lasts 30 yrs", "40 yrs", "50 yrs", "Value kept, 50 yrs", "50 yrs, 60% equity"], rows,
+                                             f"{sw['sequences']:,} sequences of {sw['years']} years built from actual monthly returns of Indian equity, debt and gold funds, {sw['from']} to {sw['to']} (2008 and 2020 included), "
+                                             f"in random 12-month blocks. Portfolio: 35% equity, 5% gold, 60% debt, rebalanced monthly; the last column uses 60% equity. The withdrawal rises {sw['inflation']:g}% a year. Fund returns are after fund costs, before tax."]),
+                ("What a higher equity share does", [f"More equity makes the corpus grow faster but swing harder. At 60% equity, 4% a year lasted 50 years in {r(b, 4)['last50']} of 100 cases (against {r(a, 4)['last50']} at 35%), "
+                                                     f"but early falls hurt more. Most retirees are better served by a modest equity share and a lower withdrawal rate than by a high equity share and a high one."]),
+                ("Making any rate safer", ["ul", ["Skip the inflation increase after a year in which the portfolio fell. It costs little and adds years.",
+                                                  "Keep two years of spending in liquid and arbitrage funds, so a fall never forces you to sell equity.",
+                                                  "Count rent, pension and an annuity first: they shrink what the corpus has to pay.",
+                                                  "Keep health cover going after you stop work. Medical costs are the most common reason retirement money runs out early.",
+                                                  "Review every year. A rule of thumb is a starting point, not autopilot."]]),
+            ],
+            faq=[("Is the 4% rule safe in India?", f"For about 30 years, usually: it lasted 30 years in {r(a, 4)['last30']} of 100 cases on Indian market history. For a longer retirement, or to keep the corpus intact, use 3% or less."),
+                 ("How much corpus do I need to retire in India?", "Take what your investments must pay each year in retirement, in today's money, after rent and pension. Multiply by 25 for a retirement from about 60, by 33 for one that lasts for life or starts early, and by 40 to pass the corpus on. Then grow it with inflation to your retirement date."),
+                 ("Is it 25 times monthly or yearly expenses?", "Yearly. 25 times your monthly spending would be only about two years of spending."),
+                 ("Does the 4% rule include tax?", "No. Withdrawals from equity and debt funds are taxed when you redeem; allow for that in the spending figure, or keep the rate a little lower.")],
+            links=[("/plan/", "Work out your own freedom number"), ("/calculators/", "Calculators")],
+        ))
     return G
+
+
+def _swr():
+    import json, pathlib
+    p = pathlib.Path(__file__).parent / "planner" / "swr.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 
 def learn_pages(B, funds, hold, ins, urls, as_of):
@@ -210,7 +257,11 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
         path = f"/learn/{g['slug']}/"
         secs = ""
         for head, body in g["sections"]:
-            if body and body[0] == "ul":
+            if body and body[0] == "table":
+                inner = ("<div class='tablewrap'><table><thead><tr>" + "".join(f"<th class='{'l' if i == 0 else ''}'>{e(h)}</th>" for i, h in enumerate(body[1]))
+                         + "</tr></thead><tbody>" + "".join("<tr>" + "".join(f"<td class='{'l' if i == 0 else 'num'}'>{e(c)}</td>" for i, c in enumerate(row)) + "</tr>" for row in body[2])
+                         + f"</tbody></table></div><p class='note' style='margin-top:8px'>{e(body[3])}</p>")
+            elif body and body[0] == "ul":
                 inner = "<ul>" + "".join(f"<li>{e(x)}</li>" for x in body[1] if x) + "</ul>"
             else:
                 inner = "".join(f"<p>{e(x)}</p>" for x in body if x)

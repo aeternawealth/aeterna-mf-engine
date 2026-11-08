@@ -395,6 +395,28 @@ function flagsOf(m){
   return f;
 }
 const why=t=>`<details class="pl-why"><summary></summary><p>${t}</p></details>`;
+// the 'freedom number': the corpus at which withdrawals of a given share a year, rising with prices, last
+// (tested on Indian market history in site/planner/swr.json, built by tools/planner_swr.mjs)
+function freedomHtml(m,sim){
+  const R=m.retire, SW=window.PLANNER_SWR; if(!R||!SW||!(R.monthlyToday>0))return '';
+  const A=R.monthlyToday*12, T=SW.mixes['35'], row=r=>T.find(x=>Math.abs(x.rate-r)<.01)||{};
+  // money already promised to other goals doesn't count: today's holdings set aside for them, and on the projected
+  // path the cost (in today's money) of each goal not yet paid at that age
+  const s0=m.s, oth=m.G.filter(g=>!g.ret), set=oth.reduce((a,g)=>a+(g.have||0),0);
+  const have=Math.max(0,m.total-(m.cur['Real estate']||0)-(m.cur.Other||0)-set);
+  const free=x=>x.p50-oth.filter(g=>s0.age+g.y>x.age).reduce((a,g)=>a+g.fv/Math.pow(1+s0.infl/100,g.y),0);
+  const fan=(sim.fan||[]).filter(x=>x.age<=s0.retireAge), atR=fan.length?free(fan[fan.length-1]):null;
+  const at=t=>{const f=fan.find(x=>free(x)>=t);return have>=t?'Already there':f?`About age ${f.age}`:`Not by ${s0.retireAge}`};
+  const L=[[20,5,`Lasts 30 years in ${row(5).last30} of 100 market histories. Enough only for a short retirement.`],
+    [25,4,`The "4% rule". Lasts 30 years in ${row(4).last30} of 100, 40 years in ${row(4).last40}. Suits retiring at about 60.`],
+    [33,3,`Lasts 50 years in ${row(3).last50} of 100: enough for life, even if you stop working early. <b>Your freedom number.</b>`],
+    [40,2.5,`After 50 years the corpus is still worth what it started with, in today's money, in ${row(2.5).kept50} of 100: money to pass on.`]];
+  const rs=L.map(([x,r,t])=>{const tg=A*x,pc=Math.min(1,have/tg);return `<tr${x===33?' style="background:var(--tint,rgba(11,74,60,.06))"':''}><td class="l"><b>${x}×</b> <span class="muted" style="font-size:12px">(${r}% a year)</span></td><td class="num">${inrS(tg)}</td><td class="num">${Math.round(pc*100)}%</td><td class="l">${at(tg)}</td><td class="l" style="font-size:13px">${t}</td></tr>`}).join('');
+  return `<div class="card pl-keep" style="margin-top:14px"><div class="eyebrow">Your freedom number</div>
+  <p style="font-size:15px;margin-top:8px;line-height:1.55">Your investments must pay ${inr(R.monthlyToday)} a month in today's money${R.other>0?` (after ${inr(R.other)} of rent or pension)`:''}: <b>${inrS(A)} a year</b>. The size of corpus that pays this for life is a multiple of that yearly amount. You have ${inrS(have)} invested today${set>0?`, after the ${inrS(set)} set aside for your other goals`:''}: <b>${(have/A).toFixed(1)}×</b> a year's spending.${atR!=null&&fan.length?` With this plan, typical markets take that to about <b>${inrS(atR)}</b> by ${s0.retireAge}, in today's money: <b>${(atR/A).toFixed(1)}×</b>.`:''}</p>
+  <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Corpus</th><th>In today's money</th><th>You have</th><th class="l">You reach it (typical markets)</th><th class="l">What it means, on Indian markets since ${SW.from.slice(0,4)}</th></tr></thead><tbody>${rs}</tbody></table></div>
+  ${why(`Each row takes out that share of the corpus in the first year and raises the amount ${SW.inflation}% a year with prices, from a retirement mix of 35% equity, 5% gold and 60% debt. It was tested on ${SW.sequences.toLocaleString('en-IN')} sequences of ${SW.years} years built from actual Indian monthly returns since ${SW.from.slice(0,4)}, 2008 and 2020 included. The 4% rule comes from US data, where inflation is lower; in India 4% lasts a normal retirement but not forever, so for life, or to retire early, aim for about 33×. "You reach it" is the typical path of your investments with this plan, in today's money, after the money for your other goals, up to your retirement age. <a href="/learn/4-percent-rule-india/">How the 4% rule works in India</a>`)}</div>`;
+}
 function verdict(m,alt){
   const s=m.s, sur=Math.max(0,m.r.surplus), found=m.debtPay+m.efPay, goalNeed=m.need, req=goalNeed+(m.phaseMonths>0?0:0);
   const per=m.G.filter(g=>g.sip>0).map(g=>`${inr(g.sip)} for ${esc(g.name.toLowerCase().startsWith('retire')?'retirement':g.name)}`).join(', ');
@@ -567,6 +589,7 @@ function dashHtml(m,sim,m90,alt,ages){
   ${advHtml()}
   ${S.mode==='quick'?`<div class="pl-banner pl-noprint"><span><b>This is your quick plan.</b> It assumes your investments split ${pc(+S.qEq)} equity and the rest debt. Add your actual holdings, insurance and EPF for a sharper answer and what to move.</span><button type="button" class="btn" id="plRefine">Refine to a detailed plan</button></div>`:''}
   ${verdict(m,alt)}
+  ${freedomHtml(m,sim)}
   ${editHtml(m)}
   <h2 style="margin-top:22px">What to do now</h2>
   <p class="muted" style="font-size:13.5px;margin-top:6px">In order. Each step uses the numbers below; change the controls above and the steps update.</p>
@@ -665,8 +688,9 @@ def planner_pages(B, urls):
     faq_html = "".join(f"<details class='faq'><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>" for q, a in faq)
     model = (HERE / "planner" / "model.js").read_text(encoding="utf-8")
     market = (HERE / "planner" / "market.json").read_text(encoding="utf-8")
+    swr = (HERE / "planner" / "swr.json").read_text(encoding="utf-8")
     body = (CSS + HTML.replace("__FAQ__", f'<h2 class="pl-noprint" style="font-size:24px;margin-top:40px">Common questions</h2><div class="pl-noprint">{faq_html}</div>')
-            + "<script>window.PLANNER_MARKET=" + market + ";</script><script>" + model + "</script><script>" + UI + "</script>")
+            + "<script>window.PLANNER_MARKET=" + market + ";window.PLANNER_SWR=" + swr + ";</script><script>" + model + "</script><script>" + UI + "</script>")
     app_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Aeterna Money Plan", "url": B.SITE + PATH,
               "applicationCategory": "FinanceApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
               "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"}, "publisher": {"@id": B.SITE + "/#org"}, "description": desc}

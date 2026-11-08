@@ -149,6 +149,16 @@ for (const [age, inc, exp, emi, goalsT, label] of [
   must(r.need < inc * 1.5, 'a typical investor is asked for far more than their income', { label, need: r.need, inc });
 }
 
+// ------------------------------------------------------------- 6b. goal inflation and the crash replay
+{ const s0 = M.normalise({ infl: 6 });
+  must(M.goalInfl("Child's higher education", s0) === 10 && M.goalInfl('Parents care', s0) === 10 && M.goalInfl("Daughter's wedding", s0) === 7 && M.goalInfl('New car', s0) === 4 && M.goalInfl('Start a business', s0) === 6, 'goal inflation mapping wrong', {});
+  let bad = 0;
+  for (let i = 0; i < 300; i++) { const inp = persona(), r = M.plan(inp, mkt, { fast: 1 });
+    for (const [ym, y] of [['2008-01', 6], ['2020-01', 3]]) { const x = M.replay(r, mkt, ym, y); if (!x) continue;
+      const okPath = x.path.every((q, j) => isFinite(q.v) && q.v >= 0 && (j === 0 || q.put >= x.path[j - 1].put - 1));
+      if (!okPath || !(x.equityFall < 0) || (x.worstGap > 1)) bad++; } }
+  must(bad === 0, 'replay produced an invalid path', { bad }); }
+
 // ------------------------------------------------------------- 7. the same finances at every age
 const ageRows = [];
 for (const age of [22, 27, 32, 37, 42, 47, 52, 57, 62, 67, 72]) {

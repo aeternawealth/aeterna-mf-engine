@@ -57,6 +57,12 @@ CSS = r"""
 .pl-tl{display:grid;gap:14px;margin-top:12px}.pl-tl>div{border-left:2px solid var(--teal-soft);padding:2px 0 2px 16px}
 .pl-tl b{display:block;font:600 16px var(--f-display)}.pl-tl ul{margin:6px 0 0;padding-left:18px;font-size:14.5px}
 .pl-busy{opacity:.55;transition:opacity .15s}
+.pl-mode{display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-height:220px}.pl-mode b{font:600 24px var(--f-display)}.pl-mode:hover{border-color:var(--teal)}
+.pl-why{margin-top:6px;font-size:13px}.pl-why summary{cursor:pointer;color:var(--teal);font-weight:600;list-style:none;display:inline}.pl-why summary::-webkit-details-marker{display:none}.pl-why summary::before{content:'Why? '}.pl-why[open] summary::before{content:'Why: '}
+.pl-why p{margin:6px 0 0;color:var(--ink-2);background:var(--band);border-radius:var(--r);padding:10px 12px;font-size:13px;line-height:1.55}
+.pl-banner{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;padding:14px 16px;border:1px dashed var(--teal);border-radius:var(--r);background:var(--surface)}
+.pl-edit .pl-goal{grid-template-columns:1.4fr 1fr .6fr auto}.pl-adv{border-left:4px solid var(--brass)}
+.pl-replay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:12px}@media (max-width:760px){.pl-replay{grid-template-columns:1fr}}
 .pl-verdict{border-left:4px solid var(--teal)}.pl-verdict.bad{border-left-color:var(--c-bad)}
 .pl-act{margin:14px 0 0;padding:0;list-style:none;counter-reset:a;display:grid;gap:10px}
 .pl-act li{counter-increment:a;position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px 14px 54px}
@@ -132,9 +138,17 @@ const KEY='aeterna-plan-v2';
 const blank={age:'',retireAge:60,lifeExp:90,retireOther:'',retireExpPct:70,dependants:'0',earners:'1',incomeType:'salaried',slab:'30',income:'',expenses:'',homeEmi:'',otherEmi:'',loanOut:'',hiDebt:'',hiRate:'',epfMonthly:'',
   efund:'',termCover:'',healthCover:'',goals:[{name:'Retirement',type:'retire',cost:'',years:''}],
   investing:'yes',eqmf:'',stocks:'',topStock:'',nfunds:'',fd:'',debtmf:'',savings:'',gold:'',epf:'',ppf:'',nps:'',npsEq:'50',realestate:'',alt:'',
-  retireIncome:'',q:{},rEq:11,rDebt:7,rGold:8,rCash:6,infl:6,stepup:10,confidence:75,investShare:85};
+  retireIncome:'',q:{},rEq:11,rDebt:7,rGold:8,rCash:6,infl:6,stepup:10,confidence:75,investShare:85,mode:'',qTotal:'',qEq:'.5',adv:null};
 let S;try{S=Object.assign(JSON.parse(JSON.stringify(blank)),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S=JSON.parse(JSON.stringify(blank))}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+// 8. funnel events (Google Analytics loads on the live site only)
+const ev=(name,params)=>{try{if(typeof gtag==='function')gtag('event',name,params||{})}catch(e){}};
+// 6. a plan saved in its own link: #p=<answers>, nothing stored anywhere else
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const dec=t=>JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,'+').replace(/_/g,'/')))));
+let fromLink=false;
+try{const m=location.hash.match(/[#&]p=([^&]+)/);if(m){S=Object.assign(JSON.parse(JSON.stringify(blank)),dec(m[1]));fromLink=true;save();history.replaceState(null,'',location.pathname+location.search)}}catch(e){}
+if(/[?&]adviser\b/.test(location.search)&&!S.adv)S.adv={client:'',by:'',arn:'ARN-317889',euin:''};
 const n=k=>{const v=parseFloat(String(S[k]??'').replace(/,/g,''));return isFinite(v)?v:0};
 let step=0;
 
@@ -151,6 +165,26 @@ const F=(k,label,o={})=>`<label class="pl-f ${o.full?'full':''}"><span>${label}<
   :`<input data-k="${k}" type="number" inputmode="decimal" min="0" value="${esc(S[k])}" placeholder="${o.ph||''}"${o.money?' data-money="1"':''}>`}<small data-h="${k}">${o.money?esc(hint(S[k])):(o.hint||'')}</small></label>`;
 const M=(k,label,o={})=>F(k,label,Object.assign({money:1,ph:'₹'},o));
 const retired=()=>S.incomeType==='retired';
+const EQS=[['0','None of it'],['.25','About a quarter'],['.5','About half'],['.75','About three-quarters'],['.95','Almost all of it']];
+const QUICK=[
+ {t:'The basics',s:'Round numbers are fine. You can refine every figure afterwards.',
+  h:()=>`<div class="pl-grid">${F('incomeType','Your income',{sel:[['salaried','Salaried, steady'],['variable','Salaried with a large variable part'],['business','Business or self-employed'],['retired','Retired']],full:1})}
+   ${F('age','Your age',{ph:'e.g. 34'})}${retired()?'<span></span>':F('retireAge','Age you plan to stop working',{ph:'60'})}
+   ${M('income',retired()?'Monthly income':'Monthly take-home income (household)')}${M('expenses','Monthly living expenses')}
+   ${M('homeEmi','All EMIs together, a month')}${F('dependants','People who depend on your income',{sel:[['0','None'],['1','1'],['2','2'],['3','3 or more']]})}
+   ${M('qTotal','All your investments today (leave out your home)',{hint:'Funds, shares, FDs, PPF, EPF, gold: the total.'})}${F('qEq','How much of that is in shares or equity funds?',{sel:EQS})}
+   ${M('efund','Emergency money kept aside')}${F('slab','Your income-tax slab',{sel:[['0','No tax / up to 5%'],['10','10%'],['20','15–20%'],['30','25–30%']]})}</div>`},
+ {t:'Goals and how you handle risk',s:'Add what you are saving for. Costs are in today\'s rupees; each goal\'s own inflation is added.',
+  h:()=>`<div id="plGoals">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
+   <div class="row" style="margin-top:14px"><button type="button" class="btn" id="plAddG">Add a goal</button>
+   <select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
+   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, today\'s money',{hint:n('expenses')?'Blank: 70% of today\'s expenses ('+inrS(n('expenses')*.7)+')':''})}${M('retireOther','Rent or pension that continues in retirement, a month')}</div>`}
+   ${[QS[0],QS[2]].map(q=>`<fieldset class="pl-q"><legend>${esc(q.t)}</legend>${q.p?`<p>${esc(q.p)}</p>`:''}${q.o.map((o,i)=>`<label class="pl-opt"><input type="radio" name="q_${q.id}" value="${i+1}"${S.q[q.id]==i+1?' checked':''}><span>${esc(o)}</span></label>`).join('')}</fieldset>`).join('')}`}];
+function quickToFull(){   // spread the quick answers into the detailed fields the model reads
+  const t=n('qTotal'),e=+S.qEq||0;
+  if(S.mode==='quick'){S.investing=t>0?'yes':'no';S.eqmf=String(Math.round(t*e));S.fd=String(Math.round(t*(1-e)));['stocks','debtmf','savings','gold','epf','ppf','nps','realestate','alt','otherEmi'].forEach(k=>S[k]='');
+    const a=Math.round(((+S.q.fall||2)+(+S.q.aim||2))/2);['range','exp','past','see'].forEach(k=>{if(!S.q[k]||S.mode==='quick')S.q[k]=a});S.earners=S.earners||'1'}
+}
 const STEPS=[
  {t:'About you',s:'Who depends on you and how steady your income is shape how much risk your finances can absorb.',
   h:()=>`<div class="pl-grid">${F('incomeType','Your income',{sel:[['salaried','Salaried, steady'],['variable','Salaried with a large variable part, or commission'],['business','Business or self-employed'],['retired','Retired: pension or investments']],full:1})}
@@ -188,30 +222,46 @@ const goalRow=(g,i)=>`<div class="pl-goal" data-i="${i}"><label class="pl-f gnam
   <label class="pl-f"><span>In years</span><input data-g="years" type="number" min="0" max="60" value="${esc(g.type==='retire'?(n('age')?Math.max(0,n('retireAge')-n('age')):''):g.years)}" ${g.type==='retire'?'readonly':''}></label>
   ${g.type==='retire'?'<span></span>':`<button type="button" class="pl-x" data-del="${i}" aria-label="Remove ${esc(g.name)}">Remove</button>`}</div>`;
 
+function chooser(){
+  $('#plProg').innerHTML='';$('#plStepLbl').textContent='';$('#plBody').className='pl-step';
+  $('#plBody').innerHTML=`<div class="grid g2" style="gap:16px;align-items:stretch">
+   <button type="button" class="card pl-mode" data-mode="quick"><span class="eyebrow">2 minutes</span><b>Quick plan</b><span>Ten numbers and two questions. You get how much to invest for each goal and whether your retirement money lasts.</span><span class="btn primary" style="margin-top:auto">Start the quick plan</span></button>
+   <button type="button" class="card pl-mode" data-mode="detailed"><span class="eyebrow">6 minutes</span><b>Detailed plan</b><span>Everything you hold, insurance and EPF, and six questions on risk: what to move in your portfolio, fund by category, and a sharper answer.</span><span class="btn" style="margin-top:auto">Start the detailed plan</span></button></div>`;
+  $$('#plBody [data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;step=0;save();ev('planner_mode',{mode:S.mode});render()});
+}
 function render(){
-  const total=STEPS.length;
+  if(!S.mode){chooser();return}
+  const STEPS_=S.mode==='quick'?QUICK:STEPS, total=STEPS_.length;
   S.goals=S.goals.filter(g=>g.type!=='retire'||!retired());if(!retired()&&!S.goals.some(g=>g.type==='retire'))S.goals.unshift({name:'Retirement',type:'retire',cost:'',years:''});
   $('#plProg').innerHTML=Array.from({length:total+1},(_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('');
-  if(step>=total){$('#plStepLbl').textContent='Your plan';$('#plBody').className='pl-dash';dashboard();return}
+  if(step>=total){quickToFull();$('#plStepLbl').textContent=S.mode==='quick'?'Your quick plan':'Your plan';$('#plBody').className='pl-dash';dashboard();return}
   $('#plBody').className='card pl-step';$('#plStepLbl').textContent=`Step ${step+1} of ${total}`;
-  const st=STEPS[step];
+  const st=STEPS_[step];
   $('#plBody').innerHTML=`<h2>${st.t}</h2><p class="sub">${st.s}</p>${st.h()}<div class="pl-err" id="plErr" role="alert"></div>
    <div class="pl-nav">${step?'<button type="button" class="btn" id="plBack">Back</button>':'<span></span>'}<button type="button" class="btn primary" id="plNext">${step===total-1?'See my plan':'Next'}</button></div>`;
   $$('#plBody [data-k]').forEach(el=>el.addEventListener('input',()=>{S[el.dataset.k]=el.value;const h=$(`[data-h="${el.dataset.k}"]`);if(h&&el.dataset.money)h.textContent=hint(el.value);save()}));
   $$('#plBody input[type=radio]').forEach(el=>el.addEventListener('change',()=>{S.q[el.name.slice(2)]=+el.value;save()}));
   $$('#plBody [data-inv]').forEach(b=>b.onclick=()=>{S.investing=b.dataset.inv;if(S.investing==='no')['eqmf','stocks','topStock','nfunds','fd','debtmf','savings','gold','nps','realestate','alt'].forEach(k=>S[k]='');save();render()});
   const it=$('#plBody [data-k="incomeType"]');if(it)it.addEventListener('change',()=>render());
-  if(step===3)bindGoals();
-  $('#plNext').onclick=()=>{const er=check();if(er){$('#plErr').textContent=er;return}step++;render();window.scrollTo({top:$('#plProg').getBoundingClientRect().top+scrollY-90,behavior:'smooth'})};
-  if(step)$('#plBack').onclick=()=>{step--;render()};
+  if($('#plGoals'))bindGoals();
+  $('#plNext').onclick=()=>{const er=check();if(er){$('#plErr').textContent=er;return}step++;ev('planner_step',{mode:S.mode,step});render();window.scrollTo({top:$('#plProg').getBoundingClientRect().top+scrollY-90,behavior:'smooth'})};
+  if(step)$('#plBack').onclick=()=>{step--;render()};else{const nb=$('#plBack');}
+  if(!step){const nav=$('#plBody .pl-nav span');if(nav)nav.outerHTML='<button type="button" class="btn" id="plMode">Change: quick or detailed</button>';const mb=$('#plMode');if(mb)mb.onclick=()=>{S.mode='';save();render()}}
 }
-function bindGoals(){
+function bindGoals(inDash){
+  const again=()=>{save();if(inDash){S._editOpen=true;dashboard()}else render()};
   $$('#plGoals [data-g]').forEach(el=>el.addEventListener('input',()=>{const i=+el.closest('.pl-goal').dataset.i;S.goals[i][el.dataset.g]=el.value;const sm=el.parentElement.querySelector('small');if(sm&&el.dataset.g==='cost')sm.textContent=hint(el.value);save()}));
-  $$('#plGoals [data-del]').forEach(b=>b.onclick=()=>{S.goals.splice(+b.dataset.del,1);save();render()});
-  $('#plAddG').onclick=()=>{S.goals.push({name:'',cost:'',years:''});save();render()};
-  $('#plPreset').onchange=e=>{if(e.target.value){S.goals.push({name:e.target.value,cost:'',years:''});save();render()}};
+  $$('#plGoals [data-del]').forEach(b=>b.onclick=()=>{S.goals.splice(+b.dataset.del,1);again()});
+  $('#plAddG').onclick=()=>{S.goals.push({name:'',cost:'',years:''});if(inDash){S._editOpen=true;$('#plGoals').insertAdjacentHTML('beforeend',goalRow(S.goals[S.goals.length-1],S.goals.length-1));bindGoals(true)}else again()};
+  $('#plPreset').onchange=e=>{if(e.target.value){S.goals.push({name:e.target.value,cost:'',years:''});if(inDash){$('#plGoals').insertAdjacentHTML('beforeend',goalRow(S.goals[S.goals.length-1],S.goals.length-1));e.target.value='';bindGoals(true)}else again()}};
 }
 function check(){
+  if(S.mode==='quick'){
+    if(step===0){if(!(n('age')>=18&&n('age')<=90))return 'Please enter your age (18 to 90).';if(!retired()&&n('retireAge')<=n('age'))return 'The age you plan to stop working should be later than your age, or choose Retired.';
+      if(!(n('income')>0))return 'Please enter your monthly income.';if(!(n('expenses')>0))return 'Please enter your monthly living expenses.'}
+    if(step===1){for(const g of S.goals){if(g.type!=='retire'&&(!g.name||!(+g.cost>0)||!(+g.years>=0)||+g.years>60))return 'Each goal needs a name, a cost and the years until you need it (or remove it).'}
+      if(!S.q.fall||!S.q.aim)return 'Please answer both questions.'}
+    return ''}
   if(step===0&&!(n('age')>=18&&n('age')<=90))return 'Please enter your age (18 to 90).';
   if(step===0&&!retired()&&n('retireAge')<=n('age'))return 'The age you plan to stop working should be later than your age, or choose Retired.';
   if(step===1&&!(n('income')>0))return 'Please enter your monthly income.';
@@ -333,6 +383,7 @@ function flagsOf(m){
   if(s.nfunds>7)f.push([`${s.nfunds} equity funds.`,'Beyond 5 or 6, funds overlap heavily; consolidating makes the portfolio easier to track and rebalance.']);
   return f;
 }
+const why=t=>`<details class="pl-why"><summary></summary><p>${t}</p></details>`;
 function verdict(m,alt){
   const s=m.s, sur=Math.max(0,m.r.surplus), found=m.debtPay+m.efPay, goalNeed=m.need, req=goalNeed+(m.phaseMonths>0?0:0);
   const per=m.G.filter(g=>g.sip>0).map(g=>`${inr(g.sip)} for ${esc(g.name.toLowerCase().startsWith('retire')?'retirement':g.name)}`).join(', ');
@@ -346,7 +397,8 @@ function verdict(m,alt){
     h=`<b>Your goals need ${inr(goalNeed)} a month; your surplus is ${inr(sur)}. You are short by ${inr(gap)} a month.</b> ${per}. Essential goals are funded first; the steps below show what to change.`}
   let tbl='';
   if(alt&&alt.length>1)tbl=`<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Retirement spending, today's money (to ${s.lifeExp})</th><th>Corpus at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${alt.map(a=>`<tr><td class="l">${inr(a.inc)} a month${a.net<a.inc?` <span class="muted" style="font-size:12px">(${inr(a.net)} from investments)</span>`:''}</td><td class="num">${inrS(a.corpus)}</td><td class="num">${inr(a.sip)}</td><td class="num">${inr(a.need)}</td><td class="l">${a.need<=sur?`Reachable; ${inr(sur-a.need)} a month to spare`:`Short by ${inr(a.need-sur)} a month`}</td></tr>`).join('')}</tbody></table></div>`;
-  return `<div class="card pl-verdict ${cls}" style="margin-top:18px"><div class="eyebrow">The answer</div><p style="font-size:16px;margin-top:8px;line-height:1.55">${h}</p>${tbl}</div>`;
+  const w=goalNeed>0?why(`Each goal's monthly amount is the smallest SIP${s.stepup?`, rising ${s.stepup}% a year,`:''} that reached that goal in ${s.confidence==90?'9 out of 10':s.confidence==50?'half':'3 out of 4'} of 900 replays of real Indian market months since 2007 (equity, debt and gold together, crashes included), after counting the money you already have set aside for it. Your spare amount is your surplus of ${inr(sur)} less these SIPs${found>0?' and the foundation steps':''}. Choose "Bad markets too" above to see the amount for 9 out of 10 markets.`):'';
+  return `<div class="card pl-verdict ${cls}" style="margin-top:18px"><div class="eyebrow">The answer</div><p style="font-size:16px;margin-top:8px;line-height:1.55">${h}</p>${w}${tbl}</div>`;
 }
 function retireHtml(m,sim,ages){
   const R=m.retire,s=m.s;if(!R)return '';
@@ -442,6 +494,33 @@ function bindSwp(m){
   $('#swGuard').onchange=e=>{SW.guard=e.target.value==='1';swpRender(m)};
   swpRender(m);
 }
+function replayHtml(m){
+  const runs=[['2008-01',6,'The 2008 crash','January 2008'],['2020-01',3,'The Covid crash','January 2020']].map(([ym,yrs,t,lab])=>{const x=PM.replay(m,MKT,ym,yrs);return x?[x,t,lab]:null}).filter(Boolean);
+  if(!runs.length||m.total+m.invest<=0)return '';
+  const mon=ym=>{const [y,mm]=ym.split('-');return new Date(+y,+mm-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})};
+  const mini=x=>{const P=x.path,W=340,H=110,mx=Math.max(...P.map(p=>Math.max(p.v,p.put)))*1.05,X=i=>8+(W-16)*i/(P.length-1),Y=v=>H-8-(H-16)*v/mx;
+    const wi=P.findIndex(p=>p.ym===x.worstYm);
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" aria-hidden="true"><polyline points="${P.map((p,i)=>X(i)+','+Y(p.put)).join(' ')}" fill="none" stroke="var(--ink-3)" stroke-dasharray="4 3" stroke-width="1.4"/><polyline points="${P.map((p,i)=>X(i)+','+Y(p.v)).join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.2"/>${wi>=0?`<circle cx="${X(wi)}" cy="${Y(P[wi].v)}" r="4" fill="var(--c-bad)"/>`:''}</svg>`};
+  const cards=runs.map(([x,t,lab])=>`<div class="card"><div class="eyebrow">${t}</div>${mini(x)}
+    <p style="font-size:14px;margin-top:6px">${x.worstGap<-1?`Starting this plan in ${lab}: by <b>${mon(x.worstYm)}</b> you would have put in ${inrS(x.worstPut)} and it would have shown <b>${inrS(x.worstValue)}, ${inrS(-x.worstGap)} below what you put in</b>, while equity markets fell ${pc(-x.equityFall)}. `
+      +(x.recoveredYm?`Keeping the SIPs going, it was back above what you had put in by <b>${mon(x.recoveredYm)}</b>, ${x.monthsToRecover} months later. `:'It had not yet recovered by the end of this window. ')
+      :`Starting this plan in ${lab}, it never fell below the money put in, even while equity markets fell ${pc(-x.equityFall)}. `}By ${mon(x.endYm)}: ${inrS(x.end)} on ${inrS(x.put)} put in.</p>
+    <p class="muted" style="font-size:12px;margin-top:4px">Solid line: your plan's value; dashed: money put in; red dot: the low point. Actual returns of the time, in rupees of the time.</p></div>`).join('');
+  return `<h2>Your plan through real crashes</h2><p style="font-size:14.5px;margin-top:6px;max-width:80ch">Every plan meets a bad year. Here is yours, replayed month by month through what actually happened. The people who did well were the ones who kept going.</p><div class="pl-replay">${cards}</div>`;
+}
+function editHtml(m){
+  return `<details class="card pl-edit pl-noprint" id="plEditBox" style="margin-top:16px"${S._editOpen?' open':''}><summary style="cursor:pointer;font:600 18px var(--f-display)">Change your goals and numbers here</summary>
+   <div id="plGoals" style="margin-top:10px">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
+   <div class="row" style="margin-top:10px"><button type="button" class="btn" id="plAddG">Add a goal</button><select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
+   <div class="pl-grid">${M('income','Monthly income')}${M('expenses','Monthly expenses')}${retired()?'':M('retireIncome','Retirement spending, today\'s money')+M('retireOther','Rent or pension in retirement')}</div>
+   <p style="margin-top:12px"><button type="button" class="btn primary" id="plEditGo">Update my plan</button></p></details>`;
+}
+function advHtml(){
+  const a=S.adv;if(!a)return '';
+  return `<div class="card pl-adv" style="margin-top:16px"><div class="row" style="justify-content:space-between;gap:12px"><b>Adviser mode</b><button type="button" class="pl-x pl-noprint" id="advOff">Turn off</button></div>
+   <div class="pl-grid pl-noprint">${[['client','Client name'],['by','Prepared by'],['arn','ARN'],['euin','EUIN']].map(([k,l])=>`<label class="pl-f"><span>${l}</span><input data-adv="${k}" value="${esc(a[k]||'')}"></label>`).join('')}</div>
+   <p class="pl-advline" style="font-size:14px;margin-top:8px">${a.client?`Prepared for <b>${esc(a.client)}</b>`:''}${a.by?` by ${esc(a.by)}`:''}${a.arn?` · ${esc(a.arn)}`:''}${a.euin?` · EUIN ${esc(a.euin)}`:''}</p></div>`;
+}
 function dashHtml(m,sim,m90,alt,ages){
   const s=m.s, flags=flagsOf(m), tot=m.total, tt=m.tgtTotal||1, hasCur=tot>0&&s.investing!=='no';
   const gap=Math.abs(m.r.tol-m.r.cap)>.2?(m.r.tol>m.r.cap?`You are comfortable with more risk than your finances can absorb right now (${m.r.why.slice(0,3).join('; ')}). The plan follows your finances; as these improve, it can take more equity.`
@@ -449,9 +528,11 @@ function dashHtml(m,sim,m90,alt,ages){
   const prob=Object.fromEntries(sim.goals.map(g=>[g.name,g]));
   const goals=m.G.map(g=>{const pr=prob[g.name]||{prob:0};const fundedFull=g.funded>=.999;
     const reach=!fundedFull&&g.y>0&&pr.p50!=null?(g.ret?`With this plan, typical markets get you about ${inrS(pr.p50)}: enough for about ${inr(pr.p50/g.fv*m.retire.monthlyToday)} a month in retirement, in today's money.`:`With this plan, typical markets get you about ${inrS(pr.p50)} of the ${inrS(g.fv)}.`):'';
-    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${g.ret&&g.how&&g.how!=='your figure'?' ('+esc(g.how)+')':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
+    return `<div class="card pl-gc"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h3>${esc(g.name)}</h3><div class="muted" style="font-size:13px">${g.essential?'Essential · ':'Nice to have · '}${g.y?`in ${g.y} year${g.y>1?'s':''}`:'now'} · ${inrS(g.fv)} then${!g.ret?` (+${g.infl}% a year)`:''}${g.ret&&g.how&&g.how!=='your figure'?' ('+esc(g.how)+')':''}</div></div>${g.y>0?`<div class="pl-prob">${gauge(pr.prob)}</div>`:''}</div>
       ${mixBar(g.mix)}<div class="muted" style="font-size:12.5px">${pc(g.mix.eq)} equity · ${pc(g.mix.debt)} debt${g.mix.gold?' · '+pc(g.mix.gold)+' gold':''}${g.y>3?'; moves to safety as the date nears':''}</div>
       <div class="kv" style="grid-template-columns:1fr"><div><span>Set aside from today's money</span><b>${inrS(g.have)}</b></div>${g.sources&&g.sources.length?`<div style="border:0;padding-top:0"><span class="muted" style="font-size:12.5px">${g.sources.map(([k,v])=>inrS(v)+' '+SRCN[k]).join(' · ')}</span></div>`:''}${g.extra>0?`<div><span>Future EPF / NPS</span><b>${inrS(g.extra)}</b></div>`:''}${g.ph>0&&g.f1>0?`<div><span>Months 1–${g.ph}, while foundations are built</span><b>${inr(g.f1)}</b></div>`:''}<div><span>Needs a month${g.ph>0?` from month ${g.ph+1}`:''} (${s.confidence===50?'typical markets':s.confidence===90?'9 in 10 markets':'3 in 4 markets'})</span><b>${g.sip>0?inr(g.sip):'Nothing more'}</b></div>${g.sip>0?`<div><span>In your plan</span><b>${inr(g.f2)}${fundedFull?'':` <span style="color:var(--c-bad)">(${pc(g.funded)})</span>`}</b></div>`:''}</div>
+      ${why(g.ret?`You want ${inr(m.retire.spendToday)} a month in today's money${m.retire.other>0?`, less ${inr(m.retire.other)} of rent or pension`:''}. At ${s.infl}% inflation that is ${inr(m.retire.monthlyThen)} a month at ${s.retireAge}, still rising every year. Paying it until ${s.lifeExp} from a corpus invested ${pc(PM.RMIX(m.E).eq)} in equity needs about ${inrS(g.fv)} at ${s.retireAge}. The ${inrS(g.have)} set aside today, and future EPF/NPS, count first; the SIP covers the rest. It is sized so the money lasts until ${s.lifeExp} in ${s.confidence==90?'9 of 10':s.confidence==50?'half':'3 of 4'} simulated markets.`
+        :`${inrS(g.today||0)} today, rising ${g.infl}% a year${/educat|school|college|medical|health|care|parent/i.test(g.name)?' (education and medical costs rise faster than general prices)':''}, is ${inrS(g.fv)} in ${g.y} year${g.y>1?'s':''}. ${g.have>0?`${inrS(g.have)} of what you hold today is set aside for it first. `:''}${g.y<3?'Money needed within 3 years holds no equity, so a market fall cannot hurt it.':`It holds ${pc(g.mix.eq)} equity now, the most whose chance of ending below the money put in stayed within your profile's limit over ${g.y} years of real market history, moving to safety as the date nears.`}`)}
       <p style="font-size:13px;margin:0">${g.y===0?(g.left>0?'Due now and not fully covered.':'Covered.'):`${g.ret?`<b>${pc(pr.prob)}</b> chance your money lasts until ${s.lifeExp}${pr.p10age!=null?`; in weak markets until about ${isFinite(pr.p10age)?Math.floor(pr.p10age):s.lifeExp+'+'}`:''}.`:`<b>${pc(pr.prob)}</b> chance of reaching it with this plan${pr.p10!=null&&fundedFull?`; in weak markets about ${inrS(pr.p10)}`:''}.`}`} ${g.ret?'':reach}</p></div>`}).join('');
   const rows=Object.keys(COL).map(k=>{const c=m.cur[k],t=m.tgt[k],d=t-c;if(!c&&!t)return '';
     const dp=tot?t/tt-c/tot:0;let act=Math.abs(d)<Math.max(5e4,.02*tot)?'On target':d>0?'Increase: through the moves and SIPs in the plan above':'Reduce: the plan above says which holdings move, and where';
@@ -471,13 +552,16 @@ function dashHtml(m,sim,m90,alt,ages){
     <label class="pl-f"><span>Invest of surplus: <b id="cIsL">${s.investShare}%</b></span><input type="range" id="cIs" min="50" max="100" step="5" value="${s.investShare}"></label>
     ${retired()?'<span></span>':`<label class="pl-f"><span>Stop working at: <b id="cRaL">${s.retireAge}</b></span><input type="range" id="cRa" min="${Math.min(75,Math.max(n('age')+1,40))}" max="75" step="1" value="${s.retireAge}"></label>`}</div></div>
   <div id="plOut">
-  <div class="pl-printhead"><b>Aeterna Money Plan</b><span>Prepared ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})} at aeternawealth.com/plan<br>Aeterna Wealth Private Limited · AMFI-registered mutual fund distributor, ARN-317889 · indicative, not advice</span></div>
+  <div class="pl-printhead"><b>Aeterna Money Plan${S.adv&&S.adv.client?' · '+esc(S.adv.client):''}</b><span>Prepared ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}${S.adv&&S.adv.by?' by '+esc(S.adv.by):' at aeternawealth.com/plan'}${S.adv&&S.adv.euin?' · EUIN '+esc(S.adv.euin):''}<br>Aeterna Wealth Private Limited · AMFI-registered mutual fund distributor, ${S.adv&&S.adv.arn?esc(S.adv.arn):'ARN-317889'} · indicative, not advice</span></div>
+  ${advHtml()}
+  ${S.mode==='quick'?`<div class="pl-banner pl-noprint"><span><b>This is your quick plan.</b> It assumes your investments split ${pc(+S.qEq)} equity and the rest debt. Add your actual holdings, insurance and EPF for a sharper answer and what to move.</span><button type="button" class="btn" id="plRefine">Refine to a detailed plan</button></div>`:''}
   ${verdict(m,alt)}
+  ${editHtml(m)}
   <h2 style="margin-top:22px">What to do now</h2>
   <p class="muted" style="font-size:13.5px;margin-top:6px">In order. Each step uses the numbers below; change the controls above and the steps update.</p>
   <ol class="pl-act">${actions(m,sim,m90).map(([t,d])=>`<li><b>${t}</b><p>${d}</p></li>`).join('')}</ol>
   <div class="card" style="margin-top:22px"><div class="row" style="justify-content:space-between;gap:20px;align-items:flex-start">
-   <div><div class="eyebrow">Your profile</div><div class="pl-k" style="margin-top:6px">${m.label}</div><p class="muted" style="margin-top:4px;font-size:14px">Long-term money: up to ${pc(m.E)} in equity</p></div>
+   <div><div class="eyebrow">Your profile</div><div class="pl-k" style="margin-top:6px">${m.label}</div><p class="muted" style="margin-top:4px;font-size:14px">Long-term money: up to ${pc(m.E)} in equity</p>${why(`Your answers on falls give your risk tolerance; your finances give your capacity${m.r.why.length?` (lowered by ${m.r.why.slice(0,3).join('; ')})`:''}. The plan uses the lower of the two, then sets long-term equity between 25% (most cautious) and 85% (boldest).`)}</div>
    <div style="flex:1;min-width:240px;max-width:430px"><div style="font-size:13.5px">Risk tolerance: how you feel about falls</div><div class="pl-meter"><i style="left:${(m.r.tol*100).toFixed(0)}%"></i></div>
    <div style="font-size:13.5px;margin-top:10px">Risk capacity: what your finances can absorb</div><div class="pl-meter"><i style="left:${(m.r.cap*100).toFixed(0)}%"></i></div><div class="pl-meter-l"><span>Low</span><span>High</span></div></div></div>
    <p style="margin-top:14px;font-size:14.5px">${esc(gap)}</p></div>
@@ -491,8 +575,10 @@ function dashHtml(m,sim,m90,alt,ages){
   :`<div class="pl-donuts">${donut({Equity:startMix.eq,Debt:startMix.debt,Gold:startMix.gold},'Long-term','mix')}<div class="card"><p style="font-size:14.5px">Long-term money (10 years or more) in your profile: ${pc(startMix.eq)} equity, ${pc(startMix.debt)} debt and ${pc(startMix.gold)} gold. Money for nearer goals is shown with each goal below.</p></div></div>`}
 
   <h2>Your goals</h2>
-  <p class="muted" style="font-size:13.5px;margin-top:6px">Costs grow at ${s.infl}% inflation. The chance of success comes from replaying real market months since 2007 with your plan.</p>
+  <p class="muted" style="font-size:13.5px;margin-top:6px">Each cost grows at its own inflation: education and medical care 10% a year, weddings, travel and homes 7%, cars 4%, everything else ${s.infl}%. The chance of success comes from replaying real market months since 2007 with your plan.</p>
   <div class="pl-goals">${goals||'<div class="card">No goals yet: everything goes to long-term wealth.</div>'}</div>
+
+  ${replayHtml(m)}
 
   ${retireHtml(m,sim,ages)}
 
@@ -513,9 +599,11 @@ function dashHtml(m,sim,m90,alt,ages){
    <div><b>Later</b><ul><li>As each goal comes within 3 years, move its money out of equity in stages.</li>${m.retire?`<li>At ${s.retireAge-1}: set up the three retirement buckets and the monthly SWP; consider an annuity for the essentials.</li>`:''}<li>Revisit the plan after marriage, a child, a new job or loan, or an inheritance.</li></ul></div></div>
   <div class="pl-flag ok" style="margin-top:18px"><b>Review by ${review.toLocaleDateString('en-IN',{month:'long',year:'numeric'})},</b> or sooner if your income, family or goals change.</div>
 
-  <div class="inv-cta pl-noprint"><div><h2>Want us to look at it with you?</h2><p>We can review this plan against your actual funds and choose the schemes for each category. The first conversation is free.</p></div>
+  <div class="inv-cta pl-noprint"${S.adv?' hidden':''}><div><h2>Want us to look at it with you?</h2><p>We can review this plan against your actual funds and choose the schemes for each category. The first conversation is free.</p></div>
    <div class="row"><a class="btn" id="plWa" target="_blank" rel="noopener">Send my summary on WhatsApp</a><a class="btn ghost" href="/#contact">Talk to us</a></div></div>
-  <div class="pl-nav pl-noprint"><button type="button" class="btn" id="plEdit">Edit my answers</button><div class="row"><button type="button" class="btn" id="plAssB">Assumptions</button><button type="button" class="btn" id="plPrint">Save as PDF</button><button type="button" class="btn" id="plReset">Start over</button></div></div>
+  <div class="card pl-noprint" style="margin-top:18px"><b>Keep this plan</b><p class="muted" style="font-size:13.5px;margin-top:4px">Nothing is stored on our side. Save the link to come back to this exact plan, or add a reminder for your yearly review. The link contains your numbers, so share it only with people you trust.</p>
+   <div class="row" style="margin-top:10px"><button type="button" class="btn" id="plLink">Copy link to this plan</button><button type="button" class="btn" id="plIcs">Add yearly review to my calendar</button><button type="button" class="btn" id="plPrint">Save as PDF</button>${S.adv?'':'<button type="button" class="btn" id="advOn">Preparing this for a client?</button>'}</div><p id="plLinkMsg" class="muted" style="font-size:13px;margin-top:6px"></p></div>
+  <div class="pl-nav pl-noprint"><button type="button" class="btn" id="plEdit">Edit all my answers</button><div class="row"><button type="button" class="btn" id="plAssB">Assumptions</button><button type="button" class="btn" id="plReset">Start over</button></div></div>
   <div id="plAssBox" hidden class="card pl-noprint" style="margin-top:16px"><b>Assumptions</b><p class="muted" style="font-size:13px">Used to size retirement and to split goals; the chances of success come from real market months, not from these.</p><div class="pl-grid">${[['rEq','Equity return % a year'],['rDebt','Debt return % a year'],['rGold','Gold return % a year'],['rCash','Short-term debt return % a year'],['infl','Inflation %']].map(([k,l])=>`<label class="pl-f"><span>${l}</span><input data-a="${k}" type="number" step="0.5" value="${s[k]}"></label>`).join('')}</div><p style="margin-top:12px"><button type="button" class="btn primary" id="plAssGo">Recalculate</button></p></div>
   </div>`;
 }
@@ -523,17 +611,31 @@ let tmr=null;
 function live(){clearTimeout(tmr);const o=$('#plOut');if(o)o.classList.add('pl-busy');tmr=setTimeout(()=>{save();dashboard()},280)}
 function bindDash(m){
   const txt=`Hi Aeterna, I made my Money Plan on your website. Profile: ${m.label} (long-term equity up to ${pc(m.E)}). Monthly surplus ${inr(Math.max(0,m.r.surplus))}; goals: ${m.G.map(g=>g.name+' in '+g.y+' yrs').join(', ')}. Investments ${inrS(m.total)}. I'd like to review it with you.`;
-  $('#plWa').href='https://wa.me/918595993600?text='+encodeURIComponent(txt);
+  const link=location.origin+location.pathname+'#p='+enc(Object.assign({},S,{_editOpen:false}));
+  $('#plWa').href='https://wa.me/918595993600?text='+encodeURIComponent(txt+' My plan: '+link);
+  $('#plWa').addEventListener('click',()=>ev('planner_whatsapp',{mode:S.mode}));
+  $('#plLink').onclick=async()=>{try{await navigator.clipboard.writeText(link);$('#plLinkMsg').textContent='Link copied. Paste it into your notes or email to come back to this plan.'}catch(e){prompt('Copy this link:',link)}ev('planner_link',{})};
+  $('#plIcs').onclick=()=>{const d=new Date();d.setFullYear(d.getFullYear()+1);const ds=d.toISOString().slice(0,10).replace(/-/g,'');
+    const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Aeterna Wealth//Money Plan//EN','BEGIN:VEVENT','UID:'+Date.now()+'@aeternawealth.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','DTSTART;VALUE=DATE:'+ds,'SUMMARY:Review my Aeterna Money Plan','DESCRIPTION:Open your plan: '+link.replace(/,/g,'\\,'),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Money Plan review next week','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='money-plan-review.ics';a.click();ev('planner_ics',{})};
+  const rf=$('#plRefine');if(rf)rf.onclick=()=>{S.mode='detailed';step=0;save();ev('planner_refine',{});render();window.scrollTo({top:0,behavior:'smooth'})};
+  const ao=$('#advOn');if(ao)ao.onclick=()=>{S.adv={client:'',by:'',arn:'ARN-317889',euin:''};save();dashboard()};
+  const af=$('#advOff');if(af)af.onclick=()=>{S.adv=null;save();dashboard()};
+  $$('[data-adv]').forEach(i=>i.addEventListener('input',()=>{S.adv[i.dataset.adv]=i.value;save();const l=$('.pl-advline');if(l)l.innerHTML=(S.adv.client?`Prepared for <b>${esc(S.adv.client)}</b>`:'')+(S.adv.by?` by ${esc(S.adv.by)}`:'')+(S.adv.arn?` · ${esc(S.adv.arn)}`:'')+(S.adv.euin?` · EUIN ${esc(S.adv.euin)}`:'');const h=$('.pl-printhead b');if(h)h.textContent='Aeterna Money Plan'+(S.adv.client?' · '+S.adv.client:'')}));
+  const eb=$('#plEditBox');if(eb){eb.addEventListener('toggle',()=>{S._editOpen=eb.open});
+    $$('#plEditBox [data-k]').forEach(el=>el.addEventListener('input',()=>{S[el.dataset.k]=el.value;const h=$(`#plEditBox [data-h="${el.dataset.k}"]`);if(h&&el.dataset.money)h.textContent=hint(el.value)}));
+    bindGoals(true);$('#plEditGo').onclick=()=>{ev('planner_edit',{});S._editOpen=true;live()}}
   $('#plEdit').onclick=()=>{step=0;render()};
-  $('#plPrint').onclick=()=>window.print();
+  $('#plPrint').onclick=()=>{ev('planner_pdf',{});window.print()};
   $('#plReset').onclick=()=>{if(confirm('Clear all your answers from this device?')){S=JSON.parse(JSON.stringify(blank));save();step=0;render()}};
   $('#plAssB').onclick=()=>{const b=$('#plAssBox');b.hidden=!b.hidden;if(!b.hidden)b.scrollIntoView({behavior:'smooth'})};
   $('#plAssGo').onclick=()=>{$$('[data-a]').forEach(i=>{const v=parseFloat(i.value);if(isFinite(v))S[i.dataset.a]=v});live()};
   $('#cConf').onchange=e=>{S.confidence=+e.target.value;live()};
   const sl=(id,k,lab,suf)=>{const el=$(id);if(!el)return;el.oninput=()=>{$(lab).textContent=el.value+suf;S[k]=+el.value;live()}};
   sl('#cSu','stepup','#cSuL','%');sl('#cIs','investShare','#cIsL','%');sl('#cRa','retireAge','#cRaL','');
-  if(typeof gtag==='function')try{gtag('event','planner_complete',{profile:m.label})}catch(e){}
+  ev('planner_complete',{profile:m.label,mode:S.mode,goals:m.G.length,adviser:!!S.adv});
 }
+if(fromLink&&S.mode){step=(S.mode==='quick'?QUICK:STEPS).length;ev('planner_open_link',{})}
 render();
 })();
 """

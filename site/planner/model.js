@@ -31,7 +31,7 @@
     const s = Object.assign({}, DEFAULTS, inp || {});
     for (const k of Object.keys(DEFAULTS)) if (typeof DEFAULTS[k] === 'number') s[k] = num(s[k]);
     s.q = Object.assign({}, inp && inp.q);
-    s.goals = (inp && inp.goals || []).map(g => ({ name: g.name || 'Goal', type: g.type || '', cost: num(g.cost), years: num(g.years) }));
+    s.goals = (inp && inp.goals || []).map(g => ({ name: g.name || 'Goal', type: g.type || '', cost: num(g.cost), years: num(g.years), infl: num(g.infl) }));
     if (!s.goals.some(g => g.type === 'retire') && s.incomeType !== 'retired') s.goals.unshift({ name: 'Retirement', type: 'retire', cost: 0, years: 0 });
     return s;
   }
@@ -109,6 +109,11 @@
     return annual * f;
   }
 
+  // costs rise at different speeds: education and medical care far faster than general prices (% a year)
+  const GOAL_INFL = [[/educat|school|college|universit|mba|abroad|study|coaching/i, 10], [/medical|health|hospital|treatment|parent|elder|care/i, 10],
+                     [/wedding|marriage|shaadi/i, 7], [/holiday|travel|trip|vacation/i, 7], [/home|house|flat|property|down payment/i, 7], [/car|bike|vehicle/i, 4]];
+  const goalInfl = (name, s) => { const m = GOAL_INFL.find(([re]) => re.test(name || '')); return m ? m[1] : s.infl; };
+
   // ---------------------------------------------------------------- the plan
   function plan(input, mkt, opts = {}) {
     const s = normalise(input), r = riskScores(s), infl = s.infl / 100, step = s.stepup / 100;
@@ -144,8 +149,10 @@
       if (ret) {
         if (g.cost > 0) { fv = g.cost; how = 'your figure'; }
         else { fv = corpus(s, s.retireAge); how = `₹${Math.round(retireMonthly(s)).toLocaleString('en-IN')} a month from the corpus, in today's money, until ${s.lifeExp}`; }
-      } else fv = g.cost * Math.pow(1 + infl, y);
-      return { name: g.name, ret, y, fv, how, essential: ret || ESS.test(g.name), mix: goalMix(y, p, mkt), today: ret ? 0 : g.cost };
+      }
+      const gi = ret ? s.infl : (g.infl > 0 ? g.infl : goalInfl(g.name, s));
+      if (!ret) fv = g.cost * Math.pow(1 + gi / 100, y);
+      return { name: g.name, ret, y, fv, how, infl: gi, essential: ret || ESS.test(g.name), mix: goalMix(y, p, mkt), today: ret ? 0 : g.cost };
     }).filter(g => g.fv > 0).sort((a, b) => a.y - b.y);
 
     // 2. today's money goes to the nearest goals first (they have the least time); EPF/PPF/NPS only to retirement
@@ -204,7 +211,7 @@
       const others = need - g.sip;
       for (let k = 1; k <= 20; k++) {
         const y2 = g.y + k, m2 = goalMix(y2, p, mkt), r2 = mixReturn(m2, s);
-        const fv2 = g.ret && !(s.goals.find(x => x.type === 'retire') || {}).cost ? corpus(s, s.retireAge + k) : g.fv * Math.pow(1 + infl, k);
+        const fv2 = g.ret && !(s.goals.find(x => x.type === 'retire') || {}).cost ? corpus(s, s.retireAge + k) : g.fv * Math.pow(1 + g.infl / 100, k);
         const ex2 = g.ret ? fvSip(s.epfMonthly, y2, .08, s.epfGrowth / 100) : 0;
         const s2 = sipFor(Math.max(0, fv2 - g.have * Math.pow(1 + r2, y2) - ex2), y2, r2, step) * ratio;
         if (others + s2 <= avail) { option = { goal: g.name, years: k, sip: s2, retire: g.ret }; break; }
@@ -365,6 +372,40 @@
     return { mode, amount: amt, years, wd: wdYear, ends: { p10: q(ends, .1), p25: q(ends, .25), p50: q(ends, .5) }, to: { 85: to(85), 90: to(90), 95: to(95), 100: to(100) }, n };
   }
 
+  // the plan replayed through what actually happened, month by month, from a given month (e.g. '2008-01'):
+  // today's money and the planned SIPs, each goal on its glide path and paid out on its date. Returns the path,
+  // the largest fall from a peak (rupees and %), when it bottomed and when it recovered.
+  function replay(res, mkt, startYm, years) {
+    const [dates, EQ, DE, LI, GO] = mkt.months, i0 = dates.indexOf(startYm);
+    if (i0 < 0) return null;
+    const T = Math.min(Math.round(years * 12), dates.length - i0), step = res.s.stepup / 100, s0 = res.s, RG = res.G.find(g => g.ret);
+    const b = res.G.map(g => ({ g, v: g.have, mx: mixSeries(Math.round(g.y * 12), res.p, mkt), done: false }));
+    let w = res.leftover, put = res.total - res.cur['Real estate'] - res.cur.Other, spent = 0, worst = 0, worstAt = -1, rec = null, eqIdx = 1, eqPeak = 1, eqFall = 0, eqBottom = null, ef = res.efTop;
+    const path = [];
+    for (let t = 0; t < T; t++) {
+      const i = i0 + t, e = EQ[i], d = DE[i], l = LI[i], gd = GO[i] != null ? GO[i] : .007, up = Math.pow(1 + step, Math.floor(t / 12));
+      for (const x of b) {
+        const m12 = Math.round(x.g.y * 12);
+        if (x.done || t >= m12) continue;
+        const left = (m12 - t) / 12, m = x.mx[t], rd = left < 2 ? l : d, c = (t < x.g.ph ? x.g.f1 : x.g.f2) * up + (x.g.ret ? s0.epfMonthly * Math.pow(1 + s0.epfGrowth / 100, Math.floor(t / 12)) : 0);
+        x.v = x.v * (1 + m.eq * e + m.gold * gd + m.debt * rd) + c; put += c;
+        if (t === m12 - 1 && !x.g.ret) { spent += x.v; x.v = 0; x.done = true; }
+      }
+      const wm = res.wealthMix, wc = (RG && t >= Math.round(RG.y * 12)) ? 0 : (t < res.phaseMonths ? res.wealth1 : res.wealth) * up;
+      w = w * (1 + wm.eq * e + wm.gold * gd + wm.debt * d) + wc; put += wc;
+      const ec = t < res.phaseMonths ? res.efPay : 0; ef = ef * (1 + l) + ec; put += ec;
+      const tot = b.reduce((a, x) => a + x.v, 0) + w + spent + ef;   // goals already paid count as 'achieved', not lost
+      path.push({ ym: dates[i], v: tot, put });
+      const gap = tot - put;   // value against money put in (a paper loss when negative)
+      if (gap < worst) { worst = gap; worstAt = t; rec = null; }
+      if (worstAt >= 0 && rec == null && t > worstAt && gap >= 0) rec = t;
+      eqIdx *= 1 + e; eqPeak = Math.max(eqPeak, eqIdx); if (eqIdx / eqPeak - 1 < eqFall) { eqFall = eqIdx / eqPeak - 1; eqBottom = dates[i]; }
+    }
+    const last = path[path.length - 1], wp = worstAt >= 0 ? path[worstAt] : null;
+    return { start: startYm, path, months: T, worstGap: worst, worstYm: wp && wp.ym, worstPut: wp && wp.put, worstValue: wp && wp.v,
+      recoveredYm: rec != null ? path[rec].ym : null, monthsToRecover: rec != null ? rec - worstAt : null, end: last.v, put: last.put, endYm: last.ym, equityFall: eqFall, equityBottom: eqBottom };
+  }
+
   function simulate(res, mkt, opts = {}) {
     const n = opts.n || 600, seed = opts.seed || 20261107, step = res.s.stepup / 100;
     const maxY = Math.max(15, ...res.G.map(g => g.y)), months = Math.round(Math.min(40, maxY) * 12);
@@ -392,7 +433,7 @@
     const rmix = { eq: Math.min(.35, res.E), gold: .05 }; rmix.debt = 1 - rmix.eq - rmix.gold;
     const wd = RG ? retireMonthly(s0) : 0;
     const totals = P2.map(P => {
-      const row = []; const b = res.G.map(g => ({ g, v: g.have, done: false })); let w = res.leftover, out = null;
+      const row = []; const b = res.G.map(g => ({ g, v: g.have, done: false })); let w = res.leftover, out = null, ef = res.efTop;
       for (let t = 0; t < T; t++) {
         const k = Math.floor(t / 12), up = Math.pow(1 + step, k);
         for (const x of b) {
@@ -410,7 +451,8 @@
         }
         const m = res.wealthMix;
         w = w * (1 + m.eq * P.e[t] + m.gold * P.g[t] + m.debt * P.d[t]) + (RG && t >= Math.round(RG.y * 12) ? 0 : (t < res.phaseMonths ? res.wealth1 : res.wealth) * up);
-        if ((t + 1) % 12 === 0) row.push(b.reduce((a, x) => a + x.v, 0) + w);
+        ef = ef * (1 + P.l[t]) + (t < res.phaseMonths ? res.efPay : 0);
+        if ((t + 1) % 12 === 0) row.push(b.reduce((a, x) => a + x.v, 0) + w + ef);
       }
       lastAge.push(out == null ? Infinity : s0.age + out / 12);
       return row;
@@ -450,6 +492,6 @@
     return hi;
   }
 
-  const api = { swp, retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
+  const api = { replay, goalInfl, swp, retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PlannerModel = api;
 })(typeof window !== 'undefined' ? window : globalThis);

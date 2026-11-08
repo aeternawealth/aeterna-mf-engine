@@ -61,6 +61,13 @@ nav.main a[aria-current="page"],nav.main a:hover,.ddbtn[aria-current="page"],.dd
 .ab-facts>div{background:var(--surface);padding:16px 18px}.ab-facts b{display:block;font:600 20px/1.2 var(--f-mono);color:var(--ink)}.ab-facts span{display:block;color:var(--ink-3);font-size:13px;margin-top:4px}
 .ab-sec{display:grid;grid-template-columns:300px minmax(0,1fr);gap:48px;padding:30px 0;border-top:1px solid var(--rule);align-items:start}
 .ab-sec:first-of-type{margin-top:36px}.ab-sec h2{font-size:22px;margin:0}.ab-sec .body{display:grid;gap:14px;min-width:0}.ab-sec .body p{margin:0}
+.planfeat{display:grid;grid-template-columns:1.25fr .75fr;gap:32px;align-items:center;background:var(--surface);border:1px solid var(--teal);border-radius:var(--r);padding:30px;text-decoration:none;color:inherit;box-shadow:0 1px 0 var(--rule)}
+.planfeat:hover{border-color:var(--teal-2)}.planfeat h2{font-size:clamp(26px,3.2vw,34px)}
+.pf-pts{margin:14px 0 0;padding-left:18px;display:grid;gap:4px;font-size:14.5px;color:var(--ink-2)}
+.pf-card{background:var(--paper);border:1px solid var(--rule);border-radius:var(--r);padding:18px;display:grid;gap:8px}
+.pf-row{display:flex;justify-content:space-between;font-size:14px}.pf-row b{font:600 18px var(--f-display)}
+.pf-g{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
+@media (max-width:820px){.planfeat{grid-template-columns:1fr;padding:22px}}
 .inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:#fff;margin-top:34px}
 .inv-cta h2{color:#fff;font-size:24px}.inv-cta p{margin:6px 0 0;color:rgba(255,255,255,.85)}.inv-cta .btn{background:#fff;color:var(--teal);border-color:#fff}.inv-cta .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
 @media (max-width:900px){.ab-hero{grid-template-columns:1fr;gap:26px}.ab-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-sec{grid-template-columns:1fr;gap:10px;padding:24px 0}}
@@ -287,7 +294,7 @@ footer.site a{color:var(--ink-2)}
       <div class="eyebrow">Wealth management · India</div>
       <h1 style="margin-top:14px">Wealth built to last, chosen with numbers.</h1>
       <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds and unlisted shares, chosen and reviewed by a team of chartered accountants, advocates and wealth professionals. We measure every equity fund in India against its index, every weekday, so each fund you hold has to earn its place.</p>
-      <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="/invest/">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
+      <div class="actions"><a class="btn primary" href="/plan/">Build my Money Plan: free, 6 minutes</a><a class="btn" href="#contact">Talk to us</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
       <div class="facts" id="facts"></div>
     </div>
     <figure class="strip" style="margin:0">
@@ -298,6 +305,17 @@ footer.site a{color:var(--ink-2)}
       <p id="stripSum" style="font-size:14px;margin-top:10px"></p>
     </figure>
   </div></section>
+
+  <section class="band tint"><div class="wrap"><a class="planfeat" href="/plan/">
+    <div class="pf-txt"><div class="eyebrow">Aeterna Money Plan · free</div>
+      <h2 style="margin-top:8px">How much should you invest, and where?</h2>
+      <p class="lede" style="margin-top:10px">Tell us your goals, from a wedding next year to retirement at 60, and how you handle market falls. You get the exact monthly amount for each goal, what to move in what you already hold, and how long your retirement money lasts, tested on every month of Indian market history since 2007.</p>
+      <ul class="pf-pts"><li>Goal by goal: weddings, education, home, retirement to 95</li><li>The chance of reaching each goal, not one optimistic number</li><li>Your SWP in retirement, year by year, to age 100</li><li>Private: runs in your browser, nothing is sent to us</li></ul>
+      <span class="btn primary" style="margin-top:16px">Build my Money Plan</span></div>
+    <div class="pf-vis" aria-hidden="true"><div class="pf-card"><div class="pf-row"><span>Invest a month</span><b>₹54,800</b></div><div class="pf-row"><span>You may still spend</span><b>₹1,45,200</b></div>
+      <div class="pf-g"><svg width="64" height="64" viewBox="0 0 56 56"><circle r="22" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="22" cx="28" cy="28" fill="none" stroke="var(--teal)" stroke-width="6" stroke-linecap="round" stroke-dasharray="110 138" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)">80%</text></svg><span>Chance the money lasts until 90</span></div>
+      <svg viewBox="0 0 220 70" width="100%" style="margin-top:6px"><polygon points="0,62 40,55 80,42 120,30 150,26 180,30 220,40 220,66 180,62 150,58 120,56 80,60 40,63 0,64" fill="var(--teal-soft)"/><polyline points="0,63 40,59 80,51 120,43 150,41 180,46 220,54" fill="none" stroke="var(--teal)" stroke-width="2"/></svg>
+      <div class="muted" style="font-size:11.5px">Illustration</div></div></div></a></div></section>
 
   <section class="band"><div class="wrap grid g2" style="align-items:start;gap:40px">
     <div class="stack" style="min-width:0">
@@ -399,7 +417,7 @@ footer.site a{color:var(--ink-2)}
 <div data-view="ratings" hidden>
   <section class="band" style="padding-top:44px"><div class="wrap">
     <div class="eyebrow">Ratings</div>
-    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds</h1>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Mutual fund ratings</h1>
     <p class="lede" style="margin-top:12px" id="rateLede"></p>
     <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
@@ -513,9 +531,10 @@ function noHoldings(f){
   return `<div class="card" style="margin-top:12px"><b>Holdings not available</b><p class="muted" style="margin-top:6px">${why} ${effect}</p><p class="muted" style="font-size:12.5px;margin-top:6px">We check every AMC's disclosures twice a month and add holdings as soon as we can read them.</p></div>`}
 async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdings.json').then(r=>r.json())}catch(e){S.holdings={}}}return S.holdings}
 const cats_=()=>cats();
-const ASSET=c=>c==='Arbitrage'?'Hybrid':'Equity';
+const HYB=['Aggressive Hybrid','Balanced Advantage','Multi Asset Allocation','Balanced Hybrid','Equity Savings','Conservative Hybrid','Arbitrage'];
+const ASSET=c=>HYB.includes(c)?'Hybrid':'Equity';
 const TAXS=0.312,TAXE=0.13;   // after-tax comparison with liquid funds: 30% slab + cess; equity LTCG 12.5% + cess
-const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund','Arbitrage'];
+const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund',...HYB];
   const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
 
 /* ---------- solutions (home cards + Solutions page) ---------- */
@@ -793,7 +812,7 @@ async function insightsPage(){const I=await insights(),el=$('#insPage');
   bindTry(el)}
 
 /* ---------- search ---------- */
-const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity, index and arbitrage fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['What we offer','/invest/','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Calculators','/calculators/','SIP, lump sum, goal, SWP, EMI and tax calculators'],['SIP backtest','#tools-sipreal','Real SIP results from actual NAVs'],['Insights','/insights/','This month in numbers'],['Investor guides','/learn/','Regular vs Direct, SIP vs lump sum, tax'],['All funds, by category','/mutual-funds/','Equity, hybrid and (soon) debt funds'],['Arbitrage funds','/mutual-funds/arbitrage/','Compared with liquid funds, before and after tax'],['Mutual fund investing','/invest/mutual-funds/','How we choose funds for you'],['SIP calculator','/calculators/sip/','Calculators'],['Capital-gains tax','/calculators/capital-gains-tax/','Calculators'],['PMS','/invest/pms/','Invest'],['AIFs','/invest/aif/','Invest'],['Bonds','/invest/bonds/','Invest'],['Unlisted shares','/invest/unlisted-shares/','Invest'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
+const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity, index and arbitrage fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Method and backtest','#method','How the ratings work'],['What we offer','/invest/','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Calculators','/calculators/','SIP, lump sum, goal, SWP, EMI and tax calculators'],['Money Plan','/plan/','How much to invest, and where, for each goal'],['Retirement planner','/plan/','Corpus, SWP and how long the money lasts (Money Plan)'],['Asset allocation','/plan/','Your mix of equity, debt and gold (Money Plan)'],['SIP backtest','#tools-sipreal','Real SIP results from actual NAVs'],['Insights','/insights/','This month in numbers'],['Investor guides','/learn/','Regular vs Direct, SIP vs lump sum, tax'],['All funds, by category','/mutual-funds/','Equity, hybrid and (soon) debt funds'],['Arbitrage funds','/mutual-funds/arbitrage/','Compared with liquid funds, before and after tax'],['Mutual fund investing','/invest/mutual-funds/','How we choose funds for you'],['SIP calculator','/calculators/sip/','Calculators'],['Capital-gains tax','/calculators/capital-gains-tax/','Calculators'],['PMS','/invest/pms/','Invest'],['AIFs','/invest/aif/','Invest'],['Bonds','/invest/bonds/','Invest'],['Unlisted shares','/invest/unlisted-shares/','Invest'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
 function openSearch(){const o=$('#srch');o.hidden=false;const q=$('#srchQ');q.value='';drawSearch('');setTimeout(()=>q.focus(),10)}
 function closeSearch(){$('#srch').hidden=true}
 function drawSearch(q){
@@ -898,7 +917,7 @@ function ratings(){
   $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
   const h=S.hz, idx=S.cat==='Index Fund', arb=S.cat==='Arbitrage';
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
-  $('#hzNote').innerHTML=h==='Overall'?'<b>Track record</b> needs at least 3 years of history (1 year for index funds). Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
+  $('#hzNote').innerHTML=h==='Overall'?(arb?'<b>Track record</b>: arbitrage funds are compared on return over the index, consistency, fee and size, and need to beat liquid funds after tax for A or A+. 3 years of history needed.':'<b>Track record</b> needs at least 3 years of history (1 year for index funds).')+' Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
     :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Every fund that existed for the whole period is ranked; a red note by the name flags a weak long-term record.`;
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
@@ -918,7 +937,7 @@ function ratings(){
     ['3Y vs liquid after tax','excess_vs_liquid_post_tax_3y',f=>spct(f.excess_vs_liquid_post_tax_3y,2),"The same after tax for an investor in the 30% slab holding over a year: liquid gains taxed at 31.2%, arbitrage gains at 13%"],
     ['Fund fee','ter_base',f=>fmtPct2(f.ter_base),'Base expense ratio: the fee the fund house charges'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),"AMFI's total expense ratio: the fee plus brokerage and statutory levies. For arbitrage funds the levies are mostly transaction tax on their trades, already reflected in returns"],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
@@ -926,7 +945,7 @@ function ratings(){
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
@@ -936,13 +955,13 @@ function ratings(){
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']];
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
     'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
     '1Y return':['Return','1Y'],'3Y vs liquid':['vs liquid','3Y'],'3Y vs liquid after tax':['vs liquid','3Y, after tax'],'Fund fee':['Fund fee','base TER'],
-    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled.'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
+    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
   const hd=c=>HD[c[0]]||[c[0],''];
   const lbl=c=>{const [a,b]=hd(c);return b?`${a} (${b})`:a};
   const order={'A+':0,'A':1,'B':2,'C':3};
@@ -959,7 +978,7 @@ function ratings(){
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
       return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(hd(c).filter(Boolean).join(' · '))}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
     const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1],[m1,m2]=hd(c);return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}"><span class="hl"><span class="h1">${m1}</span><span class="h2">${m2||'&nbsp;'}</span></span><span class="arr" aria-hidden="true">${on?(srt.dir==='asc'?'▲':'▼'):'▾'}</span></button></th>`}).join('');
-    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
+    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · ${arb&&bench==='Peer median'?'benchmark: the median arbitrage fund':L[0].bench_label?'benchmark: '+esc(L[0].bench_label):'benchmark '+esc(bench)+' TRI'}</span></div>
     <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
   $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${esc(lbl(c))}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,ter_base:1,downside_capture_3y:1,tracking_err_1y:1};
@@ -988,7 +1007,7 @@ async function fund(code){
   el.innerHTML=`<a href="#ratings" style="font-size:14px">← ${esc(f.category)} ratings</a>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:16px;gap:20px">
     <div style="min-width:0"><div class="eyebrow">${esc(f.category)} · ${esc(f.plan_type)} plan · Growth</div><h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">${esc(f.name)}</h1>
-    <p class="muted" style="margin-top:8px">${esc(f.amc)} · benchmark ${esc(f.benchmark||'peer median')} TRI · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
+    <p class="muted" style="margin-top:8px">${esc(f.amc)} · ${f.category==='Arbitrage'&&!f.benchmark?'benchmark: the median arbitrage fund':f.bench_label?'benchmark: '+esc(f.bench_label):'benchmark '+esc(f.benchmark||'peer median')+' TRI'} · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
     ${fl.length?`<p class="flag" style="margin-top:6px">${fl.map(esc).join(' · ')}</p>`:''}</div>
     <div class="row">${twin?`<a class="btn" href="#fund-${twin.code}">See ${esc(twin.plan_type)} plan</a>`:''}<button class="btn primary" id="addCmp">Add to compare</button></div>
   </div>

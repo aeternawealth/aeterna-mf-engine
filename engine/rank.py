@@ -69,6 +69,9 @@ def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
     u.loc[ix, "benchmark"] = tracked
     u.loc[ix, "peer_group"] = ["Index: " + l for l in labels]
     # arbitrage: the Nifty 50 Arbitrage index if niftyindices lists it (name matched loosely), else a peer proxy
+    hy = u["category"].isin(list(C.HYBRID_COMPOSITE))
+    u.loc[hy, "benchmark"] = u.loc[hy, "category"].map(lambda c: f"COMPOSITE {int(C.HYBRID_COMPOSITE[c][0] * 100)}:{100 - int(C.HYBRID_COMPOSITE[c][0] * 100)} {C.HYBRID_COMPOSITE[c][1]}")
+    u.loc[hy, "bench_label"] = u.loc[hy, "category"].map(lambda c: f"{int(C.HYBRID_COMPOSITE[c][0] * 100)}% Nifty 50 TRI + {100 - int(C.HYBRID_COMPOSITE[c][0] * 100)}% {'bond funds' if C.HYBRID_COMPOSITE[c][1] == 'bond' else 'liquid funds'}")
     ar = u["category"] == "Arbitrage"
     if ar.any():
         arb = next((c for c in tri.columns if _key(c) == _key(C.CATEGORY_BENCHMARK["Arbitrage"])), None) or \
@@ -78,9 +81,21 @@ def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------- metrics
-def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Timestamp, log=print, liquid=None):
+def composite(tri: pd.DataFrame, debt: pd.Series, w_eq: float) -> pd.Series | None:
+    """Daily-rebalanced mix of the Nifty 50 TRI and a debt yardstick (an index level starting at 1)."""
+    if C.HYBRID_EQUITY_INDEX not in tri or debt is None:
+        return None
+    j = pd.concat([tri[C.HYBRID_EQUITY_INDEX].dropna(), debt], axis=1, keys=["e", "d"]).dropna()
+    if len(j) < 250:
+        return None
+    r = w_eq * j.e.pct_change() + (1 - w_eq) * j.d.pct_change()
+    return (1 + r.fillna(0)).cumprod()
+
+
+def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Timestamp, log=print, liquid=None, bond=None):
     rows = []
-    liquid = liquid or {}
+    liquid, bond = liquid or {}, bond or {}
+    comps = {}
     # proxy benchmark for index groups without a Nifty TRI: median daily return of peers
     proxies = {}
     for pg, g in u[(u.category == "Index Fund") & u.benchmark.isna()].groupby("peer_group"):
@@ -111,6 +126,21 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
             m["bench_type"] = btype
             if bser is not None:
                 m.update(horizon_metrics(nav, bser, as_of))
+        elif r.category in C.HYBRID_COMPOSITE:
+            w, leg = C.HYBRID_COMPOSITE[r.category]
+            key = (r.category, r.plan_type)
+            if key not in comps:
+                comps[key] = composite(tri, (bond if leg == "bond" else liquid).get(r.plan_type), w)
+            bser = comps[key]
+            if bser is None:
+                continue
+            try:
+                m = fund_metrics(nav, bser, as_of)
+            except Exception as e:
+                log(f"  metrics failed for {r.code} {r.name}: {e}")
+                continue
+            m["bench_type"] = "composite"
+            m.update(horizon_metrics(nav, bser, as_of))
         elif r.category == "Arbitrage":
             if isinstance(r.benchmark, str) and r.benchmark in tri:
                 bser, btype = tri[r.benchmark].dropna(), "TRI"
@@ -167,10 +197,10 @@ def score_horizons(df: pd.DataFrame) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------- full ranking
-def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, holdings=None, log=print, liquid=None):
+def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, holdings=None, log=print, liquid=None, bond=None):
     as_of = pd.Timestamp(as_of) if as_of is not None else tri.index.max()
     u = assign_peers(u, tri)
-    met = compute_metrics(u, navs, tri, as_of, log, liquid=liquid)
+    met = compute_metrics(u, navs, tri, as_of, log, liquid=liquid, bond=bond)
     df = u.drop(columns=["nav_date", "nav"], errors="ignore").merge(met, on="code", how="inner")
     if ter is not None:
         df = df.merge(ter[[c for c in ("code", "ter", "ter_date", "ter_base") if c in ter.columns]], on="code", how="left")
@@ -184,7 +214,7 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         # arbitrage funds hold stocks hedged with futures: the stock list (and active share, market-cap mix,
         # mandate checks) says nothing about their risk, so it is not used or shown
         hc = [c for c in holdings.columns if c != "pair_key" and c in df.columns]
-        df.loc[df["category"].eq("Arbitrage"), hc] = np.nan
+        df.loc[df["asset_class"].eq("Hybrid"), hc] = np.nan   # hybrid portfolios hedge and mix assets: equity analytics would mislead
 
     # gates
     df["gate"] = "ok"
@@ -224,7 +254,7 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
 
 
 # ------------------------------------------------------------- outputs
-DISPLAY_COLS = ["code", "name", "amc", "asset_class", "category", "peer_group", "plan_type", "benchmark", "bench_type",
+DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "category", "peer_group", "plan_type", "benchmark", "bench_type",
                 "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
                 "cagr_1y", "cagr_3y", "cagr_5y", "excess_cagr_3y", "excess_cagr_5y",
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",

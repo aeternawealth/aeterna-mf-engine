@@ -56,6 +56,12 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Sectoral/Thematic": "invest at least 80% in one sector or theme, such as banking, technology or infrastructure",
     "Index Fund": "track an index such as the Nifty 50 as closely and cheaply as possible",
     "Arbitrage": "invest at least 65% in equities hedged with derivatives, earning the price gap between the cash and futures markets",
+    "Aggressive Hybrid": "invest 65% to 80% in equities and the rest in debt",
+    "Balanced Advantage": "move between equity and debt as they see fit (dynamic asset allocation), often hedging part of their equity",
+    "Equity Savings": "invest at least 65% in equities, much of it hedged with arbitrage, at least 10% in debt",
+    "Multi Asset Allocation": "invest at least 10% in each of three asset classes, usually equity, debt and gold",
+    "Balanced Hybrid": "invest 40% to 60% in equities and the rest in debt, without arbitrage",
+    "Conservative Hybrid": "invest 10% to 25% in equities and 75% to 90% in debt",
 }
 CAT_PITCH = {   # what the category is for, in plain words
     "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
@@ -70,17 +76,27 @@ CAT_PITCH = {   # what the category is for, in plain words
     "Dividend Yield": "Mostly companies that pay high dividends, which has often made them steadier in falls.",
     "Sectoral/Thematic": "One sector or theme, such as banking, pharma or technology. These show the widest spread of results of any category: a theme can lag for years. Most investors keep them to a small slice.",
     "Index Fund": "Funds that follow an index at low cost. Between funds on the same index, the choice comes down to cost and how closely each one tracks it.",
+    "Aggressive Hybrid": "Mostly equity with a debt cushion: a gentler ride than a pure equity fund for five-year-plus money, rebalanced for you. Taxed as equity.",
+    "Balanced Advantage": "The fund decides how much equity to hold, buying more when markets are cheap and less when they are expensive. The test is whether it really falls less than the market, which is what we measure.",
+    "Equity Savings": "A little equity, a lot of arbitrage and some debt: modest returns with small swings, taxed as equity. Often a better fit than an FD for three-year money in the higher tax slabs.",
+    "Multi Asset Allocation": "Equity, debt and gold in one fund, rebalanced for you. Gold tends to rise when equities fall, which steadies the ride. Most of these funds are young, so many are not rated yet.",
+    "Balanced Hybrid": "Equity and debt in roughly equal parts, without arbitrage. Only a few funds exist in this category.",
+    "Conservative Hybrid": "Mostly debt with a small equity kicker, for investors who want a little more than a debt fund and can accept small falls. Taxed like a debt fund, at your slab rate.",
     "Arbitrage": "A low-risk place to park money for a few months or more. Each stock bought is matched by a futures sale, so returns track short-term interest rates rather than the stock market. Before tax they usually earn a little less than liquid funds; they are taxed as equity, so after tax they often come out ahead for investors in the higher slabs.",
 }
 ASSET_CLASSES = [   # the three master categories, in site order
     ("Equity", "Funds that own shares: the long-term growth part of a portfolio."),
-    ("Hybrid", "Funds that mix asset classes or hedge their equity. Arbitrage funds first; the other hybrid categories are on the way."),
+    ("Hybrid", "Funds that mix equity, debt and gold, or hedge their equity: from aggressive hybrid to arbitrage. Each is measured against a composite of the Nifty 50 and bond or liquid funds in its own proportions."),
     ("Debt", "Funds that lend: liquid, money market, short-term, corporate bond and gilt funds. Coming soon."),
 ]
+HYBRID_CATS = {"Arbitrage", "Aggressive Hybrid", "Balanced Advantage", "Equity Savings", "Multi Asset Allocation", "Balanced Hybrid", "Conservative Hybrid"}
 def asset_class(c):
-    return "Hybrid" if c == "Arbitrage" else "Equity"
+    return "Hybrid" if c in HYBRID_CATS else "Equity"
 # tax assumptions for the after-tax comparison with liquid funds (same as engine/config.py)
 TAX_SLAB_TOP, TAX_EQUITY_LTCG = 0.312, 0.13
+TAX_TEXT = {"equity": "Taxed as an equity fund: gains on units held over a year at 12.5% beyond ₹1.25 lakh a year; within a year, 20%.",
+            "other": "Taxed as a non-equity, non-debt fund: gains on units held over two years at 12.5%; within two years, at your slab rate.",
+            "debt": "Taxed at your income-tax slab rate on all gains, however long you hold (more than 65% of the fund is in debt)."}
 
 TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
@@ -344,7 +360,8 @@ def main():
     for f in funds:
         by_cat.setdefault(f["category"], []).append(f)
     order = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused",
-             "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund", "Arbitrage"]
+             "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund",
+             "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Balanced Hybrid", "Equity Savings", "Conservative Hybrid", "Arbitrage"]
     cats = [c for c in order if c in by_cat] + sorted(set(by_cat) - set(order))
     urls = [("/", "daily", "1.0"), ("/mutual-funds/", "daily", "0.9")]
 
@@ -371,6 +388,8 @@ def main():
         twin = next((x for x in funds if x.get("pair_key") == f.get("pair_key") and x["code"] != f["code"]), None)
         top = (hold.get(f.get("pair_key")) or [])[:10]
         bench = iname(f.get("benchmark")) or "peer median"
+        BL = f.get("bench_label")
+        bp = f"its composite benchmark ({BL})" if BL else f"the {bench} TRI"
         rated = f.get("tier") not in (None, "", "Unrated")
         r3, e3 = f.get("ret_3Y"), f.get("excess_3Y")
         arb = f["category"] == "Arbitrage"
@@ -378,7 +397,7 @@ def main():
         if arb and r3 is not None and f.get("liq_cagr_3y") is not None:
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(f['liq_cagr_3y'])} for the median liquid fund (before tax).")
         elif r3 is not None and e3 is not None:
-            desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(r3 - e3)} for the {bench} TRI.")
+            desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(r3 - e3)} for {bp}.")
         if rated:
             desc_bits.append(f"Track-record rating {f['tier']} ({int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)}).")
         desc_bits.append(f"NAV {inr2(f.get('nav_latest'))} on {dmy(f.get('nav_date'))}; expense ratio {num(f.get('ter'), 2)}%.")
@@ -433,7 +452,9 @@ def main():
         faq = [(f"What is the NAV of {f['_name']} ({f['plan_type']} plan)?", f"{inr2(f.get('nav_latest'))} on {dmy(f.get('nav_date'))} (Growth option)."),
                (f"What is the expense ratio of {f['_name']} ({f['plan_type']})?", f"{num(f.get('ter'), 2)}% a year" + (f"; the {twin['plan_type']} plan's is {num(twin.get('ter'), 2)}%." if twin and twin.get('ter') is not None else "."))]
         if r3 is not None and e3 is not None:
-            faq.append((f"What return has {f['_name']} given over 3 years?", f"{pct(r3)} a year ({f['plan_type']} plan) over the 3 years to {dmy(f.get('nav_date'))}, against {pct(r3 - e3)} for the {bench} total-return index."))
+            faq.append((f"What return has {f['_name']} given over 3 years?", f"{pct(r3)} a year ({f['plan_type']} plan) over the 3 years to {dmy(f.get('nav_date'))}, against {pct(r3 - e3)} for {bp}."))
+        if f.get("tax") and asset_class(f["category"]) == "Hybrid":
+            faq.append((f"How is {f['_name']} taxed?", TAX_TEXT.get(f["tax"], "")))
         if arb:
             faq.append((f"Is {f['_name']} better than a liquid fund?", "Before tax, arbitrage funds usually earn a little less than liquid funds. They are taxed as equity, so for an investor in the 30% slab who holds for over a year, they have usually come out ahead after tax; see the table above. For lower slabs or short holdings the gap narrows."))
             faq.append(("How are arbitrage funds taxed?", "As equity funds: gains on units held over a year are taxed at 12.5% beyond ₹1.25 lakh a year (plus cess); held for a year or less, at 20%. Liquid fund gains are added to your income and taxed at your slab rate."))
@@ -457,7 +478,8 @@ def main():
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{slug(f['category'])}/">{e(f['category'])}</a> › {e(f['_name'])}</nav>
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">{e(f['_name'])} ({e(f['plan_type'])})</h1>
-<p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
+<p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else ('benchmark: ' + e(BL)) if BL else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
+{f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) == 'Hybrid' else ''}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
@@ -491,6 +513,9 @@ def main():
         e3 = [f for f in reg if f.get("excess_3Y") is not None]
         beat = sum(1 for f in e3 if f["excess_3Y"] > 0)
         bench = iname(next((f.get("benchmark") for f in L if f.get("benchmark")), None))
+        CBL = next((f.get("bench_label") for f in L if f.get("bench_label")), None)
+        if CBL:
+            bench = f"composite ({CBL})"
         path = f"/mutual-funds/{slug(c)}/"
         r3 = sorted([f for f in reg if f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
         gap_html = ""

@@ -237,13 +237,17 @@ const goalRow=(g,i)=>`<div class="pl-goal" data-i="${i}"><label class="pl-f gnam
 
 function chooser(){
   $('#plProg').innerHTML='';$('#plStepLbl').textContent='';$('#plBody').className='pl-step';
+  const had=S.mode&&(+S.age>0||+S.income>0);
   $('#plBody').innerHTML=`<div class="grid g2" style="gap:16px;align-items:stretch">
    <button type="button" class="card pl-mode" data-mode="quick"><span class="eyebrow">2 minutes</span><b>Quick plan</b><span>Ten numbers and two questions. You get how much to invest for each goal and whether your retirement money lasts.</span><span class="btn primary" style="margin-top:auto">Start the quick plan</span></button>
-   <button type="button" class="card pl-mode" data-mode="detailed"><span class="eyebrow">6 minutes</span><b>Detailed plan</b><span>Everything you hold, insurance and EPF, and six questions on risk: what to move in your portfolio, fund by category, and a sharper answer.</span><span class="btn" style="margin-top:auto">Start the detailed plan</span></button></div>`;
-  $$('#plBody [data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;step=0;save();ev('planner_mode',{mode:S.mode});render()});
+   <button type="button" class="card pl-mode" data-mode="detailed"><span class="eyebrow">6 minutes</span><b>Detailed plan</b><span>Everything you hold, insurance and EPF, and six questions on risk: what to move in your portfolio, fund by category, and a sharper answer.</span><span class="btn" style="margin-top:auto">Start the detailed plan</span></button></div>
+   <p class="muted" style="margin-top:14px;font-size:14px">You can switch between the two at any time; your answers carry over.${had?` <button type="button" class="pl-x" id="plCont" style="margin-left:6px">Continue my saved ${S.mode} plan</button>`:''}</p>`;
+  $$('#plBody [data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;step=0;atStart=false;save();ev('planner_mode',{mode:S.mode});render()});
+  const c=$('#plCont');if(c)c.onclick=()=>{atStart=false;step=0;ev('planner_continue',{mode:S.mode});render()};
 }
+let atStart=true;
 function render(){
-  if(!S.mode){chooser();return}
+  if(!S.mode||atStart){chooser();return}
   const STEPS_=S.mode==='quick'?QUICK:STEPS, total=STEPS_.length;
   S.goals=S.goals.filter(g=>g.type!=='retire'||!retired());if(!retired()&&!S.goals.some(g=>g.type==='retire'))S.goals.unshift({name:'Retirement',type:'retire',cost:'',years:''});
   $('#plProg').innerHTML=Array.from({length:total+1},(_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('');
@@ -685,7 +689,7 @@ function bindDash(m){
   sl('#cSu','stepup','#cSuL','%');sl('#cIs','investShare','#cIsL','%');sl('#cRa','retireAge','#cRaL','');
   ev('planner_complete',{profile:m.label,mode:S.mode,goals:m.G.length,adviser:!!S.adv});
 }
-if(fromLink&&S.mode){step=(S.mode==='quick'?QUICK:STEPS).length;ev('planner_open_link',{})}
+if(fromLink&&S.mode){atStart=false;step=(S.mode==='quick'?QUICK:STEPS).length;ev('planner_open_link',{})}
 render();
 })();
 """

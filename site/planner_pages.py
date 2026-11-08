@@ -65,7 +65,33 @@ CSS = r"""
 .pl-fan text{font:11px var(--f-mono);fill:var(--ink-3)}.pl-fan{overflow:hidden;display:block}
 .pl-fanwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:640px){.pl-fan{min-width:640px}.pl-fanwrap::after{content:'Swipe the chart to see all of it';display:block;font-size:12px;color:var(--ink-3);margin-top:4px}}
-@media print{header,footer,.pl-nav,.pl-noprint{display:none!important}.card{break-inside:avoid}.pl-sticky{position:static}}
+.pl-printhead{display:none}
+@media print{
+ @page{size:A4;margin:14mm 12mm 16mm}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ html,body{background:#fff!important}
+ header,footer,.pl-nav,.pl-noprint,.pl-sticky,.pl-prog,#plStepLbl,nav[aria-label="Breadcrumb"],.eyebrow+h1,.lede,.pl-wrap>p.muted,.faq,h2.pl-noprint{display:none!important}
+ section.band{padding:0!important}.wrap{max-width:none;padding:0}
+ .pl-printhead{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--teal);padding-bottom:8px;margin-bottom:10px}
+ .pl-printhead b{font:600 20px var(--f-display);color:var(--teal)}.pl-printhead span{font-size:10.5px;color:var(--ink-3);text-align:right}
+ body{font-size:11.5px}.pl-dash h2{font-size:17px;margin-top:16px}.pl-dash h3{font-size:14px;margin-top:12px}
+ .pl-dash p,.pl-act p,.pl-flag,.kv div{font-size:11px}
+ .card,.pl-gc,.pl-act li,.pl-flag,.pl-donut,.pl-verdict,.pl-tl>div,.pl-fanwrap,svg,tr,.kv>div,figure{break-inside:avoid;page-break-inside:avoid}
+ .tablewrap{overflow:visible!important}table{width:100%}thead{display:table-header-group}
+ th,thead,thead tr{position:static!important;top:auto!important;box-shadow:none!important}
+ .pl-wrap>.eyebrow{display:none!important}
+ .pl-keep{break-inside:avoid;page-break-inside:avoid}
+ h2,h3{break-after:avoid;page-break-after:avoid}
+ .card{padding:12px;box-shadow:none}
+ .pl-goals{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .pl-donuts,.grid.g2{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .grid.g3{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .pl-fan{min-width:0!important}.pl-fanwrap{overflow:visible}.pl-fanwrap::after{display:none}
+ .pl-act li{padding:8px 10px 8px 40px}.pl-act li::before{left:10px;top:8px;width:20px;height:20px;font-size:11px;line-height:20px}
+ #swpBox .pl-ctrl{display:none}#swpBox{border:0;padding:0}
+ .inv-cta{display:none}
+ a{color:inherit;text-decoration:none}
+}
 </style>
 """
 
@@ -354,7 +380,7 @@ function retireHtml(m,sim,ages){
   <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Plan for the money to last</th><th>Corpus needed at ${s.retireAge}</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${ageRows}</tbody></table></div>
 
   <h3 style="margin-top:22px">Your SWP: how the money is withdrawn, and how long it lasts</h3>
-  <div class="card pl-noprint" id="swpBox" style="margin-top:10px">
+  <div class="card" id="swpBox" style="margin-top:10px">
    <div class="pl-ctrl" style="grid-template-columns:repeat(4,minmax(0,1fr))">
     <label class="pl-f"><span>Monthly withdrawal</span><div class="seg" role="group" aria-label="Withdrawal type"><button type="button" data-sw="inflation" aria-pressed="true">Rises with prices</button><button type="button" data-sw="fixed" aria-pressed="false">Fixed rupees</button></div></label>
     <label class="pl-f"><span id="swAmtL">Amount, in today's money</span><input type="number" id="swAmt" min="0" step="5000" value="${Math.round(R.monthlyToday)}"><small id="swAmtH"></small></label>
@@ -445,6 +471,7 @@ function dashHtml(m,sim,m90,alt,ages){
     <label class="pl-f"><span>Invest of surplus: <b id="cIsL">${s.investShare}%</b></span><input type="range" id="cIs" min="50" max="100" step="5" value="${s.investShare}"></label>
     ${retired()?'<span></span>':`<label class="pl-f"><span>Stop working at: <b id="cRaL">${s.retireAge}</b></span><input type="range" id="cRa" min="${Math.min(75,Math.max(n('age')+1,40))}" max="75" step="1" value="${s.retireAge}"></label>`}</div></div>
   <div id="plOut">
+  <div class="pl-printhead"><b>Aeterna Money Plan</b><span>Prepared ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})} at aeternawealth.com/plan<br>Aeterna Wealth Private Limited · AMFI-registered mutual fund distributor, ARN-317889 · indicative, not advice</span></div>
   ${verdict(m,alt)}
   <h2 style="margin-top:22px">What to do now</h2>
   <p class="muted" style="font-size:13.5px;margin-top:6px">In order. Each step uses the numbers below; change the controls above and the steps update.</p>
@@ -475,14 +502,14 @@ function dashHtml(m,sim,m90,alt,ages){
     ${later?`<p style="font-size:14px;margin-top:10px">${later}</p>`:''}${shortTxt?`<p style="font-size:14px;margin-top:10px">${shortTxt}</p>`:`<p style="font-size:14px;margin-top:10px">${m.r.surplus<=0?'Create a surplus first: the plan starts once income exceeds expenses and EMIs.':'Your goals are covered; the rest builds long-term wealth.'}</p>`}</div>
    <div class="tablewrap"><table><thead><tr><th class="l">Where it goes, by fund category</th>${two?`<th>Months 1–${m.phaseMonths}</th><th>From month ${m.phaseMonths+1}</th>`:'<th>A month</th>'}</tr></thead><tbody>${catRows||'<tr><td class="l" colspan="3">Nothing to invest yet.</td></tr>'}<tr><td class="l"><b>Total</b></td>${two?`<td class="num"><b>${inr(m.invest1)}</b></td>`:''}<td class="num"><b>${inr(m.invest)}</b></td></tr></tbody></table></div></div>
 
-  <h2>How your money could grow</h2>
+  <div class="pl-keep"><h2>How your money could grow</h2>
   <p class="muted" style="font-size:13.5px;margin-top:6px;max-width:80ch">All your investments together, with this plan, across 500 sequences of real market months since 2007 (including 2008 and 2020). In today's money, so ₹1 lakh on the chart buys what ₹1 lakh buys now. The line drops when a goal is paid for; after retirement it includes any extra you invest beyond your goals. The SWP simulator above shows the retirement corpus on its own, withdrawal by withdrawal, to age 100.</p>
-  <div class="card" style="margin-top:12px">${fan(sim,m)}</div>
+  <div class="card" style="margin-top:12px">${fan(sim,m)}</div></div>
 
   <h2>Roadmap</h2><div class="pl-tl">
    <div><b>Next 3 months</b><ul>${[m.payDebt&&'Pay down the expensive debt first.',m.efGap>0&&`Build the emergency fund towards ${inrS(m.efTarget)}.`,(m.termGap>0||m.healthGap>0)&&'Sort out term and health cover.',m.r.surplus>0&&'Start the SIPs above; schedule them for the day after salary.',m.cur.Cash>m.r.out*12&&'Move idle savings into the goals they belong to.'].filter(Boolean).map(x=>`<li>${x}</li>`).join('')}</ul></div>
    <div><b>3 to 12 months</b><ul><li>Steer new money into what is underweight before selling anything.</li>${s.nfunds>7?'<li>Consolidate overlapping equity funds.</li>':''}<li>Check each SIP is in the category its goal's timeline needs.</li></ul></div>
-   <div><b>1 to 3 years</b><ul><li>Raise SIPs by ${s.stepup}% with each raise.</li><li>Rebalance once a year, or when an asset class is 5 points off; use the ₹1.25 lakh yearly tax-free equity gain to do it.</li></ul></div>
+   <div><b>1 to 3 years</b><ul><li>${s.stepup?`Raise SIPs by ${s.stepup}% with each raise.`:'Raise your SIPs a little every year with your income: even 5% a year lowers what each goal needs today.'}</li><li>Rebalance once a year, or when an asset class is 5 points off; use the ₹1.25 lakh yearly tax-free equity gain to do it.</li></ul></div>
    <div><b>Later</b><ul><li>As each goal comes within 3 years, move its money out of equity in stages.</li>${m.retire?`<li>At ${s.retireAge-1}: set up the three retirement buckets and the monthly SWP; consider an annuity for the essentials.</li>`:''}<li>Revisit the plan after marriage, a child, a new job or loan, or an inheritance.</li></ul></div></div>
   <div class="pl-flag ok" style="margin-top:18px"><b>Review by ${review.toLocaleDateString('en-IN',{month:'long',year:'numeric'})},</b> or sooner if your income, family or goals change.</div>
 

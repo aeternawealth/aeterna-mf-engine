@@ -88,6 +88,7 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     u = u[~((u["category"] == "Index Fund") & debt_like)]
     u["plan_type"] = u["plan"].str.contains("direct", case=False).map({True: "Direct", False: "Regular"})
     u["asset_class"] = u["category"].map(C.ASSET_CLASS).fillna("Equity")
+    u["tax"] = u["category"].map(C.TAX_CLASS).fillna("equity")
     # pairing key so Direct and Regular of the same scheme sit side by side
     base = (u["name"].str.replace(r"(?i)\b(direct|regular)\s*plan\b", "", regex=True)
             .str.replace(r"(?i)\bgrowth( option| plan)?\b", "", regex=True)
@@ -98,9 +99,10 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     return u.reset_index(drop=True)
 
 
-def liquid_universe(navall: pd.DataFrame) -> pd.DataFrame:
-    """Open-ended liquid funds, Growth option, Direct & Regular: the yardstick for arbitrage funds."""
-    u = navall[navall["raw_category"].fillna("").str.lower().str.contains(C.LIQUID_CATEGORY_KEY)
+def liquid_universe(navall: pd.DataFrame, keys=None) -> pd.DataFrame:
+    """Open-ended funds of the given AMFI categories (default: liquid), Growth option, Direct & Regular: yardsticks."""
+    keys = keys or [C.LIQUID_CATEGORY_KEY]
+    u = navall[navall["raw_category"].fillna("").str.lower().str.contains("|".join(keys))
                & navall["raw_category"].fillna("").str.startswith("Open Ended")].copy()
     growth = u["option"].str.contains("growth", case=False) & ~u["option"].str.contains("idcw|dividend|bonus", case=False)
     u = u[growth & ~u["name"].str.contains(r"\bETF\b|BeES|segregated|unclaimed|institutional|retail", case=False, regex=True)]

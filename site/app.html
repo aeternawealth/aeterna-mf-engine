@@ -529,9 +529,10 @@ function noHoldings(f){
   return `<div class="card" style="margin-top:12px"><b>Holdings not available</b><p class="muted" style="margin-top:6px">${why} ${effect}</p><p class="muted" style="font-size:12.5px;margin-top:6px">We check every AMC's disclosures twice a month and add holdings as soon as we can read them.</p></div>`}
 async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdings.json').then(r=>r.json())}catch(e){S.holdings={}}}return S.holdings}
 const cats_=()=>cats();
-const ASSET=c=>c==='Arbitrage'?'Hybrid':'Equity';
+const HYB=['Aggressive Hybrid','Balanced Advantage','Multi Asset Allocation','Balanced Hybrid','Equity Savings','Conservative Hybrid','Arbitrage'];
+const ASSET=c=>HYB.includes(c)?'Hybrid':'Equity';
 const TAXS=0.312,TAXE=0.13;   // after-tax comparison with liquid funds: 30% slab + cess; equity LTCG 12.5% + cess
-const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund','Arbitrage'];
+const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund',...HYB];
   const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
 
 /* ---------- solutions (home cards + Solutions page) ---------- */
@@ -975,7 +976,7 @@ function ratings(){
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
       return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(hd(c).filter(Boolean).join(' · '))}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
     const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1],[m1,m2]=hd(c);return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}"><span class="hl"><span class="h1">${m1}</span><span class="h2">${m2||'&nbsp;'}</span></span><span class="arr" aria-hidden="true">${on?(srt.dir==='asc'?'▲':'▼'):'▾'}</span></button></th>`}).join('');
-    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · ${arb&&bench==='Peer median'?'benchmark: the median arbitrage fund':'benchmark '+esc(bench)+' TRI'}</span></div>
+    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · ${arb&&bench==='Peer median'?'benchmark: the median arbitrage fund':L[0].bench_label?'benchmark: '+esc(L[0].bench_label):'benchmark '+esc(bench)+' TRI'}</span></div>
     <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
   $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${esc(lbl(c))}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,ter_base:1,downside_capture_3y:1,tracking_err_1y:1};
@@ -1004,7 +1005,7 @@ async function fund(code){
   el.innerHTML=`<a href="#ratings" style="font-size:14px">← ${esc(f.category)} ratings</a>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:16px;gap:20px">
     <div style="min-width:0"><div class="eyebrow">${esc(f.category)} · ${esc(f.plan_type)} plan · Growth</div><h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">${esc(f.name)}</h1>
-    <p class="muted" style="margin-top:8px">${esc(f.amc)} · ${f.category==='Arbitrage'&&!f.benchmark?'benchmark: the median arbitrage fund':'benchmark '+esc(f.benchmark||'peer median')+' TRI'} · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
+    <p class="muted" style="margin-top:8px">${esc(f.amc)} · ${f.category==='Arbitrage'&&!f.benchmark?'benchmark: the median arbitrage fund':f.bench_label?'benchmark: '+esc(f.bench_label):'benchmark '+esc(f.benchmark||'peer median')+' TRI'} · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
     ${fl.length?`<p class="flag" style="margin-top:6px">${fl.map(esc).join(' · ')}</p>`:''}</div>
     <div class="row">${twin?`<a class="btn" href="#fund-${twin.code}">See ${esc(twin.plan_type)} plan</a>`:''}<button class="btn primary" id="addCmp">Add to compare</button></div>
   </div>

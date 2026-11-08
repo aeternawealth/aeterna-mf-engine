@@ -48,9 +48,24 @@ CATEGORY_RULES = [
 INDEX_CATEGORY_KEYS = ["index funds - equity", "other scheme - index funds"]
 # Hybrid categories handled so far (AMFI raw-category keyword -> our category). Debt and the other hybrid
 # categories follow; each needs its own yardstick and protocol before it is added.
-HYBRID_RULES = [("arbitrage", "Arbitrage")]
+HYBRID_RULES = [("arbitrage", "Arbitrage"), ("aggressive hybrid", "Aggressive Hybrid"), ("balanced advantage", "Balanced Advantage"),
+                ("dynamic asset allocation", "Balanced Advantage"), ("equity savings", "Equity Savings"), ("multi asset", "Multi Asset Allocation"),
+                ("conservative hybrid", "Conservative Hybrid"), ("balanced hybrid", "Balanced Hybrid")]
+# composite benchmark for each hybrid category: equity leg (Nifty 50 TRI) and its weight; the rest is the median
+# bond fund ('bond') or the median liquid fund ('liquid'), per plan type. SEBI's own tier-1 hybrid benchmarks are
+# CRISIL indices we cannot use; these composites follow their equity shares.
+HYBRID_COMPOSITE = {
+    "Aggressive Hybrid": (.65, "bond"), "Balanced Advantage": (.50, "bond"), "Equity Savings": (.35, "liquid"),
+    "Multi Asset Allocation": (.60, "bond"), "Balanced Hybrid": (.50, "bond"), "Conservative Hybrid": (.20, "bond"),
+}
+HYBRID_EQUITY_INDEX = "NIFTY 50"
+BOND_CATEGORY_KEYS = ["corporate bond", "banking and psu"]   # AMFI raw categories averaged into the bond-fund yardstick
+# how gains are taxed (equity-oriented: 65%+ in Indian shares; 'debt': more than 65% in debt; 'other': in between)
+TAX_CLASS = {"Arbitrage": "equity", "Aggressive Hybrid": "equity", "Balanced Advantage": "equity", "Equity Savings": "equity",
+             "Multi Asset Allocation": "other", "Balanced Hybrid": "other", "Conservative Hybrid": "debt"}
 # Three master categories for the site: every category maps to one
-ASSET_CLASS = {"Arbitrage": "Hybrid"}   # everything else (equity categories, equity index funds) -> "Equity"
+ASSET_CLASS = {c: "Hybrid" for c in ["Arbitrage", "Aggressive Hybrid", "Balanced Advantage", "Equity Savings",
+                                     "Multi Asset Allocation", "Balanced Hybrid", "Conservative Hybrid"]}   # everything else (equity categories, equity index funds) -> "Equity"
 LIQUID_CATEGORY_KEY = "liquid fund"     # AMFI raw category of the liquid funds used as the arbitrage yardstick
 
 # Benchmark (Total Return Index) per category - SEBI tier-1 style benchmarks.
@@ -173,7 +188,23 @@ TAX_SLAB_TOP = 0.312
 TAX_EQUITY_LTCG = 0.13
 
 
+# Hybrid funds (other than arbitrage) exist to soften falls: they are compared with peers on return over their
+# composite, consistency, how much of the market's falls they took, their worst fall, and the fund fee.
+HYBRID_PROTOCOL = {
+    "roll3y_excess_median": ("Return", 15, True),
+    "roll3y_hit_rate":      ("Return", 10, True),
+    "info_ratio_3y":        ("Return", 10, True),
+    "downside_capture_3y":  ("Protection", 15, False),
+    "max_drawdown_3y":      ("Protection", 10, True),     # negative: closer to 0 is better
+    "capture_ratio_3y":     ("Protection", 10, True),
+    "roll1y_hit_rate":      ("Consistency", 10, True),
+    "ter_base":             ("Cost", 10, False),          # fee; hedging trades' taxes are already in the returns
+}
+
+
 def protocol_for(category: str):
+    if category in HYBRID_COMPOSITE:
+        return "Hybrid protocol", HYBRID_PROTOCOL
     if category == "Arbitrage":
         return "Arbitrage protocol", ARBITRAGE_PROTOCOL
     if category == "Index Fund":

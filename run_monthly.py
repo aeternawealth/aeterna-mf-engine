@@ -59,12 +59,15 @@ def main():
     tri = ingest.load_cached_tri() if a.offline else ingest.fetch_all_tri(log)
 
     log("[4/7] NAV history (mfapi)")
-    liq = ingest.liquid_universe(navall)   # yardstick for arbitrage funds, not ranked
-    codes = list(u.code) + [c for c in liq.code if c not in set(u.code)]
+    liq = ingest.liquid_universe(navall)   # yardstick for arbitrage and equity savings funds, not ranked
+    bnd = ingest.liquid_universe(navall, C.BOND_CATEGORY_KEYS)   # bond-fund yardstick for the other hybrid composites
+    codes = list(u.code) + [c for c in pd.concat([liq.code, bnd.code]).unique() if c not in set(u.code)]
     navs = ingest.load_cached_navs(codes) if a.offline else ingest.fetch_navs(codes, log=log)
     log(f"  {len(navs)} NAV histories ({len(liq)} of them liquid funds, the arbitrage yardstick)")
-    ingest.top_up_from_navall(navs, pd.concat([u, liq], ignore_index=True), log)
+    ingest.top_up_from_navall(navs, pd.concat([u, liq, bnd], ignore_index=True), log)
     liquid = ingest.liquid_yardstick(navs, liq, as_of=tri.index.max())
+    bond = ingest.liquid_yardstick(navs, bnd, as_of=tri.index.max())
+    log(f"  bond-fund yardstick: {', '.join(f'{k} {len(v)} days' for k, v in bond.items()) or 'none'} ({len(bnd)} plans)")
     log(f"  liquid-fund yardstick: {', '.join(f'{k} {len(v)} days' for k, v in liquid.items()) or 'none'}")
 
     hmonth = a.holdings_month or (pd.Period(datetime.now(), "M") - 1).strftime("%Y-%m")
@@ -94,7 +97,7 @@ def main():
 
     log("[6/7] Metrics, protocols, ranking committee")
     out = rank_universe(u, navs, tri, as_of=a.as_of, ter=ingest.load_manual("ter"),
-                        aum=ingest.load_manual("aum"), flags=ingest.load_manual("flags"), holdings=hold, log=log, liquid=liquid)
+                        aum=ingest.load_manual("aum"), flags=ingest.load_manual("flags"), holdings=hold, log=log, liquid=liquid, bond=bond)
     from engine import flows as FL
     if not (a.offline or a.daily):
         try:

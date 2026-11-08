@@ -13,7 +13,7 @@ const R = new URL('../site/planner/', import.meta.url).pathname;
 const M = require(R + 'model.js'), mkt = JSON.parse(fs.readFileSync(R + 'market.json'));
 
 const N = 4000, YEARS = 50, INFL = 0.06, GOLD = 0.05;
-const RATES = [0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06];
+const RATES = [0.025, 0.03, 1 / 30, 0.035, 0.04, 0.045, 0.05, 0.06];
 const MIXES = [35, 60];   // 35%: the Money Plan's retirement mix; 60%: a growth-tilted retirement portfolio
 
 export function table(eqPct, paths = M.paths(mkt, YEARS * 12, N, 4242)) {

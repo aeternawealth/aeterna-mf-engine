@@ -68,7 +68,7 @@ for (let i = 0; i < N; i++) {
   for (const g of r.G) {
     const m = g.mix;
     must(near(m.eq + m.debt + m.gold, 1, 1e-9), 'goal mix does not sum to 100%', who);
-    if (g.y < 2) must(m.eq === 0, 'equity in money needed within 2 years', { ...who, g: g.name, y: g.y });
+    if (g.y < 2) must(g.ret ? m.eq <= M.RMIX(r.E).eq + 1e-9 : m.eq === 0, g.ret ? 'retirement money above the retirement mix' : 'equity in money needed within 2 years', { ...who, g: g.name, y: g.y });
     if (g.y < 5) must(m.eq <= .35 + 1e-9, 'too much equity for a goal under 5 years', { ...who, y: g.y, eq: m.eq });
     must(g.f2 <= g.sip + 1e-6 && g.f2 >= 0 && (g.f1 || 0) >= 0, 'goal funded beyond its need', who);
     if (g.ret && g.how.includes('years')) stats.corpusMult.push(g.fv / (inp.expenses * 12 * .7 * Math.pow(1.06, g.y)));
@@ -106,15 +106,19 @@ for (const [y, lab] of [[3, 'Car in 3y'], [5, 'Down payment in 5y'], [8, 'Educat
   must(Math.abs(hit / 2000 - .75) < .06, 'calibration off: a 75% SIP did not hit about 75% on fresh simulated markets', { lab, p, got: hit / 2000 });
 }
 
-// ------------------------------------------------------------- 4b. retirement end to end: save, then spend until life expectancy
+// ------------------------------------------------------------- 4b. retirement end to end: reach the target corpus, then spend
+// The retirement SIP is sized to reach 25x / 30x / 33x a year's spending in 85% of markets; on fresh paths it should,
+// and the money should then last to 90 in at least 85% of them.
 const retCal = [];
-for (const [age, ra, inc, have, lab] of [[30, 60, 2e5, 2e6, '30, retire 60'], [45, 60, 3e5, 1.5e7, '45, retire 60'], [52, 58, 4e5, 4e7, '52, retire 58']]) {
-  const inp = { age, retireAge: ra, lifeExp: 85, income: inc, expenses: inc * .5, efund: inc * 4, eqmf: have, healthCover: 1e6, termCover: inc * 150, retireIncome: inc * .4, stepup: 5, q: qOf(RISK.middle) };
+for (const [age, ra, inc, have, lab] of [[30, 60, 2e5, 2e6, '30, retire 60'], [45, 60, 3e5, 1.5e7, '45, retire 60'], [52, 58, 4e5, 4e7, '52, retire 58'], [35, 50, 3e5, 5e6, '35, retire 50']]) {
+  const inp = { age, retireAge: ra, lifeExp: 90, income: inc, expenses: inc * .5, efund: inc * 4, eqmf: have, healthCover: 1e6, termCover: inc * 150, retireIncome: inc * .4, stepup: 5, q: qOf(RISK.middle) };
   const r = M.plan(inp, mkt, { nConf: 1200 }), g = r.G.find(x => x.ret), s = M.normalise(inp);
+  must(Math.abs(g.fv - M.retireMonthly(s) * 12 * Math.pow(1.06, ra - age) * M.retireMultiple(s)) < 1, 'retirement target is not the multiple of yearly spending', { lab });
   const yrs = Math.max(5, s.lifeExp - s.retireAge), fresh = M.paths(mkt, g.y * 12 + yrs * 12, 1500, 4242);
-  const lasts = fresh.filter(P => M.runRetire(P, s, r.p, r.E, mkt, g.have, g.f1, g.ph, g.sip, g.y, s.stepup / 100) >= s.lifeExp).length / 1500;
+  const step = s.stepup / 100;
+  const lasts = fresh.filter(P => M.runRetire(P, s, r.p, r.E, mkt, g.have, g.f1, g.ph, g.sip, g.y, step) >= s.lifeExp).length / 1500;
   retCal.push([lab, Math.round(g.sip), lasts]);
-  must(g.sip === 0 || Math.abs(lasts - .75) < .07, 'retirement calibration off: a 3-in-4 SIP did not last to 85 about 75% of the time', { lab, lasts });
+  must(g.sip === 0 || lasts >= .85, 'retirement: a plan that reaches its target corpus should last to 90 in 85% or more of markets', { lab, lasts });
 }
 
 // ------------------------------------------------------------- 5. backtest on actual history (every start month)
@@ -195,8 +199,8 @@ console.log('\nEquity % by years to goal:      1y  2y  3y  4y  5y  7y 10y 15y 20
 for (const r of glideRows) console.log(`  ${r[0].padEnd(28)}` + r.slice(1).map(v => String(v).padStart(4)).join(''));
 console.log('\nCalibration (75% SIP on 2,000 fresh simulated markets):');
 for (const [l, p, sip, h] of calib) console.log(`  ${l.padEnd(20)} profile ${p}: SIP ${sip.toLocaleString('en-IN')} -> hit ${(h * 100).toFixed(1)}%`);
-console.log('\nRetirement, saving then spending to 85 (3-in-4 SIP, 1,500 fresh paths):');
-for (const [l, sip, h] of retCal) console.log(`  ${l.padEnd(16)} SIP ${sip.toLocaleString('en-IN')} -> money lasts to 85 in ${(h * 100).toFixed(1)}%`);
+console.log('\nRetirement: reach 25x-33x yearly spending, then spend to 90 (1,500 fresh paths):');
+for (const [l, sip, h] of retCal) console.log(`  ${l.padEnd(16)} SIP ${sip.toLocaleString('en-IN')} -> money lasts to 90 in ${(h * 100).toFixed(1)}%`);
 console.log('\nBacktest on actual months since 2007 (every start month, ₹25 lakh target, SIP rising 10% a year):');
 for (const [l, sip, n, r2, w] of backtest) console.log(`  ${l.padEnd(24)} SIP ${sip.toLocaleString('en-IN')}: reached in ${(r2 * 100).toFixed(0)}% of ${n} real start months; worst ended at ${(w * 100).toFixed(0)}% of target`);
 console.log('\nSame finances (₹1.5 lakh take-home, ₹30 lakh invested) at every age: cautious / middle / bold answers');

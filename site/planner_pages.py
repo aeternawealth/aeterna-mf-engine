@@ -1,4 +1,4 @@
-"""Allocation planner: /plan/ - interactive, browser-only allocation, rebalancing and goal simulator.
+"""Aeterna Money Plan: /plan/ - interactive, browser-only allocation, rebalancing and goal simulator.
 
 The maths lives in site/planner/model.js (tested by tests/planner.test.mjs on thousands of investors and on real
 market history); real monthly returns since 2007 are in site/planner/market.json (tools/planner_market.py).
@@ -71,9 +71,9 @@ CSS = r"""
 
 HTML = r"""
 <section class="band" style="padding-top:28px"><div class="wrap pl-wrap">
-<nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/calculators/">Calculators</a> › Allocation planner</nav>
-<div class="eyebrow" style="margin-top:16px">Allocation planner</div>
-<h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">How should your money be split?</h1>
+<nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/calculators/">Calculators</a> › Money Plan</nav>
+<div class="eyebrow" style="margin-top:16px">Aeterna Money Plan · free</div>
+<h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">How much should you invest, and where?</h1>
 <p class="lede" style="margin-top:12px">A plan built around your goals, your finances and how you handle market falls: the mix of equity, debt and gold for each goal, what to change in what you hold today, how much to invest each month, and the chance of reaching each goal, tested on real Indian market history since 2007.</p>
 <p class="muted" style="font-size:13.5px;margin-top:8px">About 6 minutes. Everything stays in your browser; nothing is sent to us unless you choose to share your summary.</p>
 <div class="pl-prog" id="plProg" aria-hidden="true"></div>
@@ -81,7 +81,7 @@ HTML = r"""
 <div id="plBody" class="card pl-step" style="margin-top:8px"></div>
 <noscript><p class="note">The planner needs JavaScript.</p></noscript>
 __FAQ__
-<details class="faq pl-noprint" style="margin-top:14px"><summary>How the planner works</summary>
+<details class="faq pl-noprint" style="margin-top:14px"><summary>How the Money Plan works</summary>
 <div style="padding:4px 0 8px;max-width:82ch;font-size:14.5px">
 <p><b>Foundations first.</b> Expensive debt is cleared before investing; an emergency fund of 6 months' expenses and EMIs is built (9 if your income varies, 2 more with dependants on one income, 12 in retirement); term and health cover are checked.</p>
 <p><b>Two risk scores.</b> Your answers give your risk <i>tolerance</i>; your finances give your risk <i>capacity</i>: years until you stop working, EMIs as a share of income, your surplus, how steady your income is, who depends on you, and age. The lower of the two sets your profile, and with it the most equity your long-term money holds: 25% for the most cautious, up to 85% for the boldest.</p>
@@ -495,7 +495,7 @@ function dashHtml(m,sim,m90,alt,ages){
 let tmr=null;
 function live(){clearTimeout(tmr);const o=$('#plOut');if(o)o.classList.add('pl-busy');tmr=setTimeout(()=>{save();dashboard()},280)}
 function bindDash(m){
-  const txt=`Hi Aeterna, I used your allocation planner. Profile: ${m.label} (long-term equity up to ${pc(m.E)}). Monthly surplus ${inr(Math.max(0,m.r.surplus))}; goals: ${m.G.map(g=>g.name+' in '+g.y+' yrs').join(', ')}. Investments ${inrS(m.total)}. I'd like to review it with you.`;
+  const txt=`Hi Aeterna, I made my Money Plan on your website. Profile: ${m.label} (long-term equity up to ${pc(m.E)}). Monthly surplus ${inr(Math.max(0,m.r.surplus))}; goals: ${m.G.map(g=>g.name+' in '+g.y+' yrs').join(', ')}. Investments ${inrS(m.total)}. I'd like to review it with you.`;
   $('#plWa').href='https://wa.me/918595993600?text='+encodeURIComponent(txt);
   $('#plEdit').onclick=()=>{step=0;render()};
   $('#plPrint').onclick=()=>window.print();
@@ -513,8 +513,8 @@ render();
 
 
 def planner_pages(B, urls):
-    desc = ("Free allocation planner for India: your risk profile, a mix of equity, debt and gold for each goal, what to change in your portfolio, "
-            "a monthly SIP plan, and the chance of reaching each goal, tested on real market data since 2007.")
+    desc = ("Free Money Plan for India: how much to invest each month for each goal, the mix of equity, debt and gold, what to change in what you hold, "
+            "and how long your retirement money lasts, tested on Indian market data since 2007.")
     faq = [
         ("What is the right asset allocation for me?", "It depends on when you need each part of your money and how much risk your finances and nerves can take. Money needed within 3 years holds no equity; money for 10 years or more can hold mostly equity if your income, emergency fund and EMIs allow it. The planner works this out goal by goal."),
         ("What is the difference between risk tolerance and risk capacity?", "Tolerance is how comfortable you are with falls; capacity is how much of a fall your finances can absorb without derailing your goals. Someone comfortable with risk but with large EMIs and no emergency fund has low capacity. A sound plan follows the lower of the two."),
@@ -527,11 +527,11 @@ def planner_pages(B, urls):
     market = (HERE / "planner" / "market.json").read_text(encoding="utf-8")
     body = (CSS + HTML.replace("__FAQ__", f'<h2 class="pl-noprint" style="font-size:24px;margin-top:40px">Common questions</h2><div class="pl-noprint">{faq_html}</div>')
             + "<script>window.PLANNER_MARKET=" + market + ";</script><script>" + model + "</script><script>" + UI + "</script>")
-    app_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Allocation planner by Aeterna Wealth", "url": B.SITE + PATH,
+    app_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Aeterna Money Plan", "url": B.SITE + PATH,
               "applicationCategory": "FinanceApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
               "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"}, "publisher": {"@id": B.SITE + "/#org"}, "description": desc}
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
-    B.write(PATH, B.page("Asset allocation planner: equity, debt and gold for your goals | Aeterna Wealth", desc, PATH, body,
-                         (app_ld, faq_ld, B.crumbs([("Calculators", "/calculators/"), ("Allocation planner", PATH)]))))
+    B.write(PATH, B.page("Money Plan: how much to invest, and where, for your goals and retirement | Aeterna Wealth", desc, PATH, body,
+                         (app_ld, faq_ld, B.crumbs([("Calculators", "/calculators/"), ("Money Plan", PATH)]))))
     urls.append((PATH, "monthly", "0.9"))

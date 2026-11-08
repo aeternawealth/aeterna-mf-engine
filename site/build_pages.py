@@ -162,7 +162,7 @@ CALCS = [
 
 
 def calculator_pages(B, urls, calc_js):
-    cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:600 18px var(--f-display)'>Allocation planner</b><span class='muted' style='font-size:14px'>Your risk profile, a mix of equity, debt and gold for each goal, a rebalancing plan and a what-if simulator.</span></a>"]
+    cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:600 18px var(--f-display)'>Money Plan</b><span class='muted' style='font-size:14px'>How much to invest, and where, for each goal; what to change in what you hold; how long retirement money lasts.</span></a>"]
     for c in CALCS:
         path = f"/calculators/{c['id']}/"
         others = " · ".join(f"<a href='/calculators/{o['id']}/'>{o['name']}</a>" for o in CALCS if o is not c)

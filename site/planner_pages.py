@@ -78,8 +78,18 @@ CSS = r"""
  html,body{background:#fff!important}
  header,footer,.pl-nav,.pl-noprint,.pl-sticky,.pl-prog,#plStepLbl,nav[aria-label="Breadcrumb"],.eyebrow+h1,.lede,.pl-wrap>p.muted,.faq,h2.pl-noprint{display:none!important}
  section.band{padding:0!important}.wrap{max-width:none;padding:0}
- .pl-printhead{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--teal);padding-bottom:8px;margin-bottom:10px}
- .pl-printhead b{font:600 20px var(--f-display);color:var(--teal)}.pl-printhead span{font-size:10.5px;color:var(--ink-3);text-align:right}
+ .pl-printhead{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:2px solid var(--teal);padding-bottom:8px;margin-bottom:10px}
+ .pl-printhead .pl-logo{display:flex;align-items:center;gap:9px;flex:none;white-space:nowrap}.pl-printhead .pl-logo svg{width:30px;height:29px;flex:none}
+ .pl-printhead b{font:600 19px var(--f-display);color:var(--teal);white-space:nowrap}.pl-printhead span{font-size:9.5px;line-height:1.45;color:var(--ink-3);text-align:right}
+ /* Chrome and Safari ignore 'avoid page breaks' inside grid layouts, so for print the grids become plain blocks and
+    side-by-side cards become inline blocks, which a browser never splits across pages */
+ .pl-act,.pl-replay,.pl-goals,.pl-donuts,.grid.g2,.grid.g3{display:block!important}
+ .pl-act>li,.pl-replay>*,.pl-goals>*,.pl-donuts>*,.grid.g2>*,.grid.g3>*{break-inside:avoid;page-break-inside:avoid}
+ .pl-act>li{display:block;margin-bottom:8px}.pl-replay>*{display:block;margin-bottom:10px}
+ .pl-goals>*,.pl-donuts>*,.grid.g2>*{display:inline-block!important;vertical-align:top;width:calc(50% - 6px);margin:0 8px 8px 0}
+ .pl-goals>*:nth-child(2n),.pl-donuts>*:nth-child(2n),.grid.g2>*:nth-child(2n){margin-right:0}
+ .grid.g3>*{display:inline-block!important;vertical-align:top;width:calc(33.33% - 6px);margin:0 6px 8px 0}.grid.g3>*:nth-child(3n){margin-right:0}
+ .tablewrap,.pl-verdict,.card{break-inside:avoid;page-break-inside:avoid}
  body{font-size:11.5px}.pl-dash h2{font-size:17px;margin-top:16px}.pl-dash h3{font-size:14px;margin-top:12px}
  .pl-dash p,.pl-act p,.pl-flag,.kv div{font-size:11px}
  .card,.pl-gc,.pl-act li,.pl-flag,.pl-donut,.pl-verdict,.pl-tl>div,.pl-fanwrap,svg,tr,.kv>div,figure{break-inside:avoid;page-break-inside:avoid}
@@ -87,7 +97,8 @@ CSS = r"""
  th,thead,thead tr{position:static!important;top:auto!important;box-shadow:none!important}
  .pl-wrap>.eyebrow{display:none!important}
  .pl-keep{break-inside:avoid;page-break-inside:avoid}
- h2,h3{break-after:avoid;page-break-after:avoid}
+ h2,h3,h2+p,h3+p{break-after:avoid;page-break-after:avoid}
+ p,li{orphans:3;widows:3}
  .card{padding:12px;box-shadow:none}
  .pl-goals{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .pl-donuts,.grid.g2{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -552,7 +563,7 @@ function dashHtml(m,sim,m90,alt,ages){
     <label class="pl-f"><span>Invest of surplus: <b id="cIsL">${s.investShare}%</b></span><input type="range" id="cIs" min="50" max="100" step="5" value="${s.investShare}"></label>
     ${retired()?'<span></span>':`<label class="pl-f"><span>Stop working at: <b id="cRaL">${s.retireAge}</b></span><input type="range" id="cRa" min="${Math.min(75,Math.max(n('age')+1,40))}" max="75" step="1" value="${s.retireAge}"></label>`}</div></div>
   <div id="plOut">
-  <div class="pl-printhead"><b>Aeterna Money Plan${S.adv&&S.adv.client?' · '+esc(S.adv.client):''}</b><span>Prepared ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}${S.adv&&S.adv.by?' by '+esc(S.adv.by):' at aeternawealth.com/plan'}${S.adv&&S.adv.euin?' · EUIN '+esc(S.adv.euin):''}<br>Aeterna Wealth Private Limited · AMFI-registered mutual fund distributor, ${S.adv&&S.adv.arn?esc(S.adv.arn):'ARN-317889'} · indicative, not advice</span></div>
+  <div class="pl-printhead"><div class="pl-logo"><svg viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="#1c1a17"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="#0b4a3c"/></svg><b>Aeterna Money Plan${S.adv&&S.adv.client?' · '+esc(S.adv.client):''}</b></div><span>Prepared ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}${S.adv&&S.adv.by?' by '+esc(S.adv.by):' at aeternawealth.com/plan'}${S.adv&&S.adv.euin?' · EUIN '+esc(S.adv.euin):''}<br>Aeterna Wealth Private Limited · AMFI-registered mutual fund distributor, ${S.adv&&S.adv.arn?esc(S.adv.arn):'ARN-317889'} · indicative, not advice</span></div>
   ${advHtml()}
   ${S.mode==='quick'?`<div class="pl-banner pl-noprint"><span><b>This is your quick plan.</b> It assumes your investments split ${pc(+S.qEq)} equity and the rest debt. Add your actual holdings, insurance and EPF for a sharper answer and what to move.</span><button type="button" class="btn" id="plRefine">Refine to a detailed plan</button></div>`:''}
   ${verdict(m,alt)}

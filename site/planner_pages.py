@@ -29,7 +29,7 @@ CSS = r"""
 .pl-opt{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:var(--r);cursor:pointer;font-size:14.5px}
 .pl-opt:hover{background:var(--band)}.pl-opt input{margin-top:3px;accent-color:var(--teal)}
 .pl-nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
-.pl-goal{display:grid;grid-template-columns:1.4fr 1fr .7fr auto;gap:10px;align-items:end;padding:12px 0;border-bottom:1px dashed var(--rule)}
+.pl-goal{display:grid;grid-template-columns:1.4fr 1fr .7fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--rule)}
 @media (max-width:640px){.pl-goal{grid-template-columns:1fr 1fr}.pl-goal .gname{grid-column:1/-1}}
 .pl-x{border:1px solid var(--rule);background:var(--surface);border-radius:var(--r);padding:9px 12px;cursor:pointer;color:var(--ink-2)}
 .pl-err{color:var(--c-bad);font-size:14px;margin-top:10px}
@@ -140,7 +140,7 @@ const STEPS=[
  {t:'Safety net',s:'Money set aside for emergencies, and your insurance. These come before investing.',
   h:()=>`<div class="pl-grid">${M('efund','Emergency fund (money kept aside, not counted below)',{full:1})}
    ${M('termCover','Term life cover (sum assured)')}${M('healthCover','Health insurance cover (family)')}</div>`},
- {t:'Your goals',s:'What the money is for. Cost in today\'s rupees; inflation is added. Retirement is sized for you, or enter your own figure.',
+ {t:'Your goals',s:'What the money is for. Cost in today\'s rupees; inflation is added. Retirement is worked out from the spending you want, below.',
   h:()=>`<div id="plGoals">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
    <div class="row" style="margin-top:14px"><button type="button" class="btn" id="plAddG">Add a goal</button>
    <select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Start a business","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
@@ -158,7 +158,7 @@ const STEPS=[
   h:()=>QS.map(q=>`<fieldset class="pl-q"><legend>${esc(q.dyn?seeText():q.t)}</legend>${q.p?`<p>${esc(q.p)}</p>`:''}${q.o.map((o,i)=>`<label class="pl-opt"><input type="radio" name="q_${q.id}" value="${i+1}"${S.q[q.id]==i+1?' checked':''}><span>${esc(o)}</span></label>`).join('')}</fieldset>`).join('')}];
 const seeText=()=>{const eq=n('eqmf')+n('stocks');return eq>0?`Your equity, now ${inrS(eq)}, shows ${inrS(-eq*0.3)} (down 30%) when you open your app.`:QS[5].t};
 const goalRow=(g,i)=>`<div class="pl-goal" data-i="${i}"><label class="pl-f gname"><span>Goal</span><input data-g="name" value="${esc(g.name)}" ${g.type==='retire'?'readonly':''}></label>
-  <label class="pl-f"><span>${g.type==='retire'?'Corpus (optional)':'Cost in today\'s ₹'}</span><input data-g="cost" type="number" min="0" inputmode="decimal" value="${esc(g.cost)}" placeholder="${g.type==='retire'?'Sized for you':'₹'}"><small>${esc(hint(g.cost))}</small></label>
+  ${g.type==='retire'?`<div class="pl-f"><span>Corpus needed</span><div class="muted" style="font-size:13.5px;padding:10px 0">Worked out from the retirement spending you enter below</div></div>`:`<label class="pl-f"><span>Cost in today's ₹</span><input data-g="cost" type="number" min="0" inputmode="decimal" value="${esc(g.cost)}" placeholder="₹"><small>${esc(hint(g.cost))}</small></label>`}
   <label class="pl-f"><span>In years</span><input data-g="years" type="number" min="0" max="60" value="${esc(g.type==='retire'?(n('age')?Math.max(0,n('retireAge')-n('age')):''):g.years)}" ${g.type==='retire'?'readonly':''}></label>
   ${g.type==='retire'?'<span></span>':`<button type="button" class="pl-x" data-del="${i}" aria-label="Remove ${esc(g.name)}">Remove</button>`}</div>`;
 

@@ -62,7 +62,9 @@ CSS = r"""
 .pl-act li{counter-increment:a;position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px 14px 54px}
 .pl-act li::before{content:counter(a);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--paper);font:600 14px/26px var(--f-mono);text-align:center}
 .pl-act b{font:600 16px var(--f-display)}.pl-act p{margin:6px 0 0;font-size:14.5px}
-.pl-fan text{font:11px var(--f-mono);fill:var(--ink-3)}
+.pl-fan text{font:11px var(--f-mono);fill:var(--ink-3)}.pl-fan{overflow:hidden;display:block}
+.pl-fanwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){.pl-fan{min-width:640px}.pl-fanwrap::after{content:'Swipe the chart to see all of it';display:block;font-size:12px;color:var(--ink-3);margin-top:4px}}
 @media print{header,footer,.pl-nav,.pl-noprint{display:none!important}.card{break-inside:avoid}.pl-sticky{position:static}}
 </style>
 """
@@ -204,23 +206,35 @@ function donut(o,title,sub){
 const mixBar=m=>`<div class="pl-mix" role="img" aria-label="${pc(m.eq)} equity, ${pc(m.debt)} debt, ${pc(m.gold)} gold"><span style="width:${m.eq*100}%;background:var(--c-eq)"></span><span style="width:${m.debt*100}%;background:var(--c-debt)"></span><span style="width:${m.gold*100}%;background:var(--c-gold)"></span></div>`;
 function gauge(p){const R=22,C=2*Math.PI*R,col=p>=.7?'var(--teal)':p>=.45?'var(--brass)':'var(--c-bad)';
   return `<svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle r="${R}" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="${R}" cx="28" cy="28" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)">${Math.round(p*100)}%</text></svg>`}
+function axis(maxRaw){
+  const e=Math.pow(10,Math.floor(Math.log10(Math.max(1,maxRaw/4)))), f=maxRaw/4/e, st=(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e;
+  const top=Math.ceil(maxRaw/st)*st, t=[];for(let v=0;v<=top+1e-6;v+=st)t.push(v);return {top,t};
+}
+const shortR=v=>v>=1e7?((v/1e7)>=100?Math.round(v/1e7):+(v/1e7).toFixed(v/1e7>=10?0:1))+' cr':v>=1e5?Math.round(v/1e5)+' L':v>0?Math.round(v/1e3)+'k':'0';
+function chartLabel(xx,txt,yy,col,W,L,Rp){
+  const w=txt.length*6.7, right=xx+4+w<=W-Rp, ok=xx-4-w>=L;
+  const anchor=right?'start':'end', x0=right?xx+4:Math.max(L+w,xx-4);
+  return `<text x="${x0}" y="${yy}" text-anchor="${anchor}" style="fill:${col}">${esc(txt)}</text>`;
+}
 function fan(sim,res){
   const nl=(sim.payouts||[]).length+(res.retire?1:0);
-  const F=sim.fan, W=760, H=300+nl*12, L=64, Rp=16, T=14+nl*13, B=34; if(!F.length)return '';
-  const years=F.length, maxV=Math.max(...F.map(f=>f.p90))*1.05||1, x=i=>L+(W-L-Rp)*i/years, y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
+  const F=sim.fan, W=760, H=300+nl*12, L=70, Rp=16, T=14+nl*13, B=34; if(!F.length)return '';
+  const p90=Math.max(...F.map(f=>f.p90)), p50=Math.max(...F.map(f=>f.p50)), start0=res.total-res.cur['Real estate']-res.cur.Other;
+  const capped=p90>2.2*p50, ax=axis((capped?2.2*p50:p90)*1.02||1), maxV=ax.top;
+  const years=F.length, x=i=>L+(W-L-Rp)*i/years, y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
   const start=res.total-res.cur['Real estate']-res.cur.Other, age0=res.s.age;
   const pts=k=>[`${x(0)},${y(start)}`].concat(F.map((f,i)=>`${x(i+1)},${y(f[k])}`));
   const band=pts('p90').concat(pts('p10').reverse()).join(' ');
-  const ticks=[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-Rp}" y1="${y(maxV*f)}" y2="${y(maxV*f)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(maxV*f)+4}" text-anchor="end">${inrS(maxV*f).replace('₹','')}</text>`).join('');
+  const ticks=ax.t.map(v=>`<line x1="${L}" x2="${W-Rp}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">₹${shortR(v)}</text>`).join('');
   const step=years>30?5:years>12?2:1;
   const xt=F.map((f,i)=>(i+1)%step===0?`<text x="${x(i+1)}" y="${H-14}" text-anchor="middle">${f.age}</text>`:'').join('')+`<text x="${(L+W)/2}" y="${H-1}" text-anchor="middle">Your age</text>`;
-  const lab=(xx,txt,row,col)=>`<line x1="${xx}" x2="${xx}" y1="${10+row*13+3}" y2="${T}" stroke="${col}" stroke-width=".8"/><text x="${xx>W-260?xx-4:xx+4}" y="${10+row*13}" text-anchor="${xx>W-260?'end':'start'}" style="fill:${col}">${esc(txt)}</text>`;
+  const lab=(xx,txt,row,col)=>`<line x1="${xx}" x2="${xx}" y1="${10+row*13+3}" y2="${T}" stroke="${col}" stroke-width=".8"/>${chartLabel(xx,txt,10+row*13,col,W,L,Rp)}`;
   const gm=(sim.payouts||[]).map((pp,i)=>`<line x1="${x(pp.y)}" x2="${x(pp.y)}" y1="${T}" y2="${H-B}" stroke="var(--brass)" stroke-dasharray="3 3"/>${lab(x(pp.y),`${pp.name.slice(0,24)}: −${inrS(pp.today)} (today's money)`,i,'var(--brass)')}`).join('');
   const R=res.retire, rx=R?x(R.y):null;
   const rm=R&&R.y<=years?`<rect x="${rx}" y="${T}" width="${W-Rp-rx}" height="${H-T-B}" fill="var(--band)" opacity=".6"/><line x1="${rx}" x2="${rx}" y1="${T}" y2="${H-B}" stroke="var(--teal)" stroke-dasharray="4 3"/>${lab(rx,`Retire at ${res.s.retireAge}: spend ${inrS(R.monthlyToday)} a month (today's money)`,(sim.payouts||[]).length,'var(--teal)')}`:'';
-  return `<svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Range of outcomes for your investments, to age ${age0+years}">${rm}${ticks}<polygon points="${band}" fill="var(--c-band)"/>
-   <polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${gm}${xt}</svg>
-   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>8 in 10 outcomes fall in this band</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical outcome</span><span style="color:var(--brass)">┆ Money spent on a goal</span>${R?'<span>Shaded: retirement, living off the corpus</span>':''}<span class="muted">All amounts in today's money</span></div>`;
+  return `<div class="pl-fanwrap"><svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Range of outcomes for your investments, to age ${age0+years}">${rm}${ticks}<polygon points="${band}" fill="var(--c-band)"/>
+   <polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${gm}${xt}</svg></div>
+   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>8 in 10 outcomes fall in this band</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical outcome</span><span style="color:var(--brass)">┆ Money spent on a goal</span>${R?'<span>Shaded: retirement, living off the corpus</span>':''}<span class="muted">All amounts in today's money${capped?'; the top of the band (best 1 in 10 markets) is cut off to keep the scale readable':''}</span></div>`;
 }
 
 /* ---------- what to do now ---------- */
@@ -369,16 +383,17 @@ function swpRender(m){
   const s=m.s, infl=s.infl/100, yrsTo=m.retire.y;
   if(SW.amount==null)SW.amount=Math.round(m.retire.monthlyToday);
   const w=PM.swp(m,MKT,{mode:SW.mode,amount:SW.amount,guard:SW.guard,n:500});if(!w)return;
-  const real=SW.view==='real', k=real?'r':'', Y=w.years, W=760,H=300,L=64,Rp=16,T=16,B=34;
-  const maxV=Math.max(...Y.map(y=>y['p90'+k]))*1.05||1, x=i=>L+(W-L-Rp)*i/(Y.length-1), y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
+  const real=SW.view==='real', k=real?'r':'', Y=w.years, W=760,H=300,L=70,Rp=16,T=26,B=34;
+  const q90=Math.max(...Y.map(y=>y['p90'+k])), q50=Math.max(...Y.map(y=>y['p50'+k])), capped=q90>2.2*q50, ax=axis((capped?2.2*q50:q90)*1.02||1), maxV=ax.top;
+  const x=i=>L+(W-L-Rp)*i/(Y.length-1), y=v=>T+(H-T-B)*(1-Math.min(v,maxV)/maxV);
   const pts=q=>Y.map((r,i)=>`${x(i)},${y(r[q+k])}`);
   const band=pts('p90').concat(pts('p10').reverse()).join(' ');
-  const ticks=[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-Rp}" y1="${y(maxV*f)}" y2="${y(maxV*f)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(maxV*f)+4}" text-anchor="end">${inrS(maxV*f).replace('₹','')}</text>`).join('');
+  const ticks=ax.t.map(v=>`<line x1="${L}" x2="${W-Rp}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">₹${shortR(v)}</text>`).join('');
   const xt=Y.map((r,i)=>r.age%5===0?`<text x="${x(i)}" y="${H-14}" text-anchor="middle">${r.age}</text>`:'').join('')+`<text x="${(L+W)/2}" y="${H-1}" text-anchor="middle">Your age</text>`;
-  const endMark=(a,lab,col)=>isFinite(a)&&a<100?`<line x1="${x(a-s.retireAge)}" x2="${x(a-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="${col}" stroke-dasharray="4 3"/><text x="${x(a-s.retireAge)+(a>90?-4:4)}" y="${T+12}" text-anchor="${a>90?'end':'start'}" style="fill:${col}">${lab} ${Math.floor(a)}</text>`:'';
-  const life=`<line x1="${x(s.lifeExp-s.retireAge)}" x2="${x(s.lifeExp-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="var(--teal)" stroke-width=".8"/><text x="${x(s.lifeExp-s.retireAge)+4}" y="${H-B-6}" style="fill:var(--teal)">plan age ${s.lifeExp}</text>`;
-  const chart=`<svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Corpus during retirement">${ticks}<polygon points="${band}" fill="var(--c-band)"/><polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${life}${endMark(w.ends.p10,'Runs out in weak markets at','var(--c-bad)')}${endMark(w.ends.p50,'Runs out in typical markets at','var(--brass)')}${xt}</svg>
-   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>Corpus: 8 in 10 outcomes</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical</span><span class="muted">${real?"In today's money":'In actual rupees'}</span></div>`;
+  let er=0;const endMark=(a,lab,col)=>isFinite(a)&&a<100?`<line x1="${x(a-s.retireAge)}" x2="${x(a-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="${col}" stroke-dasharray="4 3"/>${chartLabel(x(a-s.retireAge),lab+' '+Math.floor(a),12+(er++)*13,col,W,L,Rp)}`:'';
+  const life=`<line x1="${x(s.lifeExp-s.retireAge)}" x2="${x(s.lifeExp-s.retireAge)}" y1="${T}" y2="${H-B}" stroke="var(--teal)" stroke-width=".8"/>${chartLabel(x(s.lifeExp-s.retireAge),'plan age '+s.lifeExp,H-B-6,'var(--teal)',W,L,Rp)}`;
+  const chart=`<div class="pl-fanwrap"><svg class="pl-fan" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Corpus during retirement">${ticks}<polygon points="${band}" fill="var(--c-band)"/><polyline points="${pts('p50').join(' ')}" fill="none" stroke="var(--c-eq)" stroke-width="2.5"/>${life}${endMark(w.ends.p10,'Runs out in weak markets at','var(--c-bad)')}${endMark(w.ends.p50,'Runs out in typical markets at','var(--brass)')}${xt}</svg></div>
+   <div class="row" style="gap:18px;font-size:12.5px;color:var(--ink-2)"><span><b style="display:inline-block;width:14px;height:10px;background:var(--c-band);margin-right:6px"></b>Corpus: 8 in 10 outcomes</span><span><b style="display:inline-block;width:14px;height:3px;background:var(--c-eq);vertical-align:middle;margin-right:6px"></b>Typical</span><span class="muted">${real?"In today's money":'In actual rupees'}${capped?'; top of the band cut off to keep the scale readable':''}</span></div>`;
   const A=a=>isFinite(a)?Math.floor(a):'100+';
   const first=w.wd[0], at85=w.wd.find(r=>r.age===85)||w.wd[w.wd.length-1];
   const sum=SW.mode==='fixed'

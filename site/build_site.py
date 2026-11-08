@@ -514,8 +514,7 @@ def main():
         beat = sum(1 for f in e3 if f["excess_3Y"] > 0)
         bench = iname(next((f.get("benchmark") for f in L if f.get("benchmark")), None))
         CBL = next((f.get("bench_label") for f in L if f.get("bench_label")), None)
-        if CBL:
-            bench = f"composite ({CBL})"
+        BPH = f"their composite benchmark ({CBL})" if CBL else None
         path = f"/mutual-funds/{slug(c)}/"
         r3 = sorted([f for f in reg if f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
         gap_html = ""
@@ -525,7 +524,7 @@ def main():
             gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>₹{gap / 1e5:.1f} lakh</div>"
                         f"<p style='margin-top:6px'>The difference, on ₹10 lakh invested three years ago, between the strongest {e(lc if c != 'ELSS' else c)} fund "
                         f"({pct(hi['ret_3Y'])} a year) and the weakest ({pct(lo['ret_3Y'])} a year). Same category, same SEBI rules, same market. "
-                        + (f"<b>{beat} of {len(e3)}</b> funds beat {('the ' + e(bench) + ' total-return index') if bench else 'their index'} over the same period." if e3 else "")
+                        + (f"<b>{beat} of {len(e3)}</b> funds beat {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else 'their index'} over the same period." if e3 else "")
                         + "</p><p class='muted' style='font-size:12.5px;margin-top:6px'>Regular plans, to the latest NAV. Past returns, not a forecast.</p></div>")
         grp = made_idx if c == "Index Fund" else made_thm if c == "Sectoral/Thematic" else []
         sub = ("<h2 style='font-size:24px;margin-top:30px'>" + ("By index tracked" if c == "Index Fund" else "By theme") + "</h2><div class='row' style='margin-top:12px;gap:8px;flex-wrap:wrap'>"
@@ -561,16 +560,16 @@ def main():
                ("Arbitrage fund or liquid fund?", "Before tax, liquid funds have usually earned a little more. Arbitrage funds are taxed as equity (12.5% on gains held over a year, beyond ₹1.25 lakh), liquid funds at your slab rate, so for investors in the higher slabs who hold for over a year, arbitrage funds have usually come out ahead after tax. Liquid funds suit money you may need within days; arbitrage funds suit a few months or more."),
                ("How are arbitrage funds rated?", "Against each other, Regular with Regular and Direct with Direct: return over the Nifty 50 Arbitrage index (rolling 1-year and 3-year), consistency (how often they stay ahead, volatility, months with a loss), the fund fee, and size, since a very small fund has fewer trades to spread its costs over. To be rated A or A+, a fund must also have beaten the median liquid fund after tax for a top-slab investor.")] if c == "Arbitrage" else [(f"What does a {lc} fund invest in?", f"SEBI requires {lc} funds to {CAT_INFO.get(c, 'follow their stated mandate')}."),
                (f"How many {lc} funds beat their index over 3 years?",
-                f"{beat} of {len(e3)} {lc} funds (Regular plans with 3 years of history) beat {('the ' + bench + ' total-return index') if bench else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),
+                f"{beat} of {len(e3)} {lc} funds (Regular plans with 3 years of history) beat {(BPH if BPH else ('the ' + bench + ' total-return index')) if (bench or BPH) else 'their index'} over the 3 years to {dmy(as_of)}." if e3 else "Not enough funds have 3 years of history yet."),
                ("How are these funds rated?", "Each fund is compared only with funds in its category and plan type, on its long-run return over the index, risk-adjusted return, consistency, cost and portfolio. The ratings describe the track record so far; our own backtest found they do not predict future returns.")]
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
         desc = (f"All {len(L)} arbitrage mutual fund plans in India compared: track-record ratings, returns vs liquid funds before and after tax, fund fees and AUM. Updated daily.")[:300] if arbc else \
             (f"All {len(L)} {lc} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
-                f"{bench + ' TRI' if bench else 'their index'}, expense ratios and AUM. {beat} of {len(e3)} Regular plans beat the index over 3 years. Updated daily.")[:300]
+                f"{BPH if BPH else bench + ' TRI' if bench else 'their index'}, expense ratios and AUM. {beat} of {len(e3)} Regular plans beat the index over 3 years. Updated daily.")[:300]
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › {e(c)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{e(c)} funds in India</h1>
-<p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {('the ' + e(bench) + ' total-return index') if bench else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
+<p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
 <p style="margin-top:14px;max-width:72ch">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a></div>

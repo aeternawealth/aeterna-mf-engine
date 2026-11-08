@@ -104,7 +104,7 @@ def _content(B, d):
             facts=[(f"{d['plans']:,}", "equity and index fund plans we track"),
                    (f"{d['beat']} of {d['beat_n']}", "diversified Regular plans ahead of their index over 3 years"),
                    (L(gap[1]) if gap else "–", f"gap on ₹10 lakh between the strongest and weakest {gap[0].lower() if gap and gap[0] != 'ELSS' else 'ELSS'} fund over 3 years" if gap else ""),
-                   (P(d["ter_gap"] / 100, 2) if d.get("ter_gap") is not None else "–", "typical extra yearly cost of a Regular plan over Direct")],
+                   ("0.5% to 1%", "typical extra yearly cost of a Regular plan over Direct")],
             sections=[
                 ("Why the choice of fund matters", [
                     f"Funds in the same SEBI category follow the same rules and face the same market, yet their results spread widely. Over the last three years, ₹10 lakh in the strongest {gap[0].lower() if gap and gap[0] != 'ELSS' else 'ELSS'} fund grew to {L(gap[1])} more than the same amount in the weakest." if gap else "",

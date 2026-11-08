@@ -19,6 +19,12 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 - [ELSS funds](https://aeternawealth.com/mutual-funds/elss/)
 - [Sectoral/Thematic funds](https://aeternawealth.com/mutual-funds/sectoral-thematic/)
 - [Index Fund funds](https://aeternawealth.com/mutual-funds/index-fund/)
+- [Aggressive Hybrid funds](https://aeternawealth.com/mutual-funds/aggressive-hybrid/)
+- [Balanced Advantage funds](https://aeternawealth.com/mutual-funds/balanced-advantage/)
+- [Multi Asset Allocation funds](https://aeternawealth.com/mutual-funds/multi-asset-allocation/)
+- [Balanced Hybrid funds](https://aeternawealth.com/mutual-funds/balanced-hybrid/)
+- [Equity Savings funds](https://aeternawealth.com/mutual-funds/equity-savings/)
+- [Conservative Hybrid funds](https://aeternawealth.com/mutual-funds/conservative-hybrid/)
 - [Arbitrage funds](https://aeternawealth.com/mutual-funds/arbitrage/)
 
 ## Downloadable data

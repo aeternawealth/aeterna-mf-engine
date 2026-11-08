@@ -399,7 +399,7 @@ footer.site a{color:var(--ink-2)}
 <div data-view="ratings" hidden>
   <section class="band" style="padding-top:44px"><div class="wrap">
     <div class="eyebrow">Ratings</div>
-    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Equity and index funds</h1>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Mutual fund ratings</h1>
     <p class="lede" style="margin-top:12px" id="rateLede"></p>
     <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
@@ -513,9 +513,10 @@ function noHoldings(f){
   return `<div class="card" style="margin-top:12px"><b>Holdings not available</b><p class="muted" style="margin-top:6px">${why} ${effect}</p><p class="muted" style="font-size:12.5px;margin-top:6px">We check every AMC's disclosures twice a month and add holdings as soon as we can read them.</p></div>`}
 async function holdings(){if(!S.holdings){try{S.holdings=await fetch('data/holdings.json').then(r=>r.json())}catch(e){S.holdings={}}}return S.holdings}
 const cats_=()=>cats();
-const ASSET=c=>c==='Arbitrage'?'Hybrid':'Equity';
+const HYB=['Aggressive Hybrid','Balanced Advantage','Multi Asset Allocation','Balanced Hybrid','Equity Savings','Conservative Hybrid','Arbitrage'];
+const ASSET=c=>HYB.includes(c)?'Hybrid':'Equity';
 const TAXS=0.312,TAXE=0.13;   // after-tax comparison with liquid funds: 30% slab + cess; equity LTCG 12.5% + cess
-const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund','Arbitrage'];
+const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap','Multi Cap','Flexi Cap','Focused','Value / Contra','Dividend Yield','ELSS','Sectoral/Thematic','Index Fund',...HYB];
   const have=new Set(S.funds.map(f=>f.category));return order.filter(c=>have.has(c))};
 
 /* ---------- solutions (home cards + Solutions page) ---------- */
@@ -898,7 +899,7 @@ function ratings(){
   $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
   const h=S.hz, idx=S.cat==='Index Fund', arb=S.cat==='Arbitrage';
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
-  $('#hzNote').innerHTML=h==='Overall'?'<b>Track record</b> needs at least 3 years of history (1 year for index funds). Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
+  $('#hzNote').innerHTML=h==='Overall'?(arb?'<b>Track record</b>: arbitrage funds are compared on return over the index, consistency, fee and size, and need to beat liquid funds after tax for A or A+. 3 years of history needed.':'<b>Track record</b> needs at least 3 years of history (1 year for index funds).')+' Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings describe the past and are not forecasts.'
     :`<b>${HZN[h]} view.</b> Ranks only what happened in this period: return over the index, falls, consistency and cost. Short periods mostly reflect market cycles. Every fund that existed for the whole period is ranked; a red note by the name flags a weak long-term record.`;
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
@@ -918,7 +919,7 @@ function ratings(){
     ['3Y vs liquid after tax','excess_vs_liquid_post_tax_3y',f=>spct(f.excess_vs_liquid_post_tax_3y,2),"The same after tax for an investor in the 30% slab holding over a year: liquid gains taxed at 31.2%, arbitrage gains at 13%"],
     ['Fund fee','ter_base',f=>fmtPct2(f.ter_base),'Base expense ratio: the fee the fund house charges'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),"AMFI's total expense ratio: the fee plus brokerage and statutory levies. For arbitrage funds the levies are mostly transaction tax on their trades, already reflected in returns"],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
@@ -926,7 +927,7 @@ function ratings(){
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']]
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']]
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
@@ -936,13 +937,13 @@ function ratings(){
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
     ['Max fall 5Y','max_drawdown_5y',f=>pct(f.max_drawdown_5y),'Largest drop from a peak over 5 years'],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
-    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, latest month end']];
+    ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
     'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
     '1Y return':['Return','1Y'],'3Y vs liquid':['vs liquid','3Y'],'3Y vs liquid after tax':['vs liquid','3Y, after tax'],'Fund fee':['Fund fee','base TER'],
-    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled.'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
+    'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
   const hd=c=>HD[c[0]]||[c[0],''];
   const lbl=c=>{const [a,b]=hd(c);return b?`${a} (${b})`:a};
   const order={'A+':0,'A':1,'B':2,'C':3};
@@ -959,7 +960,7 @@ function ratings(){
       const name=`<td class="fund l"><a href="#fund-${f.code}">${esc(f.name)}</a><small>${esc(f.amc||'')} · ${(f.age_years||0).toFixed(1)} yrs${fl.length?` · <span class="flag">${esc(fl[0])}</span>`:''}</small></td>`;
       return `<tr class="${has?'':'dim'}">${name}${COLS.slice(1).map(c=>`<td data-l="${esc(hd(c).filter(Boolean).join(' · '))}" class="${c[1]==='first'?'':'num'} ${c[1]===ex?sg(f[ex]):''}">${c[2](f)}</td>`).join('')}</tr>`}).join('');
     const th=COLS.map((c,i)=>{const on=srt&&srt.key===c[1],[m1,m2]=hd(c);return `<th class="${i?'':'l'}" title="${esc(c[3])}" aria-sort="${on?(srt.dir==='asc'?'ascending':'descending'):'none'}"><button type="button" class="sortbtn" data-k="${c[1]}"><span class="hl"><span class="h1">${m1}</span><span class="h2">${m2||'&nbsp;'}</span></span><span class="arr" aria-hidden="true">${on?(srt.dir==='asc'?'▲':'▼'):'▾'}</span></button></th>`}).join('');
-    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · benchmark ${esc(bench)} TRI</span></div>
+    return `<div class="stack" style="gap:10px"><div class="row" style="justify-content:space-between"><h3>${esc(g.replace('Index: ','Tracks '))}</h3><span class="muted mono" style="font-size:12.5px">${n} of ${L.length} ranked · ${arb&&bench==='Peer median'?'benchmark: the median arbitrage fund':L[0].bench_label?'benchmark: '+esc(L[0].bench_label):'benchmark '+esc(bench)+' TRI'}</span></div>
     <div class="tablewrap rt"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>`}).join('')||'<p class="muted">No funds match your search.</p>';
   $('#colHelp').innerHTML=`<summary>What the columns mean</summary><div class="kv" style="grid-template-columns:1fr;margin-top:6px">${COLS.slice(1).map(c=>`<div><span><b style="font-weight:600;color:var(--ink)">${esc(lbl(c))}</b> · ${esc(c[3])}</span></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin-top:8px">Click any column heading to sort; click again to reverse. ${srt?'<a href="#ratings" id="sortReset">Back to the default order</a>':''}</p>`;
   const lowFirst={name:1,ter:1,ter_base:1,downside_capture_3y:1,tracking_err_1y:1};
@@ -988,7 +989,7 @@ async function fund(code){
   el.innerHTML=`<a href="#ratings" style="font-size:14px">← ${esc(f.category)} ratings</a>
   <div class="row" style="justify-content:space-between;align-items:flex-start;margin-top:16px;gap:20px">
     <div style="min-width:0"><div class="eyebrow">${esc(f.category)} · ${esc(f.plan_type)} plan · Growth</div><h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">${esc(f.name)}</h1>
-    <p class="muted" style="margin-top:8px">${esc(f.amc)} · benchmark ${esc(f.benchmark||'peer median')} TRI · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
+    <p class="muted" style="margin-top:8px">${esc(f.amc)} · ${f.category==='Arbitrage'&&!f.benchmark?'benchmark: the median arbitrage fund':f.bench_label?'benchmark: '+esc(f.bench_label):'benchmark '+esc(f.benchmark||'peer median')+' TRI'} · ${(f.age_years||0).toFixed(1)} years old · AMFI code ${f.code}</p>
     ${fl.length?`<p class="flag" style="margin-top:6px">${fl.map(esc).join(' · ')}</p>`:''}</div>
     <div class="row">${twin?`<a class="btn" href="#fund-${twin.code}">See ${esc(twin.plan_type)} plan</a>`:''}<button class="btn primary" id="addCmp">Add to compare</button></div>
   </div>

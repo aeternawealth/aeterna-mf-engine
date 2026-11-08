@@ -101,7 +101,7 @@ def _content(B, d):
             seo="Mutual fund investment services: funds chosen with data | Aeterna Wealth",
             desc="Mutual fund portfolios built and reviewed by Aeterna Wealth, an AMFI-registered distributor (ARN-317889): every equity fund in India measured against its index, overlap and cost checked, tax planned in.",
             lede="Our largest practice. We measure every equity and index fund in India against the right index every weekday, and use that to choose a small set of funds that fit your goals, don't duplicate each other and are reviewed every year.",
-            facts=[(f"{d['plans']:,}", "equity and index fund plans we track"),
+            facts=[(f"{d['plans']:,}", "equity, hybrid and index fund plans we track"),
                    (f"{d['beat']} of {d['beat_n']}", "diversified Regular plans ahead of their index over 3 years"),
                    (L(gap[1]) if gap else "–", f"gap on ₹10 lakh between the strongest and weakest {gap[0].lower() if gap and gap[0] != 'ELSS' else 'ELSS'} fund over 3 years" if gap else ""),
                    ("0.5% to 1%", "typical extra yearly cost of a Regular plan over Direct")],

@@ -62,7 +62,7 @@ def extra(nav, b, t):
         j = pd.concat([fw - bw, sw - bw], axis=1, keys=["f", "s"]).dropna()
         e[f"style_{k}"] = float(j.f.cov(j.s) / j.s.var()) if len(j) > 100 and j.s.var() > 0 else np.nan
     return e
-dates=pd.date_range('2012-03-31','2025-09-30',freq='QE')
+dates=pd.date_range('2012-03-31','2026-09-30',freq='ME')   # every month-end; forward returns left blank where the future is unknown
 import os
 os.makedirs('audit/bt_parts_long',exist_ok=True)
 for t in dates:
@@ -87,6 +87,12 @@ for t in dates:
             bf=(b[:end].iloc[-1]/b[:t].iloc[-1])**(1/yrs)-1 if yrs>0.25 else np.nan
             ff=(seg.iloc[-1]/n0)**(1/yrs)-1 if yrs>0.25 else np.nan
             m[f'fwd_{h}y']=ff-bf; m[f'fwd_{h}y_closed']=closed
+        for mo in (1,3,6):   # plain (not annualised) return over the benchmark, for monthly re-rating tests
+            t1=t+pd.DateOffset(months=mo)
+            if t1>tri.index.max(): m[f'fwd_{mo}m']=np.nan; continue
+            seg=nav[t:t1]
+            if len(seg)<2: m[f'fwd_{mo}m']=np.nan; continue
+            end=seg.index[-1]; m[f'fwd_{mo}m']=(seg.iloc[-1]/nav[:t].iloc[-1]-1)-(b[:end].iloc[-1]/b[:t].iloc[-1]-1)
         m.update(code=r.code,name=r.name,category=r.category,peer_group=r.peer_group,status=r.status,as_of=t.date())
         rows.append(m); n+=1
     pd.DataFrame(rows).to_csv(part,index=False); print(t.date(), n, flush=True)

@@ -110,7 +110,7 @@ CAT_PITCH = {   # what the category is for, in plain words
     "Long Term": "Long bonds: the most sensitive to interest rates. A bet on rates falling as much as a place to hold money.",
     "Dynamic Term": "The manager decides the duration. Results depend on calling interest rates right, so the spread between funds is wide.",
     "Corporate Bond": "High-quality company bonds: a little more than gilts, with low credit risk. A common core holding for money needed in two years or more.",
-    "Credit Risk": "Bonds of lower-rated companies for extra yield. Defaults have hit these funds before; we flag any fund that has had a sudden fall of its own. Most investors keep them small, if at all.",
+    "Credit Risk": "Bonds of lower-rated companies for extra yield. Defaults have hit these funds before; we flag any fund whose NAV has had a sharp one-day fall well below its category, with the date. Most investors keep them small, if at all.",
     "Banking & PSU": "Bonds of banks and government-owned companies: high quality and steady, similar to corporate bond funds.",
     "Gilt": "Government bonds: no credit risk, but prices move with interest rates, sometimes sharply.",
     "Gilt 10-Year Constant Maturity": "Government bonds held near a ten-year duration: a pure interest-rate fund with no credit risk.",
@@ -121,7 +121,7 @@ CAT_PITCH = {   # what the category is for, in plain words
 ASSET_CLASSES = [   # the three master categories, in site order
     ("Equity", "Funds that own shares: the long-term growth part of a portfolio."),
     ("Hybrid", "Funds that mix equity, debt and gold, or hedge their equity: from aggressive hybrid to arbitrage. Each is measured against a composite of the Nifty 50 and bond or liquid funds in its own proportions."),
-    ("Debt", "Funds that lend: from overnight and liquid funds to corporate bond, gilt and credit risk funds. There is no free debt index, so each fund is measured against the median fund of its own category, with a check for sudden falls of its own (a sign of a default)."),
+    ("Debt", "Funds that lend: from overnight and liquid funds to corporate bond, gilt and credit risk funds. There is no free debt index, so each fund is measured against the median fund of its own category, with a check for any sharp one-day fall well below its category."),
 ]
 HYBRID_CATS = {"Arbitrage", "Aggressive Hybrid", "Balanced Advantage", "Equity Savings", "Multi Asset Allocation", "Balanced Hybrid", "Conservative Hybrid"}
 DEBT_CATS = set(['Overnight', 'Liquid', 'Money Market', 'Ultra Short Term', 'Ultra Short to Short Term', 'Short Term', 'Medium Term', 'Medium to Long Term', 'Long Term', 'Dynamic Term', 'Corporate Bond', 'Credit Risk', 'Banking & PSU', 'Gilt', 'Gilt 10-Year Constant Maturity', 'Floating Rate', 'Debt Sectoral'])

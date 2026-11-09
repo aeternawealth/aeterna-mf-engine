@@ -281,7 +281,7 @@ RED_FLAGS = {
     "mandate_breach": "Portfolio violates SEBI category mandate in two consecutive months (e.g. small cap fund <65% in small caps) -> capped at B",
     "mandate_watch": "Portfolio violates SEBI category mandate in the latest month only (informational, no cap)",
     "closet_indexer": "Active share below threshold (50%; 30% for large caps) AND no 3Y excess return - paying active fees for index returns",
-    "credit_event": "Debt fund: a single day in the last 5 years on which it fell far more than its category median, too much to be interest rates (a default or downgrade in the portfolio) -> capped at B",
+    "credit_event": "Debt fund: a single day in the last 5 years on which it fell far more than its category median, too much to be interest rates (holdings marked down, e.g. after a downgrade; not by itself evidence of a default) -> capped at B",
     "trails_liquid_after_tax": "Arbitrage fund: 3Y return after tax below the median liquid fund's after tax, top slab (cannot be rated A or A+)",
 }
 CLOSET_INDEX_ACTIVE_SHARE = 50          # default threshold

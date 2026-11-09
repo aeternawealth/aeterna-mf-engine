@@ -4,6 +4,7 @@
 name: Rating research panel
 on:
   push:
+    branches: [staging]
     paths: ["audit/research_trigger.txt"]
   workflow_dispatch: {}
 permissions:

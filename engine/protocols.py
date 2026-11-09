@@ -85,6 +85,11 @@ def red_flags(g: pd.DataFrame) -> pd.Series:
         add((g["excess_cagr_1y"] <= q20) & (g["excess_cagr_1y"] < -0.03), "recent_underperformance")
     if "excess_vs_liquid_post_tax_3y" in g.columns:
         add(g["excess_vs_liquid_post_tax_3y"] < 0, "trails_liquid_after_tax")
+    if "worst_rel_day_5y" in g.columns and "category" in g.columns:
+        kind = g["category"].map(lambda c: "cash" if c in C.DEBT_CASH_LIKE else "long" if c in C.DEBT_LONG else "duration")
+        thr = kind.map(C.CREDIT_EVENT_DAY)
+        credit = g["category"].isin(C.DEBT_CATEGORIES) & ~g["category"].isin(C.DEBT_SOVEREIGN)   # gilts carry no credit risk
+        add(credit & (g["worst_rel_day_5y"] <= thr), "credit_event")
     if "active_share" in g.columns:
         thr = g["category"].map(C.CLOSET_INDEX_BY_CATEGORY).fillna(C.CLOSET_INDEX_ACTIVE_SHARE) if "category" in g else C.CLOSET_INDEX_ACTIVE_SHARE
         no_alpha = g["excess_cagr_3y"].fillna(0) <= 0 if "excess_cagr_3y" in g.columns else True
@@ -102,7 +107,7 @@ def assign_tiers(g: pd.DataFrame) -> pd.DataFrame:
         tier[(pr >= min_pct) & (g["score"] >= min_score)] = label
     g["flags"] = red_flags(g)
     hard = g["flags"].map(lambda f: any(x in f for x in C.HARD_FLAGS))
-    soft = g["flags"].map(lambda f: any(x in f for x in ("deep_drawdown", "mandate_breach", "closet_indexer", "turnaround_unproven")))
+    soft = g["flags"].map(lambda f: any(x in f for x in ("deep_drawdown", "mandate_breach", "closet_indexer", "turnaround_unproven", "credit_event")))
     tier[soft & tier.isin(["A+", "A"])] = "B"
     arb = g["category"].eq("Arbitrage").all() if "category" in g else False
     if C.ABSOLUTE_GUARD and arb and "excess_vs_liquid_post_tax_3y" in g.columns:

@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from . import config as C
-from .metrics import arbitrage_metrics, fund_metrics, horizon_metrics, index_metrics
+from .metrics import arbitrage_metrics, debt_clean, debt_metrics, fund_metrics, horizon_metrics, index_metrics
 from .protocols import assign_tiers, score_group
 
 
@@ -72,6 +72,8 @@ def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
     hy = u["category"].isin(list(C.HYBRID_COMPOSITE))
     u.loc[hy, "benchmark"] = u.loc[hy, "category"].map(lambda c: f"COMPOSITE {int(C.HYBRID_COMPOSITE[c][0] * 100)}:{100 - int(C.HYBRID_COMPOSITE[c][0] * 100)} {C.HYBRID_COMPOSITE[c][1]}")
     u.loc[hy, "bench_label"] = u.loc[hy, "category"].map(lambda c: f"{int(C.HYBRID_COMPOSITE[c][0] * 100)}% Nifty 50 TRI + {100 - int(C.HYBRID_COMPOSITE[c][0] * 100)}% {'bond funds' if C.HYBRID_COMPOSITE[c][1] == 'bond' else 'liquid funds'}")
+    db = u["category"].isin(C.DEBT_CATEGORIES)
+    u.loc[db, "bench_label"] = "the median " + u.loc[db, "category"] + " fund"
     ar = u["category"] == "Arbitrage"
     if ar.any():
         arb = next((c for c in tri.columns if _key(c) == _key(C.CATEGORY_BENCHMARK["Arbitrage"])), None) or \
@@ -103,6 +105,17 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
         if len(series) >= 2:
             med = pd.concat(series, axis=1).median(axis=1).fillna(0)
             proxies[pg] = (1 + med).cumprod()
+    # debt: no free total-return index, so the median fund of the same category and plan type, day by day
+    for (cat, plan), g in u[u.category.isin(C.DEBT_CATEGORIES)].groupby(["category", "plan_type"]):
+        series = []
+        for c in g.code:
+            if c in navs and len(navs[c]) > 250 and (as_of - navs[c]["date"].iloc[-1]).days <= C.STALE_NAV_DAYS:
+                series.append(debt_clean(navs[c].set_index("date")["nav"]).pct_change())
+        if len(series) >= 3:
+            proxies[("debt", cat, plan)] = (1 + pd.concat(series, axis=1).median(axis=1, skipna=True).fillna(0)).cumprod()
+    # interest-rate shock days (e.g. RBI's surprise hike of 4 May 2022): the median gilt fund moved 0.4% or more
+    g_ = proxies.get(("debt", "Gilt", "Direct"))
+    rate_days = g_.pct_change().abs().loc[lambda x: x >= 0.004].index if g_ is not None else None
     arb = u[(u.category == "Arbitrage") & u.benchmark.isna()]
     if len(arb):   # no arbitrage TRI: median arbitrage fund (Regular and Direct together) as the index
         series = [navs[c].set_index("date")["nav"].pct_change() for c in arb.code if c in navs]
@@ -140,6 +153,13 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
                 log(f"  metrics failed for {r.code} {r.name}: {e}")
                 continue
             m["bench_type"] = "composite"
+            m.update(horizon_metrics(nav, bser, as_of))
+        elif r.category in C.DEBT_CATEGORIES:
+            bser = proxies.get(("debt", r.category, r.plan_type))
+            if bser is None:
+                continue
+            m = debt_metrics(nav, bser, as_of, rate_days)
+            m["bench_type"] = "category median"
             m.update(horizon_metrics(nav, bser, as_of))
         elif r.category == "Arbitrage":
             if isinstance(r.benchmark, str) and r.benchmark in tri:
@@ -214,14 +234,15 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         # arbitrage funds hold stocks hedged with futures: the stock list (and active share, market-cap mix,
         # mandate checks) says nothing about their risk, so it is not used or shown
         hc = [c for c in holdings.columns if c != "pair_key" and c in df.columns]
-        df.loc[df["asset_class"].eq("Hybrid"), hc] = np.nan   # hybrid portfolios hedge and mix assets: equity analytics would mislead
+        df.loc[df["asset_class"].isin(["Hybrid", "Debt"]), hc] = np.nan   # hybrid portfolios hedge and mix assets: equity analytics would mislead
 
     # gates
     df["gate"] = "ok"
     stale = (as_of - pd.to_datetime(df["nav_date"])).dt.days > C.STALE_NAV_DAYS
     df.loc[stale, "gate"] = "stale NAV (merged/wound up?)"
     age = df.age_years.fillna(0)
-    young_active = (df.category != "Index Fund") & (age < C.MIN_HISTORY_YEARS_ACTIVE)
+    min_years = df.category.map(C.DEBT_MIN_HISTORY_YEARS).fillna(C.MIN_HISTORY_YEARS_ACTIVE)
+    young_active = (df.category != "Index Fund") & (age < min_years)
     young_index = (df.category == "Index Fund") & (age < C.MIN_HISTORY_YEARS_INDEX)
     df.loc[young_active | young_index, "gate"] = "track record too short"
 
@@ -261,7 +282,7 @@ DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "cat
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",
                 "max_drawdown_5y", "max_drawdown_3y", "excess_cagr_1y", "capture_ratio_3y", "alpha_3y", "sharpe_3y", "vol_3y", "beta_3y", "tracking_diff_1y", "tracking_err_1y",
                 "tracking_diff_3y", "ter", "ter_base", "aum_cr", "aum_asof",
-                "roll1y_excess_median", "neg_months_3y", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
+                "roll1y_excess_median", "neg_months_3y", "worst_day_3y", "worst_day_5y", "worst_rel_day_5y", "worst_rel_day_date", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
                 "excess_vs_liquid_post_tax_1y", "excess_vs_liquid_post_tax_3y",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",

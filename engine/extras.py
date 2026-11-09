@@ -122,7 +122,7 @@ def fetch_aum_qavg(universe: pd.DataFrame, log=print, navall: pd.DataFrame | Non
 # AMFI fund-performance tool (run for AMFI by CRISIL): scheme-level daily AUM, the figure fund factsheets,
 # Value Research and Groww quote. One call per SEBI sub-category covers every fund house.
 _FP = "https://www.amfiindia.com/gateway/pollingsebi/api/amfi/"
-_FP_SUBS = ((1, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 44, 45)), (3, (30, 31, 32, 33, 34, 35, 40)), (5, (38,)))   # equity; hybrid; index funds & ETFs
+_FP_SUBS = ((1, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 44, 45)), (2, tuple(range(13, 30))), (3, (30, 31, 32, 33, 34, 35, 40)), (5, (38,)))   # equity; debt (2026 categories: liquid and overnight complete, others as AMCs migrate; quarterly AUM fills the rest); hybrid; index funds & ETFs
 
 
 def _aum_key(s: str) -> str:

@@ -62,6 +62,23 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Multi Asset Allocation": "invest at least 10% in each of three asset classes, usually equity, debt and gold",
     "Balanced Hybrid": "invest 40% to 60% in equities and the rest in debt, without arbitrage",
     "Conservative Hybrid": "invest 10% to 25% in equities and 75% to 90% in debt",
+    "Overnight": "lend only overnight, in securities maturing the next business day",
+    "Liquid": "hold debt and money market securities maturing within about three months",
+    "Money Market": "hold money market instruments (treasury bills, certificates of deposit, commercial paper) maturing within a year",
+    "Ultra Short Term": "keep the portfolio's duration short, roughly three to six months",
+    "Ultra Short to Short Term": "keep the portfolio's duration between ultra short and short, roughly six months to a year (formerly low duration funds)",
+    "Short Term": "keep the portfolio's duration at roughly one to three years",
+    "Medium Term": "keep the portfolio's duration at roughly three to four years",
+    "Medium to Long Term": "keep the portfolio's duration at roughly four to seven years",
+    "Long Term": "keep the portfolio's duration above about seven years",
+    "Dynamic Term": "change the portfolio's duration freely as their view on interest rates changes",
+    "Corporate Bond": "invest at least 80% in the highest-rated corporate bonds (AA+ and above)",
+    "Credit Risk": "invest at least 65% in bonds rated below the highest grades, for extra yield",
+    "Banking & PSU": "invest at least 80% in bonds of banks, public sector undertakings and public financial institutions",
+    "Gilt": "invest at least 80% in government securities, which carry no credit risk",
+    "Gilt 10-Year Constant Maturity": "invest at least 80% in government securities, keeping the portfolio's duration near ten years",
+    "Floating Rate": "invest mostly in bonds whose interest rate resets with market rates",
+    "Debt Sectoral": "lend mainly to one sector, such as financial services (a category new in 2026)",
 }
 CAT_PITCH = {   # what the category is for, in plain words
     "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
@@ -82,16 +99,34 @@ CAT_PITCH = {   # what the category is for, in plain words
     "Multi Asset Allocation": "Equity, debt and gold in one fund, rebalanced for you. Gold tends to rise when equities fall, which steadies the ride. Most of these funds are young, so many are not rated yet.",
     "Balanced Hybrid": "Equity and debt in roughly equal parts, without arbitrage. Only a few funds exist in this category.",
     "Conservative Hybrid": "Mostly debt with a small equity kicker, for investors who want a little more than a debt fund and can accept small falls. Taxed like a debt fund, at your slab rate.",
+    "Overnight": "The safest place to park money for a few days: almost no interest-rate or credit risk, and returns close to the RBI's overnight rate. Funds differ mainly in cost.",
+    "Liquid": "Where most people keep their emergency fund and short-term cash: returns close to short-term rates, withdrawals usually the next working day. Funds differ in cost and in how careful they are with credit.",
+    "Money Market": "A step up from liquid funds for money needed in three months to a year, with slightly higher returns and still very small swings.",
+    "Ultra Short Term": "For money needed in three to twelve months. A little more return than a liquid fund; a fund that reaches for yield with weaker bonds can stumble, which is what our credit check looks for.",
+    "Ultra Short to Short Term": "For money needed in six months to about a year and a half: still steady, with slightly more interest-rate risk than ultra short funds.",
+    "Short Term": "For money needed in one to three years. Rate rises cause small dips; most of the return comes from the interest earned.",
+    "Medium Term": "Three-to-four-year duration: more swing when interest rates move. Suits money needed in three years or more.",
+    "Medium to Long Term": "Four-to-seven-year duration: noticeable gains when rates fall and dips when they rise.",
+    "Long Term": "Long bonds: the most sensitive to interest rates. A bet on rates falling as much as a place to hold money.",
+    "Dynamic Term": "The manager decides the duration. Results depend on calling interest rates right, so the spread between funds is wide.",
+    "Corporate Bond": "High-quality company bonds: a little more than gilts, with low credit risk. A common core holding for money needed in two years or more.",
+    "Credit Risk": "Bonds of lower-rated companies for extra yield. Defaults have hit these funds before; we flag any fund that has had a sudden fall of its own. Most investors keep them small, if at all.",
+    "Banking & PSU": "Bonds of banks and government-owned companies: high quality and steady, similar to corporate bond funds.",
+    "Gilt": "Government bonds: no credit risk, but prices move with interest rates, sometimes sharply.",
+    "Gilt 10-Year Constant Maturity": "Government bonds held near a ten-year duration: a pure interest-rate fund with no credit risk.",
+    "Floating Rate": "Bonds whose interest resets with market rates, which softens the impact of rate rises.",
+    "Debt Sectoral": "Debt from one sector, such as financial services. A new category, so most funds are too young to rate.",
     "Arbitrage": "A low-risk place to park money for a few months or more. Each stock bought is matched by a futures sale, so returns track short-term interest rates rather than the stock market. Before tax they usually earn a little less than liquid funds; they are taxed as equity, so after tax they often come out ahead for investors in the higher slabs.",
 }
 ASSET_CLASSES = [   # the three master categories, in site order
     ("Equity", "Funds that own shares: the long-term growth part of a portfolio."),
     ("Hybrid", "Funds that mix equity, debt and gold, or hedge their equity: from aggressive hybrid to arbitrage. Each is measured against a composite of the Nifty 50 and bond or liquid funds in its own proportions."),
-    ("Debt", "Funds that lend: liquid, money market, short-term, corporate bond and gilt funds. Coming soon."),
+    ("Debt", "Funds that lend: from overnight and liquid funds to corporate bond, gilt and credit risk funds. There is no free debt index, so each fund is measured against the median fund of its own category, with a check for sudden falls of its own (a sign of a default)."),
 ]
 HYBRID_CATS = {"Arbitrage", "Aggressive Hybrid", "Balanced Advantage", "Equity Savings", "Multi Asset Allocation", "Balanced Hybrid", "Conservative Hybrid"}
+DEBT_CATS = set(['Overnight', 'Liquid', 'Money Market', 'Ultra Short Term', 'Ultra Short to Short Term', 'Short Term', 'Medium Term', 'Medium to Long Term', 'Long Term', 'Dynamic Term', 'Corporate Bond', 'Credit Risk', 'Banking & PSU', 'Gilt', 'Gilt 10-Year Constant Maturity', 'Floating Rate', 'Debt Sectoral'])
 def asset_class(c):
-    return "Hybrid" if c in HYBRID_CATS else "Equity"
+    return "Hybrid" if c in HYBRID_CATS else "Debt" if c in DEBT_CATS else "Equity"
 # tax assumptions for the after-tax comparison with liquid funds (same as engine/config.py)
 TAX_SLAB_TOP, TAX_EQUITY_LTCG = 0.312, 0.13
 TAX_TEXT = {"equity": "Taxed as an equity fund: gains on units held over a year at 12.5% beyond ₹1.25 lakh a year; within a year, 20%.",
@@ -278,7 +313,7 @@ def footer():
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
- </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
+ </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
 def page(title, desc, path, body, ld=()):
@@ -391,7 +426,7 @@ def main():
         top = (hold.get(f.get("pair_key")) or [])[:10]
         bench = iname(f.get("benchmark")) or "peer median"
         BL = f.get("bench_label")
-        bp = f"its composite benchmark ({BL})" if BL else f"the {bench} TRI"
+        bp = BL if BL and BL.startswith("the median") else f"its composite benchmark ({BL})" if BL else f"the {bench} TRI"
         rated = f.get("tier") not in (None, "", "Unrated")
         r3, e3 = f.get("ret_3Y"), f.get("excess_3Y")
         arb = f["category"] == "Arbitrage"
@@ -481,7 +516,7 @@ def main():
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">{e(f['_name'])} ({e(f['plan_type'])})</h1>
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else ('benchmark: ' + e(BL)) if BL else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
-{f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) == 'Hybrid' else ''}
+{f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) in ('Hybrid', 'Debt') else ''}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
@@ -516,7 +551,7 @@ def main():
         beat = sum(1 for f in e3 if f["excess_3Y"] > 0)
         bench = iname(next((f.get("benchmark") for f in L if f.get("benchmark")), None))
         CBL = next((f.get("bench_label") for f in L if f.get("bench_label")), None)
-        BPH = f"their composite benchmark ({CBL})" if CBL else None
+        BPH = ("the median fund in their category" if CBL.startswith("the median") else f"their composite benchmark ({CBL})") if CBL else None
         path = f"/mutual-funds/{slug(c)}/"
         r3 = sorted([f for f in reg if f.get("ret_3Y") is not None], key=lambda f: f["ret_3Y"])
         gap_html = ""

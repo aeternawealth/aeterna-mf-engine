@@ -163,6 +163,63 @@ def arbitrage_metrics(nav: pd.Series, bench: pd.Series, liquid: pd.Series | None
     return m
 
 
+def debt_clean(nav: pd.Series) -> pd.Series:
+    """A debt fund's NAV cannot halve or double in a day: such jumps are face-value changes (e.g. Rs 1,000 to
+    Rs 10 units) or data slips. The day's return is set to zero and the series rebuilt."""
+    r = nav.pct_change()
+    bad = (r <= -0.4) | (r >= 0.6)
+    if not bad.any():
+        return nav
+    r[bad] = 0.0
+    return nav.iloc[0] * (1 + r.fillna(0)).cumprod()
+
+
+def debt_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp, rate_days=None) -> dict:
+    """Debt funds against the median fund of their category and plan type: return over it (point and rolling 1Y),
+    steadiness, the worst fall and the worst single day (a large one-day fall is a credit event, not rates)."""
+    nav, bench = _cut(debt_clean(nav), as_of), _cut(bench, as_of)
+    m = {}
+    if len(nav) < 30 or len(bench) < 30:
+        return m
+    m["age_years"] = (nav.index[-1] - nav.index[0]).days / 365.25
+    m["nav_date"] = nav.index[-1]
+    for y in (1, 3, 5):
+        m[f"cagr_{y}y"] = _cagr(nav, y)
+        m[f"bench_cagr_{y}y"] = _cagr(bench, y)
+        m[f"excess_cagr_{y}y"] = m[f"cagr_{y}y"] - m[f"bench_cagr_{y}y"]
+    j = pd.concat([_weekly(nav), _weekly(bench)], axis=1, keys=["f", "b"]).dropna()
+    need = int(W * ROLL_LOOKBACK * ROLL_MIN_COVERAGE)
+    if len(j) > W + 10:
+        _, ex1 = _roll(j.f, j.b, 1, ROLL_LOOKBACK, as_of)
+        if len(ex1) >= need:
+            m["roll1y_hit_rate"] = float((ex1 > 0).mean())
+            m["roll1y_excess_median"] = float(ex1.median())
+    # worst day against the category median on the same day: a whole category falling is interest rates,
+    # one fund falling alone is its portfolio (a default or downgrade)
+    dd = pd.concat([nav.pct_change(), bench.pct_change()], axis=1, keys=["f", "b"]).dropna()
+    d5 = dd[dd.index > as_of - pd.Timedelta(days=int(365.25 * 5))]
+    if rate_days is not None and len(rate_days):   # days when government bonds themselves moved sharply: rates, not credit
+        d5 = d5[~d5.index.isin(rate_days)]
+    if len(d5) > 200:
+        rel = d5.f - d5.b
+        m["worst_rel_day_5y"] = float(rel.min())
+        m["worst_rel_day_date"] = rel.idxmin()
+    for y in (3, 5):
+        n = _cut(nav, as_of, y)
+        if len(n) > 1 and (n.index[-1] - n.index[0]).days > 365 * (y - .1):
+            d = n.pct_change().dropna()
+            m[f"worst_day_{y}y"] = float(d.min())
+            m[f"max_drawdown_{y}y"] = float((n / n.cummax() - 1).min())
+            if y == 3:
+                mo = n.resample("ME").last().pct_change().dropna()
+                if len(mo) >= 30:
+                    m["vol_3y"] = float(mo.std() * np.sqrt(12))
+                    m["neg_months_3y"] = float((mo < 0).mean())
+    if "worst_day_5y" not in m and m["age_years"] >= 1:
+        m["worst_day_5y"] = float(nav.pct_change().dropna().min())
+    return m
+
+
 def index_metrics(nav: pd.Series, idx: pd.Series, as_of: pd.Timestamp) -> dict:
     """Tracking metrics for an index fund vs the TRI it tracks (or a peer proxy series)."""
     m = {}

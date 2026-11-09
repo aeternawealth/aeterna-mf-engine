@@ -60,12 +60,38 @@ HYBRID_COMPOSITE = {
 }
 HYBRID_EQUITY_INDEX = "NIFTY 50"
 BOND_CATEGORY_KEYS = ["corporate bond", "banking and psu"]   # AMFI raw categories averaged into the bond-fund yardstick
+# Debt funds. SEBI re-categorised debt schemes in 2026 and AMCs are renaming in stages, so AMFI lists both
+# "Debt Scheme - Short Duration Fund" and "Income/Debt Oriented Schemes - Short Term Fund". Both map to the new
+# names. Order matters: first match wins (e.g. 'ultra short to short term' before 'ultra short').
+DEBT_RULES = [("overnight", "Overnight"), ("liquid", "Liquid"), ("money market", "Money Market"),
+              ("ultra short to short term", "Ultra Short to Short Term"), ("low duration", "Ultra Short to Short Term"),
+              ("ultra short", "Ultra Short Term"),
+              ("medium to long", "Medium to Long Term"), ("medium", "Medium Term"),
+              ("short", "Short Term"), ("long", "Long Term"),
+              ("dynamic", "Dynamic Term"), ("corporate bond", "Corporate Bond"), ("credit risk", "Credit Risk"),
+              ("banking and psu", "Banking & PSU"), ("10-year constant maturity", "Gilt 10-Year Constant Maturity"),
+              ("10 year", "Gilt 10-Year Constant Maturity"), ("gilt", "Gilt"), ("floating", "Floating Rate"), ("floater", "Floating Rate"),
+              ("sectoral", "Debt Sectoral")]
+DEBT_CATEGORIES = ["Overnight", "Liquid", "Money Market", "Ultra Short Term", "Ultra Short to Short Term", "Short Term",
+                   "Medium Term", "Medium to Long Term", "Long Term", "Dynamic Term", "Corporate Bond", "Credit Risk",
+                   "Banking & PSU", "Gilt", "Gilt 10-Year Constant Maturity", "Floating Rate", "Debt Sectoral"]
+# money that must not move: compared on steadiness, cost and size; a one-year record is enough to be rated
+DEBT_CASH_LIKE = {"Overnight", "Liquid", "Money Market", "Ultra Short Term", "Ultra Short to Short Term"}
+DEBT_MIN_HISTORY_YEARS = {"Overnight": 1.0, "Liquid": 1.0, "Money Market": 1.0}
+# a single day's fall this far below the category median that day is not interest rates: it is a default or
+# downgrade in the portfolio (credit event)
+CREDIT_EVENT_DAY = {"cash": -0.004, "duration": -0.008, "long": -0.012}
+DEBT_SOVEREIGN = {"Gilt", "Gilt 10-Year Constant Maturity"}
+DEBT_LONG = {"Long Term", "Medium to Long Term", "Dynamic Term", "Gilt", "Gilt 10-Year Constant Maturity"}
+
 # how gains are taxed (equity-oriented: 65%+ in Indian shares; 'debt': more than 65% in debt; 'other': in between)
 TAX_CLASS = {"Arbitrage": "equity", "Aggressive Hybrid": "equity", "Balanced Advantage": "equity", "Equity Savings": "equity",
              "Multi Asset Allocation": "other", "Balanced Hybrid": "other", "Conservative Hybrid": "debt"}
+TAX_CLASS.update({c: "debt" for c in DEBT_CATEGORIES})   # debt funds: gains taxed at the slab rate, however long held
 # Three master categories for the site: every category maps to one
 ASSET_CLASS = {c: "Hybrid" for c in ["Arbitrage", "Aggressive Hybrid", "Balanced Advantage", "Equity Savings",
                                      "Multi Asset Allocation", "Balanced Hybrid", "Conservative Hybrid"]}   # everything else (equity categories, equity index funds) -> "Equity"
+ASSET_CLASS.update({c: "Debt" for c in DEBT_CATEGORIES})
 LIQUID_CATEGORY_KEY = "liquid fund"     # AMFI raw category of the liquid funds used as the arbitrage yardstick
 
 # Benchmark (Total Return Index) per category - SEBI tier-1 style benchmarks.
@@ -202,7 +228,38 @@ HYBRID_PROTOCOL = {
 }
 
 
+# Debt funds have no free total-return index (SEBI's tier-1 debt benchmarks are CRISIL's), so each fund is
+# measured against the median fund of its own category and plan type, day by day. What separates debt funds is
+# steadiness, credit discipline and cost: a debt fund's job is to be boring.
+DEBT_CASH_PROTOCOL = {
+    "roll1y_excess_median": ("Return", 20, True),      # median rolling 1-year return over the category median
+    "excess_cagr_3y":       ("Return", 10, True),
+    "roll1y_hit_rate":      ("Consistency", 15, True),
+    "vol_3y":               ("Consistency", 10, False),
+    "worst_day_3y":         ("Credit", 10, True),        # worst single day: negative; closer to 0 is better
+    "ter":                  ("Cost", 25, False),
+    "aum_size":             ("Size", 10, True),          # capped: liquidity for redemptions, not size for its own sake
+}
+DEBT_DURATION_PROTOCOL = {
+    "roll1y_excess_median": ("Return", 15, True),
+    "excess_cagr_3y":       ("Return", 15, True),
+    "roll1y_hit_rate":      ("Consistency", 15, True),
+    "vol_3y":               ("Consistency", 10, False),
+    "max_drawdown_3y":      ("Credit", 10, True),
+    "worst_day_3y":         ("Credit", 15, True),
+    "ter":                  ("Cost", 20, False),
+}
+DEBT_CREDIT_PROTOCOL = dict(DEBT_DURATION_PROTOCOL, max_drawdown_3y=("Credit", 15, True), worst_day_3y=("Credit", 20, True),
+                            excess_cagr_3y=("Return", 10, True))
+
+
 def protocol_for(category: str):
+    if category in DEBT_CASH_LIKE:
+        return "Debt protocol: cash-like", DEBT_CASH_PROTOCOL
+    if category == "Credit Risk":
+        return "Debt protocol: credit risk", DEBT_CREDIT_PROTOCOL
+    if category in DEBT_CATEGORIES:
+        return "Debt protocol: duration", DEBT_DURATION_PROTOCOL
     if category in HYBRID_COMPOSITE:
         return "Hybrid protocol", HYBRID_PROTOCOL
     if category == "Arbitrage":
@@ -224,6 +281,7 @@ RED_FLAGS = {
     "mandate_breach": "Portfolio violates SEBI category mandate in two consecutive months (e.g. small cap fund <65% in small caps) -> capped at B",
     "mandate_watch": "Portfolio violates SEBI category mandate in the latest month only (informational, no cap)",
     "closet_indexer": "Active share below threshold (50%; 30% for large caps) AND no 3Y excess return - paying active fees for index returns",
+    "credit_event": "Debt fund: a single day in the last 5 years on which it fell far more than its category median, too much to be interest rates (a default or downgrade in the portfolio) -> capped at B",
     "trails_liquid_after_tax": "Arbitrage fund: 3Y return after tax below the median liquid fund's after tax, top slab (cannot be rated A or A+)",
 }
 CLOSET_INDEX_ACTIVE_SHARE = 50          # default threshold
@@ -248,6 +306,8 @@ def horizon_protocol(h: str, category: str) -> dict:
         return {f"excess_{h}": ("Tracking", 45, True), f"te_{h}": ("Tracking", 35, False), "ter": ("Cost", 20, False)}
     if category == "Arbitrage":
         return {f"excess_{h}": ("Return", 60, True), f"hit_{h}": ("Consistency", 15, True), "ter_base": ("Cost", 25, False)}
+    if category in DEBT_CATEGORIES:
+        return {f"excess_{h}": ("Return", 55, True), f"hit_{h}": ("Consistency", 20, True), "ter": ("Cost", 25, False)}
     w = {"6M": (50, 0, 10, 10, 20), "1Y": (40, 10, 10, 10, 20), "3Y": (25, 15, 15, 10, 25), "5Y": (25, 15, 15, 10, 25)}[h]
     p = {f"excess_{h}": ("Return", w[0], True), f"ir_{h}": ("Return", w[1], True),
          f"dcap_{h}": ("Risk", w[2], False), f"mdd_{h}": ("Risk", w[3], True),

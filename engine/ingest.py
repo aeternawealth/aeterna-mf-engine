@@ -38,6 +38,9 @@ def normalise_category(raw: str) -> str | None:
         return "Index Fund"
     if "hybrid scheme" in low:
         return next((cat for key, cat in C.HYBRID_RULES if key in low), None)
+    if "debt scheme" in low or "income/debt oriented" in low:
+        sub = low.split(" - ", 1)[-1]
+        return next((cat for key, cat in C.DEBT_RULES if key in sub), None)
     if "equity scheme" not in low:
         return None
     for key, cat in C.CATEGORY_RULES:
@@ -81,7 +84,7 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     is_growth = u["option"].str.contains("growth", case=False) | (
         u["name"].str.contains("growth", case=False) & ~u["option"].str.contains("idcw|dividend", case=False))
     u = u[is_growth]
-    u = u[~u["name"].str.contains(r"\bETF\b|fund of fund|FOF|segregated|bonus", case=False, regex=True)]
+    u = u[~u["name"].str.contains(r"\bETF\b|fund of fund|FOF|segregated portfolio|bonus|unclaimed|institutional|retail plan", case=False, regex=True)]
     debt_like = u["name"].str.contains(
         r"crisil|\bibx\b|\bsdl\b|gilt|g-sec|gsec|bond|debt|t-bill|liquid|target maturity|\bpsu\b.*\b20\d\d\b|\b20[2-4]\d\b",
         case=False, regex=True)

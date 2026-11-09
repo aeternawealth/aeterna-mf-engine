@@ -42,7 +42,12 @@ button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r);padding:11px 18px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid var(--teal);cursor:pointer;background:transparent;color:var(--teal)}
 .btn.primary{background:var(--teal);color:var(--paper)}
-.btn:hover{filter:brightness(1.08)}
+.btn{transition:transform 160ms cubic-bezier(.23,1,.32,1),filter 150ms ease,background-color 150ms ease}
+.btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{filter:brightness(1.08)}a.sol,#leaders .card,#insCards .card{transition:transform 180ms cubic-bezier(.23,1,.32,1),border-color 150ms ease,box-shadow 180ms ease}a.sol:hover,#insCards .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px -14px rgba(20,33,30,.35)}}
+.tabs button{transition:background-color 150ms ease,color 150ms ease,border-color 150ms ease}.tabs button:active{transform:scale(.97)}
+@media (pointer:coarse){.tabs button,.strip .tabs button{min-height:40px}}
+a:focus-visible,button:focus-visible,.btn:focus-visible{outline:2px solid var(--teal-2);outline-offset:2px}
 /* header */
 header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
 header.site .wrap{display:flex;align-items:center;gap:24px;height:64px}
@@ -258,7 +263,7 @@ footer.site a{color:var(--ink-2)}
 .copy{border:1px solid var(--rule);background:var(--surface);border-radius:var(--r);padding:4px 9px;font-size:12px;cursor:pointer;color:var(--ink-2)}
 [data-view]{animation:fade .25s ease}
 @keyframes fade{from{opacity:.4}to{opacity:1}}
-@media (prefers-reduced-motion:reduce){[data-view]{animation:none}}
+@media (prefers-reduced-motion:reduce){[data-view]{animation:none}.btn,.tabs button,a.sol,#insCards .card{transition:none}.btn:active,.tabs button:active{transform:none}a.sol:hover,#insCards .card:hover{transform:none}}
 </style>
 
 <header class="site">

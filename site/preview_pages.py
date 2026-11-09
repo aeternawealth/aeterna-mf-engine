@@ -32,7 +32,7 @@ CSS = """<style>
 .pv-ring{width:76px;height:76px}
 .pv-float{margin-left:12%}
 .pv-bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;margin-top:34px}
-.pv-tile{grid-column:span 2;background:var(--surface);border:1px solid var(--rule);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s;min-height:230px}
+.pv-tile{grid-column:span 2;background:var(--surface);border:1px solid var(--rule);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;min-height:230px}
 .pv-tile:hover{transform:translateY(-2px);box-shadow:var(--card-sh)}
 .pv-tile.wide{grid-column:span 4}.pv-tile.tint{background:linear-gradient(160deg,var(--teal-soft),var(--surface) 70%)}
 .pv-tile b{font:600 21px/1.25 var(--f-display);color:var(--ink)}.pv-tile p{margin:0;color:var(--ink-2);font-size:15px;line-height:1.55}
@@ -47,6 +47,15 @@ CSS = """<style>
 .pv-cta{background:var(--teal);color:#fff;border-radius:24px;padding:48px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
 .pv-cta h2{color:#fff}.pv-cta p{color:rgba(255,255,255,.82);margin-top:10px;max-width:52ch}.pv-cta .btn{background:#fff;color:var(--teal);border-color:#fff}
 .pv-note{background:var(--surface);border:1px dashed var(--rule);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--ink-3);margin-bottom:22px}
+.pv [data-enter]{opacity:0;transform:translateY(14px);animation:pvIn .7s cubic-bezier(.2,.7,.2,1) forwards}
+.pv [data-enter="2"]{animation-delay:.12s}.pv [data-enter="3"]{animation-delay:.24s}.pv [data-enter="4"]{animation-delay:.36s}
+@keyframes pvIn{to{opacity:1;transform:none}}
+.pv .btn{transition:transform .12s ease,background-color .15s ease,box-shadow .15s ease}.pv .btn:hover{transform:translateY(-1px)}.pv .btn:active{transform:translateY(1px) scale(.98)}
+.pv .go{background:linear-gradient(currentColor,currentColor) 0 100%/0 1.5px no-repeat;transition:background-size .25s ease;align-self:flex-start}.pv-tile:hover .go{background-size:100% 1.5px}
+.pv a:focus-visible,.pv button:focus-visible{outline:2px solid var(--teal-2);outline-offset:3px;border-radius:12px}
+.pv-rt td:last-child,.pv-nums b,.pv-trust b,.pv-plan b{font-variant-numeric:tabular-nums}
+.pv-tile{transition:transform .15s ease,box-shadow .15s ease}
+@media (prefers-reduced-motion:reduce){.pv [data-enter]{animation:none;opacity:1;transform:none}.pv .btn,.pv-tile,.pv .go{transition:none}.pv-tile:hover{transform:none}}
 @media (max-width:960px){.pv-hg{grid-template-columns:1fr;gap:36px}.pv-bento{grid-template-columns:1fr 1fr}.pv-tile,.pv-tile.wide{grid-column:span 2}.pv-steps,.pv-nums{grid-template-columns:1fr 1fr}.pv-float{margin-left:0}}
 @media (max-width:600px){.pv section{padding:48px 0}.pv-bento{grid-template-columns:1fr}.pv-tile,.pv-tile.wide{grid-column:span 1;min-height:0}.pv-steps,.pv-nums{grid-template-columns:1fr}.pv-cta{padding:28px}}
 </style>"""
@@ -78,15 +87,15 @@ def preview_pages(B, urls):
 <section class="pv-hero"><div class="wrap">
  <p class="pv-note">Design preview, not linked from the site. Same data and brand, new layout. <a href="/">Current home page</a></p>
  <div class="pv-hg"><div>
-  <div class="eyebrow">Aeterna Wealth · AMFI-registered mutual fund distributor</div>
-  <h1 style="margin-top:14px">Every fund in India, measured. Your money, planned.</h1>
-  <p class="lead">We rate {n:,} mutual fund plans against the right benchmark every month and turn your goals into an exact monthly plan. Then we help you stay with it.</p>
-  <div class="row" style="margin-top:28px;gap:12px"><a class="btn primary" href="/plan/">Build my Money Plan</a><a class="btn" href="/#ratings">See fund ratings</a></div>
-  <div class="pv-trust"><span><b>{n:,}</b> plans tracked</span><span><b>{cats}</b> categories</span><span>Updated <b>every weekday</b></span><span><b>ARN-317889</b></span></div>
+  <div class="eyebrow" data-enter="1">Aeterna Wealth · AMFI-registered mutual fund distributor</div>
+  <h1 style="margin-top:14px" data-enter="1">Every fund in India, measured. Your money, planned.</h1>
+  <p class="lead" data-enter="2">We rate {n:,} mutual fund plans against the right benchmark every month and turn your goals into an exact monthly plan. Then we help you stay with it.</p>
+  <div class="row" style="margin-top:28px;gap:12px" data-enter="3"><a class="btn primary" href="/plan/">Build my Money Plan</a><a class="btn" href="/#ratings">See fund ratings</a></div>
+  <div class="pv-trust" data-enter="3"><span><b>{n:,}</b> plans tracked</span><span><b>{cats}</b> categories</span><span>Updated <b>every weekday</b></span><span><b>ARN-317889</b></span></div>
  </div>
  <div class="pv-stack">
-  <div class="pv-card"><h3>Flexi Cap · top rated <span>vs Nifty 500 TRI, 3Y a year</span></h3><table class="pv-rt">{rows}</table></div>
-  <div class="pv-card pv-float"><h3>Your Money Plan <span>example</span></h3><div class="pv-plan"><div><b>₹26,400 a month</b><small>Secure retirement target ₹4.62 cr in today's money, two weddings funded first</small></div>{ring}</div></div>
+  <div class="pv-card" data-enter="2"><h3>Flexi Cap · top rated <span>vs Nifty 500 TRI, 3Y a year</span></h3><table class="pv-rt">{rows}</table></div>
+  <div class="pv-card pv-float" data-enter="4"><h3>Your Money Plan <span>example</span></h3><div class="pv-plan"><div><b>₹26,400 a month</b><small>Secure retirement target ₹4.62 cr in today's money, two weddings funded first</small></div>{ring}</div></div>
  </div></div></div></section>
 
 <section><div class="wrap">

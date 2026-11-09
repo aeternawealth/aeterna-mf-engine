@@ -143,3 +143,19 @@ python run_monthly.py --offline    # reuse cached data
 - Validation quarantines suspect portfolios.
 
 **Backtest** (`audit/`), 2019–2025: no predictive value (3Y IC −0.08). Present ratings as track-record assessments, not forecasts.
+
+## v4 changes (November 2026): hybrid and debt funds
+
+**Three families, three yardsticks.** Every fund is ranked only within its SEBI category × plan type.
+
+| Family | Benchmark | Protocol (weights) | History needed |
+|---|---|---|---|
+| Hybrid (aggressive hybrid, balanced advantage, multi asset, balanced hybrid, equity savings, conservative hybrid) | Composite: Nifty 50 TRI + median bond fund (corporate bond, banking & PSU) or, for equity savings, median liquid fund. Equity shares 65 / 50 / 60 / 50 / 35 / 20% | Return 35 (rolling 3Y median excess 15, 3Y hit rate 10, IR 10), Protection 35 (downside capture 15, max drawdown 10, capture ratio 10), Consistency 10 (rolling 1Y hit rate), fee (base expense ratio) 10 | 3 years |
+| Arbitrage | Nifty 50 Arbitrage index (or median arbitrage fund) | Rolling 1Y excess 25, 3Y excess 15, 1Y hit rate 10, volatility 10, loss months 5, fee 25, size (capped Rs 5,000 cr) 10. A/A+ must beat the median liquid fund after tax (30% slab) | 3 years |
+| Debt (17 SEBI 2026 categories; old names mapped to new) | Median fund of the same category and plan type, on a business-day calendar | Cash-like (overnight, liquid, money market, ultra short, ultra short to short term): return 30, consistency 25, cost 25, worst own day 10, size 10. Duration: return 30, consistency 25, falls 25, cost 20. Credit risk: falls 35 | 3 years (1 for overnight, liquid, money market) |
+
+- **Credit event** (debt): a day in the last 5 years when the fund fell far below its category median (0.4% cash-like, 0.8% duration, 1.2% long), excluding days when the median gilt fund moved 0.4% or more (rate shocks). Capped at B. Gilt funds are not checked.
+- **Median series** (`metrics.median_series`): every median-fund yardstick is built on one business-day calendar. Liquid and overnight funds publish NAVs every calendar day; mixing them with business-day funds double-counted weekend interest (the median liquid fund was 1.2% a year too high before Nov 2026).
+- Debt NAV face-value changes (one-day moves of -40% or more, or +60% or more) are removed before any metric (`metrics.debt_clean`).
+- Hybrid and debt funds: equity portfolio analytics (active share, market-cap mix, mandate checks) are not used.
+- Tax shown per fund: equity (65%+ Indian equity), other (non-equity, non-debt), debt (slab rate).

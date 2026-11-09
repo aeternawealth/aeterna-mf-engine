@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en-IN" data-type="service" data-radius="soft" data-buttons="block" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aeterna Wealth: mutual fund investing for families in India</title>
+<meta name="description" content="Every mutual fund in India rated against its own index each month, and SIPs set up from the funds with the record. AMFI-registered distributor, ARN-317889, New Delhi.">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Aeterna Wealth: mutual fund investing for families in India">
+<meta property="og:description" content="Every fund rated against its own index each month. ARN-317889.">
+<meta property="og:image" content="https://aeternawealth.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#f6f8f7">
+<meta name="site-kind" content="other">
+<meta name="page-type" content="service">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400..700&family=Libre+Franklin:wght@400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/system.css">
+<link rel="stylesheet" href="kit/ui/cards.css">
+<link rel="stylesheet" href="kit/motion/motion.css">
+<link rel="stylesheet" href="kit/layout/layout.css">
+<link rel="stylesheet" href="kit/icons/icon.css">
+<style>
+:root {
+  --p-bg: #f6f8f7; --p-surface: #ffffff; --p-ink: #14211e; --p-muted: #4b5b57;
+  --p-accent: #0b4a3c; --p-accent-ink: #f6f8f7; --p-action: #0b4a3c; --p-action-ink: #f6f8f7;
+  --p-inv-bg: #14211e; --p-inv-surface: #212d2a; --p-inv-ink: #f6f8f7; --p-inv-muted: #989f9d;
+  --p-inv-accent: #f6f8f7; --p-inv-accent-ink: #14211e; --p-inv-action: #f6f8f7; --p-inv-action-ink: #14211e;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-text: "Libre Franklin", system-ui, sans-serif;
+  --display-weight: 400;
+  --display-tracking: -0.02em;
+  --display-tracking-xl: -0.026em;
+}
+</style>
+<link rel="stylesheet" href="kit/ui/base.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="kit/moments/moments.js">
+<link rel="modulepreload" href="kit/moments/lib.js">
+<link rel="modulepreload" href="kit/moments/word-highlight/moment.js">
+<link rel="modulepreload" href="kit/moments/picture-develops/moment.js">
+<!-- page CSS: inside the visuals only (the ratings window, the tier ladder, the plan sheet), the logo, and the
+     one photograph's frame -->
+<style>
+  .logo-mark { width: 26px; height: 25px; flex: none; }
+  .nav__logo { gap: 10px; }
+  /* the ratings window: Aeterna's own product, live data from outputs/latest/rankings.json */
+  .rt { height: 100%; display: flex; flex-direction: column; background: var(--p-surface); }
+  .rt__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 22px 28px 16px; border-bottom: 1px solid color-mix(in srgb, var(--p-ink) 10%, transparent); }
+  .rt__title { font-family: var(--font-display); font-size: 24px; letter-spacing: -0.01em; }
+  .rt__sub { font-size: 13px; color: var(--p-muted); }
+  .rt__tabs { display: flex; gap: 6px; padding: 14px 28px 6px; flex-wrap: wrap; }
+  .rt__tab { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--p-ink) 14%, transparent); color: var(--p-muted); }
+  .rt__tab[aria-current] { background: var(--p-ink); border-color: var(--p-ink); color: var(--p-bg); }
+  .rt table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .rt th { text-align: left; font-weight: 500; font-size: 12px; color: var(--p-muted); padding: 14px 10px 10px; letter-spacing: .02em; }
+  .rt td { padding: 15px 10px; border-top: 1px solid color-mix(in srgb, var(--p-ink) 8%, transparent); }
+  .rt th:first-child, .rt td:first-child { padding-left: 28px; } .rt th:last-child, .rt td:last-child { padding-right: 28px; text-align: right; }
+  .rt .num { text-align: right; } .rt .pos { color: #1d7a4f; }
+  .rt .fund { font-weight: 500; } .rt .fund small { display: block; font-weight: 400; color: var(--p-muted); font-size: 12.5px; margin-top: 2px; }
+  .tier { display: inline-grid; place-items: center; min-width: 38px; height: 26px; padding: 0 8px; border-radius: 7px; font-size: 13px; font-weight: 600; }
+  .tier--ap { background: #0e4a43; color: #f6f8f7; } .tier--a { background: #d9ebe6; color: #0e4a43; }
+  .tier--b { background: #eceee4; color: #4a4a1f; } .tier--c { background: #f3e4e3; color: #8a2f2c; }
+  .rt__foot { margin-top: auto; padding: 14px 28px 20px; font-size: 12.5px; color: var(--p-muted); border-top: 1px solid color-mix(in srgb, var(--p-ink) 8%, transparent); }
+  /* the tier ladder */
+  .ladder { list-style: none; margin: 0; padding: 0; }
+  .ladder li { display: grid; grid-template-columns: 64px 1fr 140px; gap: 20px; align-items: center; padding: 38px 0; border-top: 1px solid color-mix(in srgb, var(--p-ink) 12%, transparent); }
+  .ladder li:last-child { border-bottom: 1px solid color-mix(in srgb, var(--p-ink) 12%, transparent); }
+  .ladder .tier { min-width: 52px; height: 34px; font-size: 15px; }
+  .ladder b { display: block; font-weight: 500; font-size: 17px; } .ladder div > span { color: var(--p-muted); font-size: 15px; }
+  .ladder .bar { height: 10px; border-radius: 99px; background: color-mix(in srgb, var(--p-ink) 8%, transparent); overflow: hidden; }
+  .ladder .bar i { display: block; height: 100%; width: var(--w); background: var(--p-accent); border-radius: 99px; }
+  .ladder .bar + small { display: block; font-size: 12.5px; color: var(--p-muted); margin-top: 6px; }
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 36px 0 0; }
+  .facts dt { font-size: 14px; color: var(--p-muted); } .facts dd { margin: 4px 0 0; font-family: var(--font-text); font-weight: 500; font-size: 26px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  /* the plan sheet */
+  .plan { background: var(--p-surface); border-radius: var(--r-lg); padding: 40px 44px; min-height: 600px; height: 100%; display: flex; flex-direction: column; box-shadow: 0 1px 0 color-mix(in srgb, var(--p-ink) 8%, transparent); }
+  .plan__top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .plan__name { font-family: var(--font-display); font-size: 24px; } .plan__tag { font-size: 13px; color: var(--p-muted); }
+  .plan__big { margin: 24px 0 4px; }
+  .plan__per { font-family: var(--font-text); font-size: 16px; color: var(--p-muted); letter-spacing: 0; }
+  .plan__lead { color: var(--p-muted); font-size: 15px; margin: 0 0 24px; }
+  .plan dl { display: grid; grid-template-columns: 1fr auto; margin: 0; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .plan dt, .plan dd { padding: 13px 0; border-top: 1px solid color-mix(in srgb, var(--p-ink) 10%, transparent); margin: 0; }
+  .plan dd { text-align: right; font-weight: 500; }
+  .mix { display: flex; height: 12px; border-radius: 99px; overflow: hidden; margin-top: auto; }
+  .mix i { display: block; } .mix__eq { background: var(--p-accent); } .mix__debt { background: #b9cfc8; }
+  .mix-key { display: flex; gap: 20px; font-size: 13px; color: var(--p-muted); margin-top: 10px; }
+  .mix-key span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--p-accent); vertical-align: 0; }
+  .mix-key span + span::before { background: #b9cfc8; }
+  /* the founders' section: the one photograph, as tall as the text beside it */
+  .develop { margin: 0; border-radius: var(--r-lg); overflow: hidden; height: min(640px, var(--ly-fit, 640px)); }
+  .develop > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+  .close__media img { object-position: 50% 30%; }
+  .footer__legal .soc a + a { margin-left: 16px; }
+  .legal-note { font-size: 12.5px; color: var(--p-muted); max-width: 110ch; margin: 0 0 12px; }
+  @media (max-width: 420px) { .nav__actions .btn { display: none; } }
+  @media (max-width: 1023px) {
+    .develop { height: auto; aspect-ratio: 4 / 3; margin-top: var(--s-7, 40px); }
+  }
+  @media (max-width: 639px) {
+    .develop { aspect-ratio: 9 / 16; }
+    .rt .hide-sm { display: none; }
+  }
+  @media (max-width: 639px) {
+    .hero__media { overflow: hidden; -webkit-mask-image: linear-gradient(#000 62%, transparent); mask-image: linear-gradient(#000 62%, transparent); }
+    .rt__tabs, .rt__foot { display: none; }
+    #founders .rows li { display: block; } #founders .rows .rows__value { display: block; text-align: left; margin-top: 2px; color: var(--p-muted); max-width: none; width: auto; }
+    .pv-flag { display: none; }
+    .rt .fund small { display: none; }
+    .rt__head { padding: 16px 18px 12px; } .rt__title { font-size: 20px; } .rt__tabs { padding: 10px 18px 4px; }
+    .rt th:first-child, .rt td:first-child { padding-left: 18px; } .rt th:last-child, .rt td:last-child { padding-right: 18px; }
+    .rt td { padding: 11px 8px; } .rt__foot { padding: 10px 18px 14px; }
+    .ladder li { grid-template-columns: 52px 1fr; padding: 16px 0; } .ladder li > div:last-child { display: none; }
+    .facts { display: none; }
+    .plan dl, .plan__lead { display: none; } .plan > div:last-child { margin-top: 20px !important; }
+    #plan .t-lead + .t-lead { display: none; }
+    .plan { padding: 24px 22px; min-height: 0; } .plan__big { margin-top: 16px; }
+  }
+</style>
+</head>
+<body>
+<!-- deal: hero split (product UI: the live ratings window), nav nav-split, close close-photo, footer footer-columns,
+     rhythm space, buttons block, mark: the client's own logo, grounds none (kind other)
+     moments: word-highlight (#paid, the statement on how Aeterna is paid), picture-develops (#founders' photograph)
+     palette: the client's own colours (start.mjs brand), type source-serif: a sober, trusted serif for a finance firm -->
+<header class="nav nav--split">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="/"><svg class="logo-mark" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="#1c1a17"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="#0b4a3c"/></svg>Aeterna Wealth</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item">
+        <a class="nav__link" href="/mutual-funds/">Fund ratings <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="nav__menu">
+          <div class="wrap grid">
+            <div class="menu-col span-3">
+              <p class="t-label">Equity</p>
+              <a href="/mutual-funds/flexi-cap/">Flexi Cap<span>{{N_FLEXI}} plans against Nifty 500</span></a>
+              <a href="/mutual-funds/small-cap/">Small Cap<span>{{N_SMALL}} plans against Smallcap 250</span></a>
+              <a href="/mutual-funds/elss/">ELSS<span>Tax-saving funds, 3-year lock-in</span></a>
+            </div>
+            <div class="menu-col span-3">
+              <p class="t-label">Hybrid and debt</p>
+              <a href="/mutual-funds/balanced-advantage/">Balanced Advantage<span>Equity that shifts with the market</span></a>
+              <a href="/mutual-funds/arbitrage/">Arbitrage<span>Against the median liquid fund</span></a>
+              <a href="/mutual-funds/corporate-bond/">Corporate Bond<span>Against the category median</span></a>
+            </div>
+            <div class="menu-col span-3">
+              <p class="t-label">Look up</p>
+              <a href="/mutual-funds/">All {{N_CATS}} categories<span>Every peer group, Regular and Direct</span></a>
+              <a href="/mutual-funds/amc/">Fund houses<span>All {{N_AMCS}} AMCs side by side</span></a>
+              <a href="/#method">How we rate<span>The rules for every family</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav__item"><a class="nav__link" href="/plan/">Money Plan</a></div>
+      <div class="nav__item"><a class="nav__link" href="/learn/">Learn</a></div>
+      <div class="nav__item"><a class="nav__link" href="/#about">About</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="nav__link" href="https://onedigital.centricity.co.in/">Client login</a>
+      <a class="btn btn--primary" href="{{CALL}}">Book a call</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+<main id="top">
+  <section class="hero hero--split" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text grid hero__grid">
+      <div class="hero__text span-5">
+        <p class="hero__kicker"><span class="dot" aria-hidden="true"></span>Ratings refreshed {{ASOF}}</p>
+        <h1 id="hero-h">Mutual fund investing for families in India</h1>
+        <p class="hero__lead">We rate all {{N_FUNDS}} fund plans in India against their own index every month, then set up your SIPs in the funds with the record. AMFI-registered distributor, ARN-317889.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="{{CALL}}">Book a call<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="/mutual-funds/">See the fund ratings</a></div>
+      </div>
+      <div class="hero__media span-6 start-7">
+        <a class="rt ui ui-rt" href="/mutual-funds/flexi-cap/" aria-label="Flexi Cap ratings, Regular plans">
+          <div class="rt__head"><span class="rt__title">Flexi Cap</span><span class="rt__sub">Regular plans · vs Nifty 500 TRI</span></div>
+          <div class="rt__tabs" aria-hidden="true"><span class="rt__tab" aria-current="true">Flexi Cap</span><span class="rt__tab">Small Cap</span><span class="rt__tab">Mid Cap</span><span class="rt__tab">ELSS</span><span class="rt__tab">Debt</span></div>
+          <table>
+            <thead><tr><th>Fund</th><th class="num">3Y a year</th><th class="num hide-sm">vs index</th><th>Rating</th></tr></thead>
+            <tbody>{{HERO_ROWS}}</tbody>
+          </table>
+          <div class="rt__foot">{{N_FLEXI_REG}} Regular plans in this peer group · track record, not a forecast</div>
+        </a>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="ratings" aria-labelledby="ratings-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5">
+          <h2 id="ratings-h">Each fund is rated against its own index. <span class="muted">Every month.</span></h2>
+          <p class="t-lead" style="margin-top:24px">A small cap fund is held to the Nifty Smallcap 250, a debt fund to the median fund of its category. Regular and Direct plans are rated in separate groups, so a fee never hides a weak record.</p>
+          <dl class="facts">
+            <div><dt>Fund plans rated</dt><dd>{{N_FUNDS}}</dd></div>
+            <div><dt>Categories</dt><dd>{{N_CATS}}</dd></div>
+            <div><dt>Fund houses</dt><dd>{{N_AMCS}}</dd></div>
+          </dl>
+        </div>
+        <div class="span-6 start-7">
+          <ul class="ladder ui ui-ladder">
+            <li><span class="tier tier--ap">A+</span><div><b>The top tenth of its peer group</b><span>And ahead of its index over 3 years</span></div><div><div class="bar"><i style="--w:10%"></i></div><small>10% of funds</small></div></li>
+            <li><span class="tier tier--a">A</span><div><b>The next fifth</b><span>Ahead of its index on one of two tests</span></div><div><div class="bar"><i style="--w:20%"></i></div><small>20% of funds</small></div></li>
+            <li><span class="tier tier--b">B</span><div><b>The middle of the group</b><span>Holds, if it suits your plan</span></div><div><div class="bar"><i style="--w:40%"></i></div><small>40% of funds</small></div></li>
+            <li><span class="tier tier--c">C</span><div><b>The bottom three tenths</b><span>We review it with you</span></div><div><div class="bar"><i style="--w:30%"></i></div><small>30% of funds</small></div></li>
+          </ul>
+          <p style="margin-top:40px"><a class="link" href="/#method">Read how each family of funds is rated</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="plan" aria-labelledby="plan-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5">
+          <h2 id="plan-h">The Money Plan works out your monthly SIP. <span class="muted">Goal by goal, in today's rupees.</span></h2>
+          <p class="t-lead" style="margin-top:24px">Tell it what you spend, what you hold and when each goal falls due. It counts what your PPF, FDs and funds already cover, sizes the SIP for the rest and tests it against 2008 and 2020.</p>
+          <p class="t-lead">Free, and nothing you type leaves your browser.</p>
+          <div class="btn-row" style="margin-top:32px"><a class="btn btn--primary" href="/plan/">Start your Money Plan</a></div>
+        </div>
+        <div class="span-6 start-7">
+          <div class="plan ui ui-plan">
+            <div class="plan__top"><span class="plan__name">Retire at 60</span><span class="plan__tag">Example plan</span></div>
+            <p class="t-stat plan__big">₹49,000 <span class="plan__per">a month</span></p>
+            <p class="plan__lead">Rising each year with prices, for 22 years</p>
+            <dl>
+              <dt>Spending a year, today</dt><dd>₹12 lakh</dd>
+              <dt>Target at 25 times spending</dt><dd>₹3 crore</dd>
+              <dt>Already covered by PPF and funds</dt><dd>₹95 lakh</dd>
+              <dt>Left for the SIP</dt><dd>₹2.05 crore</dd>
+              <dt>Reached in our market tests</dt><dd>85 of 100 paths</dd>
+            </dl>
+            <div style="margin-top:28px"><div class="mix"><i class="mix__eq" style="width:70%"></i><i class="mix__debt" style="width:30%"></i></div>
+            <div class="mix-key"><span>Equity funds 70%</span><span>Debt funds 30%</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section statement" id="paid" data-moment="word-highlight" aria-label="How we are paid">
+    <div class="wrap">
+      <p class="t-label">How we are paid</p>
+      <p class="mo-wh__text">Fund houses pay us a commission when you invest in Regular plans. So every fund page shows the <strong>Direct plan</strong> beside it, rated the same way, with both expense ratios in plain view.</p>
+    </div>
+  </section>
+
+  <section class="section" id="founders" style="--hm: 2" aria-labelledby="founders-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5">
+          <h2 id="founders-h">Run by a Chartered Accountant and an advocate.</h2>
+          <p class="t-lead" style="margin-top:24px">CA Harshit Aggarwal and Adv. Shantnu Singh Sangwan founded Aeterna in New Delhi. Tax, nominations and the paperwork sit inside the plan, not after it.</p>
+          <ul class="rows" style="margin-top:32px">
+            <li><span class="rows__name">Registered</span><span class="rows__value">AMFI mutual fund distributor, ARN-317889</span></li>
+            <li><span class="rows__name">Also arranges</span><span class="rows__value">PMS, AIFs, bonds, unlisted shares</span></li>
+            <li><span class="rows__name">Office</span><span class="rows__value">Africa Avenue Marg, Safdarjung Enclave</span></li>
+          </ul>
+          <p style="margin-top:32px"><a class="link" href="/#about">Meet the founders</a></p>
+        </div>
+        <figure class="develop span-6 start-7" data-moment="picture-develops"><img src="img/jaali-1280.webp" srcset="img/jaali-800.webp 800w, img/jaali-1280.webp 1280w" sizes="(max-width: 1023px) 100vw, 50vw" alt="Afternoon light falling through a carved stone screen onto a stone floor" width="1280" height="1962" loading="lazy" data-source="library" data-subject="stand-in"></figure>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--photo">
+      <div class="section-head--split">
+        <div><h2 id="close-h">Book a call</h2><p class="t-lead">On WhatsApp, the phone or at our office in Safdarjung Enclave.</p></div>
+        <a class="btn btn--primary" href="{{CALL}}">Book a call<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+      </div>
+      <div class="close__media"><img src="img/tomb-1280.webp" srcset="img/tomb-800.webp 800w, img/tomb-1280.webp 1280w" sizes="(max-width: 639px) 300vw, 100vw" alt="A red sandstone tomb and its reflection in a still pool under a blue sky" loading="lazy" data-source="library" data-subject="stand-in"></div>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="/"><svg class="logo-mark" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="#1c1a17"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="#0b4a3c"/></svg>Aeterna Wealth</a>
+          <p class="footer__lede">Mutual fund plans and fund ratings for families, from New Delhi.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Ratings</h3><ul><li><a href="/mutual-funds/">All categories</a></li><li><a href="/mutual-funds/amc/">Fund houses</a></li><li><a href="/#method">How we rate</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Plan</h3><ul><li><a href="/plan/">Money Plan</a></li><li><a href="/calculators/">Calculators</a></li><li><a href="/learn/">Guides</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Invest</h3><ul><li><a href="/invest/mutual-funds/">Mutual funds</a></li><li><a href="/invest/pms/">PMS</a></li><li><a href="/invest/bonds/">Bonds</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Company</h3><ul><li><a href="/#about">About</a></li><li><a href="/disclosures/">Disclosures</a></li><li><a href="/grievances/">Grievances</a></li></ul></div>
+      </div>
+      <p class="legal-note">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Aeterna Wealth Private Limited is an AMFI-registered mutual fund distributor (ARN-317889) and earns commission from fund houses on Regular plans. Ratings describe past track records from public data and are not investment advice or a forecast.</p>
+      <div class="footer__legal">
+        <span>&copy; 2026 Aeterna Wealth Private Limited &nbsp; <a href="/privacy/">Privacy</a> &nbsp; <a href="/terms/">Terms</a></span>
+        <span class="soc"><a href="https://www.linkedin.com/company/aeterna-wealth">LinkedIn</a><a href="https://www.instagram.com/aeternawealth/">Instagram</a><a href="https://x.com/AeternaWealth">X</a></span>
+        <a class="credits" href="https://commons.wikimedia.org/wiki/File:Humayun%27s_Tomb,_Delhi_1.jpg">Photographs: Naveen R Gowda, Dey.sandip, Wikimedia Commons, CC BY-SA 4.0</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<a class="pv-flag" href="/" style="position:fixed;right:16px;bottom:16px;z-index:60;background:#14211e;color:#f6f8f7;font:500 13px var(--font-text);padding:10px 16px;border-radius:999px;text-decoration:none">Design preview · current home</a>
+<script type="module" src="kit/system.js"></script>
+<script type="module" src="kit/motion/motion.js"></script>
+<script type="module" src="kit/layout/layout.js"></script>
+</body>
+</html>

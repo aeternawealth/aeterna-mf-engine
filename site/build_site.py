@@ -657,6 +657,8 @@ def main():
              + '</head><body>\n' + app_body
              + '\n</body></html>\n')
     (DIST / "index.html").write_text(index, encoding="utf-8")
+    from home_preview import build_preview
+    build_preview(DIST)
 
     # ---- data for the app + open data
     for fp in (S / "data").rglob("*.json"):

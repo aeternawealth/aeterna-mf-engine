@@ -242,6 +242,7 @@ def analytics_head():
 
 
 FAVICON = ('<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">'
+           '<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">'
            '<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
 
 
@@ -374,7 +375,7 @@ def main():
     css = app[app.index("<style>") + 7: app.index("</style>")]
     (DIST / "assets").mkdir(parents=True, exist_ok=True)
     (DIST / "assets" / "site.css").write_text(css, encoding="utf-8")
-    for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-512.png"):
+    for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
         if (S / icon).exists():
             shutil.copy(S / icon, DIST / icon)
     if (S / "og.png").exists():

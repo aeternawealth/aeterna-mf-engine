@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-08 15:12
+Aeterna MF Engine run 2026-11-08 19:00
 [1/7] Universe (AMFI NAVAll)
   2062 equity + index schemes (growth, Direct & Regular)
   Month-end AUM (30 Oct 2026): 1024/1037 schemes

@@ -25,5 +25,5 @@ jobs:
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
           gzip -kf audit/bt_metrics_long.csv
           git add -f audit/bt_metrics_long.csv.gz audit/dead_meta.csv && git commit -m "Research panel $(date -u +%F): quarterly 2012-2025, real TRI" || echo "nothing to commit"
-          for i in 1 2 3; do git push && exit 0; git pull --rebase origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
+          for i in 1 2 3; do git push && exit 0; git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
           exit 1

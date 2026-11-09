@@ -412,10 +412,6 @@ def main():
     IP.invest_pages(Bm, funds, hold, ins, urls)
     import planner_pages as PL
     PL.planner_pages(Bm, urls)
-    import preview_pages as PV
-    PV.preview_pages(Bm, urls)
-    import preview_v2 as PV2
-    PV2.preview_v2(Bm, urls)
     import learn_pages as LP
     LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
     cmp_by = {}

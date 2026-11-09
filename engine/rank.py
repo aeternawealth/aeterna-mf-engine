@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from . import config as C
-from .metrics import arbitrage_metrics, debt_clean, debt_metrics, median_series, fund_metrics, horizon_metrics, index_metrics
+from .metrics import arbitrage_metrics, debt_clean, debt_metrics, lean_metrics, median_series, fund_metrics, horizon_metrics, index_metrics
 from .protocols import assign_tiers, score_group
 
 
@@ -177,6 +177,7 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
                 continue
             try:
                 m = fund_metrics(nav, tri[bname].dropna(), as_of)
+                m.update(lean_metrics(nav, tri[bname].dropna(), tri, as_of))
             except Exception as e:
                 log(f"  metrics failed for {r.code} {r.name}: {e}")
                 continue
@@ -282,7 +283,7 @@ DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "cat
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",
                 "max_drawdown_5y", "max_drawdown_3y", "excess_cagr_1y", "capture_ratio_3y", "alpha_3y", "sharpe_3y", "vol_3y", "beta_3y", "tracking_diff_1y", "tracking_err_1y",
                 "tracking_diff_3y", "ter", "ter_base", "aum_cr", "aum_asof",
-                "roll1y_excess_median", "neg_months_3y", "worst_day_3y", "worst_day_5y", "worst_rel_day_5y", "worst_rel_day_date", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
+                "mom_1m", "mom_3m", "mom_6m", "mom_12m", "style_small", "style_mid", "roll1y_excess_median", "neg_months_3y", "worst_day_3y", "worst_day_5y", "worst_rel_day_5y", "worst_rel_day_date", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
                 "excess_vs_liquid_post_tax_1y", "excess_vs_liquid_post_tax_3y",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",

@@ -5,7 +5,12 @@ name: Daily NAV refresh
 on:
   schedule:
     - cron: "15 3 * * 2-6"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      fresh_tiers:
+        description: "Re-rate Overall tiers today (model changes on staging)"
+        type: boolean
+        default: false
 permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
@@ -19,7 +24,7 @@ jobs:
       - uses: actions/setup-python@v6
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
-      - run: python run_monthly.py --daily
+      - run: python run_monthly.py --daily ${{ inputs.fresh_tiers && '--fresh-tiers' || '' }}
       - run: python site/build_data.py && python site/build_series.py && python site/build_site.py
       - name: Health check
         run: |

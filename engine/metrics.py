@@ -163,6 +163,26 @@ def arbitrage_metrics(nav: pd.Series, bench: pd.Series, liquid: pd.Series | None
     return m
 
 
+def median_series(navs: list) -> pd.Series | None:
+    """The median fund as an index level: the median daily return across funds, cumulated.
+    Liquid and overnight funds publish a NAV for every calendar day, other funds only on business days. Taking the
+    median day by day over both kinds counts weekend interest twice (Saturday and Sunday from one kind, the
+    3-day Monday return from the other), which overstated the median liquid fund by about 1.2% a year. So every
+    series is first put on one business-day calendar (a weekend's interest lands on Monday for all)."""
+    navs = [s.dropna() for s in navs if s is not None and len(s.dropna()) > 1]
+    if not navs:
+        return None
+    cal = pd.bdate_range(min(s.index[0] for s in navs), max(s.index[-1] for s in navs))
+    rets = []
+    for s in navs:
+        s = s[~s.index.duplicated(keep="last")].sort_index()
+        b = s.reindex(s.index.union(cal)).ffill().reindex(cal)
+        b[(b.index < s.index[0]) | (b.index > s.index[-1])] = np.nan
+        rets.append(b.pct_change())
+    med = pd.concat(rets, axis=1).median(axis=1, skipna=True).fillna(0)
+    return (1 + med).cumprod()
+
+
 def debt_clean(nav: pd.Series) -> pd.Series:
     """A debt fund's NAV cannot halve or double in a day: such jumps are face-value changes (e.g. Rs 1,000 to
     Rs 10 units) or data slips. The day's return is set to zero and the series rebuilt."""
@@ -196,7 +216,8 @@ def debt_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp, rate_day
             m["roll1y_excess_median"] = float(ex1.median())
     # worst day against the category median on the same day: a whole category falling is interest rates,
     # one fund falling alone is its portfolio (a default or downgrade)
-    dd = pd.concat([nav.pct_change(), bench.pct_change()], axis=1, keys=["f", "b"]).dropna()
+    nb = nav.reindex(nav.index.union(bench.index)).ffill().reindex(bench.index)   # the fund on the median's business days
+    dd = pd.concat([nb.pct_change(), bench.pct_change()], axis=1, keys=["f", "b"]).dropna()
     d5 = dd[dd.index > as_of - pd.Timedelta(days=int(365.25 * 5))]
     if rate_days is not None and len(rate_days):   # days when government bonds themselves moved sharply: rates, not credit
         d5 = d5[~d5.index.isin(rate_days)]

@@ -125,10 +125,10 @@ def liquid_yardstick(navs: dict, liq: pd.DataFrame, as_of=None) -> dict:
             s = d.set_index("date")["nav"]
             if as_of is not None and (pd.Timestamp(as_of) - s.index[-1]).days > 10:
                 continue   # stale: merged or wound up
-            rets.append(s.pct_change())
+            rets.append(s)
         if len(rets) >= 5:
-            med = pd.concat(rets, axis=1).median(axis=1, skipna=True).fillna(0)
-            out[plan] = (1 + med).cumprod()
+            from .metrics import median_series   # business-day calendar: see median_series
+            out[plan] = median_series(rets)
     return out
 
 

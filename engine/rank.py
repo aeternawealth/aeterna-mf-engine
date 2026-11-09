@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from . import config as C
-from .metrics import arbitrage_metrics, debt_clean, debt_metrics, fund_metrics, horizon_metrics, index_metrics
+from .metrics import arbitrage_metrics, debt_clean, debt_metrics, median_series, fund_metrics, horizon_metrics, index_metrics
 from .protocols import assign_tiers, score_group
 
 
@@ -110,17 +110,17 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
         series = []
         for c in g.code:
             if c in navs and len(navs[c]) > 250 and (as_of - navs[c]["date"].iloc[-1]).days <= C.STALE_NAV_DAYS:
-                series.append(debt_clean(navs[c].set_index("date")["nav"]).pct_change())
+                series.append(debt_clean(navs[c].set_index("date")["nav"]))
         if len(series) >= 3:
-            proxies[("debt", cat, plan)] = (1 + pd.concat(series, axis=1).median(axis=1, skipna=True).fillna(0)).cumprod()
+            proxies[("debt", cat, plan)] = median_series(series)
     # interest-rate shock days (e.g. RBI's surprise hike of 4 May 2022): the median gilt fund moved 0.4% or more
     g_ = proxies.get(("debt", "Gilt", "Direct"))
     rate_days = g_.pct_change().abs().loc[lambda x: x >= 0.004].index if g_ is not None else None
     arb = u[(u.category == "Arbitrage") & u.benchmark.isna()]
     if len(arb):   # no arbitrage TRI: median arbitrage fund (Regular and Direct together) as the index
-        series = [navs[c].set_index("date")["nav"].pct_change() for c in arb.code if c in navs]
+        series = [navs[c].set_index("date")["nav"] for c in arb.code if c in navs]
         if len(series) >= 2:
-            proxies["Arbitrage"] = (1 + pd.concat(series, axis=1).median(axis=1).fillna(0)).cumprod()
+            proxies["Arbitrage"] = median_series(series)
     for n, r in enumerate(u.itertuples(index=False), 1):
         d = navs.get(r.code)
         if d is None or d.empty:

@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-09 06:29
+Aeterna MF Engine run 2026-11-09 06:52
 [1/7] Universe (AMFI NAVAll)
   2739 equity + index schemes (growth, Direct & Regular)
   Month-end AUM (30 Oct 2026): 1357/1379 schemes
@@ -61,35 +61,35 @@ Aggressive Hybrid               12   6   21  17        2
 Arbitrage                       12   4   22  14       25
 Balanced Advantage              12   8   20  20       16
 Balanced Hybrid                  2   0    2   0        4
-Banking & PSU                    7   4   16  10        3
+Banking & PSU                    5   4   18  10        3
 Conservative Hybrid              7   4    7  16        0
 Contra                           3   1    2   0        5
-Corporate Bond                   7   6   18  11        0
+Corporate Bond                   6   5   19  12        0
 Credit Risk                      7   0   11   6        0
 Dividend Yield                   4   2    8   4        6
-Dynamic Term                     8   6   18  12        2
+Dynamic Term                     9   5   18  12        2
 ELSS                            16   8   24  26        2
 Equity Savings                   6   4   14  14        8
 Flexi Cap                       14   8   30  20       20
-Floating Rate                    3   3   12   6        0
+Floating Rate                    7   1    9   7        0
 Focused                         12   6   20  16        2
 Gilt                             4   6   20  12        4
-Gilt 10-Year Constant Maturity   4   0    4   2        0
+Gilt 10-Year Constant Maturity   4   0    5   1        0
 Index Fund                      82  47  258  63       90
 Large & Mid Cap                 10   6   19  17       22
 Large Cap                       14   6   24  16        8
-Liquid                           0   0   47  19       19
-Long Term                        1   2    7   4        8
-Medium Term                      6   2   10   6        0
+Liquid                           0   0   49  19       17
+Long Term                        0   2    8   4        8
+Medium Term                      8   0   10   6        0
 Medium to Long Term              3   4   11   6        4
 Mid Cap                         12   6   21  17       10
-Money Market                     5   3   24  12       10
+Money Market                     4   3   27  12        8
 Multi Asset Allocation           4   4   14   8       44
 Multi Cap                        8   6   20  12       18
-Overnight                        0   0   44  18       17
+Overnight                        0   0   48  18       13
 Sectoral/Thematic               48  35  109  84      225
 Short Term                       7   4   19  11        4
 Small Cap                       10   6   19  15       20
-Ultra Short Term                 7   6   21  12        6
-Ultra Short to Short Term       10   4   16  10       10
+Ultra Short Term                 8   5   20  13        6
+Ultra Short to Short Term        7   4   19  10       10
 Value                            6   5   15  15        6

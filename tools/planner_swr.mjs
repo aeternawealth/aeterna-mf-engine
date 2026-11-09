@@ -13,13 +13,13 @@ const R = new URL('../site/planner/', import.meta.url).pathname;
 const M = require(R + 'model.js'), mkt = JSON.parse(fs.readFileSync(R + 'market.json'));
 
 const N = 4000, YEARS = 50, INFL = 0.06, GOLD = 0.05;
-const RATES = [0.025, 0.03, 1 / 30, 0.035, 0.04, 0.045, 0.05, 0.06];
+const RATES = [0.025, 0.03, 1 / 30, 1 / 28, 0.04, 1 / 22, 0.05, 0.06];
 const MIXES = [35, 60];   // 35%: the Money Plan's retirement mix; 60%: a growth-tilted retirement portfolio
 
 export function table(eqPct, paths = M.paths(mkt, YEARS * 12, N, 4242)) {
   const eq = eqPct / 100, de = 1 - eq - GOLD;
   return RATES.map(w => {
-    let l30 = 0, l40 = 0, l50 = 0, keep = 0;
+    let l25 = 0, l30 = 0, l35 = 0, l40 = 0, l50 = 0, keep = 0;
     for (const p of paths) {
       let v = 1, wd = w / 12, dead = 0;
       for (let t = 0; t < YEARS * 12; t++) {
@@ -27,12 +27,14 @@ export function table(eqPct, paths = M.paths(mkt, YEARS * 12, N, 4242)) {
         v = v * (1 + eq * p.e[t] + de * p.d[t] + GOLD * p.g[t]) - wd;
         if (v <= 0) { dead = t + 1; break; }
       }
+      if (!dead || dead > 300) l25++;
       if (!dead || dead > 360) l30++;
+      if (!dead || dead > 420) l35++;
       if (!dead || dead > 480) l40++;
       if (!dead) { l50++; if (v / Math.pow(1 + INFL, YEARS) >= 1) keep++; }
     }
     const pc = x => Math.round(x / paths.length * 100);
-    return { rate: Math.round(w * 1000) / 10, multiple: Math.round(1 / w * 10) / 10, last30: pc(l30), last40: pc(l40), last50: pc(l50), kept50: pc(keep) };
+    return { rate: Math.round(w * 1000) / 10, multiple: Math.round(1 / w * 10) / 10, last25: pc(l25), last30: pc(l30), last35: pc(l35), last40: pc(l40), last50: pc(l50), kept50: pc(keep) };
   });
 }
 

@@ -217,7 +217,7 @@ const STEPS=[
   h:()=>`<div id="plGoals">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
    <div class="row" style="margin-top:14px"><button type="button" class="btn" id="plAddG">Add a goal</button>
    <select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Start a business","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
-   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, in today’s money',{hint:n('expenses')?'Leave blank to use 70% of today’s expenses: '+inrS(n('expenses')*.7)+' a month':''})}${M('retireOther','Rent, pension or other income that continues in retirement, a month',{hint:'In today’s money. Reduces what your investments must pay.'})}${F('retireMult','Retirement target',{sel:[['0','Secure, set by retirement age (suggested)'],['25','25× a year\'s spending (retiring at 58 or later)'],['30','30× (retiring at 50 to 57)'],['33','33×: for life, at any age'],['40','40×: to pass it on']],full:1})}</div>`}`},
+   ${retired()?'':`<div class="pl-grid" style="margin-top:20px">${M('retireIncome','Monthly spending you will need in retirement, in today’s money',{hint:n('expenses')?'Leave blank to use 70% of today’s expenses: '+inrS(n('expenses')*.7)+' a month':''})}${M('retireOther','Rent, pension or other income that continues in retirement, a month',{hint:'In today’s money. Reduces what your investments must pay.'})}${F('retireMult','Retirement target',{sel:[['0','Secure, set by your retirement age (suggested)'],['22','22× a year\'s spending (retiring at 65 or later)'],['25','25×: the 4% rule (retiring at 60 to 64)'],['28','28× (retiring at 55 to 59)'],['30','30× (retiring at 50 to 54)'],['33','33×: for life, at any age'],['40','40×: to pass it on']],full:1})}</div>`}`},
  {t:'What you already hold',s:'Today\'s value of each. Leave out the home you live in. Rough figures are fine.',
   h:()=>`<div class="seg" role="group" aria-label="Investing already?" style="margin-top:14px"><button type="button" data-inv="yes" aria-pressed="${S.investing!=='no'}">I already invest</button><button type="button" data-inv="no" aria-pressed="${S.investing==='no'}">Not yet</button></div>
    ${S.investing==='no'?'<p class="muted" style="margin-top:14px">The plan will give you a starting mix and how much to invest each month. If you have EPF or PPF, add it; it counts towards retirement.</p><div class="pl-grid">'+M('epf','EPF / VPF')+M('ppf','PPF and Sukanya Samriddhi')+'</div>'
@@ -376,7 +376,7 @@ function compute(){const res=PM.plan(S,MKT,{nConf:900});const sim=PM.simulate(re
   let m90=null;try{if(+S.confidence<90)m90=PM.plan(Object.assign({},S,{confidence:90}),MKT,{nConf:600})}catch(e){}
   let alt=[];try{if(res.retire){const b=res.retire.spendToday;alt=[1,1.25,1.5].map(k=>{const r2=k===1?res:PM.plan(Object.assign({},S,{retireIncome:Math.round(b*k/5000)*5000}),MKT,{nConf:600});
     const g=r2.G.find(x=>x.ret);return {inc:r2.retire.spendToday,net:r2.retire.monthlyToday,sip:g.sip,need:r2.need,ok:r2.need<=r2.avail+1,corpus:r2.retire.corpus}})}}catch(e){}
-  let ages=[];try{if(res.retire&&res.retire.y>0)ages=[25,30,33,40].map(k=>{const r2=k===res.retire.multiple?res:PM.plan(Object.assign({},S,{retireMult:k}),MKT,{nConf:500});const g=r2.G.find(x=>x.ret);return {k,sip:g.sip,need:r2.need,corpus:r2.retire.corpus}})}catch(e){}
+  let ages=[];try{if(res.retire&&res.retire.y>0)ages=[...new Set([22,25,28,33,40,res.retire.multiple])].sort((a,b)=>a-b).map(k=>{const r2=k===res.retire.multiple?res:PM.plan(Object.assign({},S,{retireMult:k}),MKT,{nConf:500});const g=r2.G.find(x=>x.ret);return {k,sip:g.sip,need:r2.need,corpus:r2.retire.corpus}})}catch(e){}
   return {res,sim,m90,alt,ages}}
 function dashboard(){
   $('#plBody').innerHTML=`<div class="card"><p>Running your plan through 19 years of real market months…</p></div>`;
@@ -403,10 +403,10 @@ function flagsOf(m){
 const why=t=>`<details class="pl-why"><summary></summary><p>${t}</p></details>`;
 const CF=c=>({50:'1 in 2',75:'3 in 4',90:'9 in 10'})[+c]||`${+c} in 100`;
 const RCF=s=>CF(PM.retireConf(s));   // retirement aims 10 points lower: its 25x-40x target is itself the safety margin
-const MN={20:'Bare minimum',25:'Secure retirement',30:'Secure, retiring before 58',33:'Secure for life, any age',40:'Pass it on'};
+const MN={20:'Bare minimum',22:'Secure, retiring at 65+',25:'Secure, retiring at 60 to 64',28:'Secure, retiring at 55 to 59',30:'Secure, retiring at 50 to 54',33:'Secure for life, any age',40:'Pass it on'};
 // what the Indian market tests (swr.json) say about a corpus of k times a year's spending
 const swrRow=k=>{const T=(window.PLANNER_SWR||{mixes:{}}).mixes['35']||[];return T.find(x=>Math.abs(x.multiple-k)<.6)||{}};
-const swrTxt=k=>{const r=swrRow(k);return k>=40?`after 50 years it was still worth what it started with, in today's money, in ${r.kept50} of 100 market histories`:k>=30?`it lasted 50 years in ${r.last50} of 100 market histories`:`it lasted 30 years in ${r.last30} of 100 market histories`};
+const swrTxt=k=>{const r=swrRow(k),y=k>=40?0:k>=33?50:k>=30?40:k>=28?35:k>=25?30:25;return !y?`after 50 years it was still worth what it started with, in today's money, in ${r.kept50} of 100 market histories`:`it lasted ${y} years in ${r['last'+y]} of 100 market histories`};
 // what each extra ₹10,000 a month invested until retirement adds, in today's money (long-term mix, average returns)
 const per10k=m=>{const s=m.s,y=Math.max(1,s.retireAge-s.age),w=m.wealthMix,r=(w.eq*s.rEq+w.debt*s.rDebt+w.gold*s.rGold)/100;return PM.fvSip(10000,y,r,s.stepup/100)/Math.pow(1+s.infl/100,y)};
 // the 'freedom number': the corpus at which withdrawals of a given share a year, rising with prices, last
@@ -421,9 +421,10 @@ function freedomHtml(m,sim){
   const free=x=>x.p50-oth.filter(g=>s0.age+g.y>x.age).reduce((a,g)=>a+g.fv/Math.pow(1+s0.infl/100,g.y),0);
   const fan=(sim.fan||[]).filter(x=>x.age<=s0.retireAge), atR=fan.length?free(fan[fan.length-1]):null;
   const at=t=>{const f=fan.find(x=>free(x)>=t);return have>=t?'Already there':f?`About age ${f.age}`:`Not by ${s0.retireAge}`};
-  const L=[[20,`Lasts 30 years in ${swrRow(20).last30} of 100 market histories: not secure. A floor, not a target.`],
-    [25,`The "4% rule". Lasts 30 years in ${swrRow(25).last30} of 100. <b>Secure for retiring at 58 or later.</b>`],
-    [30,`Lasts 40 years in ${swrRow(30).last40} of 100. Secure for retiring between 50 and 57.`],
+  const L=[[20,`Lasts 25 years in ${swrRow(20).last25} of 100 market histories: not secure. A floor, not a target.`],
+    [22,`Lasts 25 years in ${swrRow(22).last25} of 100. Secure for retiring at 65 or later.`],
+    [25,`The "4% rule". Lasts 30 years in ${swrRow(25).last30} of 100. Secure for retiring at 60 to 64.`],
+    [28,`Lasts 35 years in ${swrRow(28).last35} of 100. Secure for retiring at 55 to 59.`],
     [33,`Lasts 50 years in ${swrRow(33).last50} of 100: secure for life at any age. <b>Financial freedom.</b>`],
     [40,`After 50 years still worth what it started with, in today's money, in ${swrRow(40).kept50} of 100: money to pass on.`]];
   const rs=L.map(([x,t])=>{const tg=A*x,pc=Math.min(1,have/tg),me=x===R.multiple;return `<tr${me?' style="background:rgba(11,74,60,.09)"':''}><td class="l"><b>${x}×</b> <span class="muted" style="font-size:12px">(${(100/x).toFixed(1).replace(/\.0$/,'')}% a year)</span>${me?'<br><b style="font-size:12px;color:var(--teal)">Your target</b>':''}</td><td class="num">${inrS(tg)}</td><td class="num">${Math.round(pc*100)}%</td><td class="l">${at(tg)}</td><td class="l" style="font-size:13px">${t}</td></tr>`}).join('');
@@ -480,7 +481,7 @@ function retireHtml(m,sim,ages){
   <p class="muted" style="font-size:12.5px;margin-top:6px">From 800 sequences of real market months since 2007, saving until ${s.retireAge} and spending after it.</p>
 
   ${ageRows?`<h3 style="margin-top:22px">Choose your retirement target</h3>
-  <p style="font-size:14.5px;margin-top:6px;max-width:80ch">A bigger corpus costs more each month now, and is the surest protection: it does not depend on guessing how long you will live. 25× suits retiring at 58 or later; retire earlier and the money must last longer, so aim for 30× or 33×; 40× leaves the corpus to the next generation.</p>
+  <p style="font-size:14.5px;margin-top:6px;max-width:80ch">A bigger corpus costs more each month now, and is the surest protection: it does not depend on guessing how long you will live. The earlier you stop, the longer the money must last: 22× suits retiring at 65 or later, 25× at 60 to 64, 28× at 55 to 59, 30× at 50 to 54 and 33× earlier; 40× leaves the corpus to the next generation.</p>
   <div class="tablewrap" style="margin-top:10px"><table><thead><tr><th class="l">Target</th><th>Corpus at ${s.retireAge}</th><th>In today's money</th><th>Retirement SIP</th><th>All goals together</th><th class="l">With your surplus of ${inr(sur)}</th></tr></thead><tbody>${ageRows}</tbody></table></div>`:''}
 
   <h3 style="margin-top:22px">Your SWP: how the money is withdrawn, and how long it lasts</h3>

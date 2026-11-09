@@ -101,12 +101,15 @@
   // monthly spending in retirement, in today's rupees: what the investor entered, else retireExpPct of today's expenses
   const retireSpend = s => s.retireIncome > 0 ? s.retireIncome : s.expenses * s.retireExpPct / 100;
   const retireMonthly = s => Math.max(0, retireSpend(s) - s.retireOther);   // what the corpus itself must pay
-  // the retirement target is a multiple of what the investments must pay in a year (site/planner/swr.json, tested on
-  // Indian markets since 2007 at 6% inflation): 25x (4% a year) lasted 30 years in 95 of 100 sequences; for a longer
-  // retirement the share taken has to be lower: 30x (about 3.3%) from 50-57, 33x (3%, lasted 50 years in 95 of 100)
-  // before 50. 40x (2.5%) keeps the corpus's value for the next generation. Chosen by the investor, or by retirement age.
+  // the retirement target is a multiple of what the investments must pay in a year, set by how many years the money
+  // must last (to age 90 unless the investor plans longer). From site/planner/swr.json (Indian markets since 2007, 6%
+  // inflation, 35% equity), each lasted its span in 95 of 100 market histories: 22x for 25 years, 25x (the 4% rule)
+  // for 30, 28x for 35, 30x for 40, 33x for 50. 40x keeps the corpus's value for the next generation.
+  // Chosen by the investor, or set by these spans.
   const retireConf = s => Math.max(50, s.confidence - 10);
-  const retireMultiple = (s, retireAge) => s.retireMult > 0 ? s.retireMult : ((retireAge == null ? s.retireAge : retireAge) >= 58 ? 25 : (retireAge == null ? s.retireAge : retireAge) >= 50 ? 30 : 33);
+  const retireYears = (s, retireAge) => Math.max(90, s.lifeExp || 90) - (retireAge == null ? s.retireAge : retireAge);
+  const retireMultiple = (s, retireAge) => { if (s.retireMult > 0) return s.retireMult; const n = retireYears(s, retireAge);
+    return n <= 25 ? 22 : n <= 30 ? 25 : n <= 35 ? 28 : n <= 40 ? 30 : 33; };
   // corpus needed at retirement: that multiple of a year's spending from the corpus, inflated to the retirement date
   function corpus(s, retireAge) {
     const infl = s.infl / 100, y = Math.max(0, retireAge - s.age);
@@ -509,6 +512,6 @@
     return hi;
   }
 
-  const api = { retireConf, retireMultiple, replay, goalInfl, swp, retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
+  const api = { retireYears, retireConf, retireMultiple, replay, goalInfl, swp, retireSpend, runRetire, RMIX, retireMonthly, corpus, mixSeries, DEFAULTS, QIDS, normalise, riskScores, goalMix, equityCap, lossLimit, profileLabel, sipFor, fvSip, plan, vehicles, simulate, sipForConf, paths };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PlannerModel = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -203,13 +203,12 @@ def guides(d, f):
         a, b = sw["mixes"]["35"], sw["mixes"]["60"]
         r = lambda t, x: next(z for z in t if abs(z["rate"] - x) < .01)
         y0 = sw["from"][:4]
-        rows = [[f"{z['multiple']:g}× ({z['rate']:g}%)", f"{z['last30']}%", f"{z['last40']}%", f"{z['last50']}%", f"{z['kept50']}%",
-                 f"{r(b, z['rate'])['last50']}%"] for z in a]
+        rows = [[f"{z['multiple']:g}× ({z['rate']:g}%)"] + [f"{z[k]}%" for k in ("last25", "last30", "last35", "last40", "last50", "kept50")] for z in a]
         G.append(dict(
             slug="4-percent-rule-india",
             title="The 4% rule in India: how big a corpus lasts for life",
             seo="The 4% rule in India: retirement corpus, safe withdrawal rate and your freedom number",
-            desc=f"Does taking 4% a year from a retirement corpus work in India? Tested on Indian market returns since {y0}: how long 25×, 33× and 40× your yearly spending last, and which to aim for.",
+            desc=f"Does taking 4% a year from a retirement corpus work in India? Tested on Indian market returns since {y0}: how long 22× to 40× your yearly spending last, and which to aim for.",
             answer=(f"The 4% rule says: take 4% of your corpus in the first year of retirement, raise it with inflation every year, and the money should last about 30 years. "
                     f"That needs a corpus of 25 times your yearly spending. On Indian market returns since {y0}, with inflation at {sw['inflation']:g}%, 25× lasted 30 years in {r(a, 4)['last30']} of 100 cases "
                     f"but 50 years in only {r(a, 4)['last50']}, so it is not 'forever' in India. For money that lasts for life, even if you stop work early, aim for about 33× (3% a year): "
@@ -218,15 +217,17 @@ def guides(d, f):
                 ("Where the 4% rule comes from", ["It comes from US research in the 1990s (William Bengen, then the 'Trinity study'): a mix of US shares and bonds, from which 4% a year rising with inflation survived every 30-year period in US history.",
                                                   f"India is different. Inflation has been higher (we assume {sw['inflation']:g}% a year), so the withdrawal grows faster, and debt returns are only a little above inflation. Both make a given rate run out sooner."]),
                 ("The multiples, in plain words", ["ul", ["Yearly spending means what your investments must pay: your expenses in retirement, less any rent or pension. Not your house, not your income.",
-                                                          f"20× (5% a year): lasted 30 years in {r(a, 5)['last30']} of 100 cases. Enough only for a late, short retirement.",
-                                                          f"25× (4% a year): lasted 30 years in {r(a, 4)['last30']} of 100, and 40 years in {r(a, 4)['last40']}. Suits retiring at about 60.",
+                                                          f"20× (5% a year): lasted 25 years in {r(a, 5)['last25']} of 100 cases. A floor, not a target.",
+                                                          f"22× (4.5% a year): lasted 25 years in {r(a, 4.5)['last25']} of 100. Suits retiring at 65 or later.",
+                                                          f"25× (4% a year): lasted 30 years in {r(a, 4)['last30']} of 100, but 40 years in only {r(a, 4)['last40']}. Suits retiring at 60 to 64.",
+                                                          f"28× (3.6% a year): lasted 35 years in {r(a, 3.6)['last35']} of 100. Suits retiring at 55 to 59; about 30× from 50 to 54.",
                                                           f"33× (3% a year): lasted 50 years in {r(a, 3)['last50']} of 100. Enough for life at almost any retirement age: a sensible 'freedom number'.",
                                                           f"40× (2.5% a year): after 50 years the corpus was still worth what it started with, in today's money, in {r(a, 2.5)['kept50']} of 100. This is the number for passing wealth on."]]),
-                ("Tested on Indian markets", ["table", ["Corpus (year-1 withdrawal)", "Lasts 30 yrs", "40 yrs", "50 yrs", "Value kept, 50 yrs", "50 yrs, 60% equity"], rows,
+                ("Tested on Indian markets", ["table", ["Corpus (year-1 withdrawal)", "Lasts 25 yrs", "30 yrs", "35 yrs", "40 yrs", "50 yrs", "Value kept, 50 yrs"], rows,
                                              f"{sw['sequences']:,} sequences of {sw['years']} years built from actual monthly returns of Indian equity, debt and gold funds, {sw['from']} to {sw['to']} (2008 and 2020 included), "
-                                             f"in random 12-month blocks. Portfolio: 35% equity, 5% gold, 60% debt, rebalanced monthly; the last column uses 60% equity. The withdrawal rises {sw['inflation']:g}% a year. Fund returns are after fund costs, before tax."]),
+                                             f"in random 12-month blocks. Portfolio: 35% equity, 5% gold, 60% debt, rebalanced monthly. The withdrawal rises {sw['inflation']:g}% a year. Fund returns are after fund costs, before tax."]),
                 ("Why aim for a number, not a probability", ["A plan that says 'your money lasts until 82 in 4 out of 5 markets' asks you to bet on how long you will live and on what markets will do. A target asks a simpler question: have you built 25 times what your investments must pay in a year? If yes, the withdrawal is a small enough share of the corpus to survive bad decades; if not, you know exactly how far there is to go.",
-                                                             "So retirement is planned to a number: 25× for retiring at 58 or later, about 30× from 50 to 57, 33× to be free at any age, 40× to pass it on. 20× is a floor, not a target."]),
+                                                             "So retirement is planned to a number, set by how long the money must last (to 90): 22× for retiring at 65 or later, 25× at 60 to 64, 28× at 55 to 59, 30× at 50 to 54, 33× to be free at any age, 40× to pass it on. 20× is a floor, not a target."]),
                 ("If the number looks out of reach", ["ul", ["Start with the gap in rupees a month. That is the number to work towards, not a reason to give up.",
                                                              "Grow the income: ask for the raise, change jobs, learn the skill that pays more, build a second income. Over a career this moves the target more than any fund choice.",
                                                              "Raise your SIP with every increase in income, even by 5% a year.",

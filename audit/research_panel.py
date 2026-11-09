@@ -37,6 +37,31 @@ for r in allf.itertuples():
     p=f'data/{r.src}/{r.code}.csv'
     try: navs[r.code]=pd.read_csv(p,parse_dates=['date']).set_index('date')['nav']
     except FileNotFoundError: pass
+import numpy as np
+STYLE = {"mom": "NIFTY200 MOMENTUM 30", "val": "NIFTY200 VALUE 30", "lowvol": "NIFTY100 LOW VOLATILITY 30",
+         "qual": "NIFTY100 QUALITY 30", "small": "NIFTY SMALLCAP 250", "mid": "NIFTY MIDCAP 150", "n50": "NIFTY 50"}
+STYLE = {k: v for k, v in STYLE.items() if v in tri}
+print("style indices available:", STYLE, flush=True)
+def _ret(s, t, months):
+    s = s[:t]
+    if len(s) < 2: return np.nan
+    a = s[:t - pd.DateOffset(months=months)]
+    return s.iloc[-1] / a.iloc[-1] - 1 if len(a) else np.nan
+def extra(nav, b, t):
+    """Momentum over 1/3/6/12 months (fund minus benchmark), market condition, and style exposure from weekly returns
+    over 3 years: each style index's return over the benchmark regressed on the fund's return over the benchmark."""
+    e = {}
+    for mo in (1, 3, 6, 12):
+        e[f"mom_{mo}m"] = _ret(nav, t, mo) - _ret(b, t, mo)
+    e["mkt_12m"] = _ret(b, t, 12)                      # market condition on the date
+    bb = b[:t]; e["mkt_above_200d"] = float(bb.iloc[-1] > bb.iloc[-200:].mean()) if len(bb) > 200 else np.nan
+    w = lambda x: x[t - pd.DateOffset(years=3):t].resample("W-FRI").last().pct_change()
+    fw, bw = w(nav), w(b)
+    for k, name in STYLE.items():
+        sw = w(tri[name].dropna())
+        j = pd.concat([fw - bw, sw - bw], axis=1, keys=["f", "s"]).dropna()
+        e[f"style_{k}"] = float(j.f.cov(j.s) / j.s.var()) if len(j) > 100 and j.s.var() > 0 else np.nan
+    return e
 dates=pd.date_range('2012-03-31','2025-09-30',freq='QE')
 import os
 os.makedirs('audit/bt_parts_long',exist_ok=True)
@@ -51,6 +76,7 @@ for t in dates:
         b=tri[r.benchmark].dropna()
         m=fund_metrics(nav,b,t)
         if not m: continue
+        m.update(extra(nav,b,t))
         for h in (1,3,5):
             t1=t+pd.DateOffset(years=h)
             if t1>tri.index.max(): m[f'fwd_{h}y']=np.nan; continue

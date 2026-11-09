@@ -1,0 +1,28 @@
+# Rating research: builds the quarterly point-in-time backtest panel (2012-2025) with real NSE total-return indices,
+# which can only be downloaded from GitHub's runners, and commits audit/bt_metrics_long.csv back to the branch.
+# Started by changing audit/research_trigger.txt (or manually). Does not touch the website or the ratings.
+name: Rating research panel
+on:
+  push:
+    paths: ["audit/research_trigger.txt"]
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency: { group: research, cancel-in-progress: true }
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
+      - run: python audit/research_panel.py
+      - name: Commit the panel
+        run: |
+          git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
+          gzip -kf audit/bt_metrics_long.csv
+          git add -f audit/bt_metrics_long.csv.gz audit/dead_meta.csv && git commit -m "Research panel $(date -u +%F): quarterly 2012-2025, real TRI" || echo "nothing to commit"
+          for i in 1 2 3; do git push && exit 0; git pull --rebase origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
+          exit 1

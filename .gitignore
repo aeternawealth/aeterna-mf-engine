@@ -52,3 +52,5 @@ site/dist/preview/
 audit/bt_parts/
 audit/bt_parts_long/
 audit/bt_metrics_long.csv
+# 38 MB of demo assets; restore with: npx skills experimental_install (reads skills-lock.json)
+.claude/skills/design-taste-frontend/

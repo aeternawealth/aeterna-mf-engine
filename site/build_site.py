@@ -133,6 +133,7 @@ TAX_TEXT = {"equity": "Taxed as an equity fund: gains on units held over a year 
             "other": "Taxed as a non-equity, non-debt fund: gains on units held over two years at 12.5%; within two years, at your slab rate.",
             "debt": "Taxed at your income-tax slab rate on all gains, however long you hold (more than 65% of the fund is in debt)."}
 
+RET_RANK = {}   # (code, period) -> (rank by return over the index, funds ranked)
 RH = {}   # rating history per scheme code, from outputs/latest/rating_history.json (written by the monthly run)
 RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B','C','Unrated'],Y={'A+':26,'A':62,'B':98,'C':134,'Unrated':168},CL={'A+':'var(--t-ap)','A':'var(--t-a)','B':'var(--t-b)','C':'var(--t-c)','Unrated':'var(--t-u)'};
  const W=el.clientWidth<560?420:760,L=W<500?58:64,R=14,n=H.length,x=i=>L+(n>1?i/(n-1):.5)*(W-L-R),mo=m=>{const[a,b]=m.split('-');return new Date(+a,+b-1,1).toLocaleDateString('en-IN',{month:'short',year:'2-digit'})};
@@ -467,6 +468,18 @@ def main():
     if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
         shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
     (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
+    # rank by return over the index in each period, within the peer group and plan: what the fund page's returns
+    # table shows (the ratings page's period view ranks a blend of return, falls, consistency and cost instead)
+    RET_RANK.clear()
+    by = {}
+    for f in funds:
+        for h in ("6M", "1Y", "3Y", "5Y"):
+            if f.get("excess_" + h) is not None:
+                by.setdefault((f.get("peer_group"), f.get("plan_type"), h), []).append(f)
+    for (pg, pl, h), g in by.items():
+        g = sorted(g, key=lambda x: -x["excess_" + h])
+        for i, x in enumerate(g):
+            RET_RANK[(x["code"], h)] = (1 + sum(1 for y in g[:i] if y["excess_" + h] > x["excess_" + h]), len(g))
     rhp = S.parent / "outputs" / "latest" / "rating_history.json"
     if rhp.exists():
         RH.update(json.loads(rhp.read_text(encoding="utf-8")))
@@ -526,8 +539,8 @@ def main():
         rows = ""
         for h, lab in (("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)
-            rk = f.get("rank_" + h)
-            rank_s = "%d / %d" % (int(rk), int(f.get("peers_" + h) or 0)) if rk is not None else "–"
+            rr = RET_RANK.get((f["code"], h))
+            rank_s = "%d / %d" % rr if rr else "–"
             idx_s = pct(r - x) if r is not None and x is not None else "–"
             cls = "pos" if (x or 0) > 0 else ("neg" if x is not None else "")
             rows += (f"<tr><td class='l'>{lab}</td><td class='num'>{pct(r)}</td><td class='num'>{idx_s}</td>"
@@ -635,8 +648,8 @@ def main():
 {review_status(f, RH.get(str(f["code"])))}
 {rh_html}
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
-<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>
-<p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends.</p>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>
 {liq_html}
 {range_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>

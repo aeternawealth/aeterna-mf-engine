@@ -467,15 +467,25 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 @media (prefers-reduced-motion:reduce){.pf-goals i{transition:none}}
 
 /* ---- opening-screen options, chosen with ?hero=a|b|c ---- */
+.lede-short{display:none}
 @media (min-width:1000px){
- /* a: everything on the first screen */
- [data-hero="a"] .hero{padding-block:34px 40px}
- [data-hero="a"] .hero-top{max-width:none;margin-bottom:26px}
- [data-hero="a"] .hero h1{font-size:clamp(38px,4.1vw,58px)}
- [data-hero="a"] .hero-top .lede{margin-top:14px;max-width:96ch;font-size:17px}
- [data-hero="a"] .hero .actions{margin-top:20px}[data-hero="a"] .hero .actions .btn{padding:11px 18px;font-size:15px}
- [data-hero="a"] .strip-main{padding:18px 22px 10px}[data-hero="a"] .strip-head{margin-bottom:10px}[data-hero="a"] .strip-side{padding:18px 22px;gap:10px}
- [data-hero="a"] .strip-side p.muted{display:none}[data-hero="a"] .ss-rows div{padding:7px 0}
+ /* a: statement and the whole chart on the first screen; the panel ends at the foot of the screen */
+ [data-hero="a"] .hero{padding-block:48px 72px}
+ [data-hero="a"] .hero>.wrap{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:calc(100svh - 64px - 48px - 28px + 150px)}
+ [data-hero="a"] .hero-top{max-width:none;margin-bottom:36px}
+ [data-hero="a"] .hero h1{font-size:clamp(40px,4.3vw,62px)}
+ [data-hero="a"] .hero-top .lede{display:none}
+ [data-hero="a"] .hero-top .lede-short{display:block;margin-top:16px;font-size:18px;max-width:none}
+ [data-hero="a"] .hero .actions{margin-top:26px}
+ [data-hero="a"] .strip{max-height:600px}
+ [data-hero="a"] .strip-main{display:flex;flex-direction:column;padding:26px 30px 20px}
+ [data-hero="a"] .strip-hint{display:none}
+ [data-hero="a"] #strip{margin-block:auto}
+ [data-hero="a"] .strip-side{padding:30px 28px;gap:20px;justify-content:center}
+ [data-hero="a"] .strip-side p.muted,[data-hero="a"] .ss-rows div:nth-child(n+2){display:none}
+ [data-hero="a"] .strip-side .btn{margin-top:0}
+ [data-hero="a"] .ss-rows div{border-bottom:1px solid var(--rule);padding:14px 0}
+ [data-hero="a"] .hero .facts{height:70px;margin-top:80px;align-content:center}
  /* b: statement on the left, chart on the right */
  [data-hero="b"] .hero{padding-block:56px 56px}
  [data-hero="b"] .hero>.wrap{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:28px 52px;align-items:center}
@@ -554,13 +564,14 @@ input,select,textarea,progress{accent-color:var(--teal)}
     <div class="hero-top">
       <h1>Wealth built to last, <em>chosen with numbers.</em></h1>
       <p class="lede">Mutual funds, PMS, AIFs, bonds and unlisted shares, chosen and reviewed by a team of chartered accountants, advocates and wealth professionals. We measure every equity fund in India against its index, every weekday, so each fund you hold has to earn its place.</p>
+      <p class="lede lede-short">Mutual funds, PMS, AIFs, bonds and unlisted shares, with every fund measured against its index.</p>
       <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="/invest/">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
     </div>
     <figure class="strip" id="stripFig">
       <div class="strip-main">
         <div class="strip-head"><div class="tabs" id="stripTabs" role="tablist" aria-label="Category"></div><span class="live"><i></i><span id="stripAsOf"></span></span></div>
         <b class="strip-title" id="stripTitle"></b>
-        <p class="muted" style="font-size:13.5px;margin-top:4px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. <span class="hover-hint">Hover to see which, click to open.</span><span class="tap-hint">Tap a dot to open the fund.</span></p>
+        <p class="muted strip-hint" style="font-size:13.5px;margin-top:4px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. <span class="hover-hint">Hover to see which, click to open.</span><span class="tap-hint">Tap a dot to open the fund.</span></p>
         <div id="strip" style="margin-top:8px"></div>
       </div>
       <aside class="strip-side" id="stripSum"></aside>

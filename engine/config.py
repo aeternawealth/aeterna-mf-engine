@@ -4,6 +4,7 @@ Every number the engine produces is computed deterministically in Python from
 public data. The weights below are the "house view" and are meant to be
 reviewed against the walk-forward backtest (backtest.py) each quarter.
 """
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -178,11 +179,32 @@ ACTIVE_EQUITY_PROTOCOL = {
     "turnover_1m":          ("Portfolio", 1, False),
 }
 
+V3_ACTIVE_EQUITY_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)   # kept for reference and the backtest
+
+# v4 (Nov 2026, audit/research_monthly.py): the inputs that predicted the next 1 month to 3 years over the benchmark in
+# both 2012-18 and 2019-26 (walk-forward, monthly, closed funds included). Long-run quality measures (information
+# ratio, alpha, Sharpe, Sortino, capture ratio, hit rates) predicted in 2012-18 and then flipped, so they are shown on
+# fund pages but carry no weight. A+ in 2019-26: 56% beat the benchmark next year (all funds 48%; v3 45%).
+LEAN_EQUITY_PROTOCOL = {
+    "mom_1m":            ("Momentum", 12.5, True),     # fund minus benchmark TRI return, last month
+    "mom_3m":            ("Momentum", 12.5, True),
+    "mom_6m":            ("Momentum", 12.5, True),
+    "mom_12m":           ("Momentum", 12.5, True),
+    "style_small":       ("Size tilt", 15, True),      # weekly slope on Nifty Smallcap 250 over the benchmark, 3Y
+    "style_mid":         ("Size tilt", 15, True),      # weekly slope on Nifty Midcap 150 over the benchmark, 3Y
+    "upside_capture_3y": ("Upside capture", 20, True),
+}
+# Which equity model rates the funds. "v3" is the live model; "v4" is the candidate, run on the staging branch only
+# (the data workflows set AETERNA_EQUITY_MODEL from the branch) until it is approved for the live site.
+EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v3")
+ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL == "v4" else V3_ACTIVE_EQUITY_PROTOCOL
+
 SMALL_MID_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
-SMALL_MID_PROTOCOL.update({
-    "aum_capacity_penalty": ("Portfolio", 2, False),   # capacity: very large small/mid funds struggle to deploy
-    "beyond500_pct": ("Portfolio", 2, False),          # liquidity risk
-})
+if EQUITY_MODEL != "v4":   # v4: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
+    SMALL_MID_PROTOCOL.update({
+        "aum_capacity_penalty": ("Portfolio", 2, False),   # capacity: very large small/mid funds struggle to deploy
+        "beyond500_pct": ("Portfolio", 2, False),          # liquidity risk
+    })
 
 THEMATIC_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
 

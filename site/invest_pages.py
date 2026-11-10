@@ -25,8 +25,8 @@ CSS = """<style>
 .inv-steps li{display:grid;grid-template-columns:30px 1fr;column-gap:12px;counter-increment:st}
 .inv-steps li::before{content:counter(st);grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--teal-soft);color:var(--teal);font:600 14px/28px var(--f-mono);text-align:center}
 .inv-steps b{font:600 16px/1.3 var(--f-display);color:var(--ink)}.inv-steps span{color:var(--ink-2)}
-.inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:#fff;margin-top:34px}
-.inv-cta h2{color:#fff;font-size:24px}.inv-cta p{margin:6px 0 0;color:rgba(255,255,255,.85)}.inv-cta .btn{background:#fff;color:var(--teal);border-color:#fff}
+.inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:var(--on-teal);margin-top:34px}
+.inv-cta h2{color:var(--on-teal);font-size:24px}.inv-cta p{margin:6px 0 0;color:var(--on-teal);opacity:.86}.inv-cta .btn{background:var(--on-teal);color:var(--teal);border-color:var(--on-teal)}
 .inv-more{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 @media (max-width:520px){.inv-facts b{font-size:18px}.inv-facts>div{padding:14px}}
 @media (max-width:860px){.inv-hero{grid-template-columns:1fr;gap:22px}.inv-sec{grid-template-columns:1fr;gap:10px;padding:24px 0}}

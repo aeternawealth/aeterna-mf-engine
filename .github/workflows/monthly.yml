@@ -14,6 +14,8 @@ on:
 permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
+env:
+  AETERNA_EQUITY_MODEL: ${{ github.ref_name == 'staging' && 'v4' || 'v3' }}   # the candidate model runs on staging only
 jobs:
   rate:
     runs-on: ubuntu-latest
@@ -46,5 +48,5 @@ jobs:
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
           git add outputs data site/data site/dist && git commit -m "Monthly ratings $(date -u +%F)" || echo "nothing to commit"
           # main may have moved during the run (code pushes, the office-PC upload): rebase our data commit onto it
-          for i in 1 2 3; do git push && exit 0; git pull --rebase origin main || { git rebase --abort; exit 1; }; done
+          for i in 1 2 3; do git push && exit 0; git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
           echo "push failed 3 times"; exit 1

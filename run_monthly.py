@@ -29,6 +29,8 @@ def main():
     ap.add_argument("--no-download", action="store_true")
     ap.add_argument("--daily", action="store_true",
                     help="weekday-morning refresh: new NAVs/index -> returns & period ranks; Overall tiers frozen from the last monthly run")
+    ap.add_argument("--fresh-tiers", action="store_true",
+                    help="with --daily: re-rate Overall tiers today instead of keeping the monthly snapshot (model changes on staging)")
     ap.add_argument("--backtest", action="store_true")
     ap.add_argument("--as-of", default=None)
     ap.add_argument("--holdings-month", default=None, help="YYYY-MM (default: previous calendar month)")
@@ -110,7 +112,7 @@ def main():
     month = "latest" if a.daily else (pd.Timestamp(a.as_of) if a.as_of else tri.index.max()).strftime("%Y-%m")
     snap = C.OUT / "ratings_snapshot.csv"
     keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
-    if a.daily and snap.exists():   # Overall rating changes only monthly
+    if a.daily and snap.exists() and not a.fresh_tiers:   # Overall rating changes only monthly
         s0 = pd.read_csv(snap)
         # a category with no fund in the snapshot is new (added since the last monthly run): rate it today
         # instead of showing every fund Unrated until the next monthly run

@@ -276,6 +276,10 @@ def fit_desc(d, n=158):
     return cut[:cut.rfind(" ")].rstrip(",;:") + "…"
 
 
+THEME_JS = ('<meta name="theme-color" content="#06100d"><script>try{var t=localStorage.getItem("aw-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);'
+            'if(t==="light")document.querySelector(\'meta[name="theme-color"]\').content="#f6f8f7"}}catch(e){}</script>')
+
+
 def head(title, desc, path, extra_ld=(), og_type="website"):
     title, desc = fit_title(title), fit_desc(desc)
     url = SITE + path
@@ -287,7 +291,7 @@ def head(title, desc, path, extra_ld=(), og_type="website"):
             f'<meta property="og:url" content="{url}"><meta property="og:image" content="{SITE}/og.png"><meta property="og:locale" content="en_IN">'
             f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@AeternaWealth">'
             f'<meta name="twitter:title" content="{e(title)}"><meta name="twitter:description" content="{e(desc)}"><meta name="twitter:image" content="{SITE}/og.png">'
-            + FAVICON + "".join(jsonld(x) for x in extra_ld) + analytics_head())
+            + THEME_JS + FAVICON + "".join(jsonld(x) for x in extra_ld) + analytics_head())
 
 
 def crumbs(items):
@@ -318,9 +322,9 @@ def footer():
 
 
 def page(title, desc, path, body, ld=()):
-    return (f'<!doctype html>\n<html lang="en-IN"><head>{head(title, desc, path, ld)}'
+    return (f'<!doctype html>\n<html lang="en-IN" data-theme="dark"><head>{head(title, desc, path, ld)}'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,500;0,600;1,400&display=swap">'
+            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
             f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}</body></html>\n')
 
@@ -651,7 +655,7 @@ def main():
                                    "query-input": "required name=search_term_string"}}
     app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
-    index = ('<!doctype html>\n<html lang="en-IN"><head>'
+    index = ('<!doctype html>\n<html lang="en-IN" data-theme="dark"><head>'
              + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body

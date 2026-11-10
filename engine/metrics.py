@@ -183,6 +183,34 @@ def median_series(navs: list) -> pd.Series | None:
     return (1 + med).cumprod()
 
 
+STYLE_INDEX = {"small": "NIFTY SMALLCAP 250", "mid": "NIFTY MIDCAP 150"}
+
+
+def _ret_months(s: pd.Series, t, months: int):
+    s = s[:t]
+    a = s[:t - pd.DateOffset(months=months)]
+    return s.iloc[-1] / a.iloc[-1] - 1 if len(s) and len(a) else np.nan
+
+
+def lean_metrics(nav: pd.Series, bench: pd.Series, tri, as_of: pd.Timestamp) -> dict:
+    """Inputs of the v4 equity score (audit/research_monthly.py, Nov 2026): momentum over 1, 3, 6 and 12 months (fund
+    return minus benchmark TRI return), and the fund's tilt towards small and mid caps: the slope of its weekly return
+    over the benchmark on each size index's weekly return over the benchmark, over 3 years. Same formulas as the
+    research panel (audit/research_panel.py), so live ratings match what was tested."""
+    m = {}
+    for mo in (1, 3, 6, 12):
+        m[f"mom_{mo}m"] = _ret_months(nav, as_of, mo) - _ret_months(bench, as_of, mo)
+    w = lambda x: x[as_of - pd.DateOffset(years=3):as_of].resample("W-FRI").last().pct_change()
+    fw, bw = w(nav), w(bench)
+    for k, name in STYLE_INDEX.items():
+        if tri is None or name not in tri:
+            continue
+        sw = w(tri[name].dropna())
+        j = pd.concat([fw - bw, sw - bw], axis=1, keys=["f", "s"]).dropna()
+        m[f"style_{k}"] = float(j.f.cov(j.s) / j.s.var()) if len(j) > 100 and j.s.var() > 0 else np.nan
+    return m
+
+
 def debt_clean(nav: pd.Series) -> pd.Series:
     """A debt fund's NAV cannot halve or double in a day: such jumps are face-value changes (e.g. Rs 1,000 to
     Rs 10 units) or data slips. The day's return is set to zero and the series rebuilt."""

@@ -48,5 +48,11 @@ site/dist/favicon.svg
 site/dist/icon-512.png
 site/dist/icon-192.png
 site/dist/plan/
+site/dist/preview/
 audit/bt_parts/
 audit/bt_parts_long/
+audit/bt_metrics_long.csv
+# 38 MB of demo assets; restore with: npx skills experimental_install (reads skills-lock.json)
+.claude/skills/design-taste-frontend/
+.claude/skills/impeccable/scripts/bin/
+site/preview_home/.taste-skill/

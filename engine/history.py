@@ -14,6 +14,9 @@ closet indexing) are not applied to past months."""
 from __future__ import annotations
 
 import json
+import multiprocessing as mp
+import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -73,7 +76,18 @@ def _rows(out: pd.DataFrame, month: str) -> pd.DataFrame:
     return o
 
 
-def update(u, navs, tri, current: pd.DataFrame | None = None, months: int = HISTORY_MONTHS, log=print, liquid=None, bond=None, ter=None, aum=None) -> pd.DataFrame:
+_W = {}   # what each worker process needs, shared by fork rather than pickled
+
+
+def _one(t):
+    from .rank import rank_universe
+    w = _W
+    out = rank_universe(w["eq"], w["navs"], w["tri"], as_of=t, ter=w["ter"], aum=w["aum"], log=lambda *a, **k: None, liquid=w["liquid"], bond=w["bond"])
+    return _rows(out, t.strftime("%Y-%m"))
+
+
+def update(u, navs, tri, current: pd.DataFrame | None = None, months: int = HISTORY_MONTHS, log=print, liquid=None, bond=None, ter=None, aum=None,
+           budget_min: float | None = None) -> pd.DataFrame:
     """Add the missing month-ends (and the current run as its own month) to the history file."""
     from .rank import rank_universe
     hist = pd.read_csv(HIST, low_memory=False) if HIST.exists() else pd.DataFrame(columns=KEEP + ["month"])
@@ -83,9 +97,29 @@ def update(u, navs, tri, current: pd.DataFrame | None = None, months: int = HIST
     if todo:
         log(f"  rating history: rating {len(todo)} past month-ends ({todo[0].date()} .. {todo[-1].date()})")
     parts = [hist]
-    for t in todo:
-        out = rank_universe(eq, navs, tri, as_of=t, ter=ter, aum=aum, log=lambda *a, **k: None, liquid=liquid, bond=bond)   # today's expense ratio and AUM stand in for past ones
-        parts.append(_rows(out, t.strftime("%Y-%m")))
+    # newest months first, so a run that runs out of time still fills the part of the chart people see first;
+    # months are rated in parallel (today's expense ratio and AUM stand in for past ones), and no new month is
+    # started once the time budget is used up: the next run carries on from there
+    todo = sorted(todo, reverse=True)
+    _W.update(eq=eq, navs=navs, tri=tri, ter=ter, aum=aum, liquid=liquid, bond=bond)
+    t0, done = time.time(), []
+    budget = (budget_min or 1e9) * 60
+    if todo:
+        workers = max(1, min(len(todo), (os.cpu_count() or 2)))
+        ctx = mp.get_context("fork") if "fork" in mp.get_all_start_methods() else None
+        if ctx and workers > 1:
+            with ctx.Pool(workers) as pool:
+                pending = list(todo)
+                while pending and time.time() - t0 < budget:
+                    batch, pending = pending[:workers], pending[workers:]
+                    for r in pool.map(_one, batch):
+                        parts.append(r); done.append(r["month"].iloc[0] if len(r) else "")
+        else:
+            for t in todo:
+                if time.time() - t0 >= budget: break
+                r = _one(t); parts.append(r); done.append(t.strftime("%Y-%m"))
+        log(f"  rating history: {len(done)} of {len(todo)} months rated in {(time.time() - t0) / 60:.1f} min"
+            + ("" if len(done) == len(todo) else "; the rest on the next run"))
     if current is not None and len(current):
         cur = _rows(current[current["code"].isin(eq["code"])], pd.Timestamp(current["as_of"].iloc[0]).strftime("%Y-%m"))
         parts = [p[p["month"].astype(str) != cur["month"].iloc[0]] for p in parts] + [cur]

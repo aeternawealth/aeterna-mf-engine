@@ -138,7 +138,7 @@ def main():
         from engine import history as RH
         try:
             hist = RH.update(u, navs, tri, current=out if (not a.daily or a.fresh_tiers) else None, log=log, liquid=liquid, bond=bond,
-                             ter=ingest.load_manual("ter"), aum=ingest.load_manual("aum"))
+                             ter=ingest.load_manual("ter"), aum=ingest.load_manual("aum"), budget_min=15 if a.daily else 45)
             n = RH.site_json(hist, folder / "rating_history.json")
             log(f"  rating history: {hist['month'].nunique()} months, {n} funds")
         except Exception as e:   # the history is a display feature: never fail the ratings run for it

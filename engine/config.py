@@ -4,6 +4,7 @@ Every number the engine produces is computed deterministically in Python from
 public data. The weights below are the "house view" and are meant to be
 reviewed against the walk-forward backtest (backtest.py) each quarter.
 """
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -193,10 +194,17 @@ LEAN_EQUITY_PROTOCOL = {
     "style_mid":         ("Size tilt", 15, True),      # weekly slope on Nifty Midcap 150 over the benchmark, 3Y
     "upside_capture_3y": ("Upside capture", 20, True),
 }
-ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL
+# Which equity model rates the funds. "v3" is the live model; "v4" is the candidate, run on the staging branch only
+# (the data workflows set AETERNA_EQUITY_MODEL from the branch) until it is approved for the live site.
+EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v3")
+ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL == "v4" else V3_ACTIVE_EQUITY_PROTOCOL
 
 SMALL_MID_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
-# v4: the capacity and liquidity inputs were not in the walk-forward test, so they no longer carry weight
+if EQUITY_MODEL != "v4":   # v4: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
+    SMALL_MID_PROTOCOL.update({
+        "aum_capacity_penalty": ("Portfolio", 2, False),   # capacity: very large small/mid funds struggle to deploy
+        "beyond500_pct": ("Portfolio", 2, False),          # liquidity risk
+    })
 
 THEMATIC_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
 

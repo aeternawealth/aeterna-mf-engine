@@ -14,6 +14,8 @@ on:
 permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
+env:
+  AETERNA_EQUITY_MODEL: ${{ github.ref_name == 'staging' && 'v4' || 'v3' }}   # the candidate model runs on staging only
 jobs:
   rate:
     runs-on: ubuntu-latest

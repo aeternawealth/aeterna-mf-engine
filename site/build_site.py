@@ -133,6 +133,22 @@ TAX_TEXT = {"equity": "Taxed as an equity fund: gains on units held over a year 
             "other": "Taxed as a non-equity, non-debt fund: gains on units held over two years at 12.5%; within two years, at your slab rate.",
             "debt": "Taxed at your income-tax slab rate on all gains, however long you hold (more than 65% of the fund is in debt)."}
 
+RH = {}   # rating history per scheme code, from outputs/latest/rating_history.json (written by the monthly run)
+RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B','C','Unrated'],Y={'A+':26,'A':62,'B':98,'C':134,'Unrated':168},CL={'A+':'var(--t-ap)','A':'var(--t-a)','B':'var(--t-b)','C':'var(--t-c)','Unrated':'var(--t-u)'};
+ const W=el.clientWidth<560?420:760,L=W<500?58:64,R=14,n=H.length,x=i=>L+(n>1?i/(n-1):.5)*(W-L-R),mo=m=>{const[a,b]=m.split('-');return new Date(+a,+b-1,1).toLocaleDateString('en-IN',{month:'short',year:'2-digit'})};
+ let d='';H.forEach((h,i)=>{d+=(i?`H${x(i).toFixed(1)}V${Y[h[1]]}`:`M${x(0).toFixed(1)} ${Y[h[1]]}`)});
+ const ticks=[0,Math.round((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i);
+ el.innerHTML=`<svg viewBox="0 0 ${W} 196" role="img" aria-label="Rating each month, ${mo(H[0][0])} to ${mo(H[n-1][0])}">${T.map(t=>`<line x1="${L}" x2="${W-R}" y1="${Y[t]}" y2="${Y[t]}" stroke="var(--rule)"/><text x="${L-12}" y="${Y[t]+4}" text-anchor="end" font-size="12.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t}</text>`).join('')}
+ <path class="rh-line" pathLength="1" d="${d}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linejoin="round"/>
+ ${H.map((h,i)=>`<circle class="rh-dot${h[5]?' ch':''}" cx="${x(i).toFixed(1)}" cy="${Y[h[1]]}" r="${h[5]?6:4}" fill="${CL[h[1]]}" stroke="var(--surface)" stroke-width="1.5" style="--d:${300+i*25}ms"/>`).join('')}
+ ${ticks.map(i=>`<text x="${x(i)}" y="190" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${mo(H[i][0])}</text>`).join('')}
+ <line id="rhG" y1="14" y2="176" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhHit" x="${L-10}" y="0" width="${W-L-R+20}" height="196" fill="transparent"/></svg><div class="rh-tip" id="rhTip" aria-live="polite"></div>`;
+ const tip=document.getElementById('rhTip'),g=document.getElementById('rhG'),hit=document.getElementById('rhHit');
+ const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
+ const at=e=>{const r=hit.getBoundingClientRect();return Math.max(0,Math.min(n-1,Math.round(((e.clientX-r.left)/r.width*(W-L-R+20)-10)/(W-L-R)*(n-1))))};
+ hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
+ let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
+document.querySelectorAll('.rh-chart').forEach(rhDraw);"""
 TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
 
@@ -414,6 +430,9 @@ def main():
     if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
         shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
     (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
+    rhp = S.parent / "outputs" / "latest" / "rating_history.json"
+    if rhp.exists():
+        RH.update(json.loads(rhp.read_text(encoding="utf-8")))
     import build_pages as P
     Bm = sys.modules[__name__]
     for f in funds:
@@ -545,6 +564,20 @@ def main():
             fr = [(f"Net flow, quarter to {e(f.get('flow_quarter') or '')}", spct(f.get("flow_1q")) + " of AUM"), ("Net flow, last 4 quarters", spct(f.get("flow_4q")) + " of AUM")]
             flow_html = ('<h3 style="margin-top:28px">Money flows</h3><div class="kv" style="margin-top:8px">' + "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in fr)
                          + '</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing the change in NAV.</p>')
+        rh_html = ""
+        hh = RH.get(str(f["code"])) or []
+        if len(hh) >= 3:
+            mo = lambda m: date(int(m[:4]), int(m[5:7]), 1).strftime("%b %Y")
+            chg = [h for h in hh if h[5]][::-1][:6]
+            def chg_head(p, h):
+                rk = f"rank {p[2]} → {h[2]} of {h[3]}" if h[2] and p[2] else ""
+                return (f"{e(h[1])}, {rk}" if p[1] == h[1] else f"{e(p[1])} → {e(h[1])}" + (f" ({rk})" if rk else ""))
+            items = "".join(f"<li><b>{mo(h[0])}: {chg_head(p, h)}</b>. {e(h[5])}</li>" for h in chg for p in [hh[hh.index(h) - 1]])
+            rh_html = (f'<h2 style="margin-top:36px;font-size:26px">Rating history</h2><p class="muted" style="margin-top:8px">The rating at each month-end over the last {len(hh)} months. '
+                       'Hover or tap the chart for a month; larger dots mark a change. Months before November 2026 are rebuilt with today\'s rules, using only data available at each month-end.</p>'
+                       f'<div class="card rh-card" style="margin-top:14px"><div class="rh-chart" data-h="{e(json.dumps(hh, separators=(",", ":")))}"></div></div>'
+                       + (f'<h3 style="margin-top:18px;font-size:18px">Recent changes</h3><ul class="rh-list">{items}</ul>' if chg else '<p class="muted" style="margin-top:12px">No change of rating in this period.</p>')
+                       + f'<script>{RH_JS}</script>')
         range_html = ""
         if f.get("hist3y_n") and not arb and asset_class(f["category"]) != "Debt":
             rd = {k: f.get(k) for k in ("hist3y_worst", "hist3y_p10", "hist3y_median", "hist3y_p90", "hist3y_best", "hist3y_n", "hist3y_pos", "hist3y_gt7")}
@@ -562,6 +595,7 @@ def main():
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
+{rh_html}
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends.</p>

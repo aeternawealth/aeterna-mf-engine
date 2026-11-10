@@ -31,6 +31,8 @@ def main():
                     help="weekday-morning refresh: new NAVs/index -> returns & period ranks; Overall tiers frozen from the last monthly run")
     ap.add_argument("--fresh-tiers", action="store_true",
                     help="with --daily: re-rate Overall tiers today instead of keeping the monthly snapshot (model changes on staging)")
+    ap.add_argument("--history", action="store_true",
+                    help="with --daily: also fill and update the monthly rating history (the monthly run always does)")
     ap.add_argument("--backtest", action="store_true")
     ap.add_argument("--as-of", default=None)
     ap.add_argument("--holdings-month", default=None, help="YYYY-MM (default: previous calendar month)")
@@ -132,6 +134,15 @@ def main():
     from engine.rank import data_meta
     folder = write_outputs(out, C.OUT / month, holdings_top=hold.attrs.get("top") if len(hold) else None,
                            meta=data_meta(hmonth if len(hold) else None, tri.index.max()))
+    if not a.daily or a.history:   # monthly rating history and the reasons behind each change, for the fund pages
+        from engine import history as RH
+        try:
+            hist = RH.update(u, navs, tri, current=out if (not a.daily or a.fresh_tiers) else None, log=log, liquid=liquid, bond=bond,
+                             ter=ingest.load_manual("ter"), aum=ingest.load_manual("aum"))
+            n = RH.site_json(hist, folder / "rating_history.json")
+            log(f"  rating history: {hist['month'].nunique()} months, {n} funds")
+        except Exception as e:   # the history is a display feature: never fail the ratings run for it
+            log(f"  rating history failed: {type(e).__name__}: {e}")
     dash = dashboard.build(folder)
     if not a.daily:   # the website always reads outputs/latest
         import shutil

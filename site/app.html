@@ -488,6 +488,17 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .cc-key b{font:500 13.5px var(--f-mono);color:var(--ink)}.cc-key .cc-at{font:500 12px var(--f-mono);color:var(--ink-3);min-width:64px}
 .cc-split{display:flex;height:18px;border-radius:99px;overflow:hidden;background:var(--teal-soft)}.cc-split i{display:block;height:100%;transition:width .5s cubic-bezier(.23,1,.32,1)}
 @media (prefers-reduced-motion:reduce){.cc-line.draw{animation:none}.cc-split i{transition:none}}
+
+/* rating history on fund pages */
+.rh-card{padding:18px 18px 14px}.rh-chart svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.rh-line{stroke-dasharray:1;animation:draw 1.4s cubic-bezier(.23,1,.32,1) both}
+.rh-dot{transform-box:fill-box;transform-origin:center;animation:dotIn .6s cubic-bezier(.23,1,.32,1) var(--d,0ms) both}
+:root[data-theme="dark"] .rh-line{filter:drop-shadow(0 0 4px rgba(var(--glow),.5))}:root[data-theme="dark"] .rh-dot.ch{filter:drop-shadow(0 0 5px rgba(var(--glow),.8))}
+.rh-tip{margin-top:10px;font-size:14px;color:var(--ink-2);min-height:44px}.rh-tip b{color:var(--ink);margin-right:6px}
+.rh-tip .tier-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 2px;vertical-align:0}
+.rh-why{display:block;margin-top:4px;color:var(--ink)}
+.rh-list{margin:8px 0 0;padding-left:20px;display:grid;gap:8px;max-width:90ch;color:var(--ink-2);font-size:14.5px}.rh-list b{color:var(--ink);font-weight:500}
+@media (prefers-reduced-motion:reduce){.rh-line,.rh-dot{animation:none}}
 /* reveal on scroll (class added by script only) */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .rv.in{opacity:1;transform:none}

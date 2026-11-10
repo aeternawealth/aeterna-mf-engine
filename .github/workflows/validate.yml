@@ -10,7 +10,7 @@ on:
       models: { description: 'JSON list of models', default: '["v7","v3","v5"]' }
 permissions:
   contents: write
-concurrency: { group: validate, cancel-in-progress: true }
+concurrency: { group: "validate-${{ inputs.models || 'all' }}", cancel-in-progress: true }
 jobs:
   rate:
     runs-on: ubuntu-latest

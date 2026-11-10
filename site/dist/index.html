@@ -19,7 +19,7 @@
   --logo-ink:#eaf3ef; --logo-green:#5fd6b3;
   --paper:#06100d; --surface:#0c1a16; --ink:#eaf3ef; --ink-2:#abbdb6; --ink-3:#83978f; --rule:#1c3029; --band:#09150f;
   --teal:#62d6b2; --teal-2:#93e6cd; --teal-soft:#10302a; --brass:#dfb96f;
-  --good:#62d79c; --bad:#f08a83; --t-ap:#62e0b9; --t-a:#3fae93; --t-b:#cdc76c; --t-c:#e29c62; --t-u:#8c9d97;
+  --good:#62d79c; --bad:#f08a83; --t-ap:#6ff5cf; --t-a:#35c49f; --t-b:#f2dc5d; --t-c:#ff9d5e; --t-u:#a3b4ae;
   --on-teal:#06100d; --tier-ink:#06100d; --glow:98,214,178; --shadow:0,0,0; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
@@ -197,7 +197,7 @@ input[type=search]{flex:1 1 220px;max-width:340px}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
 .seg button{border:0;background:none;padding:9px 13px;cursor:pointer;font-size:14px;color:var(--ink-2)}
 .seg button[aria-pressed="true"]{background:var(--teal);color:var(--paper)}
-.note{border-left:3px solid var(--brass);background:var(--surface);padding:12px 16px;border-radius:0 var(--r) var(--r) 0;color:var(--ink-2);font-size:14px;max-width:90ch}
+.note{border:1px solid color-mix(in srgb,var(--brass) 45%,var(--rule));background:color-mix(in srgb,var(--brass) 7%,var(--surface));padding:12px 16px;border-radius:var(--r);color:var(--ink-2);font-size:14px;max-width:90ch}
 /* fund page */
 .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 28px}
 .kv div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--rule);font-size:14px}
@@ -308,7 +308,9 @@ h1 em{font-style:italic;font-weight:400;color:var(--teal)}
 @keyframes dotIn{from{opacity:0;transform:translate(var(--dx,0),var(--dy,0)) scale(.25)}to{opacity:1;transform:none}}
 .strip .halo{transform-box:fill-box;transform-origin:center;pointer-events:none;opacity:0;animation:halo 2.6s cubic-bezier(.2,.6,.3,1) var(--d,0ms) infinite}
 @keyframes halo{0%{opacity:.75;transform:scale(1)}70%,100%{opacity:0;transform:scale(2.6)}}
-:root[data-theme="dark"] .strip .dot.ap{filter:drop-shadow(0 0 5px rgba(var(--glow),.95))}
+.strip .dot{stroke:var(--surface);stroke-width:1.5;shape-rendering:geometricPrecision}
+:root[data-theme="dark"] .strip .dot{stroke:#0c1a16;stroke-width:1.25;filter:drop-shadow(0 0 3.5px currentColor)}
+:root[data-theme="dark"] .strip .dot.ap{filter:drop-shadow(0 0 7px currentColor)}
 .strip .idx{stroke-dasharray:1;animation:draw 1s cubic-bezier(.23,1,.32,1) both}
 @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @media (hover:hover) and (pointer:fine){.strip .dot:hover{transform:scale(1.5)}
@@ -463,6 +465,48 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 :root[data-theme="dark"] .cta-panel{border-color:#1f3a31;background:linear-gradient(180deg,#0e2019,#0a1712);box-shadow:0 0 120px -50px rgba(var(--glow),.45)}
 :root[data-theme="dark"] .cta-panel::before{background:radial-gradient(60% 130% at 50% 125%,rgba(98,214,178,.3),transparent 70%),radial-gradient(40% 80% at 85% -10%,rgba(223,185,111,.1),transparent 70%)}
 @media (prefers-reduced-motion:reduce){.pf-goals i{transition:none}}
+
+/* ---- opening-screen options, chosen with ?hero=a|b|c ---- */
+@media (min-width:1000px){
+ /* a: everything on the first screen */
+ [data-hero="a"] .hero{padding-block:34px 40px}
+ [data-hero="a"] .hero-top{max-width:none;margin-bottom:26px}
+ [data-hero="a"] .hero h1{font-size:clamp(38px,4.1vw,58px)}
+ [data-hero="a"] .hero-top .lede{margin-top:14px;max-width:96ch;font-size:17px}
+ [data-hero="a"] .hero .actions{margin-top:20px}[data-hero="a"] .hero .actions .btn{padding:11px 18px;font-size:15px}
+ [data-hero="a"] .strip-main{padding:18px 22px 10px}[data-hero="a"] .strip-head{margin-bottom:10px}[data-hero="a"] .strip-side{padding:18px 22px;gap:10px}
+ [data-hero="a"] .strip-side p.muted{display:none}[data-hero="a"] .ss-rows div{padding:7px 0}
+ /* b: statement on the left, chart on the right */
+ [data-hero="b"] .hero{padding-block:56px 56px}
+ [data-hero="b"] .hero>.wrap{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:28px 52px;align-items:center}
+ [data-hero="b"] .hero-top{text-align:left;margin:0;max-width:none}
+ [data-hero="b"] .hero h1{font-size:clamp(40px,4.4vw,64px)}
+ [data-hero="b"] .hero-top .lede{margin-left:0}[data-hero="b"] .hero .actions{justify-content:flex-start}
+ [data-hero="b"] .strip{grid-template-columns:1fr}
+ [data-hero="b"] .strip-side{border-left:0;border-top:1px solid var(--rule);flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px 22px;padding:16px 22px}
+ [data-hero="b"] .strip-side .ss-rows,[data-hero="b"] .strip-side p.muted{display:none}[data-hero="b"] .strip-side .btn{margin:0 0 0 auto}
+ [data-hero="b"] .ss-ring svg{width:60px;height:60px}[data-hero="b"] .ss-ring b{font-size:26px}
+ [data-hero="b"] .hero .facts{grid-column:1/-1;margin-top:6px}
+ /* c: the statement fills the first screen, the chart is the next one */
+ [data-hero="c"] .hero{padding-block:0 72px}
+ [data-hero="c"] .hero>.wrap{display:flex;flex-direction:column}
+ [data-hero="c"] .hero-top{min-height:calc(100svh - 64px - 132px);display:flex;flex-direction:column;justify-content:center;margin-bottom:0}
+ [data-hero="c"] .hero h1{font-size:clamp(48px,7vw,96px)}
+ [data-hero="c"] .hero .facts{order:1;margin:0 0 0;height:132px;align-content:center;border-top:1px solid var(--rule)}
+ [data-hero="c"] .strip{order:2;margin-top:64px}
+}
+
+/* ---- one theme on every page ---- */
+input,select,textarea,progress{accent-color:var(--teal)}
+::selection{background:rgba(var(--glow),.32);color:var(--ink)}
+:root[data-theme="dark"] input:not([type=range]):not([type=checkbox]):not([type=radio]),:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background-color:#081410;border-color:#1f3a31}
+:root[data-theme="dark"] input:focus,:root[data-theme="dark"] select:focus,:root[data-theme="dark"] textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(var(--glow),.18);outline:0}
+:root[data-theme="dark"] table thead th{background:#0a1712}
+:root[data-theme="dark"] tbody tr:hover td{background:rgba(var(--glow),.045)}
+:root[data-theme="dark"] main h1{text-shadow:0 0 60px rgba(var(--glow),.18)}
+:root[data-theme="dark"] .eyebrow{text-shadow:0 0 14px rgba(var(--glow),.45)}
+:root[data-theme="dark"] .btn:not(.primary){border-color:#2c6b59}
+:root[data-theme="dark"] .btn:not(.primary):hover{background:rgba(var(--glow),.08);border-color:var(--teal)}
 /* reveal on scroll (class added by script only) */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .rv.in{opacity:1;transform:none}
@@ -1064,7 +1108,8 @@ function drawStrip(cat){
   $('#stripTitle').textContent=`${cat} funds vs the ${bench.replace(/\bNIFTY\b/g,'Nifty').replace(/Nifty(\d)/,'Nifty $1')} TRI`;
   const narrow=($('#strip').clientWidth||600)<480;
   const wide=($('#strip').clientWidth||600)>=700;
-  const W=wide?920:600,H=narrow?250:wide?270:300,L=30,R=14,T=24,B=46, rad=narrow?8:wide?8.5:7, gap=narrow?17:wide?19:15;
+  const hv=document.documentElement.dataset.hero;
+  const W=wide?920:600,H=narrow?250:wide?(hv==='a'?200:270):(hv==='b'?260:300),L=30,R=14,T=24,B=46, rad=narrow?8:wide?8.5:7, gap=narrow?17:wide?19:15;
   if(!F.length){$('#strip').innerHTML='<p class="muted">No data</p>';$('#stripSum').textContent='';return}
   const v=F.map(f=>f.excess_3Y), lo=Math.min(-0.04,Math.min(...v)-0.005), hi=Math.max(0.04,Math.max(...v)+0.005);
   const x=e=>L+(e-lo)/(hi-lo)*(W-L-R);
@@ -1083,7 +1128,7 @@ function drawStrip(cat){
   <text x="${L}" y="${H-8}" font-size="12.5" fill="var(--ink-3)" font-family="Libre Franklin,sans-serif">← behind the index</text>
   <text x="${W-R}" y="${H-8}" text-anchor="end" font-size="12.5" fill="var(--ink-3)" font-family="Libre Franklin,sans-serif">ahead of the index</text>
   ${pts.filter(p=>p.f.tier==='A+').map(p=>`<circle class="halo" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="none" stroke="var(--t-ap)" stroke-width="1.5" style="--d:${1100+pts.indexOf(p)*40}ms"/>`).join('')}
-  ${pts.map((p,i)=>`<circle class="dot${p.f.tier==='A+'?' ap':''}" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="var(--${TC[p.f.tier]||'t-u'})" stroke="var(--surface)" stroke-width="1.5" data-c="${p.f.code}" style="--dx:${(x(0)-p.px).toFixed(1)}px;--dy:${(base-y(p.lane)).toFixed(1)}px;--d:${150+i*16}ms"><title>${esc(p.f.name)}: ${spct(p.f.excess_3Y)} vs index</title></circle>`).join('')}
+  ${pts.map((p,i)=>`<circle class="dot${p.f.tier==='A+'?' ap':''}" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="var(--${TC[p.f.tier]||'t-u'})" data-c="${p.f.code}" style="color:var(--${TC[p.f.tier]||'t-u'});--dx:${(x(0)-p.px).toFixed(1)}px;--dy:${(base-y(p.lane)).toFixed(1)}px;--d:${150+i*16}ms"><title>${esc(p.f.name)}: ${spct(p.f.excess_3Y)} vs index</title></circle>`).join('')}
   </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t}</span>`).join('')}</div>`;
   const ahead=F.filter(f=>f.excess_3Y>0).length, med=[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
@@ -1107,6 +1152,7 @@ function drawBT(){
 
 /* ---------- motion: numbers count up, bars and lines draw when they come on screen ---------- */
 const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+{const hv=new URLSearchParams(location.search).get('hero');if(hv)document.documentElement.dataset.hero=hv}
 const NF={int:v=>Math.round(v).toLocaleString('en-IN'),inr:v=>'₹'+Math.round(v).toLocaleString('en-IN'),cr:v=>'₹'+v.toFixed(2)+' cr',lakh:v=>'₹'+v.toFixed(1)+' lakh',pct0:v=>Math.round(v)+'%'};
 function figUp(el){const m=el.textContent.match(/^(\D*)([\d,]*\.?\d+)(.*)$/);if(!m)return;const to=+m[2].replace(/,/g,''),dp=(m[2].split('.')[1]||'').length,t0=performance.now();
   const step=t=>{const k=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-k,4);el.textContent=m[1]+(to*e).toLocaleString('en-IN',{minimumFractionDigits:dp,maximumFractionDigits:dp})+m[3];if(k<1)requestAnimationFrame(step);else el.textContent=m[0]};requestAnimationFrame(step)}

@@ -24,7 +24,7 @@ CSS = """<style>
 .inv-steps{list-style:none;padding:0;margin:0;display:grid;gap:14px;counter-reset:st}
 .inv-steps li{display:grid;grid-template-columns:30px 1fr;column-gap:12px;counter-increment:st}
 .inv-steps li::before{content:counter(st);grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--teal-soft);color:var(--teal);font:600 14px/28px var(--f-mono);text-align:center}
-.inv-steps b{font:600 16px/1.3 var(--f-display);color:var(--ink)}.inv-steps span{color:var(--ink-2)}
+.inv-steps b{font:500 16px/1.3 var(--f-display);color:var(--ink)}.inv-steps span{color:var(--ink-2)}
 .inv-cta{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:24px;border-radius:var(--r);background:var(--teal);color:var(--on-teal);margin-top:34px}
 .inv-cta h2{color:var(--on-teal);font-size:24px}.inv-cta p{margin:6px 0 0;color:var(--on-teal);opacity:.86}.inv-cta .btn{background:var(--on-teal);color:var(--teal);border-color:var(--on-teal)}
 .inv-more{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
@@ -460,7 +460,7 @@ def invest_pages(B, funds, hold, ins, urls):
         B.write(path, B.page(c["seo"], c["desc"], path, body,
                              (svc_ld, faq_ld, B.crumbs([("Invest", "/invest/"), (NAMES[slug], path)]))))
         urls.append((path, "monthly", "0.8"))
-    cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit{';grid-column:1/-1' if s == 'portfolio-review' else ''}'><b style='font:600 19px var(--f-display)'>{e(NAMES[s])}</b>"
+    cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit{';grid-column:1/-1' if s == 'portfolio-review' else ''}'><b style='font:500 19px var(--f-display)'>{e(NAMES[s])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(C[s]['lede'][:150].rsplit(' ', 1)[0])}…</span></a>" for s in PAGES)
     app = open(__file__.replace("invest_pages.py", "app.html"), encoding="utf-8").read()
     a = app.index('<h2 style="font-size:26px;margin-top:40px">How they compare</h2>')

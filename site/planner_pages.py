@@ -35,7 +35,7 @@ CSS = r"""
 .pl-err{color:var(--c-bad);font-size:14px;margin-top:10px}
 .pl-dash h2{font-size:25px;margin-top:38px}
 .pl-dash .tablewrap td,.pl-dash .tablewrap th{white-space:normal}
-.pl-k{font:600 26px var(--f-display)}
+.pl-k{font:500 26px var(--f-display)}
 .pl-meter{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--c-debt),var(--c-eq));margin:8px 0 4px}
 .pl-meter i{position:absolute;top:-5px;width:4px;height:20px;border-radius:2px;background:var(--ink);transform:translateX(-2px)}
 .pl-meter-l{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3)}
@@ -55,9 +55,9 @@ CSS = r"""
 @media (max-width:480px){.pl-ctrl{grid-template-columns:1fr}}
 .pl-sticky{position:sticky;top:64px;z-index:5;background:var(--paper);padding:10px 0;border-bottom:1px solid var(--rule)}
 .pl-tl{display:grid;gap:14px;margin-top:12px}.pl-tl>div{border-left:2px solid var(--teal-soft);padding:2px 0 2px 16px}
-.pl-tl b{display:block;font:600 16px var(--f-display)}.pl-tl ul{margin:6px 0 0;padding-left:18px;font-size:14.5px}
+.pl-tl b{display:block;font:500 16px var(--f-display)}.pl-tl ul{margin:6px 0 0;padding-left:18px;font-size:14.5px}
 .pl-busy{opacity:.55;transition:opacity .15s}
-.pl-mode{display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-height:220px}.pl-mode b{font:600 24px var(--f-display)}.pl-mode:hover{border-color:var(--teal)}
+.pl-mode{display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-height:220px}.pl-mode b{font:500 24px var(--f-display)}.pl-mode:hover{border-color:var(--teal)}
 .pl-why{margin-top:6px;font-size:13px}.pl-why summary{cursor:pointer;color:var(--teal);font-weight:600;list-style:none;display:inline}.pl-why summary::-webkit-details-marker{display:none}.pl-why summary::before{content:'Why? '}.pl-why[open] summary::before{content:'Why: '}
 .pl-why p{margin:6px 0 0;color:var(--ink-2);background:var(--band);border-radius:var(--r);padding:10px 12px;font-size:13px;line-height:1.55}
 .pl-banner{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;padding:14px 16px;border:1px dashed var(--teal);border-radius:var(--r);background:var(--surface)}
@@ -67,7 +67,7 @@ CSS = r"""
 .pl-act{margin:14px 0 0;padding:0;list-style:none;counter-reset:a;display:grid;gap:10px}
 .pl-act li{counter-increment:a;position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px 14px 54px}
 .pl-act li::before{content:counter(a);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--paper);font:600 14px/26px var(--f-mono);text-align:center}
-.pl-act b{font:600 16px var(--f-display)}.pl-act p{margin:6px 0 0;font-size:14.5px}
+.pl-act b{font:500 16px var(--f-display)}.pl-act p{margin:6px 0 0;font-size:14.5px}
 .pl-fan text{font:11px var(--f-mono);fill:var(--ink-3)}.pl-fan{overflow:hidden;display:block}
 .pl-fanwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:640px){.pl-fan{min-width:640px}.pl-fanwrap::after{content:'Swipe the chart to see all of it';display:block;font-size:12px;color:var(--ink-3);margin-top:4px}}
@@ -81,7 +81,7 @@ CSS = r"""
  .pl-printhead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;border-bottom:2px solid var(--teal);padding-bottom:8px;margin-bottom:10px}
  .pl-printhead .pl-logo{display:flex;align-items:center;gap:8px;white-space:nowrap}.pl-printhead .pl-logo svg{width:30px;height:29px;flex:none}
  .pl-printhead .pl-wm{font:600 15px/1.05 var(--f-display);color:var(--ink)}.pl-printhead .pl-wm i{display:block;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
- .pl-printhead .pl-mid{text-align:center}.pl-printhead .pl-ph-t{display:block;font:600 19px var(--f-display);color:var(--teal);white-space:nowrap}.pl-printhead .pl-ph-c{display:block;font-size:10.5px;color:var(--ink-2)}
+ .pl-printhead .pl-mid{text-align:center}.pl-printhead .pl-ph-t{display:block;font:500 19px var(--f-display);color:var(--teal);white-space:nowrap}.pl-printhead .pl-ph-c{display:block;font-size:10.5px;color:var(--ink-2)}
  .pl-printhead .pl-right{font-size:9px;line-height:1.45;color:var(--ink-3);text-align:right}
  /* Chrome and Safari ignore 'avoid page breaks' inside grid layouts, so for print the grids become plain blocks and
     side-by-side cards become inline blocks, which a browser never splits across pages */
@@ -562,7 +562,7 @@ function replayHtml(m){
   return `<h2>Your plan through real crashes</h2><p style="font-size:14.5px;margin-top:6px;max-width:80ch">Every plan meets a bad year. Here is yours, replayed month by month through what actually happened. The people who did well were the ones who kept going.</p><div class="pl-replay">${cards}</div>`;
 }
 function editHtml(m){
-  return `<details class="card pl-edit pl-noprint" id="plEditBox" style="margin-top:16px"${S._editOpen?' open':''}><summary style="cursor:pointer;font:600 18px var(--f-display)">Change your goals and numbers here</summary>
+  return `<details class="card pl-edit pl-noprint" id="plEditBox" style="margin-top:16px"${S._editOpen?' open':''}><summary style="cursor:pointer;font:500 18px var(--f-display)">Change your goals and numbers here</summary>
    <div id="plGoals" style="margin-top:10px">${S.goals.map((g,i)=>goalRow(g,i)).join('')}</div>
    <div class="row" style="margin-top:10px"><button type="button" class="btn" id="plAddG">Add a goal</button><select id="plPreset" class="pl-x" aria-label="Goal ideas"><option value="">Goal ideas…</option>${["Child's higher education","Child's wedding","Home down payment","Car","Foreign holiday","Parents' care"].map(x=>`<option>${x}</option>`).join('')}</select></div>
    <div class="pl-grid">${M('income','Monthly income')}${M('expenses','Monthly expenses')}${retired()?'':M('retireIncome','Retirement spending, today\'s money')+M('retireOther','Rent or pension in retirement')}</div>

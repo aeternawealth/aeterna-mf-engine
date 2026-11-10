@@ -309,12 +309,22 @@ HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll
              "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}})})();</script>")
 
 
+MOTION_JS = ("<script>(function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion:reduce)').matches)return;"
+             "var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);if(el.hasAttribute('data-fig'))fig(el);else el.classList.add('in')})},{rootMargin:'0px 0px -10% 0px'});"
+             "function fig(el){var m=el.textContent.match(/^(\\D*)([\\d,]*\\.?\\d+)([\\s\\S]*)$/);if(!m)return;var to=+m[2].replace(/,/g,''),dp=(m[2].split('.')[1]||'').length,t0=performance.now();"
+             "(function st(t){var k=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-k,4);el.textContent=m[1]+(to*e).toLocaleString('en-IN',{minimumFractionDigits:dp,maximumFractionDigits:dp})+m[3];if(k<1)requestAnimationFrame(st);else el.textContent=m[0]})(t0)}"
+             "[].forEach.call(document.querySelectorAll('main .card,main .tablewrap,main .note,main figure'),function(el){if(el.closest('.rv'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('rv');io.observe(el)}});"
+             "[].forEach.call(document.querySelectorAll('main .big-fig'),function(el){if(/^\\D*[\\d,]*\\.?\\d/.test(el.textContent.trim())&&!el.children.length){el.setAttribute('data-fig','');io.observe(el)}});"
+             "[].forEach.call(document.querySelectorAll('main a.card'),function(el){el.classList.add('glow')});"
+             "if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.addEventListener('pointermove',function(e){var g=e.target.closest&&e.target.closest('.glow');if(!g)return;var r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true})})();</script>")
+
+
 def footer():
     def label(u):
         return "LinkedIn" if "linkedin" in u else "Instagram" if "instagram" in u else "X" if "x.com" in u else "YouTube" if "youtube" in u else u
     soc = " · ".join('<a href="%s" target="_blank" rel="noopener me">%s</a>' % (e(u), label(u)) for u in SOCIAL)
     return f"""<footer class="site"><div class="wrap"><div class="cols">
- <div class="stack" style="gap:8px"><b style="font:600 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
+ <div class="stack" style="gap:8px"><b style="font:500 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
@@ -326,7 +336,7 @@ def page(title, desc, path, body, ld=()):
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
-            f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}</body></html>\n')
+            f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
 def write(path, text):
@@ -624,7 +634,7 @@ def main():
         urls.append((path, "daily", "0.8"))
         sub_line = (f"{len(L)} plans · {beat_l} of {len(lq)} beat liquid funds after tax over 3Y" if arbc and lq else
                     f"{len(L)} plans · {beat} of {len(e3)} beat the index over 3Y" if e3 and not arbc else f"{len(L)} plans")
-        cat_cards.append((asset_class(c), f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{sub_line}</span></a>"))
+        cat_cards.append((asset_class(c), f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{e(c)}</b><span class='muted' style='font-size:14px'>{sub_line}</span></a>"))
 
     hub_sections = ""
     for ac, blurb in ASSET_CLASSES:
@@ -638,7 +648,7 @@ def main():
 <h1 style="font-size:clamp(30px,4vw,44px)">Mutual funds in India, compared</h1>
 <p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right yardstick and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
 {hub_sections}
-<div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:600 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
+<div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:500 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
 <p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/#method">how the ratings work</a>.</p>
 </div></section>"""

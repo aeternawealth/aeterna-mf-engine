@@ -299,7 +299,7 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
         B.write(path, B.page(g["seo"] + " | Aeterna Wealth", g["desc"], path, body,
                              (art, faq_ld, B.crumbs([("Learn", "/learn/"), (g["title"], path)]))))
         urls.append((path, "weekly", "0.8"))
-    cards = "".join(f"<a class='card stack sol' href='/learn/{g['slug']}/' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 19px/1.3 var(--f-display)'>{e(g['title'])}</b>"
+    cards = "".join(f"<a class='card stack sol' href='/learn/{g['slug']}/' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 19px/1.3 var(--f-display)'>{e(g['title'])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(g['desc'][:140].rsplit(' ', 1)[0])}…</span></a>" for g in gs)
     body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <div class="eyebrow">Learn</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Investor guides</h1>

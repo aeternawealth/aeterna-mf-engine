@@ -162,7 +162,7 @@ CALCS = [
 
 
 def calculator_pages(B, urls, calc_js):
-    cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:600 18px var(--f-display)'>Money Plan</b><span class='muted' style='font-size:14px'>How much to invest, and where, for each goal; what to change in what you hold; how long retirement money lasts.</span></a>"]
+    cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:500 18px var(--f-display)'>Money Plan</b><span class='muted' style='font-size:14px'>How much to invest, and where, for each goal; what to change in what you hold; how long retirement money lasts.</span></a>"]
     for c in CALCS:
         path = f"/calculators/{c['id']}/"
         others = " · ".join(f"<a href='/calculators/{o['id']}/'>{o['name']}</a>" for o in CALCS if o is not c)
@@ -188,8 +188,8 @@ def calculator_pages(B, urls, calc_js):
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in c["faq"]]}
         B.write(path, B.page(c["title"], c["desc"], path, body, (app_ld, faq_ld, B.crumbs([("Calculators", "/calculators/"), (c["name"], path)]))))
         urls.append((path, "monthly", "0.8"))
-        cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>{c['name']}</b><span class='muted' style='font-size:14px'>{B.e(c['desc'].split(': ', 1)[-1][:120])}</span></a>")
-    cards.append("<a class='card stack sol' href='/#tools-sipreal' style='gap:6px;text-decoration:none;color:inherit'><b style='font:600 18px var(--f-display)'>SIP backtest on real NAVs</b><span class='muted' style='font-size:14px'>What a SIP in actual funds of a category would be worth today, from any start month.</span></a>")
+        cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{c['name']}</b><span class='muted' style='font-size:14px'>{B.e(c['desc'].split(': ', 1)[-1][:120])}</span></a>")
+    cards.append("<a class='card stack sol' href='/#tools-sipreal' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>SIP backtest on real NAVs</b><span class='muted' style='font-size:14px'>What a SIP in actual funds of a category would be worth today, from any start month.</span></a>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Financial calculators</h1>
 <p class="lede" style="margin-top:12px">Free calculators for the questions families ask most: SIPs, goals, retirement income, loans, inflation and capital-gains tax. Each one shows how it is calculated.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""
@@ -446,7 +446,7 @@ def insight_pages(B, ins, urls, as_of):
         B.write(path, B.page(f"{i['title']} | Aeterna Wealth insights", i["text"][:300], path, body,
                              (art, B.crumbs([("Insights", "/insights/"), (i["title"], path)]))))
         urls.append((path, "daily", "0.6"))
-        cards.append(f"<a class='card stack' href='{path}' style='gap:8px;text-decoration:none;color:inherit'><div class='big-fig'>{B.e(i['figure'])}</div><b style='font:600 18px/1.3 var(--f-display)'>{B.e(i['title'])}</b><span class='muted' style='font-size:14px'>{B.e(i['text'][:160])}…</span></a>")
+        cards.append(f"<a class='card stack' href='{path}' style='gap:8px;text-decoration:none;color:inherit'><div class='big-fig'>{B.e(i['figure'])}</div><b style='font:500 18px/1.3 var(--f-display)'>{B.e(i['title'])}</b><span class='muted' style='font-size:14px'>{B.e(i['text'][:160])}…</span></a>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Indian mutual funds in numbers</h1>
 <p class="lede" style="margin-top:12px">Facts worked out from our own data every weekday: what SIPs have earned, how many funds beat their index, and what costs add up to. Last updated {B.dmy(ins.get('as_of') or as_of)}.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""

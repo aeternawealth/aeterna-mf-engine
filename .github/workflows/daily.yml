@@ -19,7 +19,7 @@ permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
 env:
-  AETERNA_EQUITY_MODEL: ${{ github.ref_name == 'staging' && 'v5' || 'v3' }}   # the candidate model runs on staging only
+  AETERNA_EQUITY_MODEL: v7   # a model per equity category (Method page); set v3 here to return to the old ratings
 jobs:
   refresh:
     runs-on: ubuntu-latest

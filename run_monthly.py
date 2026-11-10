@@ -113,7 +113,7 @@ def main():
         out = out.merge(fl, on="pair_key", how="left")
     month = "latest" if a.daily else (pd.Timestamp(a.as_of) if a.as_of else tri.index.max()).strftime("%Y-%m")
     snap = C.OUT / "ratings_snapshot.csv"
-    keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
+    keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped", "market_mode", "behind_index_3y"] + [c for c in out.columns if c.startswith("pillar_")]
     if a.daily and snap.exists() and not a.fresh_tiers:   # Overall rating changes only monthly
         s0 = pd.read_csv(snap)
         # a category with no fund in the snapshot is new (added since the last monthly run): rate it today

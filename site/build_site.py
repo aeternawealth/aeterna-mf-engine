@@ -140,12 +140,13 @@ RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B'
  let d='';H.forEach((h,i)=>{d+=(i?`H${x(i).toFixed(1)}V${Y[h[1]]}`:`M${x(0).toFixed(1)} ${Y[h[1]]}`)});
  const ticks=[0,Math.round((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i);
  el.innerHTML=`<svg viewBox="0 0 ${W} 196" role="img" aria-label="Rating each month, ${mo(H[0][0])} to ${mo(H[n-1][0])}">${T.map(t=>`<line x1="${L}" x2="${W-R}" y1="${Y[t]}" y2="${Y[t]}" stroke="var(--rule)"/><text x="${L-12}" y="${Y[t]+4}" text-anchor="end" font-size="12.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t}</text>`).join('')}
+ ${H.map((h,i)=>h[6]==='after a fall'?`<rect x="${(x(i)-(W-L-R)/Math.max(1,n-1)/2).toFixed(1)}" y="12" width="${((W-L-R)/Math.max(1,n-1)).toFixed(1)}" height="166" fill="var(--brass)" opacity=".09"/>`:'').join('')}
  <path class="rh-line" pathLength="1" d="${d}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linejoin="round"/>
  ${H.map((h,i)=>`<circle class="rh-dot${h[5]?' ch':''}" cx="${x(i).toFixed(1)}" cy="${Y[h[1]]}" r="${h[5]?6:4}" fill="${CL[h[1]]}" stroke="var(--surface)" stroke-width="1.5" style="--d:${300+i*25}ms"/>`).join('')}
  ${ticks.map(i=>`<text x="${x(i)}" y="190" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${mo(H[i][0])}</text>`).join('')}
  <line id="rhG" y1="14" y2="176" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhHit" x="${L-10}" y="0" width="${W-L-R+20}" height="196" fill="transparent"/></svg><div class="rh-tip" id="rhTip" aria-live="polite"></div>`;
  const tip=document.getElementById('rhTip'),g=document.getElementById('rhG'),hit=document.getElementById('rhHit');
- const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
+ const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
  const at=e=>{const r=hit.getBoundingClientRect();return Math.max(0,Math.min(n-1,Math.round(((e.clientX-r.left)/r.width*(W-L-R+20)-10)/(W-L-R)*(n-1))))};
  hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
  let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
@@ -607,6 +608,13 @@ def main():
         rate_text = ("%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
             else "Not rated yet: a rating needs at least 3 years of history (1 year for index funds)."
         cap_html = ('<p class="flag" style="font-size:13.5px;margin-top:4px">%s</p>' % e(cn)) if cn else ""
+        if rated and f.get("market_mode"):   # v7 equity: which criteria the month was rated on, and the 3-year note
+            cap_html += ('<p class="muted" style="font-size:13px;margin-top:6px"><span class="mode %s">%s</span> %s</p>'
+                         % (("mode-n", "Normal mode", "Rated on the normal criteria for its category.") if f["market_mode"] == "normal" else
+                            ("mode-f", "After-a-fall mode", "Its category's index was below its 200-day average on the rating day, so half the score comes from the after-a-fall criteria.")))
+            if f.get("behind_index_3y"):
+                cap_html += '<p class="muted" style="font-size:13px;margin-top:4px">Behind its index over 3 years, after costs. Shown for information; it does not cap the rating.</p>'
+        cap_html += ' <a href="/#method" style="font-size:13px">How ratings work</a>' if rated and f.get("market_mode") else ""
         d1 = f.get("nav_chg_1d")
         day_html = (f'<div><div class="muted" style="font-size:13px">1-day change</div><div class="mono {"pos" if d1 > 0 else "neg" if d1 < 0 else ""}" style="font-size:20px">{spct(d1, 2)}</div></div>') if d1 is not None else ""
         flow_html = ""
@@ -624,7 +632,7 @@ def main():
                 return (f"{e(h[1])}, {rk}" if p[1] == h[1] else f"{e(p[1])} → {e(h[1])}" + (f" ({rk})" if rk else ""))
             items = "".join(f"<li><b>{mo(h[0])}: {chg_head(p, h)}</b>. {e(h[5])}</li>" for h in chg for p in [hh[hh.index(h) - 1]])
             rh_html = (f'<h2 style="margin-top:36px;font-size:26px">Rating history</h2><p class="muted" style="margin-top:8px">The rating at each month-end over the last {len(hh)} months. '
-                       'Hover or tap the chart for a month; larger dots mark a change. Months before November 2026 are rebuilt with today\'s rules, using only data available at each month-end.</p>'
+                       'Hover or tap the chart for a month; larger dots mark a change and shaded months were rated in after-a-fall mode. Months before November 2026 are rebuilt with today\'s rules, using only data available at each month-end.</p>'
                        f'<div class="card rh-card" style="margin-top:14px"><div class="rh-chart" data-h="{e(json.dumps(hh, separators=(",", ":")))}"></div></div>'
                        + (f'<h3 style="margin-top:18px;font-size:18px">Recent changes</h3><ul class="rh-list">{items}</ul>' if chg else '<p class="muted" style="margin-top:12px">No change of rating in this period.</p>')
                        + f'<script>{RH_JS}</script>')

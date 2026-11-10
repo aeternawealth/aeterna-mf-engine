@@ -25,7 +25,7 @@ from . import config as C
 
 HISTORY_MONTHS = 36
 HIST = C.OUT / "rating_history.csv.gz"
-KEEP = ["code", "category", "plan_type", "tier", "score", "peer_rank", "peer_count", "guard_capped", "flags"]
+KEEP = ["code", "category", "plan_type", "tier", "score", "peer_rank", "peer_count", "guard_capped", "flags", "market_mode"]
 
 NAMES = {"mom_1m": "1-month return over the index", "mom_3m": "3-month return over the index", "mom_6m": "6-month return over the index",
          "mom_12m": "12-month return over the index", "style_small": "tilt towards small caps", "style_mid": "tilt towards mid caps",
@@ -52,8 +52,12 @@ def _equity(u: pd.DataFrame) -> pd.DataFrame:
     return u[ok]
 
 
-def _inputs(category: str) -> dict:
-    return {m: w for m, (pl, w, hib) in C.protocol_for(category)[1].items() if w > 0}
+def _inputs(category: str, mode: str = "normal") -> dict:
+    w = {m: wt for m, (pl, wt, hib) in C.protocol_for(category)[1].items() if wt > 0}
+    if mode == "after a fall" and C.EQUITY_MODEL == "v7" and category in C.V7_CATEGORIES:   # half the model, half rebound
+        r = {m: wt for m, (pl, wt, hib) in C.v7_rebound(category).items()}
+        w = {m: w.get(m, 0) / 2 + r.get(m, 0) / 2 for m in set(w) | set(r)}
+    return w
 
 
 def _month_ends(tri: pd.DataFrame, n: int) -> list[pd.Timestamp]:
@@ -144,7 +148,12 @@ def _reason(prev: pd.Series, cur: pd.Series) -> str:
     if prev["tier"] == "Unrated":
         return "Rated for the first time: it now has enough history."
     bits = []
-    w = _inputs(cur["category"])
+    ma, mb = str(prev.get("market_mode") or "normal"), str(cur.get("market_mode") or "normal")
+    if ma != mb and mb == "after a fall":
+        bits.append("its category's index fell below its 200-day average, so the after-a-fall criteria now count for half the score")
+    elif ma != mb and ma == "after a fall":
+        bits.append("its category's index is back above its 200-day average, so the normal criteria apply again")
+    w = _inputs(cur["category"], mb)
     moves = []
     tot = sum(w[m] for m in w if np.isfinite(cur.get("p_" + m, np.nan)))
     for m, wt in w.items():
@@ -193,7 +202,7 @@ def site_json(hist: pd.DataFrame, path) -> int:
             pr = prev.get("peer_rank") if prev is not None else None
             if prev is not None and (r["tier"] != prev["tier"] or (rk and pd.notna(pr) and abs(rk - pr) >= 3)):
                 why = _reason(prev, r)
-            rows.append([str(r["month"]), r["tier"], rk, n, None if pd.isna(r.get("score")) else float(r["score"]), why])
+            rows.append([str(r["month"]), r["tier"], rk, n, None if pd.isna(r.get("score")) else float(r["score"]), why, str(r.get("market_mode") or "")])
             prev = r
         out[str(int(code))] = rows
     path.parent.mkdir(parents=True, exist_ok=True)

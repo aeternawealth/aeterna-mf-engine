@@ -201,8 +201,8 @@ LEAN_EQUITY_PROTOCOL = {
 #   "v5"  a model per category (audit/research_final.py): lean, or a comprehensive linear model on all 31 measures where
 #         that did better in the walk-forward test. The choice and the fitted weights are in audit/equity_models.json.
 # The candidate runs on the staging branch only until it is approved for the live site.
-EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v3")
-ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5") else V3_ACTIVE_EQUITY_PROTOCOL
+EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v7")
+ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5", "v7") else V3_ACTIVE_EQUITY_PROTOCOL
 EQUITY_BY_CATEGORY = {}          # category -> protocol, for categories that do not use ACTIVE_EQUITY_PROTOCOL
 EQUITY_MODEL_NAMES = {}          # category -> "lean" / "comp_all" / "comp_cat", for the Method page
 if EQUITY_MODEL == "v5":
@@ -214,13 +214,60 @@ if EQUITY_MODEL == "v5":
                 EQUITY_BY_CATEGORY[_c] = {s: ("Comprehensive", abs(w), w > 0) for s, w in _d["weights"].items()}
 
 SMALL_MID_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
-if EQUITY_MODEL == "v3":   # v4, v5: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
+if EQUITY_MODEL == "v3":   # v4, v5, v7: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
     SMALL_MID_PROTOCOL.update({
         "aum_capacity_penalty": ("Portfolio", 2, False),   # capacity: very large small/mid funds struggle to deploy
         "beyond500_pct": ("Portfolio", 2, False),          # liquidity risk
     })
 
 THEMATIC_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
+
+# ---------------------------------------------------------------- v7 (Nov 2026): a model per equity category
+# audit/research_final2.py: post-COVID data weighted twice; tested with these tier rules. Each entry is
+# metric -> (pillar, weight, higher is better).
+def _size(cat, w):
+    """the size tilt for a category: what a manager there can choose (see the Method page)"""
+    if cat == "Mid Cap":
+        return {"style_small": ("Size tilt", w / 2, True), "style_n50": ("Size tilt", w / 2, False)}
+    if cat == "Small Cap":
+        return {"style_mid": ("Size tilt", w, False)}          # purity: less drift up into mid caps
+    if cat == "Multi Cap":
+        return {"style_n50": ("Size tilt", w, False)}          # the free 25%, away from the Nifty 50
+    return {"style_small": ("Size tilt", w / 2, True), "style_mid": ("Size tilt", w / 2, True)}
+
+
+def _core(cat):
+    p = {f"mom_{m}m": ("Momentum", 13.75, True) for m in (1, 3, 6, 12)}
+    p["upside_capture_3y"] = ("Upside capture", 30, True)
+    p.update(_size(cat, 15))
+    return p
+
+
+V7_SMALL = {"mom_1m": ("Momentum", 25, True), "mom_3m": ("Momentum", 25, True), "beta_3y": ("Market exposure", 20, True),
+            "age_years": ("Fund size and age", 15, False), **_size("Small Cap", 15)}
+V7_MULTI = {"mom_3m": ("Momentum", 16.67, True), "mom_6m": ("Momentum", 16.67, True), "mom_12m": ("Momentum", 16.66, True),
+            "upside_capture_3y": ("Upside capture", 35, True), **_size("Multi Cap", 15)}
+_comp = json.loads((Path(__file__).resolve().parent.parent / "audit" / "equity_models_v7.json").read_text())
+V7_COMP = {s: ("Comprehensive", abs(w), w > 0) for s, w in _comp["weights"].items()}
+V7_CATEGORIES = ["Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Focused", "ELSS", "Value", "Contra",
+                 "Dividend Yield", "Sectoral/Thematic"]
+V7_MODEL_NAME = {"Large & Mid Cap": "comprehensive", "Small Cap": "small-cap", "Multi Cap": "multi-cap"}
+
+
+def v7_protocol(cat):
+    if cat == "Large & Mid Cap": return V7_COMP
+    if cat == "Small Cap": return V7_SMALL
+    if cat == "Multi Cap": return V7_MULTI
+    return _core(cat)
+
+
+def v7_rebound(cat):
+    """after-a-fall criteria: the funds that rebound first after the category's index has fallen"""
+    return {"upside_capture_3y": ("Rebound", 30, True), "beta_3y": ("Rebound", 25, True), "style_val": ("Rebound", 20, True), **_size(cat, 25)}
+
+
+V7_MARKET_DAYS = 200        # after-a-fall mode when the category's index is below its 200-day average on the rating date
+V7_MIN_APLUS = 3            # at least 3 A+ places in a peer group of 15 or more
 
 INDEX_PROTOCOL = {
     "tracking_diff_1y":     ("Tracking", 35, True),   # fund minus index return (negative); closer to 0 better
@@ -302,6 +349,8 @@ def protocol_for(category: str):
         return "Arbitrage protocol", ARBITRAGE_PROTOCOL
     if category == "Index Fund":
         return "Index protocol", INDEX_PROTOCOL
+    if EQUITY_MODEL == "v7" and category in V7_CATEGORIES:
+        return f"Equity v7: {V7_MODEL_NAME.get(category, 'core')} model", v7_protocol(category)
     if category in EQUITY_BY_CATEGORY:
         return "Comprehensive equity protocol", EQUITY_BY_CATEGORY[category]
     if category in ("Small Cap", "Mid Cap"):

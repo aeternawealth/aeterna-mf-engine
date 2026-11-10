@@ -4,7 +4,7 @@ import json, math, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 src = json.loads((ROOT / "outputs" / "latest" / "rankings.json").read_text())
-KEEP = ["code","name","amc","asset_class","tax","bench_label","category","peer_group","plan_type","benchmark","tier","score","peer_rank","peer_count","flags","gate",
+KEEP = ["code","name","amc","asset_class","tax","bench_label","category","peer_group","plan_type","benchmark","tier","score","peer_rank","peer_count","flags","gate","market_mode","behind_index_3y","protocol",
  "age_years","nav_latest","nav_date","nav_prev_date","nav_chg_1d","ter","ter_base","ter_date","aum_cr","aum_asof","pair_key",
  "roll3y_excess_median","roll3y_hit_rate","roll1y_hit_rate","info_ratio_3y","capture_ratio_3y","alpha_3y","sharpe_3y","sortino_3y",
  "roll1y_excess_median","neg_months_3y","worst_day_3y","worst_rel_day_5y","worst_rel_day_date","liq_cagr_1y","liq_cagr_3y","excess_vs_liquid_1y","excess_vs_liquid_3y","excess_vs_liquid_post_tax_1y","excess_vs_liquid_post_tax_3y",

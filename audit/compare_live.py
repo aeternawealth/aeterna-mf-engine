@@ -176,6 +176,10 @@ for Y in range(2017, 2027):
 SC["comp"] = comp.groupby([M[g] for g in G]).rank(pct=True) * 100
 SC["blend"] = (SC["core"].groupby([M[g] for g in G]).rank(pct=True) * 50 + SC["comp"] / 2)
 
+GR = lambda x: x.groupby([M[g] for g in G]).rank(pct=True) * 100
+SC["ensemble (6 styles)"] = sum(GR(SC[k]) for k in ("core", "small-cap", "quality", "value + momentum", "low volatility", "quality tilt")) / 6
+SC["ensemble (momentum + defence)"] = sum(GR(SC[k]) for k in ("core", "downside protection", "quality tilt")) / 3
+SC["ensemble (momentum + value + quality)"] = sum(GR(SC[k]) for k in ("small-cap", "value + quality", "momentum + upside")) / 3
 for m in ("v3", "v5", "v7"):   # engine runs: their own scores and tiers
     if m in R:
         e = R[m][["month", "code", "score", "tier"]].rename(columns={"score": f"s_{m}", "tier": f"t_{m}"})
@@ -252,6 +256,12 @@ def evaluate(tier, c):
             o["worst_year"] = yr[ok.groupby(ok.t.dt.year).size() >= 6].min() if len(yr) else np.nan
             o["per_fund_1y"] = ok.groupby("code").fwd_12.agg(lambda x: (x > 0).mean()).mean() if len(ok) else np.nan
             out[(plan, p)] = o
+    yrs = {}
+    for plan in ("Regular", "Direct"):
+        mk = (M.cat == c) & (M.plan_type == plan) & (tier == "A+") & M.fwd_12.notna()
+        for y, x in M[mk].groupby(M.t[mk].dt.year).fwd_12:
+            yrs.setdefault(y, []).append((x > 0).mean())
+    out["years"] = {y: float(np.mean(v)) for y, v in yrs.items()}
     dec = [(out[(pl, "pre")]["core4"] + 2 * out[(pl, "post")]["core4"]) / 3 for pl in ("Regular", "Direct") if (pl, "pre") in out]
     return out, float(np.nanmean(dec)) if dec else np.nan
 
@@ -278,13 +288,16 @@ for c in CATS:
         for rn, rf in rules.items():
             out, dec = evaluate(rf(s), c)
             if not out: continue
-            po = {k2: np.nanmean([out[(pl, "post")][k2] for pl in ("Regular", "Direct") if (pl, "post") in out]) for k2 in out[next(iter(out))]}
-            pr = {k2: np.nanmean([out[(pl, "pre")][k2] for pl in ("Regular", "Direct") if (pl, "pre") in out]) for k2 in out[next(iter(out))]}
+            YRS.extend(dict(category=c, model=k, mode=mode, tiers=rn, year=y, aplus_1y=v) for y, v in out.pop("years").items())
+            kk = [k for k in out if isinstance(k, tuple)]
+            po = {k2: np.nanmean([out[(pl, "post")][k2] for pl in ("Regular", "Direct") if (pl, "post") in out]) for k2 in out[kk[0]]}
+            pr = {k2: np.nanmean([out[(pl, "pre")][k2] for pl in ("Regular", "Direct") if (pl, "pre") in out]) for k2 in out[kk[0]]}
             rows.append(dict(category=c, model=k, mode=mode, tiers=rn, decision=dec, **{"post_" + a: b for a, b in po.items()},
                              **{"pre_" + a: b for a, b in pr.items()}))
     print(f"  {c} done", flush=True)
 T = pd.DataFrame(rows)
 T.to_csv(L + "compare_results.csv", index=False)
+pd.DataFrame(YRS).to_csv(L + "compare_years.csv", index=False)
 pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500)
 cols = ["model", "mode", "tiers", "decision", "post_aplus_1y", "post_aplus_3y", "post_review_1y", "post_review_3y", "post_all_1y",
         "post_aplus_n", "pre_aplus_1y", "pre_review_3y"]

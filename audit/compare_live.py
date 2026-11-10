@@ -266,7 +266,7 @@ def evaluate(tier, c):
     return out, float(np.nanmean(dec)) if dec else np.nan
 
 
-rows = []
+rows, YRS = [], []
 def quota20(s):
     t = quota(s); pr = s.groupby([M[g] for g in G]).rank(ascending=False, pct=True)
     return t.where(~((pr <= .2) & t.isin(["A"])), "A+")

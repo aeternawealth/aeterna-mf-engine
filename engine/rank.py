@@ -283,7 +283,7 @@ DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "cat
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",
                 "max_drawdown_5y", "max_drawdown_3y", "excess_cagr_1y", "capture_ratio_3y", "alpha_3y", "sharpe_3y", "vol_3y", "beta_3y", "tracking_diff_1y", "tracking_err_1y",
                 "tracking_diff_3y", "ter", "ter_base", "aum_cr", "aum_asof",
-                "mom_1m", "mom_3m", "mom_6m", "mom_12m", "style_small", "style_mid", "roll1y_excess_median", "neg_months_3y", "worst_day_3y", "worst_day_5y", "worst_rel_day_5y", "worst_rel_day_date", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
+                "mom_1m", "mom_3m", "mom_6m", "mom_12m", "style_small", "style_mid", "style_mom", "style_val", "style_lowvol", "style_qual", "style_n50", "tracking_err_3y", "roll1y_excess_median", "neg_months_3y", "worst_day_3y", "worst_day_5y", "worst_rel_day_5y", "worst_rel_day_date", "liq_cagr_1y", "liq_cagr_3y", "excess_vs_liquid_1y", "excess_vs_liquid_3y",
                 "excess_vs_liquid_post_tax_1y", "excess_vs_liquid_post_tax_3y",
                 "n_stocks", "top10_pct", "effective_n", "equity_pct", "cash_other_pct", "large_pct", "mid_pct",
                 "small_pct", "beyond500_pct", "top_sector", "top_sector_pct", "active_share", "active_share_basis",
@@ -295,7 +295,8 @@ def data_meta(holdings_month=None, tri_date=None):
     rd = lambda f: (C.MANUAL / f).read_text().strip() if (C.MANUAL / f).exists() else None
     return {"nav_source": "AMFI daily NAV (via mfapi.in)", "tri_date": str(tri_date)[:10] if tri_date is not None else None,
             "holdings_month": holdings_month, "aum_period": rd("aum.period.txt"), "mcap_period": rd("amfi_mcap.period.txt"),
-            "ter_source": "AMFI TER disclosure (latest revision per scheme)"}
+            "ter_source": "AMFI TER disclosure (latest revision per scheme)",
+            "equity_model": C.EQUITY_MODEL, "equity_models": C.EQUITY_MODEL_NAMES}
 
 
 def write_outputs(out: pd.DataFrame, folder, holdings_top=None, meta=None):

@@ -183,7 +183,9 @@ def median_series(navs: list) -> pd.Series | None:
     return (1 + med).cumprod()
 
 
-STYLE_INDEX = {"small": "NIFTY SMALLCAP 250", "mid": "NIFTY MIDCAP 150"}
+# the same style indices as the research panel (audit/research_panel.py), so live inputs match what was tested
+STYLE_INDEX = {"small": "NIFTY SMALLCAP 250", "mid": "NIFTY MIDCAP 150", "mom": "NIFTY200 MOMENTUM 30", "val": "NIFTY200 VALUE 30",
+               "lowvol": "NIFTY100 LOW VOLATILITY 30", "qual": "NIFTY100 QUALITY 30", "n50": "NIFTY 50"}
 
 
 def _ret_months(s: pd.Series, t, months: int):

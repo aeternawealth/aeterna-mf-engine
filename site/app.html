@@ -1174,6 +1174,37 @@ function flowGraphic(){const el=$('#flow');if(!el)return;
     <text class="fl-s" x="${X.rev[0]+22}" y="${mid+8}">What to keep,</text><text class="fl-s" x="${X.rev[0]+22}" y="${mid+30}">change or add,</text><text class="fl-s" x="${X.rev[0]+22}" y="${mid+52}">and why</text></g>
   ${pulses.join('')}</svg>`}
 
+
+/* Method page for the per-category equity model: its rules, the test for each category, and how we use the ratings */
+const SIGN={mom_1m:'1-month return over the index',mom_3m:'3-month return over the index',mom_6m:'6-month return over the index',mom_12m:'12-month return over the index',style_small:'tilt towards small caps',style_mid:'tilt towards mid caps',style_mom:'tilt towards momentum stocks',style_val:'tilt towards value stocks',style_lowvol:'tilt towards low-volatility stocks',style_qual:'tilt towards quality stocks',style_n50:'tilt towards the Nifty 50',upside_capture_3y:'share of market rises captured',downside_capture_3y:'share of market falls taken',capture_ratio_3y:'rises captured ÷ falls taken',alpha_3y:"Jensen's alpha",info_ratio_3y:'information ratio',sharpe_3y:'Sharpe ratio',sortino_3y:'Sortino ratio',beta_3y:'beta',vol_3y:'volatility',tracking_err_3y:'tracking error',excess_cagr_1y:'1-year return over the index',excess_cagr_3y:'3-year return over the index',excess_cagr_5y:'5-year return over the index',roll1y_hit_rate:'1-year windows ahead of the index',roll1y_excess_median:'typical 1-year return over the index',roll3y_excess_median:'typical 3-year return over the index',roll3y_hit_rate:'3-year windows ahead of the index',roll3y_excess_p10:'worst-decile 3-year return over the index',max_drawdown_3y:'deepest fall in 3 years',age_years:'age of the fund'};
+async function methodV5(){
+  if((S.meta||{}).equity_model!=='v5')return;
+  const B=S.bt||(S.bt=await fetch('data/model-backtest.json').then(r=>r.ok?r.json():null).catch(()=>null));if(!B||!$('#mt-backtest'))return;
+  const C=B.categories,names=Object.keys(C),pc=v=>v==null||isNaN(v)?'–':Math.round(v*100)+'%';
+  const avg=names.reduce((a,c)=>a+C[c].tiers['A+'].y1,0)/names.length;
+  const tile=$$('#methodPage .mt-facts div').pop();if(tile)tile.innerHTML=`<b>${pc(avg)}</b><span>of A+ equity funds beat their index over the next year in our test (all funds: ${pc(names.reduce((a,c)=>a+C[c].all.y1,0)/names.length)})</span>`;
+  const lean='Return over the index in the last 1, 3, 6 and 12 months (50), tilt towards small and mid caps (30), share of the market\'s rises captured over 3 years (20)';
+  const eq=$('#methodPage .mt-panel[data-panel="equity"]');
+  if(eq)eq.innerHTML=`<h4>A model for each category</h4><p>Every equity fund is measured against its category's total-return index and ranked among its peers. Which measures count was decided category by category: we tested a lean model and a comprehensive one on each category's own history and kept the one that did better on years it had not seen.</p>
+  <div class="tablewrap"><table class="mtab"><thead><tr><th class="l">Category</th><th class="l">Model</th><th class="l">What it weighs most</th></tr></thead><tbody>${names.map(c=>`<tr><td class="l"><b>${esc(c)}</b></td><td class="l">${C[c].model==='lean'?'Lean':'Comprehensive'}</td><td class="l" style="white-space:normal">${C[c].model==='lean'?lean:C[c].weights.slice(0,6).map(([k,w])=>`${w>0?'more':'less'} ${SIGN[k]||k} (${Math.abs(w).toFixed(0)})`).join(', ')+'; 27 measures in all'}</td></tr>`).join('')}</tbody></table></div>
+  <p class="muted" style="font-size:13.5px">Dividend yield and sector funds use the lean model; they have too few funds to test on their own. Long-run quality measures (information ratio, alpha, Sharpe, Sortino, 3-year and 5-year returns over the index) looked predictive up to 2018 and then stopped working, so the lean model leaves them out; they stay on every fund page. The weights of the comprehensive model were last fitted on data to ${dmy(B.fitted_to)}.</p>`;
+  const sec=$('#mt-backtest');S.btCat=S.btCat||'Flexi Cap';S.btH=S.btH||'y1';
+  const draw=()=>{const d=C[S.btCat],h=S.btH,mx=Math.max(.75,...['A+','A','B','C'].map(t=>d.tiers[t][h]||0),d.all[h])+.05;
+    sec.innerHTML=`<h2>Did it work? Tested category by category</h2>
+    <p style="margin-top:8px">For every month from January 2019 to ${mon(B.tested_to)} we rated each category using only what was known on that date (the comprehensive model was refitted each year on earlier data only), including funds that later closed or merged. Then we looked at what happened next.</p>
+    <div class="tabs" role="tablist" aria-label="Category" style="margin-top:16px">${names.map(c=>`<button role="tab" aria-selected="${c===S.btCat}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <div class="tabs" role="tablist" aria-label="Period" style="margin-top:10px"><button role="tab" aria-selected="${h==='y1'}" data-h="y1">Next 1 year</button><button role="tab" aria-selected="${h==='y3'}" data-h="y3">Next 3 years</button></div>
+    <div class="mt-panel" style="margin-top:14px"><h4>${esc(S.btCat)}: funds ahead of their index over the next ${h==='y1'?'year':'3 years'}, by rating</h4>
+    <div class="mt-bars anim" id="btBars" style="position:relative;margin-top:14px">${['A+','A','B','C'].map((t,i)=>`<div class="mt-bar"><span class="mt-bl">${t}</span><span class="mt-bt"><i style="width:${(d.tiers[t][h]/mx*100).toFixed(1)}%;transition:width .9s cubic-bezier(.23,1,.32,1) ${i*90}ms"></i></span><span class="mono">${pc(d.tiers[t][h])}</span></div>`).join('')}
+      <div class="mt-bar"><span class="mt-bl muted" style="font-weight:400;font-size:12.5px">All</span><span class="mt-bt"><i style="width:${(d.all[h]/mx*100).toFixed(1)}%;background:var(--ink-3)"></i></span><span class="mono">${pc(d.all[h])}</span></div></div>
+    <div class="mt-facts" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px"><div><b>${pc(d.tiers['A+'][h])}</b><span>of A+ funds ended ahead of the index</span></div><div><b>${pc(d.basket[h])}</b><span>of months in which the A+ funds, bought together, ended ahead</span></div><div><b>${pc(d.hold[h])}</b><span>of start months ahead when following the review rule below</span></div></div>
+    <p class="muted" style="font-size:13px;margin-top:10px">Regular plans, ${d.months[h]} monthly start dates, ${d.model==='lean'?'lean':'comprehensive'} model. No costs or taxes are charged in the test.</p></div>
+    <h3 style="margin-top:28px">How we use the ratings</h3>
+    <ol class="mt-steps"><li><b>New money goes to funds rated A+</b> in the category your plan calls for.</li><li><b>A fund stays while it is rated A or better.</b> A slip from A+ to A changes nothing.</li><li><b>Below A, it comes up for review after 12 months.</b> By then the exit load has ended in almost every equity fund. We weigh the tax on the gain before replacing it; the first ₹1.25 lakh of long-term gains each year is tax-free.</li><li><b>A red flag brings a review at any time:</b> a change of manager, a merger, or a portfolio outside its SEBI limits.</li></ol>
+    <h3 style="margin-top:24px">What the test does not show</h3>
+    <ul class="mt-steps"><li>These are odds from seven years of Indian data, not promises. In most categories about four in ten A+ funds still trailed their index over the following year.</li><li>The model for each category was chosen on the same years, so its own figures flatter it a little.</li><li>Mid Cap: A+ funds beat their peers, but most mid-cap funds trailed the Nifty Midcap 150 in these years, so even the best group was behind the index over 3 years.</li><li>Ratings describe a track record. They are not a forecast or a recommendation to buy or sell.</li></ul>`;
+    $$('[data-c]',sec).forEach(b=>b.onclick=()=>{S.btCat=b.dataset.c;draw()});$$('[data-h]',sec).forEach(b=>b.onclick=()=>{S.btH=b.dataset.h;draw()})};
+  draw()}
 /* motion on the other views: blocks below the fold ease in once, large figures count up */
 function motionView(root){if(!seen||!root)return;
   $$('.card,.tablewrap,.ab-facts,.ab-sec,.sol-row,.note,figure',root).forEach(el=>{if(el.classList.contains('rv')||el.closest('.rv'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('rv');seen.observe(el)}});
@@ -1439,6 +1470,7 @@ function staticPages(){
 .mt-bars{position:relative;margin-top:18px;padding-bottom:26px}
 .mt-bar{display:grid;grid-template-columns:40px minmax(0,1fr) 62px;gap:8px;align-items:center;margin:8px 0}
 .mt-bl{font:600 14px var(--f-mono)}.mt-bt{height:14px;background:var(--rule);border-radius:7px;overflow:hidden}.mt-bt i{display:block;height:100%;background:var(--teal);border-radius:7px}
+.mt-steps{margin:10px 0 0;padding-left:20px;display:grid;gap:8px;max-width:80ch;color:var(--ink-2)}.mt-steps b{color:var(--ink)}
 .mt-avg{position:absolute;top:0;bottom:0;border-left:2px dashed var(--ink-3)}.mt-avg span{position:absolute;bottom:0;left:6px;font-size:12px;color:var(--ink-3);white-space:nowrap}
 @media (max-width:960px){.mt-grid{grid-template-columns:1fr;gap:0}.mt-toc{display:none}}
 @media (max-width:640px){.mt-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.mt-prs,.mt-cols{grid-template-columns:1fr}.mt-panel{padding:16px}}
@@ -1470,6 +1502,7 @@ function staticPages(){
 <section id="mt-limits"><h2>Limitations</h2><p style="margin-top:8px">Categories and benchmarks are today's; SEBI recategorised equity funds in 2018, redefined multi cap in 2020 and renamed debt categories in 2026. Fund manager changes are not yet tracked. Debt funds are rated on their NAVs; the credit quality and maturity of the bonds they hold are not yet used. ${holdCov()}</p></section>
 <section id="mt-updates"><h2>Data and updates</h2><p style="margin-top:8px">Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and AMC monthly portfolio disclosures. NAVs, returns and period ranks refresh every weekday morning after AMFI publishes the previous day's NAVs. Track-record ratings, holdings, expense ratios and AUM refresh twice a month, on the 11th and the 16th, after fund houses publish their monthly portfolios (due by the 10th).</p></section>
 </div></div>`;
+  methodV5();
   $$('#methodPage .mt-tab').forEach(b=>b.onclick=()=>{$$('#methodPage .mt-tab').forEach(x=>x.setAttribute('aria-selected',x===b));$$('#methodPage .mt-panel').forEach(p=>p.hidden=p.dataset.panel!==b.dataset.fam)});
   $$('#methodPage [data-jump]').forEach(a=>a.onclick=e=>{e.preventDefault();const t=document.getElementById(a.dataset.jump);if(t)t.scrollIntoView({behavior:'smooth'})});
   $('#aboutPage').innerHTML=`<div class="ab-hero">

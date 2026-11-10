@@ -411,6 +411,8 @@ def main():
         used.add(u)
         f["_url"] = f"/mutual-funds/{slug(f['category'])}/{u}/"
     (DIST / "data").mkdir(parents=True, exist_ok=True)
+    if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
+        shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
     (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
     import build_pages as P
     Bm = sys.modules[__name__]

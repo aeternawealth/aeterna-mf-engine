@@ -120,3 +120,17 @@ for c in CATS:
     if w: print(f'\n{c} ({choice[c]}), weights fitted on all history:', ', '.join(f'{s} {v:+.1f}' for s, v in sorted(w.items(), key=lambda x: -abs(x[1]))[:14]))
 CH = R[R.chosen].set_index('category').loc[CATS, ['model', 'fund_1y', 'basket_1y', 'hold_1y', 'fund_3y', 'basket_3y', 'hold_3y', 'all_1y', 'all_3y']]
 print('\n=== the chosen model per category ==='); print(CH.round(3).to_string())
+
+# ---- the Method page reads this: per category, the chosen model and how each rating did afterwards (walk-forward) ----
+site = {'fitted_to': out['fitted_to'], 'tested_from': '2019-01', 'tested_to': str(T.as_of[T.fwd_1y.notna()].max().date())[:7], 'categories': {}}
+for c in CATS:
+    k = choice[c]; d = T[T.cat == c]; r = d['r_' + k]; row = R[(R.category == c) & (R.model == k)].iloc[0]
+    tiers = {}
+    for name, m in (('A+', r >= .9), ('A', (r >= .7) & (r < .9)), ('B', (r > .3) & (r < .7)), ('C', r <= .3)):
+        tiers[name] = {'y1': round(float((d[m].fwd_1y.dropna() > 0).mean()), 3), 'y3': round(float((d[m].fwd_3y.dropna() > 0).mean()), 3)}
+    site['categories'][c] = {'model': k, 'tiers': tiers, 'all': {'y1': round(float(row.all_1y), 3), 'y3': round(float(row.all_3y), 3)},
+                             'basket': {'y1': round(float(row.basket_1y), 3), 'y3': round(float(row.basket_3y), 3)}, 'hold': {'y1': round(float(row.hold_1y), 3), 'y3': round(float(row.hold_3y), 3)},
+                             'months': {'y1': int(row.n_1y), 'y3': int(row.n_3y)},
+                             'weights': sorted(out['categories'][c].get('weights', {}).items(), key=lambda x: -abs(x[1]))[:10]}
+json.dump(site, open('site/model_backtest.json', 'w'), separators=(',', ':'))
+print('\nwrote site/model_backtest.json')

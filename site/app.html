@@ -402,7 +402,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 :root[data-theme="dark"] .facts div b{text-shadow:0 0 18px rgba(var(--glow),.35)}
 :root[data-theme="dark"] .tier.t-ap{box-shadow:0 0 12px -2px rgba(var(--glow),.75)}
 :root[data-theme="dark"] .tbar i.t-ap{box-shadow:0 0 10px rgba(var(--glow),.8)}
-:root[data-theme="dark"] .pf-ring,:root[data-theme="dark"] .pf-line{filter:drop-shadow(0 0 5px rgba(var(--glow),.8))}
+:root[data-theme="dark"] .pf-line{filter:drop-shadow(0 0 4px rgba(var(--glow),.7))}
 :root[data-theme="dark"] .pf-area{fill:url(#pfGrad)}
 :root[data-theme="dark"] .tabs button[aria-selected="true"]{background:linear-gradient(180deg,#7fe3c6,#55c9a6);box-shadow:0 0 16px -4px rgba(var(--glow),.8)}
 :root[data-theme="dark"] header.site{background:color-mix(in srgb,#07130f 82%,transparent);backdrop-filter:blur(14px) saturate(1.3);border-bottom-color:#163027}
@@ -432,7 +432,11 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .ss-ring b{display:block;font:500 34px/1 var(--f-mono);letter-spacing:-.02em}.ss-ring b small{font-size:15px;color:var(--ink-3);font-weight:400}
 .ss-ring span{font-size:13.5px;color:var(--ink-2);line-height:1.35;display:block;margin-top:6px}.ss-ring b span{display:inline;font-size:inherit;color:inherit;margin:0}
 .ss-arc{animation:arc 1.4s cubic-bezier(.23,1,.32,1) .5s both}@keyframes arc{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
-:root[data-theme="dark"] .ss-arc{filter:drop-shadow(0 0 6px rgba(var(--glow),.8))}
+.pf-g svg,.ss-ring svg{overflow:visible;shape-rendering:geometricPrecision;flex:none}
+.ring-dot{stroke:#eafff8;animation:ringrun 2.8s cubic-bezier(.45,0,.2,1) 1.6s infinite both}
+:root[data-theme="light"] .ring-dot{stroke:#bfeedd}
+@keyframes ringrun{0%{stroke-dashoffset:0;opacity:0}12%{opacity:1}80%{opacity:1}100%{stroke-dashoffset:calc(var(--len) * -1);opacity:0}}
+.anim:not(.in) .ring-dot{animation:none;opacity:0}
 .ss-rows{margin:0;display:grid;gap:0}.ss-rows div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--rule);font-size:14px}
 .ss-rows dt{color:var(--ink-2)}.ss-rows dd{margin:0;font:500 14px var(--f-mono)}
 .strip-side .btn{justify-content:center;margin-top:auto}
@@ -462,7 +466,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .cta-panel::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(60% 120% at 50% 120%,rgba(var(--glow),.16),transparent 70%)}
 :root[data-theme="dark"] .cta-panel{border-color:#1f3a31;background:linear-gradient(180deg,#0e2019,#0a1712);box-shadow:0 0 120px -50px rgba(var(--glow),.45)}
 :root[data-theme="dark"] .cta-panel::before{background:radial-gradient(60% 130% at 50% 125%,rgba(98,214,178,.3),transparent 70%),radial-gradient(40% 80% at 85% -10%,rgba(223,185,111,.1),transparent 70%)}
-@media (prefers-reduced-motion:reduce){.pf-goals i{transition:none}}
+@media (prefers-reduced-motion:reduce){.pf-goals i{transition:none}.ring-dot{display:none}}
 
 /* ---- wide screens: the statement fills the first screen with the four numbers at its foot; the chart is the next screen ---- */
 @media (min-width:1000px){
@@ -476,7 +480,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 /* reveal on scroll (class added by script only) */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.ring-dot,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){[data-view]{animation:none}.btn,.tabs button,a.sol,#insCards .card{transition:none}.btn:active,.tabs button:active{transform:none}a.sol:hover,#insCards .card:hover{transform:none}}
 </style>
 
@@ -555,7 +559,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
         <div><span>College fees, 2038</span><b data-n="9500" data-f="inr">₹9,500</b><i style="--w:35%;--d:120ms"></i></div>
         <div><span>Home down payment, 2030</span><b data-n="4000" data-f="inr">₹4,000</b><i style="--w:60%;--d:240ms"></i></div>
       </div>
-      <div class="pf-g"><svg width="56" height="56" viewBox="0 0 56 56"><circle r="22" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="22" cx="28" cy="28" fill="none" class="pf-ring" stroke="var(--teal)" stroke-width="6" stroke-linecap="round" stroke-dasharray="110 138" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)" data-n="80" data-f="pct0">80%</text></svg><span>of the <b data-n="5.25" data-f="cr">₹5.25 cr</b> retirement target already covered by what you hold</span></div>
+      <div class="pf-g"><svg width="64" height="64" viewBox="0 0 56 56"><circle r="22" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="5"/><circle r="22" cx="28" cy="28" fill="none" class="pf-ring" stroke="var(--teal)" stroke-width="5" stroke-linecap="round" stroke-dasharray="110 138.3" transform="rotate(-90 28 28)"/><circle r="22" cx="28" cy="28" fill="none" class="ring-dot" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 138.3" style="--len:110" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)" data-n="80" data-f="pct0">80%</text></svg><span>of the <b data-n="5.25" data-f="cr">₹5.25 cr</b> retirement target already covered by what you hold</span></div>
       <svg viewBox="0 0 220 60" width="100%"><defs><linearGradient id="pfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62d6b2" stop-opacity=".45"/><stop offset="1" stop-color="#62d6b2" stop-opacity=".04"/></linearGradient></defs><polygon class="pf-area" points="0,52 40,45 80,32 120,20 150,16 180,20 220,30 220,56 180,52 150,48 120,46 80,50 40,53 0,54" fill="var(--teal-soft)"/><polyline class="pf-line" pathLength="1" points="0,53 40,49 80,41 120,33 150,31 180,36 220,44" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/></svg>
       <div class="muted" style="font-size:11.5px">Range of outcomes across market history</div></div></div></div></section>
 
@@ -1097,7 +1101,7 @@ function drawStrip(cat){
   </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t}</span>`).join('')}</div>`;
   const ahead=F.filter(f=>f.excess_3Y>0).length, med=[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
-  $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
+  $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/><circle class="ring-dot" cx="44" cy="44" r="36" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
     <div><b><span data-n="${ahead}" data-f="int">${ahead}</span><small> of ${F.length}</small></b><span>${esc(cat)} funds beat the index over 3 years</span></div></div>
   <dl class="ss-rows"><div><dt>Typical fund</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'level':spct(med)+' a year'}</dd></div>
     <div><dt>Furthest ahead</dt><dd class="pos">${spct(best.excess_3Y)}</dd></div><div><dt>Furthest behind</dt><dd class="neg">${spct(worst.excess_3Y)}</dd></div></dl>

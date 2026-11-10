@@ -243,13 +243,26 @@ def evaluate(tier, c):
                      all_1y=(dp.fwd_12.dropna() > 0).mean(), aplus_n=ap.groupby("t").size().mean() if len(ap) else 0,
                      **{f"{t}_1y": (dp[dp.tt == t].fwd_12.dropna() > 0).mean() for t in ("A", "B", "C")})
             o["core4"] = np.nanmean([o[k] for k in ("aplus_1y", "aplus_3y", "review_1y", "review_3y")])
+            # robustness: how many different funds, how many months had any A+, the worst year, and the hit rate
+            # counted once per fund (so one fund held A+ for years does not count as many independent picks)
+            ok = ap[ap.fwd_12.notna()]
+            o["aplus_funds"] = ok.code.nunique()
+            o["cover"] = ap.t.nunique() / max(1, dp.t.nunique())
+            yr = ok.groupby(ok.t.dt.year).fwd_12.agg(lambda x: (x > 0).mean())
+            o["worst_year"] = yr[ok.groupby(ok.t.dt.year).size() >= 6].min() if len(yr) else np.nan
+            o["per_fund_1y"] = ok.groupby("code").fwd_12.agg(lambda x: (x > 0).mean()).mean() if len(ok) else np.nan
             out[(plan, p)] = o
     dec = [(out[(pl, "pre")]["core4"] + 2 * out[(pl, "post")]["core4"]) / 3 for pl in ("Regular", "Direct") if (pl, "pre") in out]
     return out, float(np.nanmean(dec)) if dec else np.nan
 
 
 rows = []
-RULES = {"quota": quota, "A+80/A70": lambda s: thresh(s, 80, 70), "A+75/A65": lambda s: thresh(s, 75, 65), "A+85/A70": lambda s: thresh(s, 85, 70)}
+def quota20(s):
+    t = quota(s); pr = s.groupby([M[g] for g in G]).rank(ascending=False, pct=True)
+    return t.where(~((pr <= .2) & t.isin(["A"])), "A+")
+
+
+RULES = {"quota": quota, "top 20%": quota20, "A+70/A60": lambda s: thresh(s, 70, 60), "A+80/A70": lambda s: thresh(s, 80, 70), "A+75/A65": lambda s: thresh(s, 75, 65), "A+85/A70": lambda s: thresh(s, 85, 70)}
 for c in CATS:
     cands = {}
     for k, s in SC.items():

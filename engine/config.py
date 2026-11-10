@@ -4,6 +4,7 @@ Every number the engine produces is computed deterministically in Python from
 public data. The weights below are the "house view" and are meant to be
 reviewed against the walk-forward backtest (backtest.py) each quarter.
 """
+import json
 import os
 from pathlib import Path
 
@@ -194,13 +195,26 @@ LEAN_EQUITY_PROTOCOL = {
     "style_mid":         ("Size tilt", 15, True),      # weekly slope on Nifty Midcap 150 over the benchmark, 3Y
     "upside_capture_3y": ("Upside capture", 20, True),
 }
-# Which equity model rates the funds. "v3" is the live model; "v4" is the candidate, run on the staging branch only
-# (the data workflows set AETERNA_EQUITY_MODEL from the branch) until it is approved for the live site.
+# Which equity model rates the funds (the data workflows set AETERNA_EQUITY_MODEL from the branch):
+#   "v3"  the live model
+#   "v4"  the lean model for every equity category
+#   "v5"  a model per category (audit/research_final.py): lean, or a comprehensive linear model on all 31 measures where
+#         that did better in the walk-forward test. The choice and the fitted weights are in audit/equity_models.json.
+# The candidate runs on the staging branch only until it is approved for the live site.
 EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v3")
-ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL == "v4" else V3_ACTIVE_EQUITY_PROTOCOL
+ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5") else V3_ACTIVE_EQUITY_PROTOCOL
+EQUITY_BY_CATEGORY = {}          # category -> protocol, for categories that do not use ACTIVE_EQUITY_PROTOCOL
+EQUITY_MODEL_NAMES = {}          # category -> "lean" / "comp_all" / "comp_cat", for the Method page
+if EQUITY_MODEL == "v5":
+    _m = json.loads((Path(__file__).resolve().parent.parent / "audit" / "equity_models.json").read_text())
+    for _cat, _d in _m["categories"].items():
+        for _c in (("Value", "Contra") if _cat == "Value / Contra" else (_cat,)):
+            EQUITY_MODEL_NAMES[_c] = _d["model"]
+            if _d["model"] != "lean":
+                EQUITY_BY_CATEGORY[_c] = {s: ("Comprehensive", abs(w), w > 0) for s, w in _d["weights"].items()}
 
 SMALL_MID_PROTOCOL = dict(ACTIVE_EQUITY_PROTOCOL)
-if EQUITY_MODEL != "v4":   # v4: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
+if EQUITY_MODEL == "v3":   # v4, v5: the capacity and liquidity inputs were not in the walk-forward test, so they carry no weight there
     SMALL_MID_PROTOCOL.update({
         "aum_capacity_penalty": ("Portfolio", 2, False),   # capacity: very large small/mid funds struggle to deploy
         "beyond500_pct": ("Portfolio", 2, False),          # liquidity risk
@@ -288,6 +302,8 @@ def protocol_for(category: str):
         return "Arbitrage protocol", ARBITRAGE_PROTOCOL
     if category == "Index Fund":
         return "Index protocol", INDEX_PROTOCOL
+    if category in EQUITY_BY_CATEGORY:
+        return "Comprehensive equity protocol", EQUITY_BY_CATEGORY[category]
     if category in ("Small Cap", "Mid Cap"):
         return "Small/Mid protocol", SMALL_MID_PROTOCOL
     if category == "Sectoral/Thematic":

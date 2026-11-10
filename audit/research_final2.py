@@ -23,7 +23,8 @@ Candidates (first principles):
   blend      50/50 by rank of core and comp
 Audit of the chosen package: tier order (A+ > A > B > C), turnover of the A+ list, results in the years large caps
 led, after falls and after the market's strongest years, and the effect of each rule switched off."""
-import warnings; warnings.filterwarnings('ignore')
+import os, warnings; warnings.filterwarnings('ignore')
+GUARD = os.environ.get('GUARD', '1') == '1'   # the 'ahead of the index' check on A+ and A
 import numpy as np, pandas as pd
 from sklearn.linear_model import Ridge
 
@@ -73,8 +74,9 @@ for c in CATS:
     CAND[c] = {'core': core[c], 'mandate': mandate[c], 'quality': quality[c], 'comp': compr, 'blend': .5 * rk(core[c]) + .5 * compr}
 
 
-def tiers(score, min3=True, guard=True):
+def tiers(score, min3=True, guard=None):
     """A+ / A / B / C from a score, per peer group and month, with the site's rules."""
+    guard = GUARD if guard is None else guard
     df = pd.DataFrame({'s': score, 'as_of': M.as_of, 'cat': M.cat, 'e3': M.excess_cagr_3y, 'rm': M.roll3y_excess_median})
     df = df[df.s.notna()]
     n = df.groupby(['as_of', 'cat']).s.transform('size'); pos = df.groupby(['as_of', 'cat']).s.rank(ascending=False, method='first')
@@ -143,7 +145,7 @@ for c in CATS:
     base = res[('core', 'market mode')]['decision']
     pick = max(res, key=lambda x: res[x]['decision'] - (0 if x[0] == 'core' else .02))
     best[c] = pick
-R = pd.DataFrame(rows); R['chosen'] = R.apply(lambda r: best[r.category] == (r.model, r['mode']), axis=1); R.to_csv('audit/research_final2_results.csv', index=False)
+R = pd.DataFrame(rows); R['chosen'] = R.apply(lambda r: best[r.category] == (r.model, r['mode']), axis=1); R.to_csv('audit/research_final2_results.csv' if GUARD else 'audit/research_final2_noguard.csv', index=False)
 pd.set_option('display.width', 260); pd.set_option('display.max_columns', 40)
 print('=== decision score per candidate (1 x pre-COVID + 2 x post-COVID; average of A+ 1y, review 1y, A+ 3y, review 3y) ===')
 print(R.pivot_table(index='category', columns=['mode', 'model'], values='decision').loc[CATS].round(3).to_string())
@@ -163,7 +165,7 @@ for c in CATS:
     s_mode = pd.Series(np.where(M.fall, .5 * rk(sc) + .5 * rk(REB(c)), rk(sc)), index=M.index)
     s_use = s_mode if mode == 'market mode' else sc
     alts = {'as chosen': evaluate(tiers(s_use), c)['decision'], 'no 3-fund minimum': evaluate(tiers(s_use, min3=False), c)['decision'],
-            'no index check': evaluate(tiers(s_use, guard=False), c)['decision'], 'other mode': evaluate(tiers(sc if mode == 'market mode' else s_mode), c)['decision']}
+            'no index check' if GUARD else 'with index check': evaluate(tiers(s_use, guard=not GUARD), c)['decision'], 'other mode': evaluate(tiers(sc if mode == 'market mode' else s_mode), c)['decision']}
     print(f'  {c:16}', '  '.join(f'{a} {v:.3f}' for a, v in alts.items()))
 # audit 4: turnover of the A+ list
 print('\n=== audit 4: share of A+ funds still A+ or A the next month, and still A+ 12 months later ===')

@@ -131,6 +131,7 @@ section.tint{background:var(--band);border-block:1px solid var(--rule)}
 .tap-hint{display:none} @media (hover:none){.hover-hint{display:none}.tap-hint{display:inline}}
 .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font:12.5px/1.45 var(--f-body);padding:8px 10px;border-radius:6px;max-width:260px;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 /* tiers */
+.tier-w{font-weight:600;font-size:14px;color:var(--ink)}
 .tier{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 7px;border-radius:5px;font:600 12.5px var(--f-mono);color:var(--tier-ink);letter-spacing:.02em}
 .t-ap{background:var(--t-ap)}.t-a{background:var(--t-a)}.t-b{background:var(--t-b)}.t-c{background:var(--t-c)}.t-u{background:var(--t-u)}
 /* pillars */
@@ -735,7 +736,11 @@ const cr=v=>v==null?'–':'₹'+Math.round(v).toLocaleString('en-IN')+' cr';
 const dmy=v=>{if(!v)return'–';const d=new Date(String(v).slice(0,10)+'T00:00:00');return isNaN(d)?String(v):d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})};
 const mon=m=>{if(!m)return'–';const[y,mm]=m.split('-');return new Date(+y,+mm-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'})};
 const tcls=t=>({'A+':'t-ap','A':'t-a','B':'t-b','C':'t-c'}[t]||'t-u');
-const tier=t=>`<span class="tier ${tcls(t)}" title="Track-record rating">${esc(t&&t!=='Unrated'?t:'–')}</span>`;
+// one place for what each rating means in words (badges keep the letter; the word shows where there is room)
+const TW={'A+':'Leading','A':'Strong','B':'In line','C':'Lagging','Watch':'Under review','Unrated':'Not yet rated'};
+const tw=t=>TW[t]||TW.Unrated;
+const tier=t=>`<span class="tier ${tcls(t)}" title="${esc((t&&t!=='Unrated'?t+': ':'')+tw(t)+' in its category')}">${esc(t&&t!=='Unrated'?t:'–')}</span>`;
+const tierW=t=>`<span class="row" style="gap:8px;display:inline-flex">${tier(t)}<span class="tier-w">${tw(t)}</span></span>`;
 const sg=v=>v==null?'':v>0?'pos':'neg';
 const CAPF={mandate_breach:1,closet_indexer:1,deep_drawdown:1,turnaround_unproven:1,chronic_underperformer:1,risk_without_reward:1};
 function capNote(f){const fs=(f.flags||'').split(', ').filter(x=>CAPF[x]);if(!fs.length)return'';
@@ -1130,7 +1135,7 @@ function drawStrip(cat){
   <text x="${W-R}" y="${H-8}" text-anchor="end" font-size="12.5" fill="var(--ink-3)" font-family="Libre Franklin,sans-serif">ahead of the index</text>
   ${pts.filter(p=>p.f.tier==='A+').map(p=>`<circle class="halo" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="none" stroke="var(--t-ap)" stroke-width="1.5" style="--d:${1100+pts.indexOf(p)*40}ms"/>`).join('')}
   ${pts.map((p,i)=>`<circle class="dot${p.f.tier==='A+'?' ap':''}" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="var(--${TC[p.f.tier]||'t-u'})" data-c="${p.f.code}" style="color:var(--${TC[p.f.tier]||'t-u'});--dx:${(x(0)-p.px).toFixed(1)}px;--dy:${(base-y(p.lane)).toFixed(1)}px;--d:${150+i*16}ms"><title>${esc(p.f.name)}: ${spct(p.f.excess_3Y)} vs index</title></circle>`).join('')}
-  </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t}</span>`).join('')}</div>`;
+  </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t==='Unrated'?tw(t):t+' · '+tw(t)}</span>`).join('')}</div>`;
   const ahead=F.filter(f=>f.excess_3Y>0).length, med=[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
   $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/><circle class="ring-dot" cx="44" cy="44" r="36" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
@@ -1403,7 +1408,7 @@ async function fund(code){
       <div><div class="muted" style="font-size:13px">1-day change</div><div class="mono ${sg(f.nav_chg_1d)}" style="font-size:20px">${spct(f.nav_chg_1d,2)}</div></div>
       <div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">${f.ter==null?'–':num(f.ter,2)+'%'}</div>${arb&&f.ter_base!=null?`<div class="muted" style="font-size:12px">fund fee ${num(f.ter_base,2)}%, the rest trading taxes and costs</div>`:''}</div>
       <div><div class="muted" style="font-size:13px">${aumL(f)}</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
-    <div class="card row" style="gap:18px"><div>${tier(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}${watchNote(f)?`<br><span style="font-size:13.5px;color:var(--brass)">${esc(watchNote(f))}</span>`:''}</p></div></div>
+    <div class="card row" style="gap:18px"><div>${tierW(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}${watchNote(f)?`<br><span style="font-size:13.5px;color:var(--brass)">${esc(watchNote(f))}</span>`:''}</p></div></div>
   </div>
   <h2 style="margin-top:40px;font-size:26px">${dbt?'Returns against the category median':'Returns against the index'}</h2>
   <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>${dbt?'Median '+esc(f.category)+' fund':'Index (TRI)'}</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>${per}</tbody></table></div>
@@ -1471,7 +1476,7 @@ async function compare(){
   $$('#chips button').forEach(b=>b.onclick=()=>{S.cmp=S.cmp.filter(c=>c!==+b.dataset.c);saveCmp();compare()});
   if(!fs.length){$('#cmp').innerHTML='<div class="note">Start typing a fund name above. Tip: you can also press "Add to compare" on any fund page.</div>';return}
   const H=await holdings();
-  const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tier(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr)+(f.aum_asof?' <span class="muted" style="font-size:12px">'+esc(f.aum_asof)+'</span>':''),f=>f.aum_cr]]],
+  const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tierW(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr)+(f.aum_asof?' <span class="muted" style="font-size:12px">'+esc(f.aum_asof)+'</span>':''),f=>f.aum_cr]]],
     ['Returns (a year beyond 1Y)',[['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
     ['Against its index',[['1 year',f=>spct(f.excess_1Y),f=>f.excess_1Y,1],['3 years',f=>spct(f.excess_3Y),f=>f.excess_3Y,1],['5 years',f=>spct(f.excess_5Y),f=>f.excess_5Y,1],['3Y rank in category',f=>f.rank_3Y!=null?f.rank_3Y+' / '+f.peers_3Y:'–']]],
     ['Risk',[['Max fall, 5Y',f=>pct(f.max_drawdown_5y),f=>f.max_drawdown_5y,1],['Downside capture',f=>num(f.downside_capture_3y,0),f=>f.downside_capture_3y,-1],['Sharpe, 3Y',f=>num(f.sharpe_3y,2),f=>f.sharpe_3y,1],['Volatility, 3Y',f=>pct(f.vol_3y),f=>f.vol_3y,-1]]],

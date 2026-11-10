@@ -146,7 +146,7 @@ RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B'
  ${ticks.map(i=>`<text x="${x(i)}" y="190" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${mo(H[i][0])}</text>`).join('')}
  <line id="rhG" y1="14" y2="176" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhHit" x="${L-10}" y="0" width="${W-L-R+20}" height="196" fill="transparent"/></svg><div class="rh-tip" id="rhTip" aria-live="polite"></div>`;
  const tip=document.getElementById('rhTip'),g=document.getElementById('rhG'),hit=document.getElementById('rhHit');
- const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
+ const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]+' ('+({'A+':'Leading','A':'Strong','B':'In line','C':'Lagging','Watch':'Under review'}[h[1]]||'')+')'}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
  const at=e=>{const r=hit.getBoundingClientRect();return Math.max(0,Math.min(n-1,Math.round(((e.clientX-r.left)/r.width*(W-L-R+20)-10)/(W-L-R)*(n-1))))};
  hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
  let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
@@ -405,9 +405,14 @@ def write(path, text):
     p.write_text(text, encoding="utf-8")
 
 
-def tier_badge(t):
+TIER_WORD = {"A+": "Leading", "A": "Strong", "B": "In line", "C": "Lagging", "Watch": "Under review", "Unrated": "Not yet rated"}   # same as TW in app.html
+
+
+def tier_badge(t, word=False):
     cls = {"A+": "t-ap", "A": "t-a", "B": "t-b", "C": "t-c"}.get(t, "t-u")
-    return f'<span class="tier {cls}">{e(t if t and t != "Unrated" else "–")}</span>'
+    w = TIER_WORD.get(t, TIER_WORD["Unrated"])
+    b = f'<span class="tier {cls}" title="{e((t + ": " if t in ("A+", "A", "B", "C", "Watch") else "") + w + " in its category")}">{e(t if t and t != "Unrated" else "–")}</span>'
+    return f'<span class="row" style="gap:8px;display:inline-flex">{b}<span class="tier-w">{e(w)}</span></span>' if word else b
 
 
 def cap_note(f):
@@ -651,7 +656,7 @@ def main():
 <div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="/#contact">Ask about this fund</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
- <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
+ <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 {review_status(f, RH.get(str(f["code"])))}
 {rh_html}

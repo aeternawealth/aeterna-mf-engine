@@ -224,7 +224,7 @@ def review(tier, mask):
                 lot[2] += 1
             if ok and j == 11: o12[t0] = cash + sum(l[1] for l in lots)
             if ok and j == 35: o36[t0] = cash + sum(l[1] for l in lots)
-    return pd.Series(o12, dtype=float), pd.Series(o36, dtype=float)
+    return (pd.Series(o12, dtype=float, index=pd.DatetimeIndex(list(o12))), pd.Series(o36, dtype=float, index=pd.DatetimeIndex(list(o36))))
 
 
 def evaluate(tier, c):
@@ -236,7 +236,7 @@ def evaluate(tier, c):
         d = M[mk].assign(tt=tier[mk])
         for p in ("pre", "post"):
             dp = d[d.period == p]
-            per = (lambda s: s[s.index <= pd.Timestamp("2020-02-29")]) if p == "pre" else (lambda s: s[s.index >= pd.Timestamp("2020-04-01")])
+            per = (lambda s: s[pd.DatetimeIndex(s.index) <= pd.Timestamp("2020-02-29")]) if p == "pre" else (lambda s: s[pd.DatetimeIndex(s.index) >= pd.Timestamp("2020-04-01")])
             ap = dp[dp.tt == "A+"]
             o = dict(aplus_1y=(ap.fwd_12.dropna() > 0).mean(), aplus_3y=(ap.fwd_36.dropna() > 0).mean(),
                      aplus_ex1y=ap.fwd_12.mean(), review_1y=(per(r12) > 1).mean(), review_3y=(per(r36) > 1).mean(),

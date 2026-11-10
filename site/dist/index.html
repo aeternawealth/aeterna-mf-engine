@@ -470,21 +470,20 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .lede-short{display:none}
 @media (min-width:1000px){
  /* a: statement and the whole chart on the first screen; the panel ends at the foot of the screen */
- [data-hero="a"] .hero{padding-block:48px 72px}
- [data-hero="a"] .hero>.wrap{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:calc(100svh - 64px - 48px - 28px + 150px)}
- [data-hero="a"] .hero-top{max-width:none;margin-bottom:36px}
+ [data-hero="a"] .hero{padding-block:36px 72px}
+ [data-hero="a"] .hero>.wrap{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:calc(100svh - 64px - 36px - 28px + 150px)}
+ [data-hero="a"] .hero-top{max-width:none;margin-bottom:28px}
  [data-hero="a"] .hero h1{font-size:clamp(40px,4.3vw,62px)}
  [data-hero="a"] .hero-top .lede{display:none}
  [data-hero="a"] .hero-top .lede-short{display:block;margin-top:16px;font-size:18px;max-width:none}
- [data-hero="a"] .hero .actions{margin-top:26px}
+ [data-hero="a"] .hero .actions{margin-top:22px}
  [data-hero="a"] .strip{max-height:600px}
  [data-hero="a"] .strip-main{display:flex;flex-direction:column;padding:26px 30px 20px}
- [data-hero="a"] .strip-hint{display:none}
  [data-hero="a"] #strip{margin-block:auto}
- [data-hero="a"] .strip-side{padding:30px 28px;gap:20px;justify-content:center}
- [data-hero="a"] .strip-side p.muted,[data-hero="a"] .ss-rows div:nth-child(n+2){display:none}
+ [data-hero="a"] .strip-side{padding:28px 28px;gap:18px;justify-content:center}
+ [data-hero="a"] .strip-side p.muted{display:none}
  [data-hero="a"] .strip-side .btn{margin-top:0}
- [data-hero="a"] .ss-rows div{border-bottom:1px solid var(--rule);padding:14px 0}
+ [data-hero="a"] .ss-rows div{padding:12px 0}[data-hero="a"] .ss-rows div:last-child{border-bottom:1px solid var(--rule)}
  [data-hero="a"] .hero .facts{height:70px;margin-top:80px;align-content:center}
  /* b: statement on the left, chart on the right */
  [data-hero="b"] .hero{padding-block:56px 56px}

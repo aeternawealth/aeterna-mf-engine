@@ -27,7 +27,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 a{color:var(--teal)}
 h1,h2,h3{font-family:var(--f-display);font-weight:500;line-height:1.12;letter-spacing:-.012em;text-wrap:balance;margin:0}
 h1{font-size:clamp(36px,5.2vw,62px);letter-spacing:-.022em;line-height:1.04}
-h2{font-size:clamp(26px,3.2vw,36px)}
+h2{font-size:clamp(28px,3.6vw,42px)}
 h3{font-size:20px}
 p{margin:0}
 .wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
@@ -296,10 +296,9 @@ h1 em{font-style:italic;font-weight:400;color:var(--teal)}
 @keyframes drift1{to{transform:translate3d(90px,60px,0) scale(1.12)}}
 @keyframes drift2{to{transform:translate3d(-80px,70px,0) scale(.92)}}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.hero .g2>div>*{animation:rise .8s cubic-bezier(.23,1,.32,1) both}
-.hero .g2>div>*:nth-child(2){animation-delay:.08s}.hero .g2>div>*:nth-child(3){animation-delay:.16s}.hero .g2>div>*:nth-child(4){animation-delay:.24s}
-.hero .strip{animation:rise .9s cubic-bezier(.23,1,.32,1) .12s both}
-.hero .lede{margin-top:20px}
+.hero-top>*{animation:rise .8s cubic-bezier(.23,1,.32,1) both}
+.hero-top>*:nth-child(2){animation-delay:.08s}.hero-top>*:nth-child(3){animation-delay:.16s}
+.hero .strip{animation:rise 1s cubic-bezier(.23,1,.32,1) .26s both}.hero .facts{animation:rise 1s cubic-bezier(.23,1,.32,1) .4s both}
 .facts{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:20px;margin-top:36px;padding-top:22px;border-top:1px solid var(--rule)}
 .facts div b{font:500 23px var(--f-mono);letter-spacing:-.01em}
 @media (max-width:560px){.facts{grid-template-columns:1fr 1fr;justify-content:stretch}}
@@ -412,10 +411,62 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 :root[data-theme="dark"] .tablewrap,:root[data-theme="dark"] footer.site{background:linear-gradient(180deg,#0c1a16,#09140f)}
 :root[data-theme="dark"] a.cat:hover,:root[data-theme="dark"] .glow:hover{box-shadow:0 18px 40px -24px rgba(0,0,0,.9),0 0 40px -18px rgba(var(--glow),.55)}
 @media (prefers-reduced-motion:reduce){.gaprow,.how li,.how ol::before,.why>div{transition:none}.gaprow .bar i::after{animation:none}}
+
+/* ---- hero: centred statement over a full-width chart console ---- */
+.hero{padding-block:84px 72px}
+.hero-top{text-align:center;max-width:940px;margin:0 auto 48px}
+.hero h1{font-size:clamp(40px,6.2vw,82px);line-height:1.02;letter-spacing:-.028em}
+.hero-top .lede{margin:24px auto 0;max-width:68ch;font-size:clamp(17px,1.4vw,19.5px)}
+.hero .actions{justify-content:center;margin-top:32px}
+.hero .actions .btn{padding:13px 22px;font-size:15.5px}
+.strip{margin:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:0;padding:0;border-radius:18px;overflow:hidden}
+.strip-main{padding:24px 26px 16px;min-width:0}
+.strip-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.strip-title{display:block;font:500 21px/1.25 var(--f-display)}
+.live{display:inline-flex;align-items:center;gap:8px;font:500 12px var(--f-mono);color:var(--ink-3);white-space:nowrap}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(var(--glow),.6);animation:ping 2.2s ease-out infinite}
+@keyframes ping{to{box-shadow:0 0 0 9px rgba(var(--glow),0)}}
+.strip-side{border-left:1px solid var(--rule);padding:26px 24px;display:flex;flex-direction:column;gap:18px;background:color-mix(in srgb,var(--band) 60%,transparent)}
+:root[data-theme="dark"] .strip-side{border-left-color:#1a332b;background:linear-gradient(180deg,rgba(98,214,178,.05),transparent)}
+.ss-ring{display:flex;align-items:center;gap:14px}
+.ss-ring b{display:block;font:500 34px/1 var(--f-mono);letter-spacing:-.02em}.ss-ring b small{font-size:15px;color:var(--ink-3);font-weight:400}
+.ss-ring span{font-size:13.5px;color:var(--ink-2);line-height:1.35;display:block;margin-top:6px}.ss-ring b span{display:inline;font-size:inherit;color:inherit;margin:0}
+.ss-arc{animation:arc 1.4s cubic-bezier(.23,1,.32,1) .5s both}@keyframes arc{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+:root[data-theme="dark"] .ss-arc{filter:drop-shadow(0 0 6px rgba(var(--glow),.8))}
+.ss-rows{margin:0;display:grid;gap:0}.ss-rows div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--rule);font-size:14px}
+.ss-rows dt{color:var(--ink-2)}.ss-rows dd{margin:0;font:500 14px var(--f-mono)}
+.strip-side .btn{justify-content:center;margin-top:auto}
+.hero .facts{grid-template-columns:repeat(4,1fr);margin-top:28px;padding:0;border:0;gap:0}
+.hero .facts div{text-align:center;padding:6px 12px}.hero .facts div+div{border-left:1px solid var(--rule)}
+.hero .facts div b{font-size:26px}
+@media (max-width:900px){.strip{grid-template-columns:1fr}.strip-side{border-left:0;border-top:1px solid var(--rule);padding:20px}.strip-main{padding:18px 16px 10px}}
+@media (max-width:640px){.hero{padding-block:44px 48px}.hero-top{text-align:left;margin-bottom:32px}.hero-top .lede{margin-left:0}.hero .actions{justify-content:flex-start}.hero .actions .btn{padding:12px 16px;font-size:15px}
+ .hero .facts{grid-template-columns:1fr 1fr;row-gap:18px}.hero .facts div{text-align:left;padding:0 0 0 14px;border-left:1px solid var(--rule)}.hero .facts div b{font-size:21px}.strip-title{font-size:18px}}
+/* Money Plan card */
+.pf-card{padding:24px;gap:14px;border-radius:14px}
+.pf-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink-2)}
+.pf-ex{font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brass);border:1px solid var(--brass);border-radius:999px;padding:2px 8px}
+.pf-big{font:500 46px/1 var(--f-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+:root[data-theme="dark"] .pf-big{background:linear-gradient(100deg,#9af2d8,#55c9a6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pf-goals{display:grid;gap:12px;margin-top:2px}
+.pf-goals div{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:13.5px;color:var(--ink-2)}
+.pf-goals b{font:500 13.5px var(--f-mono);color:var(--ink)}
+.pf-goals i{grid-column:1/-1;height:6px;border-radius:99px;background:linear-gradient(90deg,var(--teal) var(--w),var(--teal-soft) var(--w));transform-origin:left;transition:transform 1.1s cubic-bezier(.23,1,.32,1) var(--d,0ms)}
+:root[data-theme="dark"] .pf-goals i{box-shadow:0 0 10px -3px rgba(var(--glow),.7)}
+.anim:not(.in) .pf-goals i{transform:scaleX(0)}
+.pf-g{padding-top:12px;border-top:1px solid var(--rule)}.pf-g b{font:500 13.5px var(--f-mono);color:var(--ink)}
+/* closing panel */
+.cta-panel{position:relative;overflow:hidden;isolation:isolate;text-align:center;padding:clamp(40px,6vw,76px) clamp(22px,5vw,64px);border:1px solid var(--rule);border-radius:22px;background:var(--surface)}
+.cta-panel h2{font-size:clamp(32px,4.6vw,56px);letter-spacing:-.02em}
+.cta-panel .lede{margin:18px auto 0}.cta-panel .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+.cta-panel::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(60% 120% at 50% 120%,rgba(var(--glow),.16),transparent 70%)}
+:root[data-theme="dark"] .cta-panel{border-color:#1f3a31;background:linear-gradient(180deg,#0e2019,#0a1712);box-shadow:0 0 120px -50px rgba(var(--glow),.45)}
+:root[data-theme="dark"] .cta-panel::before{background:radial-gradient(60% 130% at 50% 125%,rgba(98,214,178,.3),transparent 70%),radial-gradient(40% 80% at 85% -10%,rgba(223,185,111,.1),transparent 70%)}
+@media (prefers-reduced-motion:reduce){.pf-goals i{transition:none}}
 /* reveal on scroll (class added by script only) */
 .rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.hero-bg i,.hero .g2>div>*,.hero .strip,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
+@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){[data-view]{animation:none}.btn,.tabs button,a.sol,#insCards .card{transition:none}.btn:active,.tabs button:active{transform:none}a.sol:hover,#insCards .card:hover{transform:none}}
 </style>
 
@@ -455,20 +506,22 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 
 <!-- HOME -->
 <div data-view="home">
-  <section class="hero"><div class="hero-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="wrap grid g2">
-    <div>
+  <section class="hero"><div class="hero-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="wrap">
+    <div class="hero-top">
       <h1>Wealth built to last, <em>chosen with numbers.</em></h1>
-      <p class="lede" style="margin-top:18px">Mutual funds, PMS, AIFs, bonds and unlisted shares, chosen and reviewed by a team of chartered accountants, advocates and wealth professionals. We measure every equity fund in India against its index, every weekday, so each fund you hold has to earn its place.</p>
+      <p class="lede">Mutual funds, PMS, AIFs, bonds and unlisted shares, chosen and reviewed by a team of chartered accountants, advocates and wealth professionals. We measure every equity fund in India against its index, every weekday, so each fund you hold has to earn its place.</p>
       <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="/invest/">See what we do</a><a class="btn" href="#ratings">Explore fund ratings</a></div>
-      <div class="facts" id="facts"></div>
     </div>
-    <figure class="strip" id="stripFig" style="margin:0">
-      <div class="tabs" id="stripTabs" role="tablist" aria-label="Category" style="margin-bottom:14px"></div>
-      <div class="row" style="justify-content:space-between;margin-bottom:4px"><b style="font-size:15px" id="stripTitle"></b><span class="muted mono" style="font-size:12px" id="stripAsOf"></span></div>
-      <p class="muted" style="font-size:13px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. <span class="hover-hint">Hover to see which, click to open.</span><span class="tap-hint">Tap a dot to open the fund.</span></p>
-      <div id="strip" style="margin-top:6px"></div>
-      <p id="stripSum" style="font-size:14px;margin-top:10px"></p>
+    <figure class="strip" id="stripFig">
+      <div class="strip-main">
+        <div class="strip-head"><div class="tabs" id="stripTabs" role="tablist" aria-label="Category"></div><span class="live"><i></i><span id="stripAsOf"></span></span></div>
+        <b class="strip-title" id="stripTitle"></b>
+        <p class="muted" style="font-size:13.5px;margin-top:4px">Each dot is a fund (Regular plan): its 3-year return a year above or below the index. <span class="hover-hint">Hover to see which, click to open.</span><span class="tap-hint">Tap a dot to open the fund.</span></p>
+        <div id="strip" style="margin-top:8px"></div>
+      </div>
+      <aside class="strip-side" id="stripSum"></aside>
     </figure>
+    <div class="facts" id="facts"></div>
   </div></section>
 
   <section class="band tint" id="flowSec"><div class="wrap">
@@ -484,10 +537,17 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <ul class="pf-pts"><li>Goal by goal: weddings, education, home, retirement</li><li>A secure retirement target: 25× your yearly spending, or more if you retire early</li><li>What you already hold counted first; the SIP covers the rest</li><li>Your plan replayed through the 2008 and 2020 crashes</li><li>Private: runs in your browser, nothing is sent to us</li></ul>
       <div class="actions" style="margin-top:16px"><a class="btn primary" href="/plan/">Build my Money Plan</a></div>
       <p class="muted" style="font-size:13.5px;margin-top:8px">Choose a quick plan (2 minutes) or a detailed one (6 minutes) on the next page.</p><p style="font-size:14.5px;margin-top:14px">Or start with one number: <a href="/calculators/sip/">SIP</a>, <a href="/calculators/goal/">goal</a>, <a href="/calculators/swp/">retirement income (SWP)</a>, <a href="/calculators/emi/">EMI</a> or <a href="/calculators/capital-gains-tax/">capital-gains tax</a>.</p></div>
-    <div class="pf-vis" id="pfVis" aria-hidden="true"><div class="pf-card"><div class="pf-row"><span>Invest a month</span><b data-n="54800" data-f="inr">₹54,800</b></div><div class="pf-row"><span>Secure retirement target</span><b data-n="5.25" data-f="cr">₹5.25 cr</b></div>
-      <div class="pf-g"><svg width="64" height="64" viewBox="0 0 56 56"><circle r="22" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="22" cx="28" cy="28" fill="none" class="pf-ring" stroke="var(--teal)" stroke-width="6" stroke-linecap="round" stroke-dasharray="110 138" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)" data-n="80" data-f="pct0">80%</text></svg><span>Of the target already covered</span></div>
-      <svg viewBox="0 0 220 70" width="100%" style="margin-top:6px"><defs><linearGradient id="pfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62d6b2" stop-opacity=".45"/><stop offset="1" stop-color="#62d6b2" stop-opacity=".04"/></linearGradient></defs><polygon class="pf-area" points="0,62 40,55 80,42 120,30 150,26 180,30 220,40 220,66 180,62 150,58 120,56 80,60 40,63 0,64" fill="var(--teal-soft)"/><polyline class="pf-line" pathLength="1" points="0,63 40,59 80,51 120,43 150,41 180,46 220,54" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/></svg>
-      <div class="muted" style="font-size:11.5px">Example plan</div></div></div></div></div></section>
+    <div class="pf-vis" id="pfVis" aria-hidden="true"><div class="pf-card">
+      <div class="pf-top"><span>Invest a month</span><span class="pf-ex">Example plan</span></div>
+      <div class="pf-big" data-n="54800" data-f="inr">₹54,800</div>
+      <div class="pf-goals">
+        <div><span>Retirement at 60</span><b data-n="41300" data-f="inr">₹41,300</b><i style="--w:80%"></i></div>
+        <div><span>College fees, 2038</span><b data-n="9500" data-f="inr">₹9,500</b><i style="--w:35%;--d:120ms"></i></div>
+        <div><span>Home down payment, 2030</span><b data-n="4000" data-f="inr">₹4,000</b><i style="--w:60%;--d:240ms"></i></div>
+      </div>
+      <div class="pf-g"><svg width="56" height="56" viewBox="0 0 56 56"><circle r="22" cx="28" cy="28" fill="none" stroke="var(--rule)" stroke-width="6"/><circle r="22" cx="28" cy="28" fill="none" class="pf-ring" stroke="var(--teal)" stroke-width="6" stroke-linecap="round" stroke-dasharray="110 138" transform="rotate(-90 28 28)"/><text x="28" y="32" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--ink)" data-n="80" data-f="pct0">80%</text></svg><span>of the <b data-n="5.25" data-f="cr">₹5.25 cr</b> retirement target already covered by what you hold</span></div>
+      <svg viewBox="0 0 220 60" width="100%"><defs><linearGradient id="pfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62d6b2" stop-opacity=".45"/><stop offset="1" stop-color="#62d6b2" stop-opacity=".04"/></linearGradient></defs><polygon class="pf-area" points="0,52 40,45 80,32 120,20 150,16 180,20 220,30 220,56 180,52 150,48 120,46 80,50 40,53 0,54" fill="var(--teal-soft)"/><polyline class="pf-line" pathLength="1" points="0,53 40,49 80,41 120,33 150,31 180,36 220,44" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/></svg>
+      <div class="muted" style="font-size:11.5px">Range of outcomes across market history</div></div></div></div></section>
 
   <section class="band tint" id="catSec"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
@@ -541,14 +601,11 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
     <div class="grid g3" style="margin-top:24px" id="insCards"></div>
   </div></section>
 
-  <section class="band tint"><div class="wrap grid g2" style="align-items:center">
-    <div class="stack">
-      
+  <section class="band"><div class="wrap"><div class="cta-panel">
       <h2>Bring us the whole picture</h2>
       <p class="lede">Families, professionals and business owners come to us with a mix of funds, policies, shares and plans built up over years. We start by putting it in one view, then help you decide what to keep, what to change and what to add.</p>
-    </div>
-    <div class="row" style="justify-content:flex-end"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#about">About us</a></div>
-  </div></section>
+      <div class="actions"><a class="btn primary" href="#contact">Talk to us</a><a class="btn" href="#about">About us</a></div>
+  </div></div></section>
 </div>
 
 <!-- RATINGS -->
@@ -983,7 +1040,7 @@ function home(){
   const m=S.meta, act=S.funds.filter(f=>f.plan_type==='Regular');
   const rated=S.funds.filter(f=>f.tier&&f.tier!=='Unrated').length;
   $('#facts').innerHTML=[[S.funds.length,'fund plans tracked'],[rated,'with a track-record rating'],[cats().length,'categories'],[dmy(m.as_of),'NAV data as of']].map(([a,b])=>`<div><b${typeof a==='number'?` data-n="${a}" data-f="int"`:''}>${typeof a==='number'?a.toLocaleString('en-IN'):a}</b><span>${b}</span></div>`).join('');
-  $('#stripAsOf').textContent='3Y to '+dmy(m.as_of);
+  $('#stripAsOf').textContent='3 years to '+dmy(m.as_of);
   const SC=['Large Cap','Mid Cap','Small Cap','Flexi Cap','Multi Cap'].filter(c=>S.funds.some(f=>f.category===c));
   S.stripCat=S.stripCat||'Flexi Cap';
   const drawTabs=()=>{$('#stripTabs').innerHTML=SC.map(c=>`<button role="tab" aria-selected="${c===S.stripCat}" data-c="${c}">${c}</button>`).join('');
@@ -996,7 +1053,7 @@ function home(){
   drawBT();
   const L=['Large Cap','Flexi Cap','Mid Cap','Small Cap'];
   $('#leaders').innerHTML=L.map(c=>{const top=S.funds.filter(f=>f.category===c&&f.plan_type==='Regular'&&f.score!=null).sort((a,b)=>b.score-a.score).slice(0,3);
-    return `<div class="card stack glow" style="gap:10px"><b style="font:500 19px var(--f-display)">${c}</b>${top.map((f,i)=>`<a href="#fund-${f.code}" style="text-decoration:none;color:inherit;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--rule)"><span class="mono muted">${i+1}</span><span style="min-width:0"><span style="display:block;font-weight:500;line-height:1.3">${esc(f.name)}</span><span class="muted mono" style="font-size:12px">3Y ${pct(f.ret_3Y)} · vs index ${spct(f.excess_3Y)}</span></span>${tier(f.tier)}</a>`).join('')}<a href="#ratings" data-cat="${c}" style="font-size:13.5px;display:inline-block;padding:4px 0">Full ${c} table</a></div>`}).join('');
+    return `<div class="card stack glow" style="gap:10px"><b style="font:500 19px var(--f-display)">${c}</b>${top.map((f,i)=>`<a href="#fund-${f.code}" style="text-decoration:none;color:inherit;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--rule)"><span class="mono muted">${i+1}</span><span style="min-width:0"><span style="display:block;font-weight:500;line-height:1.3">${esc(niceName(f.name))}</span><span class="muted mono" style="font-size:12px">3Y ${pct(f.ret_3Y)} · vs index ${spct(f.excess_3Y)}</span></span>${tier(f.tier)}</a>`).join('')}<a href="#ratings" data-cat="${c}" style="font-size:13.5px;display:inline-block;padding:4px 0">Full ${c} table</a></div>`}).join('');
   $$('#leaders a[data-cat]').forEach(a=>a.onclick=()=>{S.cat=a.dataset.cat});
   gapBlock();motion($('[data-view="home"]'));
   if($('#services'))$('#services').innerHTML=SOL.map(s=>`<a class="card stack sol glow" href="/invest/" style="gap:6px;text-decoration:none;color:inherit"><div class="row" style="justify-content:space-between;gap:8px"><b style="font:600 18px var(--f-display)">${s.t}</b>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div><span class="muted" style="font-size:14px">${s.short}</span></a>`).join('');
@@ -1006,7 +1063,8 @@ function drawStrip(cat){
   const bench=(F.find(f=>f.benchmark)||{}).benchmark||'its index';
   $('#stripTitle').textContent=`${cat} funds vs the ${bench.replace(/\bNIFTY\b/g,'Nifty').replace(/Nifty(\d)/,'Nifty $1')} TRI`;
   const narrow=($('#strip').clientWidth||600)<480;
-  const W=600,H=narrow?250:300,L=30,R=14,T=24,B=46, rad=narrow?8:7, gap=narrow?17:15;
+  const wide=($('#strip').clientWidth||600)>=700;
+  const W=wide?920:600,H=narrow?250:wide?270:300,L=30,R=14,T=24,B=46, rad=narrow?8:wide?8.5:7, gap=narrow?17:wide?19:15;
   if(!F.length){$('#strip').innerHTML='<p class="muted">No data</p>';$('#stripSum').textContent='';return}
   const v=F.map(f=>f.excess_3Y), lo=Math.min(-0.04,Math.min(...v)-0.005), hi=Math.max(0.04,Math.max(...v)+0.005);
   const x=e=>L+(e-lo)/(hi-lo)*(W-L-R);
@@ -1028,7 +1086,12 @@ function drawStrip(cat){
   ${pts.map((p,i)=>`<circle class="dot${p.f.tier==='A+'?' ap':''}" cx="${p.px.toFixed(1)}" cy="${y(p.lane).toFixed(1)}" r="${rad}" fill="var(--${TC[p.f.tier]||'t-u'})" stroke="var(--surface)" stroke-width="1.5" data-c="${p.f.code}" style="--dx:${(x(0)-p.px).toFixed(1)}px;--dy:${(base-y(p.lane)).toFixed(1)}px;--d:${150+i*16}ms"><title>${esc(p.f.name)}: ${spct(p.f.excess_3Y)} vs index</title></circle>`).join('')}
   </svg><div class="row" style="gap:14px;font-size:12.5px;margin-top:6px">${['A+','A','B','C','Unrated'].map(t=>`<span class="row" style="gap:6px"><span class="tier ${tcls(t)}" style="min-width:0;width:12px;height:12px;padding:0;border-radius:50%"></span>${t}</span>`).join('')}</div>`;
   const ahead=F.filter(f=>f.excess_3Y>0).length, med=[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
-  $('#stripSum').innerHTML=`<b><span data-n="${ahead}" data-f="int">${ahead}</span> of ${F.length}</b> ${esc(cat)} funds beat the index over 3 years; ${Math.abs(med)<0.0005?'the typical fund was about level with it.':`the typical fund was <b class="${sg(med)}">${spct(med)}</b> a year against it.`} <a href="#ratings" id="stripMore">See the ${esc(cat)} table</a>`;
+  const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
+  $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
+    <div><b><span data-n="${ahead}" data-f="int">${ahead}</span><small> of ${F.length}</small></b><span>${esc(cat)} funds beat the index over 3 years</span></div></div>
+  <dl class="ss-rows"><div><dt>Typical fund</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'level':spct(med)+' a year'}</dd></div>
+    <div><dt>Furthest ahead</dt><dd class="pos">${spct(best.excess_3Y)}</dd></div><div><dt>Furthest behind</dt><dd class="neg">${spct(worst.excess_3Y)}</dd></div></dl>
+  <a class="btn" href="#ratings" id="stripMore">See the ${esc(cat)} table</a><p class="muted" style="font-size:12px">Past returns against the index, not a forecast.</p>`;
   $('#stripMore').onclick=()=>{S.cat=cat};motion($('#stripSum'));
   $$('#strip circle.dot').forEach(c=>{const f=S.byCode.get(+c.dataset.c);
     c.onmousemove=e=>showTip(e,`<b>${esc(f.name)}</b><br>3Y ${pct(f.ret_3Y)} a year · ${spct(f.excess_3Y)} vs index<br>Track record: ${esc(f.tier)}`);
@@ -1085,6 +1148,8 @@ function flowGraphic(){const el=$('#flow');if(!el)return;
     <text class="fl-s" x="${X.rev[0]+22}" y="${mid+8}">What to keep,</text><text class="fl-s" x="${X.rev[0]+22}" y="${mid+30}">change or add,</text><text class="fl-s" x="${X.rev[0]+22}" y="${mid+52}">and why</text></g>
   ${pulses.join('')}</svg>`}
 const benchName=b=>b.replace(/NIFTY ?/g,'Nifty ').replace(/\s+/g,' ').replace(/\b([A-Z]{4,})\b/g,w=>w[0]+w.slice(1).toLowerCase()).replace('Largemidcap','LargeMidcap');
+const KEEP=new Set(['HDFC','ICICI','SBI','UTI','DSP','HSBC','PGIM','JM','LIC','MF','ITI','IDFC','NJ','ELSS','PSU','BSE','ESG','MNC','WOC','IIFL']);
+const niceName=n=>n===n.toUpperCase()?n.split(' ').map((w,i)=>KEEP.has(w)?w:(i&&/^(OF|AND|THE)$/.test(w))?w.toLowerCase():w[0]+w.slice(1).toLowerCase()).join(' '):n;
 const catSlug=c=>c.toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 function catSection(){const el=$('#catGrid');if(!el)return;
   const AC=['Equity','Hybrid','Debt'].filter(a=>S.funds.some(f=>f.asset_class===a));S.catAc=S.catAc||AC[0];

@@ -141,6 +141,14 @@ PROTO = {
     "momentum 6m": lambda c: {"mom_6m": (1, True)},
     "momentum 1-12m": lambda c: mom((1, 3, 6, 12), 100),
     "momentum + upside": lambda c: {**mom((1, 3, 6, 12), 60), "upside_capture_3y": (40, True)},
+    "value tilt": lambda c: {"style_val": (1, True)},
+    "value + momentum": lambda c: {"style_val": (40, True), **mom((3, 6, 12), 60)},
+    "value + quality": lambda c: {"style_val": (40, True), "style_qual": (30, True), "info_ratio_3y": (30, True)},
+    "quality tilt": lambda c: {"style_qual": (50, True), "capture_ratio_3y": (50, True)},
+    "low volatility": lambda c: {"style_lowvol": (50, True), "vol_3y": (50, False)},
+    "momentum-stock tilt": lambda c: {"style_mom": (50, True), **mom((6, 12), 50)},
+    "size + momentum": lambda c: {**size(c), **mom((1, 3, 6, 12), 50), "beta_3y": (20, True)},
+    "high beta": lambda c: {"beta_3y": (1, True)},
 }
 REB = lambda c: {"upside_capture_3y": (30, True), "beta_3y": (25, True), "style_val": (20, True), **{k: (v[0] / 15 * 25, v[1]) for k, v in size(c).items()}}
 

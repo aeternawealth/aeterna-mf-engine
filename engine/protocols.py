@@ -113,9 +113,14 @@ def assign_tiers_v7(g: pd.DataFrame) -> pd.DataFrame:
     k30 = max(k, int(np.ceil(.3 * n)))
     bottom = n - int(np.floor(.3 * n))
     tier = pd.Series("B", index=g.index)
-    tier[pos <= k30] = "A"
-    tier[pos <= k] = "A+"
-    tier[(pos > bottom) & (pos > k30)] = "C"
+    if C.EQUITY_MODEL == "v8":   # by score, any number of funds: A+ at 75 or more, A at 65 or more; C = the bottom 30% below that
+        tier[(pos > bottom) & (s < C.V8_A)] = "C"
+        tier[s >= C.V8_A] = "A"
+        tier[s >= C.V8_APLUS] = "A+"
+    else:
+        tier[pos <= k30] = "A"
+        tier[pos <= k] = "A+"
+        tier[(pos > bottom) & (pos > k30)] = "C"
     g["flags"] = red_flags(g)
     breach = g["flags"].map(lambda f: "mandate_breach" in f)
     tier[breach & tier.isin(["A+", "A"])] = "B"

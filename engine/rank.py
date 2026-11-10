@@ -9,7 +9,7 @@ import pandas as pd
 
 from . import config as C
 from .metrics import arbitrage_metrics, debt_clean, debt_metrics, lean_metrics, median_series, fund_metrics, horizon_metrics, index_metrics
-from .protocols import assign_tiers, assign_tiers_v7, score_group
+from .protocols import _pct, assign_tiers, assign_tiers_v7, score_group
 
 
 def _key(s: str) -> str:
@@ -259,7 +259,7 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         rest = g[g.gate != "ok"].copy()
         cat = g.category.iloc[0]
         proto_name, proto = C.protocol_for(cat)
-        v7 = C.EQUITY_MODEL == "v7" and cat in C.V7_CATEGORIES
+        v7 = C.EQUITY_MODEL in ("v7", "v8") and cat in C.V7_CATEGORIES
         if len(ok) and v7:
             # market mode: when the category's own index is below its 200-day average on the rating date, the score
             # is half the category model and half the after-a-fall (rebound) criteria
@@ -267,6 +267,9 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
             bs = tri[b.iloc[0]][:as_of].dropna() if len(b) and b.iloc[0] in tri else pd.Series(dtype=float)
             fall = len(bs) > C.V7_MARKET_DAYS and bs.iloc[-1] < bs.iloc[-C.V7_MARKET_DAYS:].mean()
             s1 = score_group(ok, proto)
+            if C.EQUITY_MODEL == "v8" and cat in C.V8_ENSEMBLE:   # each view's score as a place in the group, averaged
+                parts = [_pct(score_group(ok, p)["score"], True) for p in C.V8_ENSEMBLE[cat]]
+                s1["score"] = (sum(x.fillna(50) for x in parts) / len(parts)).where(s1["score"].notna()).round(1)
             if fall:
                 s2 = score_group(ok, C.v7_rebound(cat))
                 s1["score"] = ((s1["score"] + s2["score"].fillna(s1["score"])) / 2).round(1)

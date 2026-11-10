@@ -54,7 +54,7 @@ def _equity(u: pd.DataFrame) -> pd.DataFrame:
 
 def _inputs(category: str, mode: str = "normal") -> dict:
     w = {m: wt for m, (pl, wt, hib) in C.protocol_for(category)[1].items() if wt > 0}
-    if mode == "after a fall" and C.EQUITY_MODEL == "v7" and category in C.V7_CATEGORIES:   # half the model, half rebound
+    if mode == "after a fall" and C.EQUITY_MODEL in ("v7", "v8") and category in C.V7_CATEGORIES:   # half the model, half rebound
         r = {m: wt for m, (pl, wt, hib) in C.v7_rebound(category).items()}
         w = {m: w.get(m, 0) / 2 + r.get(m, 0) / 2 for m in set(w) | set(r)}
     return w

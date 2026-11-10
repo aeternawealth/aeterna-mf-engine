@@ -202,7 +202,7 @@ LEAN_EQUITY_PROTOCOL = {
 #         that did better in the walk-forward test. The choice and the fitted weights are in audit/equity_models.json.
 # The candidate runs on the staging branch only until it is approved for the live site.
 EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v7")
-ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5", "v7") else V3_ACTIVE_EQUITY_PROTOCOL
+ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5", "v7", "v8") else V3_ACTIVE_EQUITY_PROTOCOL
 EQUITY_BY_CATEGORY = {}          # category -> protocol, for categories that do not use ACTIVE_EQUITY_PROTOCOL
 EQUITY_MODEL_NAMES = {}          # category -> "lean" / "comp_all" / "comp_cat", for the Method page
 if EQUITY_MODEL == "v5":
@@ -264,6 +264,38 @@ def v7_protocol(cat):
 def v7_rebound(cat):
     """after-a-fall criteria: the funds that rebound first after the category's index has fallen"""
     return {"upside_capture_3y": ("Rebound", 30, True), "beta_3y": ("Rebound", 25, True), "style_val": ("Rebound", 20, True), **_size(cat, 25)}
+
+
+# ---------------------------------------------------------------- v8 (Nov 2026): v7 checked on the live engine
+# audit/validate_live.py + compare_live.py + wf_select.py: the production engine at every month-end 2015-2026, Regular and
+# Direct, closed funds included. A category leaves its v7 model only where another candidate did better by 3 points or
+# more both before and after COVID. Large & Mid Cap: the comprehensive model was fitted on the test years (0.41 before
+# COVID, 0.81 after); the all-rounder below holds in both (0.68 / 0.71).
+V8_QUALITY = {**{f"mom_{m}m": ("Momentum", 11.25, True) for m in (1, 3, 6, 12)}, "upside_capture_3y": ("Upside capture", 20, True),
+              "info_ratio_3y": ("Risk-adjusted", 10, True), "capture_ratio_3y": ("Risk-adjusted", 10, True), **_size("Large & Mid Cap", 15)}
+V8_MID = {"mom_1m": ("Momentum", 25, True), "mom_3m": ("Momentum", 25, True), "beta_3y": ("Market exposure", 20, True),
+          "age_years": ("Fund size and age", 15, False), **_size("Mid Cap", 15)}
+V8_FOCUSED = {"tracking_err_3y": ("Conviction", 40, True), **{f"mom_{m}m": ("Momentum", 20, True) for m in (3, 6, 12)}}
+# Multi Cap: three views scored separately, each turned into a place in the peer group, and the places averaged
+V8_ENSEMBLE = {"Multi Cap": [_core("Multi Cap"),
+                             {"downside_capture_3y": ("Defence", 50, False), "max_drawdown_3y": ("Defence", 30, True), "capture_ratio_3y": ("Defence", 20, True)},
+                             {"style_qual": ("Quality", 50, True), "capture_ratio_3y": ("Quality", 50, True)}]}
+V8_MODEL_NAME = {"Large & Mid Cap": "all-rounder", "Mid Cap": "mid-cap", "Small Cap": "small-cap", "Multi Cap": "momentum and defence",
+                 "Focused": "conviction"}
+V8_APLUS, V8_A = 75, 65     # v8 tiers: by score, any number of funds (the test: higher hit rates than a fixed top 10%)
+
+
+def v8_protocol(cat):
+    if cat == "Large & Mid Cap": return V8_QUALITY
+    if cat == "Mid Cap": return V8_MID
+    if cat == "Focused": return V8_FOCUSED
+    if cat in V8_ENSEMBLE:     # the merged inputs, for the fund page and the history's reasons; the score is the ensemble
+        m = {}
+        for p in V8_ENSEMBLE[cat]:
+            for k, (pl, w, h) in p.items():
+                m[k] = (pl, m.get(k, (pl, 0, h))[1] + w / len(V8_ENSEMBLE[cat]), h)
+        return m
+    return v7_protocol(cat)
 
 
 V7_MARKET_DAYS = 200        # after-a-fall mode when the category's index is below its 200-day average on the rating date
@@ -349,6 +381,8 @@ def protocol_for(category: str):
         return "Arbitrage protocol", ARBITRAGE_PROTOCOL
     if category == "Index Fund":
         return "Index protocol", INDEX_PROTOCOL
+    if EQUITY_MODEL == "v8" and category in V7_CATEGORIES:
+        return f"Equity v8: {V8_MODEL_NAME.get(category, 'core')} model", v8_protocol(category)
     if EQUITY_MODEL == "v7" and category in V7_CATEGORIES:
         return f"Equity v7: {V7_MODEL_NAME.get(category, 'core')} model", v7_protocol(category)
     if category in EQUITY_BY_CATEGORY:

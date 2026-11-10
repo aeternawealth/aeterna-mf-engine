@@ -149,6 +149,10 @@ PROTO = {
     "momentum-stock tilt": lambda c: {"style_mom": (50, True), **mom((6, 12), 50)},
     "size + momentum": lambda c: {**size(c), **mom((1, 3, 6, 12), 50), "beta_3y": (20, True)},
     "high beta": lambda c: {"beta_3y": (1, True)},
+    # the momentum + defence ensemble as one weighted score (how the engine would run it)
+    "momentum + defence (one score)": lambda c: {**{k: (w / 3, h) for k, (w, h) in {**mom((1, 3, 6, 12), 55), "upside_capture_3y": (30, True), **size(c)}.items()},
+                                                 "downside_capture_3y": (50 / 3, False), "max_drawdown_3y": (30 / 3, True),
+                                                 "capture_ratio_3y": (70 / 3, True), "style_qual": (50 / 3, True)},
 }
 REB = lambda c: {"upside_capture_3y": (30, True), "beta_3y": (25, True), "style_val": (20, True), **{k: (v[0] / 15 * 25, v[1]) for k, v in size(c).items()}}
 
@@ -272,7 +276,18 @@ def quota20(s):
     return t.where(~((pr <= .2) & t.isin(["A"])), "A+")
 
 
-RULES = {"quota": quota, "top 20%": quota20, "A+70/A60": lambda s: thresh(s, 70, 60), "A+80/A70": lambda s: thresh(s, 80, 70), "A+75/A65": lambda s: thresh(s, 75, 65), "A+85/A70": lambda s: thresh(s, 85, 70)}
+def union(s, ap, a):
+    """the quota, and on top of it any fund whose score clears the cut: never empty, never capped"""
+    q, t = quota(s), thresh(s, ap, a)
+    r = q.copy()
+    r[(t == "A") & r.isin(["B", "C"])] = "A"
+    r[t == "A+"] = "A+"
+    return r
+
+
+RULES = {"quota": quota, "quota+75/65": lambda s: union(s, 75, 65), "quota+80/70": lambda s: union(s, 80, 70), "quota+70/60": lambda s: union(s, 70, 60), "top 20%": quota20, "A+70/A60": lambda s: thresh(s, 70, 60), "A+80/A70": lambda s: thresh(s, 80, 70), "A+75/A65": lambda s: thresh(s, 75, 65), "A+85/A70": lambda s: thresh(s, 85, 70)}
+import os
+ONLY = [x for x in os.environ.get("ONLY", "").split("|") if x]
 for c in CATS:
     cands = {}
     for k, s in SC.items():
@@ -280,6 +295,7 @@ for c in CATS:
         cands[(k, "market mode")] = np.where(M.fall, (s + reb.fillna(s)) / 2, s)
     for m in ("v3", "v5", "v7"):
         if f"s_{m}" in M: cands[(f"engine {m}", "as run")] = M[f"s_{m}"]
+    if ONLY: cands = {kk: v for kk, v in cands.items() if kk[0] in ONLY}
     for (k, mode), s in cands.items():
         s = pd.Series(s, index=M.index).where(M.cat == c)
         rules = dict(RULES)
@@ -296,8 +312,8 @@ for c in CATS:
                              **{"pre_" + a: b for a, b in pr.items()}))
     print(f"  {c} done", flush=True)
 T = pd.DataFrame(rows)
-T.to_csv(L + "compare_results.csv", index=False)
-pd.DataFrame(YRS).to_csv(L + "compare_years.csv", index=False)
+T.to_csv(L + os.environ.get("OUTNAME", "compare_results.csv"), index=False)
+pd.DataFrame(YRS).to_csv(L + os.environ.get("OUTNAME", "compare_results.csv").replace("results", "years"), index=False)
 pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500)
 cols = ["model", "mode", "tiers", "decision", "post_aplus_1y", "post_aplus_3y", "post_review_1y", "post_review_3y", "post_all_1y",
         "post_aplus_n", "pre_aplus_1y", "pre_review_3y"]

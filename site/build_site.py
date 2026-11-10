@@ -149,6 +149,43 @@ RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B'
  hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
  let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
 document.querySelectorAll('.rh-chart').forEach(rhDraw);"""
+EQUITY_ACTIVE = {"Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Focused", "ELSS", "Value / Contra", "Dividend Yield", "Sectoral/Thematic"}
+REVIEW_FLAGS = {"mandate_breach": "its portfolio is outside SEBI's limits for the category"}
+
+
+def review_status(f, hist):
+    """Where an active equity fund stands under the review rule (Method page, 'How we use the ratings')."""
+    if f.get("category") not in EQUITY_ACTIVE:
+        return ""
+    t, elss = f.get("tier"), f.get("category") == "ELSS"
+    wait = "its 3-year lock-in ends" if elss else "you have held it for 12 months"
+    flags = [x for x in str(f.get("flags") or "").split(",") if x.strip()]
+    hit = [REVIEW_FLAGS[x.strip()] for x in flags if x.strip() in REVIEW_FLAGS]
+    below = 0
+    for h in reversed(hist or []):
+        if h[1] in ("B", "C"): below += 1
+        else: break
+    since = ""
+    if below and hist:
+        m = hist[len(hist) - below][0]
+        since = f" since {date(int(m[:4]), int(m[5:7]), 1).strftime('%b %Y')} ({below} month{'s' if below > 1 else ''})"
+    if hit:
+        state, cls, txt = "Review now", "rv-now", f"A red flag brings a review at any time: {'; '.join(hit)}."
+    elif t == "A+":
+        state, cls, txt = "In the A+ group", "rv-ap", "The top 10% of its peer group on our ratings: the group new money in this category goes to under our review rule."
+    elif t == "A":
+        state, cls, txt = "Keep", "rv-a", "Rated A: if you hold it, it stays. New money in this category goes to A+ funds."
+    elif t in ("B", "C"):
+        state, cls, txt = "Review due", "rv-due", (f"Rated {t}{since}. Below A, a fund comes up for review once {wait}"
+                                                   + ("" if elss else ", when the exit load has ended in almost every equity fund") + ". We weigh the tax on the gain before replacing it.")
+    elif f.get("gate") and "stale" in str(f.get("gate")):
+        state, cls, txt = "Review now", "rv-now", "Its NAV has stopped updating: the scheme may have merged or closed."
+    else:
+        state, cls, txt = "Not rated yet", "rv-new", "Too little history for a rating (3 years), so there is no review signal yet."
+    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b><a href="/#method" class="rv-how">How the review rule works</a></div>'
+            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p></div>')
+
+
 TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
 
@@ -595,6 +632,7 @@ def main():
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
+{review_status(f, RH.get(str(f["code"])))}
 {rh_html}
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>

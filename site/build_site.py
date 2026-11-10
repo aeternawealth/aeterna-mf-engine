@@ -299,6 +299,8 @@ def crumbs(items):
             "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + p} for i, (n, p) in enumerate(items)]}
 
 
+CSS_VER = ""
+RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use one copy
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
 HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll('.dd')),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
              "function shut(x){x.classList.remove('open');var y=x.querySelector('.ddbtn');if(y)y.setAttribute('aria-expanded','false')}"
@@ -306,7 +308,8 @@ HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll
              "document.addEventListener('click',function(e){dd.forEach(function(d){if(!d.contains(e.target))shut(d)})});"
              "if(m)m.onclick=function(){var o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};"
              "var h=(document.querySelector('a.brand')||{}).href||'/',go=function(){location.href=h.split('#')[0]+'?q='};var s=document.getElementById('srchBtn');if(s)s.onclick=go;"
-             "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}})})();</script>")
+             "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}});"
+             "var ac=document.getElementById('addCmp');if(ac)ac.onclick=function(){var c=[];try{c=JSON.parse(localStorage.getItem('aw_cmp')||'[]')}catch(e){}var k=+ac.getAttribute('data-code');if(c.indexOf(k)<0)c.push(k);try{localStorage.setItem('aw_cmp',JSON.stringify(c.slice(-4)))}catch(e){}location.href='/#compare'}})();</script>")
 
 
 MOTION_JS = ("<script>(function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion:reduce)').matches)return;"
@@ -335,7 +338,7 @@ def page(title, desc, path, body, ld=()):
     return (f'<!doctype html>\n<html lang="en-IN" data-theme="dark"><head>{head(title, desc, path, ld)}'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
-            '<link rel="stylesheet" href="/assets/site.css"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
+            '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
             f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
@@ -386,8 +389,13 @@ def main():
     hdr = app[app.index("<!-- HEADER-START -->"): app.index("<!-- HEADER-END -->")]
     hdr = re.sub(r'href="#', 'href="/#', hdr)
     HEADER = '<header class="site">' + hdr + '</header>'
+    global RANGE_JS
+    RANGE_JS = app[app.index('function rangeBlock(f){'): app.index('function portfolioBlock(')]
     css = app[app.index("<style>") + 7: app.index("</style>")]
     (DIST / "assets").mkdir(parents=True, exist_ok=True)
+    global CSS_VER
+    import hashlib
+    CSS_VER = hashlib.sha1(css.encode("utf-8")).hexdigest()[:10]   # a new address whenever the styles change, so no browser keeps an old copy
     (DIST / "assets" / "site.css").write_text(css, encoding="utf-8")
     for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
         if (S / icon).exists():
@@ -402,6 +410,8 @@ def main():
         u = base if base not in used else f"{base}-{f['code']}"
         used.add(u)
         f["_url"] = f"/mutual-funds/{slug(f['category'])}/{u}/"
+    (DIST / "data").mkdir(parents=True, exist_ok=True)
+    (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
     import build_pages as P
     Bm = sys.modules[__name__]
     for f in funds:
@@ -526,23 +536,37 @@ def main():
         rate_text = ("%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
             else "Not rated yet: a rating needs at least 3 years of history (1 year for index funds)."
         cap_html = ('<p class="flag" style="font-size:13.5px;margin-top:4px">%s</p>' % e(cn)) if cn else ""
+        d1 = f.get("nav_chg_1d")
+        day_html = (f'<div><div class="muted" style="font-size:13px">1-day change</div><div class="mono {"pos" if d1 > 0 else "neg" if d1 < 0 else ""}" style="font-size:20px">{spct(d1, 2)}</div></div>') if d1 is not None else ""
+        flow_html = ""
+        if f.get("flow_4q") is not None:
+            fr = [(f"Net flow, quarter to {e(f.get('flow_quarter') or '')}", spct(f.get("flow_1q")) + " of AUM"), ("Net flow, last 4 quarters", spct(f.get("flow_4q")) + " of AUM")]
+            flow_html = ('<h3 style="margin-top:28px">Money flows</h3><div class="kv" style="margin-top:8px">' + "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in fr)
+                         + '</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing the change in NAV.</p>')
+        range_html = ""
+        if f.get("hist3y_n") and not arb and asset_class(f["category"]) != "Debt":
+            rd = {k: f.get(k) for k in ("hist3y_worst", "hist3y_p10", "hist3y_median", "hist3y_p90", "hist3y_best", "hist3y_n", "hist3y_pos", "hist3y_gt7")}
+            rd["hist3y_from"] = dmy(f.get("hist3y_from"))
+            range_html = ('<div id="rangeBox"></div><script>(function(){const pct=(v,d=1)=>v==null?"–":(v*100).toFixed(d)+"%",dmy=x=>x;' + RANGE_JS
+                          + 'document.getElementById("rangeBox").innerHTML=rangeBlock(' + json.dumps(rd) + ')})();</script>')
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{slug(f['category'])}/">{e(f['category'])}</a> › {e(f['_name'])}</nav>
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">{e(f['_name'])} ({e(f['plan_type'])})</h1>
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else ('benchmark: ' + e(BL)) if BL else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 {f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) in ('Hybrid', 'Debt') else ''}
-<div class="row" style="margin-top:16px"><a class="btn primary" href="/#fund-{f['code']}">Open the interactive view</a><a class="btn" href="/#contact">Ask about this fund</a>{twin_btn}</div>
+<div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="/#contact">Ask about this fund</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
- <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div><div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
+ <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends.</p>
 {liq_html}
+{range_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>
-<div><h2 style="font-size:26px">Portfolio</h2><div style="margin-top:12px">{hold_html}</div></div></div>
+<div><h2 style="font-size:26px">Portfolio</h2><div style="margin-top:12px">{hold_html}</div>{flow_html}</div></div>
 {more}
 <p class="note" style="margin-top:32px">Data as of {dmy(as_of)}: NAVs from AMFI, index data from NSE Indices, portfolios from {e(f.get('amc', 'the fund house'))}'s monthly disclosure. Updated every weekday. Read the scheme documents before investing.</p>
 </div></section>"""

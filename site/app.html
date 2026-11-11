@@ -510,9 +510,9 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .mode{display:inline-block;font:500 12.5px var(--f-mono);padding:3px 9px;border-radius:999px;border:1px solid var(--rule);white-space:nowrap}.mode-n{color:var(--teal);border-color:color-mix(in srgb,var(--teal) 45%,var(--rule))}.mode-f{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,var(--rule))}
 .mt-why{margin-top:14px;display:grid;gap:10px;max-width:90ch}.mt-why p{color:var(--ink-2)}.mt-why b{color:var(--ink)}
 /* reveal on scroll (class added by script only) */
-.rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
-.rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.ring-dot,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
+.sr{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
+.sr.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.ring-dot,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.sr,.fl-path,.fl-node{transition:none}.sr{opacity:1;transform:none}.glow:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){[data-view]{animation:none}.btn,.tabs button,a.sol,#insCards .card{transition:none}.btn:active,.tabs button:active{transform:none}a.sol:hover,#insCards .card:hover{transform:none}}
 </style>
 
@@ -1168,7 +1168,7 @@ const seen=typeof IntersectionObserver==='function'&&!RM?new IntersectionObserve
 function motion(root){if(!seen||!root)return;
   $$('[data-n],[data-fig]',root).forEach(el=>{if(!el.dataset.mo){el.dataset.mo=1;seen.observe(el)}});
   $$('#pfVis,#gapRows,#catGrid,#flow,#howCard,.why',root).concat(root.matches&&root.matches('#catGrid')?[root]:[]).forEach(el=>{el.classList.remove('in');el.classList.add('anim');seen.observe(el)});
-  $$('section.band>.wrap',root).forEach(el=>{if(!el.classList.contains('rv')){el.classList.add('rv');seen.observe(el)}})}
+  $$('section.band>.wrap',root).forEach(el=>{if(!el.classList.contains('sr')){el.classList.add('sr');seen.observe(el)}})}
 if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.addEventListener('pointermove',e=>{const g=e.target.closest&&e.target.closest('.glow');if(!g)return;const r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true});
 
 /* the investing flow: you -> one plan -> where the money goes -> yearly review. A drawing on wide screens, steps on a phone. */
@@ -1257,7 +1257,7 @@ async function methodV5(){
 
 /* motion on the other views: blocks below the fold ease in once, large figures count up */
 function motionView(root){if(!seen||!root)return;
-  $$('.card,.tablewrap,.ab-facts,.ab-sec,.sol-row,.note,figure',root).forEach(el=>{if(el.classList.contains('rv')||el.closest('.rv'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('rv');seen.observe(el)}});
+  $$('.card,.tablewrap,.ab-facts,.ab-sec,.sol-row,.note,figure',root).forEach(el=>{if(el.classList.contains('sr')||el.closest('.sr'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('sr');seen.observe(el)}});
   $$('.big-fig,.ab-facts b',root).forEach(el=>{if(!el.dataset.mo&&/^\D*[\d,]*\.?\d/.test(el.textContent.trim())){el.dataset.mo=1;el.dataset.fig='';seen.observe(el)}});
   $$('a.card,a.sol',root).forEach(el=>el.classList.add('glow'))}
 const benchName=b=>b.replace(/NIFTY ?/g,'Nifty ').replace(/\s+/g,' ').replace(/\b([A-Z]{4,})\b/g,w=>w[0]+w.slice(1).toLowerCase()).replace('Largemidcap','LargeMidcap');

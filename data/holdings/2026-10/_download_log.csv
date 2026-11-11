@@ -1,4 +1,4 @@
-amc,status,info,file,run 2026-11-11 10:41
+amc,status,info,file,run 2026-11-11 11:37
 360-ONE-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.360.one/asset/mutual-funds/downloads/: no 2026-10 file found on https://www.360.one/asset/mutual-funds/downloads/,
 Abakkus-Mutual-Fund,FAILED,"downloaded 2 files but none is an equity portfolio (Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx, Investor_Complaints_October_2026_d2ba961098.xlsx)",/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Abakkus-Mutual-Fund/Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx
 Aditya-Birla-Sun-Life-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio: no 2026-10 file found on https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio,
@@ -14,7 +14,7 @@ Choice-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page
 DSP-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/DSP-Mutual-Fund/dsp-monthend-portfolio-as-on-31-october-2026.zip
 Edelweiss-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.edelweissmf.com/statutory#Portfolio-of-Schemes: no 2026-10 file found on https://www.edelweissmf.com/statutory,
 Franklin-Templeton-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.franklintempletonindia.com/investor/reports?firstFilter-12: no 2026-10 file found on https://www.franklintempletonindia.com/investor/reports?firstFilter-12,
-Groww-Mutual-Fund,NOT_YET,adapter found no files for this month,
+Groww-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Groww-Mutual-Fund/Monthly_Portfolio-_Oct_31_2026.xlsx
 HDFC-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio: no 2026-10 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio,
 Helios-Mutual-Fund,OK,7 files from https://www.heliosmf.in/portfolio-disclosure/ (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Helios-Mutual-Fund/helios-arbitrage-fund-monthly-portfolio-as-on-31-october-2026.xlsx
 HSBC-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (investor-complaints-october-2026.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/HSBC-Mutual-Fund/investor-complaints-october-2026.xlsx

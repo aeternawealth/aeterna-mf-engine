@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-11 10:15
+Aeterna MF Engine run 2026-11-11 11:13
 [1/7] Universe (AMFI NAVAll)
   2741 equity + index schemes (growth, Direct & Regular)
 [2/7] AMFI extras: TER, AUM, market-cap list
@@ -58,7 +58,7 @@ Aeterna MF Engine run 2026-11-11 10:15
   OK      DSP-Mutual-Fund  
   NOT_YET Edelweiss-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.edelweissmf.com/statutory#Portfolio-of-Schemes: no 2026-10 file found on https://www.edelweissmf.com/statutory
   NOT_YET Franklin-Templeton-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.franklintempletonindia.com/investor/reports?firstFilter-12: no 2026-10 file found on https://www.franklintempletonindia.com/investor/reports?firstFilter-12
-  NOT_YET Groww-Mutual-Fund  adapter found no files for this month
+  OK      Groww-Mutual-Fund  
   NOT_YET HDFC-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio: no 2026-10 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio
   OK      Helios-Mutual-Fund  
   FAILED  HSBC-Mutual-Fund  downloaded 1 files but none is an equity portfolio (investor-complaints-october-2026.xlsx)
@@ -99,10 +99,11 @@ Call log:
   NOT_YET ASK-MUTUAL-FUND  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-10 file found on https://www.askmutualfund.com/
   NOT_YET Carnelian-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bit.ly/4eN2G08: no 2026-10 file found on https://bit.ly/4eN2G08
   FAILED  Monarch-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_Portfolio_Monarch_Overnight_Fund_31_October_2026_fd2ba7cda3.xls)
-  holdings download: 16/54 AMCs OK, 32 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
-  holdings: 420 portfolios parsed from 282 files, 283 mapped to schemes
+  holdings download: 17/54 AMCs OK, 31 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
+  holdings: 463 portfolios parsed from 283 files, 301 mapped to schemes
   holdings validation: 12 portfolios quarantined
-  holdings: 271 portfolios from 2026-10, 428 carried forward from 2026-09 (AMCs not published / not downloaded) -> 699 total
+  holdings: kept 413 portfolios already parsed for 2026-10 that this run did not re-download
+  holdings: 702 portfolios from 2026-10, 0 carried forward from 2026-09 (AMCs not published / not downloaded) -> 702 total
 [6/7] Metrics, protocols, ranking committee
   metrics 200/2741
   metrics 400/2741
@@ -119,7 +120,7 @@ Call log:
   metrics 2600/2741
   flows: 36 quarters of AUM history on disk
   rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
-  rating history: 1 of 1 months rated in 0.7 min
+  rating history: 1 of 1 months rated in 0.9 min
   rating history: 36 months, 1151 funds
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/2026-11
 tier                             A  A+    B   C  Unrated
@@ -149,7 +150,7 @@ Liquid                          13   8   28  19       17
 Long Term                        1   2    7   4        8
 Medium Term                      8   0   10   6        0
 Medium to Long Term              4   4   10   6        4
-Mid Cap                          4   0   36  16       10
+Mid Cap                          4   2   32  18       10
 Money Market                     9   4   21  12        8
 Multi Asset Allocation           4   4   14   8       44
 Multi Cap                        5   4   25  12       18

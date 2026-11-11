@@ -285,6 +285,10 @@ def portfolio_metrics(df: pd.DataFrame, category: str, mcap: pd.Series | None) -
         # 3-point tolerance: AMFI's cap list changes twice a year (with a 1-month rebalancing window) and
         # month-end classification lags; only a clear shortfall counts as a breach
         tol = 0 if key == "n_stocks" else 3
+        if op == ">=" and key in ("large", "mid", "small"):
+            # holdings missing from AMFI's list (mostly stocks listed since the list was cut) get the benefit of the
+            # doubt: a breach must hold even if all of them counted towards the rule
+            val = None if val is None else val + float(m.get("unclassified_pct") or 0)
         if val is not None and not np.isnan(val) and not _check(val + (tol if op == ">=" else -tol), op, lim):
             breaches.append(f"{key} {val:.0f} (needs {op}{lim})")
     m["mandate_ok"] = 0 if breaches else 1
@@ -456,6 +460,30 @@ def with_fallback(hold: pd.DataFrame, month: str, log=print, same_month: pd.Data
     return out, month
 
 
+_BREACH = re.compile(r"(large|mid|small) (\d+(?:\.\d+)?) \(needs >=(\d+)\)")
+
+
+def recheck_mandates(hold: pd.DataFrame) -> pd.DataFrame:
+    """Re-apply today's mandate rule to portfolios parsed earlier: a market-cap shortfall is kept only if it holds
+    with the holdings missing from AMFI's list counted towards the rule (see portfolio_metrics)."""
+    if not len(hold) or "mandate_ok" not in hold.columns or "unclassified_pct" not in hold.columns:
+        return hold
+    hold = hold.copy()
+    for i in hold.index[(hold["mandate_ok"] == 0) & hold["mandate_breaches"].notna()]:
+        keep = []
+        for part in str(hold.at[i, "mandate_breaches"]).split("; "):
+            mm = _BREACH.fullmatch(part.strip())
+            if mm:
+                val = float(hold.at[i, f"{mm.group(1)}_pct"]) if pd.notna(hold.at[i, f"{mm.group(1)}_pct"]) else np.nan
+                val += float(hold.at[i, "unclassified_pct"] or 0) if pd.notna(hold.at[i, "unclassified_pct"]) else 0
+                if np.isfinite(val) and val + 3 >= float(mm.group(3)):
+                    continue
+            keep.append(part)
+        hold.at[i, "mandate_breaches"] = "; ".join(keep) if keep else np.nan
+        hold.at[i, "mandate_ok"] = 0 if keep else 1
+    return hold
+
+
 def add_prev_mandate(hold: pd.DataFrame, month: str) -> pd.DataFrame:
     """mandate_ok_prev = the fund's mandate result in the latest earlier parsed month (NaN if none).
     Rows carried forward from an earlier month are compared with the month before their own portfolio."""
@@ -468,7 +496,7 @@ def add_prev_mandate(hold: pd.DataFrame, month: str) -> pd.DataFrame:
         prev_m = latest_cached_month(before=m)
         if not prev_m:
             continue
-        prev = load_cached(prev_m)
+        prev = recheck_mandates(load_cached(prev_m))
         if not len(prev) or "mandate_ok" not in prev.columns:
             continue
         mp = prev.drop_duplicates("pair_key").set_index("pair_key")["mandate_ok"]

@@ -201,7 +201,7 @@ LEAN_EQUITY_PROTOCOL = {
 #   "v5"  a model per category (audit/research_final.py): lean, or a comprehensive linear model on all 31 measures where
 #         that did better in the walk-forward test. The choice and the fitted weights are in audit/equity_models.json.
 # The candidate runs on the staging branch only until it is approved for the live site.
-EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v7")
+EQUITY_MODEL = os.environ.get("AETERNA_EQUITY_MODEL", "v8")
 ACTIVE_EQUITY_PROTOCOL = LEAN_EQUITY_PROTOCOL if EQUITY_MODEL in ("v4", "v5", "v7", "v8") else V3_ACTIVE_EQUITY_PROTOCOL
 EQUITY_BY_CATEGORY = {}          # category -> protocol, for categories that do not use ACTIVE_EQUITY_PROTOCOL
 EQUITY_MODEL_NAMES = {}          # category -> "lean" / "comp_all" / "comp_cat", for the Method page

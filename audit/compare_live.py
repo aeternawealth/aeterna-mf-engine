@@ -248,7 +248,8 @@ def evaluate(tier, c):
             ap = dp[dp.tt == "A+"]
             o = dict(aplus_1y=(ap.fwd_12.dropna() > 0).mean(), aplus_3y=(ap.fwd_36.dropna() > 0).mean(),
                      aplus_ex1y=ap.fwd_12.mean(), review_1y=(per(r12) > 1).mean(), review_3y=(per(r36) > 1).mean(),
-                     all_1y=(dp.fwd_12.dropna() > 0).mean(), aplus_n=ap.groupby("t").size().mean() if len(ap) else 0,
+                     all_1y=(dp.fwd_12.dropna() > 0).mean(), all_3y=(dp.fwd_36.dropna() > 0).mean(),
+                     aplus_fall_1y=(ap[ap.fall].fwd_12.dropna() > 0).mean() if ap.fall.any() else np.nan, aplus_n=ap.groupby("t").size().mean() if len(ap) else 0,
                      **{f"{t}_1y": (dp[dp.tt == t].fwd_12.dropna() > 0).mean() for t in ("A", "B", "C")})
             o["core4"] = np.nanmean([o[k] for k in ("aplus_1y", "aplus_3y", "review_1y", "review_3y")])
             # robustness: how many different funds, how many months had any A+, the worst year, and the hit rate

@@ -174,7 +174,7 @@ def review_status(f, hist):
     if hit:
         state, cls, txt = "Review now", "rv-now", f"A red flag brings a review at any time: {'; '.join(hit)}."
     elif t == "A+":
-        state, cls, txt = "In the A+ group", "rv-ap", "The top 10% of its peer group on our ratings: the group new money in this category goes to under our review rule."
+        state, cls, txt = "In the A+ group", "rv-ap", "A score of 75 or more out of 100 against its peer group: the group new money in this category goes to under our review rule."
     elif t == "A":
         state, cls, txt = "Keep", "rv-a", "Rated A: if you hold it, it stays. New money in this category goes to A+ funds."
     elif t in ("B", "C"):
@@ -188,7 +188,7 @@ def review_status(f, hist):
             f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p></div>')
 
 
-TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
+TIER_WORD = {"A+": "A+ (a score of 75 or more)", "A": "A (65 or more)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
 
 def slug(s):
@@ -405,12 +405,12 @@ def write(path, text):
     p.write_text(text, encoding="utf-8")
 
 
-TIER_WORD = {"A+": "Leading", "A": "Strong", "B": "In line", "C": "Lagging", "Watch": "Under review", "Unrated": "Not yet rated"}   # same as TW in app.html
+TIER_LABEL = {"A+": "Leading", "A": "Strong", "B": "In line", "C": "Lagging", "Watch": "Under review", "Unrated": "Not yet rated"}   # same as TW in app.html
 
 
 def tier_badge(t, word=False):
     cls = {"A+": "t-ap", "A": "t-a", "B": "t-b", "C": "t-c"}.get(t, "t-u")
-    w = TIER_WORD.get(t, TIER_WORD["Unrated"])
+    w = TIER_LABEL.get(t, TIER_LABEL["Unrated"])
     b = f'<span class="tier {cls}" title="{e((t + ": " if t in ("A+", "A", "B", "C", "Watch") else "") + w + " in its category")}">{e(t if t and t != "Unrated" else "–")}</span>'
     return f'<span class="row" style="gap:8px;display:inline-flex">{b}<span class="tier-w">{e(w)}</span></span>' if word else b
 

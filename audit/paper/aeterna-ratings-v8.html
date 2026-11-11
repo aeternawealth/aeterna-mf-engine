@@ -1,0 +1,178 @@
+<title>Aeterna Equity Ratings v8</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column (paper), wide tables scroll inside their own frames; numbers in mono */
+:root{
+  --bg:#f6f8f6; --paper:#ffffff; --ink:#14211b; --muted:#5b6b63; --rule:#d9e2dc; --green:#1d5c43; --green-soft:#e3efe8; --brass:#9a6b12; --brass-soft:#f6ecd6; --bad:#a23b2a;
+  --f-display:"Source Serif 4",Georgia,"Times New Roman",serif; --f-body:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0d1512;--paper:#121d18;--ink:#e3ece7;--muted:#9bb0a5;--rule:#26362e;--green:#6fc29d;--green-soft:#173327;--brass:#e0b35a;--brass-soft:#2c2412;--bad:#f08a76;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1512;--paper:#121d18;--ink:#e3ece7;--muted:#9bb0a5;--rule:#26362e;--green:#6fc29d;--green-soft:#173327;--brass:#e0b35a;--brass-soft:#2c2412;--bad:#f08a76;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.65 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;padding-block:40px 80px;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--rule);padding-bottom:22px}
+.eyebrow{font:500 12px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1{font:700 clamp(30px,5vw,44px)/1.12 var(--f-display);text-wrap:balance;margin:0}
+h2{font:600 25px/1.25 var(--f-display);margin:22px 0 0;text-wrap:balance}
+h3{font:600 18px/1.3 var(--f-display);margin:8px 0 0}
+p{margin:0;max-width:68ch}
+.meta{color:var(--muted);font-size:13.5px}
+.abstract{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.abstract b{color:var(--green)}
+ol,ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:68ch}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{padding:8px 12px;border-bottom:1px solid var(--rule);text-align:right;vertical-align:top}
+th{font:600 12.5px/1.3 var(--f-body);color:var(--muted);background:var(--green-soft);text-transform:none}
+td.l,th.l{text-align:left}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.win{color:var(--green);font-weight:600}
+.lose{color:var(--bad)}
+.note{background:var(--brass-soft);border-left:3px solid var(--brass);padding:12px 16px;border-radius:4px;display:flex;flex-direction:column;gap:6px}
+.cap{font-size:13px;color:var(--muted);max-width:75ch}
+code{font:13px var(--f-mono);background:var(--green-soft);padding:1px 5px;border-radius:3px}
+.movers td{font-size:13.5px}
+.mv{display:block;line-height:1.45}
+.up{color:var(--green)} .dn{color:var(--bad)}
+a{color:var(--green)}
+a:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+@media (max-width:520px){h2{font-size:22px}}
+</style>
+<main>
+<header>
+  <span class="eyebrow">Aeterna Wealth · Internal research note · 11 November 2026</span>
+  <h1>Equity fund ratings, version 8: what we tested, what we kept, and where it is weak</h1>
+  <p class="meta">Research and engine: aeterna-mf-engine, branch staging. Files cited are in the repository under <code>audit/</code>. Ratings describe past records and are not forecasts or recommendations.</p>
+</header>
+
+<section class="abstract" aria-label="Summary">
+  <p><b>Question.</b> Does a fund's rating at a month-end tell us anything about how it does against its index over the next 1 and 3 years, and which rating model does that best in each SEBI equity category?</p>
+  <p><b>Test.</b> The production ranking engine rated every open-ended active equity fund at every month-end from February 2015 to October 2026, on real AMFI NAVs and NSE total-return indices, Regular and Direct plans separately, closed and merged funds included, using only data available on each date. About 40 models were compared under seven tier rules.</p>
+  <p><b>Result.</b> The live model (v3) did no better than chance: its A+ funds were ahead of the index a year later 51% of the time (rating years 2018–25), and after COVID its C-rated funds did better than its A-rated ones. The chosen model (v8) put A+ funds ahead 66% of the time over the same years, and under our review rule 87% of start months were ahead after 3 years (post-COVID). v8 is strongest since 2020; in the short clean pre-COVID window (June 2018 to February 2020) it was roughly level with v3, and it has a known weak spot in years when large caps lead.</p>
+  <p><b>Decision.</b> Replace v3 with v8 for equity funds. A+ and A are now set by score (75 and 65 out of 100), so any number of funds can be A+.</p>
+</section>
+
+<h2>1. Data</h2>
+<ul>
+  <li><b>Funds.</b> Every open-ended active equity scheme in AMFI's NAVAll (growth option), 819 funds across Regular and Direct, plus the equity funds that later closed or merged that mfapi.in still lists (about 15). Index funds, ETFs and funds of funds are excluded.</li>
+  <li><b>Prices.</b> Daily NAVs from mfapi.in (AMFI data). Benchmarks: NSE total-return indices from niftyindices.com from 2008, so that 3-year rolling windows are available from 2015.</li>
+  <li><b>Peer groups.</b> SEBI category × plan type (Regular with Regular, Direct with Direct). Value and Contra are one group; sector funds are grouped by theme.</li>
+  <li><b>Outcome.</b> For each rating, the fund's return relative to its category TRI over the next 12 and 36 months. A fund that closed earns the benchmark from its last NAV, so its record up to closure counts.</li>
+  <li><b>Periods.</b> "After COVID" = ratings from April 2020 to October 2025 (outcomes known). "Before COVID" = June 2018 to February 2020 only: SEBI's October 2017 categories took effect in 2018, and before that a category label is today's label applied to funds run under other mandates. Flexi Cap exists only from November 2020 and the 25/25/25 Multi Cap rule from early 2021.</li>
+</ul>
+
+<h2>2. How each model was tested</h2>
+<ol>
+  <li>The engine computes the same measures it uses today (returns over the index at 1–12 months, upside and downside capture, beta, information ratio, Sharpe, style exposures, drawdowns, rolling records and more) for every fund at every month-end, with data up to that date only.</li>
+  <li>Each candidate model turns those measures into a 0–100 score within the peer group (percentile ranks, weighted, as the engine does).</li>
+  <li>Each tier rule turns scores into A+, A, B and C.</li>
+  <li>We measure: how often A+ funds were ahead of the index after 1 and 3 years; the review rule (new money each month to A+ funds, a fund kept while A+ or A, replaced only after 12 months held and rated B or C); and whether A+ &gt; A &gt; B &gt; C held in that order.</li>
+</ol>
+<p><b>Candidates (about 40).</b> Models built during this project (lean, core, mandate, quality, comprehensive 31-measure ridge model, blends, small-cap and multi-cap models); published approaches approximated from the engine's measures (Morningstar-style risk-adjusted return, Value Research-style return less a fall penalty, a CRISIL-style mix, low cost first, Amihud–Goyenko selectivity, alpha persistence, information ratio); and style tilts (value, value + momentum, value + quality, quality, low volatility, momentum stocks, size + momentum, high beta, downside protection, consistency, pure momentum, conviction + momentum). Each was run in a fixed mode and with the 200-day market mode. Tier rules: top 10% quota, top 20%, score cut-offs at 70/60, 75/65, 80/70 and 85/70, and quota plus cut-off.</p>
+
+<h2>3. Three things we removed before choosing</h2>
+<div class="note">
+  <p><b>Expense-ratio models.</b> Only today's TER is published. Funds that did well grew and now charge less under SEBI's slabs, so today's TER carries the past result into the test. "Low cost" models looked excellent for that reason and were excluded.</p>
+  <p><b>Lucky winners.</b> A model with fewer than 6 different A+ funds after COVID, or months without any A+ fund, was dropped: one fund held A+ for years is not many independent picks. Hit rates were also counted once per fund.</p>
+  <p><b>Overfitting.</b> The 31-measure model for Large &amp; Mid Cap had been fitted on data up to 2025, so its post-COVID result (0.81) was partly in-sample. Refitted every year on past data only, it did about as well as the simpler all-rounder.</p>
+</div>
+
+<h2>4. Choosing the best model each year does not work</h2>
+<p>We tested the selection process itself. Each year, pick the model with the best record known by 1 January (ratings up to two years earlier), then score that pick on the year's ratings.</p>
+<div class="tw"><table>
+  <thead><tr><th class="l">Strategy (A+ funds ahead of the index 1 year later)</th><th>2018–25 mean</th><th>2021–25</th></tr></thead>
+  <tbody>
+    <tr><td class="l">Re-pick the best model per category every year</td><td class="n lose">0.53</td><td class="n">0.58</td></tr>
+    <tr><td class="l">Re-pick one best model for all categories every year</td><td class="n lose">0.49</td><td class="n">0.60</td></tr>
+    <tr><td class="l">v3, fixed (live today)</td><td class="n lose">0.51</td><td class="n">0.51</td></tr>
+    <tr><td class="l">v7, fixed</td><td class="n">0.61</td><td class="n">0.66</td></tr>
+    <tr><td class="l">v8, fixed</td><td class="n win">0.66</td><td class="n win">0.68</td></tr>
+  </tbody></table></div>
+<p>Chasing last year's winner lost to a fixed, sound model. So the rule for v8 was strict: a category leaves the core recipe only where another candidate did better by at least 3 points both before and after COVID.</p>
+
+<h2>5. The model, category by category</h2>
+<div class="tw"><table>
+  <thead><tr><th class="l">Category</th><th class="l">Model and inputs</th><th>A+ ahead 1y</th><th>All funds</th><th>A+ ahead 3y</th><th>Review rule ahead 3y</th></tr></thead>
+  <tbody>
+    <tr><td class="l">Large Cap</td><td class="l">Core: return over the index at 1, 3, 6, 12 months (55), upside capture (30), lean to mid and small caps (15)</td><td class="n">64%</td><td class="n">52%</td><td class="n">72%</td><td class="n">91%</td></tr>
+    <tr><td class="l">Large &amp; Mid Cap</td><td class="l">All-rounder: momentum (45), upside capture (20), information ratio and capture ratio (20), size lean (15)</td><td class="n">68%</td><td class="n">47%</td><td class="n">56%</td><td class="n">90%</td></tr>
+    <tr><td class="l">Mid Cap</td><td class="l">Short momentum 1 and 3 months (50), beta (20), younger and smaller (15), lean to small caps and away from the Nifty 50 (15)</td><td class="n">60%</td><td class="n">41%</td><td class="n">35%</td><td class="n">43%</td></tr>
+    <tr><td class="l">Small Cap</td><td class="l">Short momentum (50), beta (20), younger and smaller (15), no drift into mid caps (15)</td><td class="n">68%</td><td class="n">55%</td><td class="n">45%</td><td class="n">92%</td></tr>
+    <tr><td class="l">Flexi Cap</td><td class="l">Core</td><td class="n">67%</td><td class="n">49%</td><td class="n">71%</td><td class="n">91%</td></tr>
+    <tr><td class="l">Multi Cap</td><td class="l">Momentum + defence + quality, scored separately and averaged by place in the group</td><td class="n">71%</td><td class="n">62%</td><td class="n">56%</td><td class="n">85%</td></tr>
+    <tr><td class="l">Focused</td><td class="l">Conviction (tracking error, 40) + momentum at 3–12 months (60)</td><td class="n">68%</td><td class="n">50%</td><td class="n">82%</td><td class="n">87%</td></tr>
+    <tr><td class="l">ELSS</td><td class="l">Core (review rule only after the 3-year lock-in)</td><td class="n">72%</td><td class="n">53%</td><td class="n">79%</td><td class="n">93%</td></tr>
+    <tr><td class="l">Value / Contra</td><td class="l">Core</td><td class="n">83%</td><td class="n">64%</td><td class="n">90%</td><td class="n">100%</td></tr>
+    <tr><td class="l">Sectoral / Thematic</td><td class="l">Core, within each theme</td><td class="n">61%</td><td class="n">57%</td><td class="n">74%</td><td class="n">100%</td></tr>
+  </tbody></table></div>
+<p class="cap">After COVID (ratings April 2020 to October 2025), Regular and Direct averaged. Dividend Yield uses the core recipe; it has too few funds to test on its own.</p>
+<p><b>Market mode (all categories).</b> When the category's index is below its 200-day average on the rating day, the score becomes half the category model and half "rebound" traits: upside capture 30, beta 25, size lean 25, value lean 20.</p>
+<p><b>Tiers.</b> A+ = score of 75 or more; A = 65 or more; C = bottom 30% of the group (below 65); B = the rest. Any number of funds per tier; in some months no fund clears the A+ bar (Small Cap: about a third of months). A portfolio outside SEBI limits in two consecutive months caps at B; a qualitative flag (manager exit, merger, SEBI action) turns A or A+ into Watch.</p>
+
+<h2>6. v8 against the live model</h2>
+<div class="tw"><table>
+  <thead><tr><th class="l">Measure</th><th>v3 (live)</th><th>v7</th><th>v8</th></tr></thead>
+  <tbody>
+    <tr><td class="l">A+ ahead after 1 year, mean of 2018–25 rating years</td><td class="n">0.51</td><td class="n">0.61</td><td class="n win">0.66</td></tr>
+    <tr><td class="l">A+ ahead after 1 year, after COVID</td><td class="n">0.51</td><td class="n">0.65</td><td class="n win">0.68</td></tr>
+    <tr><td class="l">Review rule ahead after 3 years, after COVID</td><td class="n">0.46</td><td class="n">0.84</td><td class="n win">0.87</td></tr>
+    <tr><td class="l">A+ ahead after 1 year, Jun 2018 – Feb 2020</td><td class="n">0.60</td><td class="n">–</td><td class="n">0.62</td></tr>
+    <tr><td class="l">Review rule ahead after 3 years, Jun 2018 – Feb 2020</td><td class="n">0.48</td><td class="n">–</td><td class="n win">0.61</td></tr>
+    <tr><td class="l">After COVID, share ahead after 1 year: A / B / C</td><td class="n lose">0.49 / 0.51 / 0.54</td><td class="n">0.59 / 0.50 / 0.43</td><td class="n win">0.59 / 0.51 / 0.43</td></tr>
+  </tbody></table></div>
+<p class="cap">Every fund in a category was ahead of its index over a year 52% of the time on average after COVID, so a coin-flip model sits near 0.50. Pre-COVID figures rest on 1–2 A+ funds a month and should be read as indicative.</p>
+
+<h2>7. Where v8 is weak</h2>
+<div class="tw"><table>
+  <thead><tr><th class="l">A+ ahead after 1 year, by rating year</th><th>2018</th><th>2019</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+  <tbody>
+    <tr><td class="l">v3 (live)</td><td class="n">0.53</td><td class="n">0.66</td><td class="n">0.35</td><td class="n">0.37</td><td class="n">0.47</td><td class="n">0.59</td><td class="n">0.56</td><td class="n">0.54</td></tr>
+    <tr><td class="l">v8</td><td class="n">0.48</td><td class="n">0.58</td><td class="n">0.80</td><td class="n">0.69</td><td class="n">0.75</td><td class="n">0.77</td><td class="n lose">0.41</td><td class="n">0.76</td></tr>
+  </tbody></table></div>
+<ul>
+  <li>The models reward funds that have been ahead recently and that keep up when the market rises. When large caps lead and that momentum breaks (ratings made in 2018–19, and in 2024 ahead of the 2025 reversal), A+ funds did no better than the rest. The quality-based v3 did better in 2018–19.</li>
+  <li>A hedge was tested: v8 blended with 10–50% of the v3 score. It barely changed 2018–19 (0.52–0.55 against 0.53) and lowered 2020–25 (0.57–0.65 against 0.70), so it was not adopted.</li>
+  <li>Large Cap is the hardest category: in 2018–19 its A+ funds trailed the category (28% ahead against 49%). Mid Cap's 3-year edge is weak (35% of A+ funds ahead over 3 years).</li>
+  <li><b>Stability.</b> v8 ratings move more than v3's: 89% of A+ funds were still A+ or A the next month (v3 99%), and 60% after 12 months (v3 83%). The review rule (keep while A+ or A, review only after 12 months and below A) is what keeps this from turning into frequent switching.</li>
+</ul>
+
+<h2>8. What changes today (v3 live → v8, Regular plans, 9 Nov 2026 data)</h2>
+<p>Of 265 rated equity funds in the main categories, 140 change tier. A+ funds: 29 under v3, 25 under v8. Large, long-established funds that have lagged their index in recent months move down; funds ahead in the last 1–12 months move up. The three largest moves each way per category:</p>
+<div class="tw"><table class="movers">
+  <thead><tr><th class="l">Category</th><th class="l">Moved up (tier, rank in group)</th><th class="l">Moved down</th></tr></thead>
+  <tbody>
+    <tr><td class="l">Large Cap</td><td class="l"><span class="mv up">ITI Large Cap: B → A (#22 → #4)</span><span class="mv up">LIC MF Large Cap: C → B (#29 → #13)</span><span class="mv up">Axis Large Cap: C → B (#23 → #8)</span></td><td class="l"><span class="mv dn">ICICI Prudential Large Cap: A → C (#4 → #29)</span><span class="mv dn">Nippon India Large Cap: A → C (#2 → #25)</span><span class="mv dn">HDFC Large Cap: B → C (#15 → #28)</span></td></tr>
+    <tr><td class="l">Large &amp; Mid Cap</td><td class="l"><span class="mv up">Bank of India Large &amp; Mid Cap: B → A+ (#16 → #4)</span><span class="mv up">Quant Large &amp; Mid Cap: B → A+ (#10 → #5)</span><span class="mv up">Canara Robeco Large and Mid Cap: C → B (#17 → #6)</span></td><td class="l"><span class="mv dn">ICICI Prudential Large &amp; Mid Cap: A → C (#4 → #23)</span><span class="mv dn">Nippon India Vision Large &amp; Mid Cap: A → C (#6 → #21)</span><span class="mv dn">Bandhan Large &amp; Mid Cap: A+ → B (#2 → #7)</span></td></tr>
+    <tr><td class="l">Mid Cap</td><td class="l"><span class="mv up">LIC MF Mid Cap: C → A (#25 → #3)</span><span class="mv up">Taurus Mid Cap: C → B (#28 → #9)</span><span class="mv up">PGIM India Midcap: C → B (#26 → #10)</span></td><td class="l"><span class="mv dn">HDFC Mid Cap: A+ → C (#3 → #24)</span><span class="mv dn">Nippon India Growth Mid Cap: A+ → B (#2 → #20)</span><span class="mv dn">Sundaram Mid Cap: A → C (#7 → #23)</span></td></tr>
+    <tr><td class="l">Small Cap</td><td class="l"><span class="mv up">Aditya Birla Sun Life Small Cap: B → A (#16 → #6)</span><span class="mv up">UTI Small Cap: C → B (#20 → #11)</span><span class="mv up">SBI Small Cap: C → B (#23 → #14)</span></td><td class="l"><span class="mv dn">Nippon India Small Cap: A → C (#6 → #20)</span><span class="mv dn">Sundaram Small Cap: B → C (#13 → #24)</span><span class="mv dn">Franklin India Small Cap: B → C (#16 → #23)</span></td></tr>
+    <tr><td class="l">Flexi Cap</td><td class="l"><span class="mv up">Taurus Flexi Cap: B → A (#22 → #3)</span><span class="mv up">Navi Flexi Cap: C → B (#33 → #22)</span><span class="mv up">PGIM India Flexi Cap: C → B (#27 → #17)</span></td><td class="l"><span class="mv dn">Parag Parikh Flexi Cap: A → C (#7 → #33)</span><span class="mv dn">HDFC Flexi Cap: A+ → B (#1 → #13)</span><span class="mv dn">ICICI Prudential Flexi Cap: A+ → B (#2 → #12)</span></td></tr>
+    <tr><td class="l">Multi Cap</td><td class="l"><span class="mv up">Bandhan Multi Cap: C → B (#21 → #11)</span><span class="mv up">SBI MultiCap: B → A (#12 → #5)</span><span class="mv up">WhiteOak Capital Multi Cap: A → A+ (#5 → #2)</span></td><td class="l"><span class="mv dn">LIC MF Multi Cap: A+ → B (#3 → #14)</span><span class="mv dn">Kotak Multi Cap: A+ → B (#2 → #9)</span><span class="mv dn">ICICI Prudential Multi Cap: A → B (#4 → #12)</span></td></tr>
+    <tr><td class="l">Focused</td><td class="l"><span class="mv up">Motilal Oswal Focused: B → A+ (#17 → #1)</span><span class="mv up">Quant Focused: B → A+ (#14 → #3)</span><span class="mv up">Mirae Asset Focused: C → B (#25 → #6)</span></td><td class="l"><span class="mv dn">ICICI Prudential Focused: A+ → C (#3 → #21)</span><span class="mv dn">Mahindra Manulife Focused: A → C (#5 → #24)</span><span class="mv dn">Kotak Focused: A → C (#7 → #21)</span></td></tr>
+    <tr><td class="l">ELSS</td><td class="l"><span class="mv up">Invesco India ELSS Tax Saver: C → A (#22 → #4)</span><span class="mv up">PGIM India ELSS Tax Saver: C → B (#32 → #14)</span><span class="mv up">Groww ELSS Tax Saver: C → B (#35 → #18)</span></td><td class="l"><span class="mv dn">SBI ELSS Tax Saver: A+ → C (#4 → #27)</span><span class="mv dn">HDFC ELSS Tax Saver: A+ → B (#3 → #24)</span><span class="mv dn">Motilal Oswal ELSS Tax Saver: A+ → B (#1 → #9)</span></td></tr>
+    <tr><td class="l">Value / Contra</td><td class="l"><span class="mv up">LIC MF Value: B → A+ (#9 → #3)</span><span class="mv up">Groww Value: C → B (#21 → #12)</span><span class="mv up">Baroda BNP Paribas Value: C → B (#23 → #15)</span></td><td class="l"><span class="mv dn">ICICI Prudential Value: A → C (#4 → #18)</span><span class="mv dn">HSBC Value: A+ → B (#2 → #8)</span><span class="mv dn">Nippon India Value: B → C (#10 → #22)</span></td></tr>
+    <tr><td class="l">Dividend Yield</td><td class="l"><span class="mv up">Sundaram Dividend Yield: C → B (#9 → #7)</span><span class="mv up">LIC MF Dividend Yield: A → A+ (#2 → #1)</span></td><td class="l"><span class="mv dn">ICICI Prudential Dividend Yield: A+ → C (#1 → #8)</span><span class="mv dn">UTI Dividend Yield: A → B (#3 → #2)</span></td></tr>
+  </tbody></table></div>
+<p class="cap">Full list: <code>audit/live/movers_v3_to_v8.csv</code>. Communication note: several widely held funds move to C ("Lagging"). Under the review rule an existing holding is reviewed only after 12 months below A, with exit load and tax weighed first; the site says "review", never "sell".</p>
+
+<h2>9. Limits</h2>
+<ul>
+  <li>Today's expense ratios and AUM stand in for past ones; portfolio checks (SEBI mandate fit, active share) cannot be applied to past months.</li>
+  <li>Only about 15 closed equity funds are still listed by the NAV source, so some survivorship bias remains.</li>
+  <li>The clean pre-COVID window is 21 months with 1–2 A+ funds a month per category; per-category pre-COVID figures are indicative only.</li>
+  <li>Four category changes (Large &amp; Mid Cap, Mid Cap, Focused, Multi Cap) were chosen on the same data they are reported on, under the both-periods rule; their gains are a few points and may shrink live.</li>
+  <li>No costs or taxes are charged in the test. A rating describes the past and is not a forecast.</li>
+</ul>
+
+<h2>10. Recommendation</h2>
+<ol>
+  <li>Publish v8 for equity funds, with the Method page showing each category's model, both modes, the results above and the weak years.</li>
+  <li>Keep the review rule as the way ratings are used: new money to A+ funds, holdings kept while A+ or A, reviewed after 12 months below A.</li>
+  <li>Re-run this live-engine test every quarter (<code>.github/workflows/validate.yml</code>) and report v8's out-of-sample record from November 2026, the first months it did not see.</li>
+  <li>Revisit Large Cap and Mid Cap first if the next 12 months repeat 2018–19 conditions.</li>
+</ol>
+
+<h3>Reproduce</h3>
+<p class="cap"><code>audit/validate_live.py</code> (GitHub run: engine ratings per month-end) → <code>audit/compare_live.py</code> (all candidates and tier rules) → <code>audit/select_live.py</code> and <code>audit/wf_select.py</code> (out-of-sample and walk-forward selection) → <code>audit/site_backtest_v8.py</code> (Method page figures). Engine: <code>engine/config.py</code> (V8_*), <code>engine/protocols.py</code> (tiers), <code>engine/rank.py</code>.</p>
+</main>

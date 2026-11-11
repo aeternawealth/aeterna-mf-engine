@@ -1,0 +1,266 @@
+code,category_v3,plan_type_v3,tier_v3,peer_rank_v3,peer_count_v3,score_v3,category_v8,plan_type_v8,tier_v8,peer_rank_v8,peer_count_v8,score_v8,name,step,move,cat
+103040,Contra,Regular,A,5.0,24.0,71.9,Contra,Regular,B,10.0,24.0,51.2,Kotak Contra Fund,-1,-0.20833333333333334,Value / Contra
+105460,Contra,Regular,A,8.0,24.0,64.8,Contra,Regular,A+,2.0,24.0,76.4,Invesco India Contra Fund,1,0.25,Value / Contra
+102414,Contra,Regular,B,13.0,24.0,51.0,Contra,Regular,B,17.0,24.0,41.4,SBI CONTRA FUND,0,-0.16666666666666674,Value / Contra
+129310,Dividend Yield,Regular,A+,1.0,9.0,83.3,Dividend Yield,Regular,C,8.0,9.0,32.4,ICICI Prudential Dividend Yield Fund,-3,-0.7777777777777777,Dividend Yield
+152019,Dividend Yield,Regular,A,2.0,9.0,74.2,Dividend Yield,Regular,A+,1.0,9.0,80.7,LIC MF Dividend Yield Fund,1,0.1111111111111111,Dividend Yield
+103026,Dividend Yield,Regular,A,3.0,9.0,61.8,Dividend Yield,Regular,B,2.0,9.0,62.6,UTI - Dividend Yield Fund,-1,0.1111111111111111,Dividend Yield
+151476,Dividend Yield,Regular,B,6.0,9.0,47.0,Dividend Yield,Regular,B,5.0,9.0,52.1,SBI Dividend Yield Fund,0,0.11111111111111105,Dividend Yield
+148948,Dividend Yield,Regular,B,4.0,9.0,49.9,Dividend Yield,Regular,B,3.0,9.0,61.9,Tata Dividend Yield Fund,0,0.1111111111111111,Dividend Yield
+101738,Dividend Yield,Regular,B,5.0,9.0,48.7,Dividend Yield,Regular,B,6.0,9.0,44.4,Aditya Birla Sun Life Dividend Yield Fund,0,-0.11111111111111105,Dividend Yield
+148610,Dividend Yield,Regular,B,7.0,9.0,35.2,Dividend Yield,Regular,B,4.0,9.0,60.8,HDFC DIVIDEND YIELD FUND,0,0.33333333333333337,Dividend Yield
+103678,Dividend Yield,Regular,C,8.0,9.0,32.6,Dividend Yield,Regular,C,9.0,9.0,19.9,Franklin India Dividend Yield Fund,0,-0.11111111111111116,Dividend Yield
+149697,Dividend Yield,Regular,C,9.0,9.0,9.9,Dividend Yield,Regular,B,7.0,9.0,35.1,Sundaram Dividend Yield Fund (Formerly Known as Principal Dividend Yield Fund),1,0.2222222222222222,Dividend Yield
+133385,ELSS,Regular,A+,1.0,37.0,88.6,ELSS,Regular,B,9.0,37.0,61.1,Motilal Oswal ELSS Tax Saver Fund,-2,-0.21621621621621623,ELSS
+151076,ELSS,Regular,A+,2.0,37.0,86.7,ELSS,Regular,B,7.0,37.0,63.7,HSBC ELSS Tax saver Fund,-2,-0.13513513513513514,ELSS
+101979,ELSS,Regular,A+,3.0,37.0,86.2,ELSS,Regular,B,24.0,37.0,49.1,HDFC ELSS - Tax Saver Fund,-2,-0.5675675675675675,ELSS
+105628,ELSS,Regular,A+,4.0,37.0,80.9,ELSS,Regular,C,27.0,37.0,44.1,SBI ELSS Tax Saver Fund,-3,-0.6216216216216216,ELSS
+104772,ELSS,Regular,A,5.0,37.0,79.0,ELSS,Regular,B,6.0,37.0,64.9,DSP ELSS Tax Saver Fund,-1,-0.02702702702702703,ELSS
+103196,ELSS,Regular,A,7.0,37.0,76.7,ELSS,Regular,B,10.0,37.0,61.0,Nippon India ELSS Tax Saver Fund,-1,-0.08108108108108109,ELSS
+150156,ELSS,Regular,A,8.0,37.0,75.0,ELSS,Regular,B,12.0,37.0,60.2,Baroda BNP Paribas ELSS Tax Saver Fund,-1,-0.10810810810810811,ELSS
+107288,ELSS,Regular,A,6.0,37.0,77.6,ELSS,Regular,A,5.0,37.0,66.2,JM ELSS - Tax Saver Fund,0,0.02702702702702703,ELSS
+150589,ELSS,Regular,A,9.0,37.0,74.0,ELSS,Regular,A,3.0,37.0,71.6,WhiteOak Capital ELSS Tax Saver Fund,0,0.16216216216216217,ELSS
+100175,ELSS,Regular,A,10.0,37.0,71.2,ELSS,Regular,A+,1.0,37.0,83.4,Quant ELSS Tax Saver Fund,1,0.24324324324324326,ELSS
+111709,ELSS,Regular,A,11.0,37.0,60.9,ELSS,Regular,B,13.0,37.0,59.5,BANK OF INDIA ELSS TAX SAVER FUND,-1,-0.05405405405405406,ELSS
+100526,ELSS,Regular,B,13.0,37.0,58.5,ELSS,Regular,B,23.0,37.0,49.2,Franklin India ELSS Tax Saver Fund,0,-0.27027027027027023,ELSS
+135784,ELSS,Regular,B,14.0,37.0,58.1,ELSS,Regular,B,17.0,37.0,54.6,Mirae Asset ELSS Tax Saver Fund,0,-0.08108108108108109,ELSS
+147544,ELSS,Regular,A,12.0,37.0,59.0,ELSS,Regular,B,20.0,37.0,49.8,ITI ELSS Tax Saver Fund,-1,-0.21621621621621623,ELSS
+132757,ELSS,Regular,B,15.0,37.0,55.8,ELSS,Regular,B,19.0,37.0,52.8,Tata ELSS - Tax Saver Fund,0,-0.10810810810810806,ELSS
+103339,ELSS,Regular,B,16.0,37.0,53.1,ELSS,Regular,A,2.0,37.0,72.2,Kotak ELSS Tax Saver Fund,1,0.3783783783783784,ELSS
+100354,ELSS,Regular,B,17.0,37.0,52.4,ELSS,Regular,B,26.0,37.0,45.0,ICICI Prudential ELSS - Tax Saver Fund,0,-0.24324324324324326,ELSS
+111638,ELSS,Regular,B,18.0,37.0,51.4,ELSS,Regular,B,15.0,37.0,56.4,Edelweiss ELSS Tax Saver Fund,0,0.08108108108108109,ELSS
+100480,ELSS,Regular,B,20.0,37.0,49.4,ELSS,Regular,B,16.0,37.0,54.7,Taurus ELSS Tax Saver Fund,0,0.10810810810810811,ELSS
+147482,ELSS,Regular,B,19.0,37.0,50.6,ELSS,Regular,C,37.0,37.0,14.8,Parag Parikh ELSS Tax Saver Fund,-1,-0.4864864864864865,ELSS
+141070,ELSS,Regular,B,21.0,37.0,46.2,ELSS,Regular,C,34.0,37.0,23.6,Quantum ELSS Tax Saver Fund,-1,-0.3513513513513514,ELSS
+104636,ELSS,Regular,C,22.0,37.0,45.3,ELSS,Regular,A,4.0,37.0,69.6,Invesco India ELSS Tax Saver Fund,2,0.4864864864864865,ELSS
+111722,ELSS,Regular,B,23.0,37.0,40.8,ELSS,Regular,B,8.0,37.0,62.3,Canara Robeco ELSS - Tax Saver Fund,0,0.4054054054054054,ELSS
+107745,ELSS,Regular,C,24.0,37.0,40.6,ELSS,Regular,B,22.0,37.0,49.4,Aditya Birla Sun Life ELSS Tax Saver Fund,1,0.05405405405405406,ELSS
+151472,ELSS,Regular,C,27.0,37.0,33.8,ELSS,Regular,C,28.0,37.0,42.0,NAVI ELSS TAX SAVER NIFTY50 INDEX FUND,0,-0.027027027027027084,ELSS
+111569,ELSS,Regular,B,25.0,37.0,39.3,ELSS,Regular,B,21.0,37.0,49.7,BANDHAN ELSS - Tax Saver Fund,0,0.10810810810810811,ELSS
+112323,ELSS,Regular,C,26.0,37.0,39.0,ELSS,Regular,B,11.0,37.0,60.6,Axis ELSS- Tax Saver Fund,1,0.40540540540540543,ELSS
+116051,ELSS,Regular,C,28.0,37.0,30.5,ELSS,Regular,B,25.0,37.0,45.2,Union ELSS Tax Saver Fund (Formerly Union Tax Saver (ELSS) Fund,1,0.08108108108108114,ELSS
+100865,ELSS,Regular,C,30.0,37.0,26.9,ELSS,Regular,C,29.0,37.0,41.7,LIC MF ELSS Tax Saver Fund,0,0.027027027027027084,ELSS
+151609,ELSS,Regular,C,29.0,37.0,27.6,ELSS,Regular,C,35.0,37.0,19.2,NJ ELSS Tax Saver Fund,0,-0.16216216216216217,ELSS
+135598,ELSS,Regular,C,32.0,37.0,22.1,ELSS,Regular,B,14.0,37.0,59.0,PGIM India ELSS Tax Saver Fund,1,0.4864864864864865,ELSS
+149569,ELSS,Regular,C,31.0,37.0,22.9,ELSS,Regular,C,36.0,37.0,15.1,Sundaram ELSS Tax Saver Fund,0,-0.1351351351351352,ELSS
+100821,ELSS,Regular,C,33.0,37.0,17.8,ELSS,Regular,C,33.0,37.0,28.2,UTI ELSS Tax Saver Fund,0,0.0,ELSS
+139783,ELSS,Regular,C,34.0,37.0,16.5,ELSS,Regular,C,31.0,37.0,32.8,Mahindra Manulife ELSS Tax Saver Fund,0,0.08108108108108114,ELSS
+141862,ELSS,Regular,C,35.0,37.0,16.4,ELSS,Regular,B,18.0,37.0,53.0,Groww ELSS Tax Saver Fund,1,0.45945945945945943,ELSS
+150839,ELSS,Regular,C,36.0,37.0,13.9,ELSS,Regular,C,32.0,37.0,30.7,Samco ELSS Tax Saver Fund,0,0.10810810810810811,ELSS
+145820,ELSS,Regular,C,37.0,37.0,9.8,ELSS,Regular,C,30.0,37.0,33.8,Shriram ELSS Tax Saver Fund,0,0.18918918918918914,ELSS
+101762,Flexi Cap,Regular,A+,1.0,36.0,89.2,Flexi Cap,Regular,B,13.0,36.0,56.9,HDFC Flexi Cap Fund,-2,-0.3333333333333333,Flexi Cap
+148989,Flexi Cap,Regular,A+,2.0,36.0,78.7,Flexi Cap,Regular,B,12.0,36.0,57.7,ICICI Prudential Flexi Cap fund,-2,-0.2777777777777778,Flexi Cap
+148405,Flexi Cap,Regular,A+,3.0,36.0,77.7,Flexi Cap,Regular,A,8.0,36.0,67.1,BANK OF INDIA FLEXI CAP FUND,-1,-0.1388888888888889,Flexi Cap
+102252,Flexi Cap,Regular,A+,4.0,36.0,76.5,Flexi Cap,Regular,A,5.0,36.0,69.5,HSBC Flexi Cap Fund,-1,-0.02777777777777779,Flexi Cap
+149766,Flexi Cap,Regular,A,5.0,36.0,76.4,Flexi Cap,Regular,A+,2.0,36.0,86.2,Invesco India Flexi Cap Fund,1,0.08333333333333334,Flexi Cap
+103166,Flexi Cap,Regular,A,6.0,36.0,74.8,Flexi Cap,Regular,B,11.0,36.0,59.7,Aditya Birla Sun Life Flexi Cap Fund,-1,-0.13888888888888892,Flexi Cap
+122640,Flexi Cap,Regular,A,7.0,36.0,74.1,Flexi Cap,Regular,C,33.0,36.0,22.4,Parag Parikh Flexi Cap Fund,-2,-0.7222222222222222,Flexi Cap
+129048,Flexi Cap,Regular,A,8.0,36.0,72.6,Flexi Cap,Regular,A,9.0,36.0,66.7,Motilal Oswal Flexi Cap Fund,0,-0.02777777777777779,Flexi Cap
+151377,Flexi Cap,Regular,A,10.0,36.0,70.6,Flexi Cap,Regular,A+,1.0,36.0,87.6,ITI Flexi Cap Fund,1,0.25,Flexi Cap
+151799,Flexi Cap,Regular,A,9.0,36.0,72.2,Flexi Cap,Regular,A,7.0,36.0,67.5,360 ONE Flexicap Fund,0,0.05555555555555555,Flexi Cap
+151898,Flexi Cap,Regular,B,12.0,36.0,65.8,Flexi Cap,Regular,A,4.0,36.0,71.7,Bajaj Finserv Flexi Cap Fund,1,0.2222222222222222,Flexi Cap
+140355,Flexi Cap,Regular,A,11.0,36.0,66.0,Flexi Cap,Regular,B,20.0,36.0,50.6,Edelweiss Flexi Cap Fund,-1,-0.25,Flexi Cap
+109522,Flexi Cap,Regular,B,12.0,36.0,65.8,Flexi Cap,Regular,B,10.0,36.0,61.2,JM Flexi Cap Fund,0,0.055555555555555525,Flexi Cap
+150347,Flexi Cap,Regular,B,15.0,36.0,63.0,Flexi Cap,Regular,B,16.0,36.0,54.2,WhiteOak Capital Flexi Cap Fund,0,-0.027777777777777735,Flexi Cap
+109830,Flexi Cap,Regular,B,14.0,36.0,64.9,Flexi Cap,Regular,A,6.0,36.0,69.3,Quant Flexi Cap Fund,1,0.22222222222222224,Flexi Cap
+100520,Flexi Cap,Regular,B,16.0,36.0,57.9,Flexi Cap,Regular,C,29.0,36.0,32.8,Franklin India Flexi Cap Fund,-1,-0.36111111111111116,Flexi Cap
+112090,Flexi Cap,Regular,B,17.0,36.0,57.4,Flexi Cap,Regular,B,26.0,36.0,38.3,Kotak Flexi Cap Fund,0,-0.25,Flexi Cap
+151414,Flexi Cap,Regular,B,18.0,36.0,56.7,Flexi Cap,Regular,B,14.0,36.0,55.8,Mirae Asset Flexi Cap Fund,0,0.1111111111111111,Flexi Cap
+141927,Flexi Cap,Regular,B,19.0,36.0,48.0,Flexi Cap,Regular,B,15.0,36.0,55.5,Axis Flexi Cap Fund,0,0.1111111111111111,Flexi Cap
+105875,Flexi Cap,Regular,B,20.0,36.0,45.0,Flexi Cap,Regular,B,23.0,36.0,47.1,DSP Flexi Cap Fund,0,-0.08333333333333326,Flexi Cap
+101922,Flexi Cap,Regular,B,23.0,36.0,41.1,Flexi Cap,Regular,B,21.0,36.0,49.8,Canara Robeco Flexi Cap Fund,0,0.05555555555555547,Flexi Cap
+100476,Flexi Cap,Regular,B,22.0,36.0,42.5,Flexi Cap,Regular,A,3.0,36.0,72.1,Taurus Flexi Cap Fund,1,0.5277777777777778,Flexi Cap
+108594,Flexi Cap,Regular,B,21.0,36.0,42.9,Flexi Cap,Regular,B,25.0,36.0,39.2,BANDHAN Flexi Cap Fund,0,-0.11111111111111105,Flexi Cap
+150385,Flexi Cap,Regular,B,24.0,36.0,39.3,Flexi Cap,Regular,C,27.0,36.0,37.1,Baroda BNP Paribas Flexi Cap Fund,-1,-0.08333333333333337,Flexi Cap
+115270,Flexi Cap,Regular,B,25.0,36.0,35.1,Flexi Cap,Regular,B,19.0,36.0,51.5,Union Flexi Cap Fund,0,0.16666666666666663,Flexi Cap
+144548,Flexi Cap,Regular,B,26.0,36.0,31.5,Flexi Cap,Regular,C,36.0,36.0,16.1,Tata Flexi Cap Fund,-1,-0.2777777777777778,Flexi Cap
+133836,Flexi Cap,Regular,C,27.0,36.0,26.0,Flexi Cap,Regular,B,17.0,36.0,54.1,PGIM India Flexi Cap Fund,1,0.2777777777777778,Flexi Cap
+100669,Flexi Cap,Regular,C,30.0,36.0,24.1,Flexi Cap,Regular,B,24.0,36.0,46.0,UTI - Flexi Cap Fund.,1,0.16666666666666674,Flexi Cap
+151920,Flexi Cap,Regular,C,28.0,36.0,25.3,Flexi Cap,Regular,C,34.0,36.0,20.4,NJ Flexi Cap Fund,0,-0.16666666666666663,Flexi Cap
+103215,Flexi Cap,Regular,C,32.0,36.0,23.0,Flexi Cap,Regular,C,31.0,36.0,26.1,SBI FLEXICAP FUND,0,0.02777777777777768,Flexi Cap
+149089,Flexi Cap,Regular,C,31.0,36.0,23.5,Flexi Cap,Regular,C,28.0,36.0,36.8,Nippon India Flexi Cap Fund,0,0.08333333333333337,Flexi Cap
+100313,Flexi Cap,Regular,C,28.0,36.0,25.3,Flexi Cap,Regular,B,18.0,36.0,52.7,LIC MF Flexi Cap Fund,1,0.2777777777777778,Flexi Cap
+143787,Flexi Cap,Regular,C,33.0,36.0,21.6,Flexi Cap,Regular,B,22.0,36.0,49.4,Navi Flexi Cap Fund,1,0.30555555555555547,Flexi Cap
+150568,Flexi Cap,Regular,C,34.0,36.0,14.4,Flexi Cap,Regular,C,35.0,36.0,16.7,Sundaram Flexicap Fund,0,-0.02777777777777779,Flexi Cap
+149101,Flexi Cap,Regular,C,35.0,36.0,11.6,Flexi Cap,Regular,C,31.0,36.0,26.1,Mahindra Manulife Flexi Cap Fund,0,0.11111111111111105,Flexi Cap
+144902,Flexi Cap,Regular,C,36.0,36.0,9.5,Flexi Cap,Regular,C,30.0,36.0,27.9,Shriram Flexi Cap Fund,0,0.16666666666666663,Flexi Cap
+148483,Focused,Regular,A+,1.0,27.0,89.6,Focused,Regular,A+,2.0,27.0,92.2,Invesco India Focused Fund,0,-0.037037037037037035,Focused
+102760,Focused,Regular,A+,2.0,27.0,88.9,Focused,Regular,B,5.0,27.0,64.1,HDFC Focused Fund,-2,-0.1111111111111111,Focused
+111957,Focused,Regular,A+,3.0,27.0,86.3,Focused,Regular,C,21.0,27.0,33.7,ICICI Prudential Focused Fund,-3,-0.6666666666666667,Focused
+148571,Focused,Regular,A,5.0,27.0,66.2,Focused,Regular,C,24.0,27.0,23.3,Mahindra Manulife Focused Fund,-2,-0.7037037037037037,Focused
+108592,Focused,Regular,A,4.0,27.0,68.0,Focused,Regular,B,10.0,27.0,58.1,Bandhan Focused Fund,-1,-0.2222222222222222,Focused
+102756,Focused,Regular,A,6.0,27.0,64.0,Focused,Regular,A+,4.0,27.0,78.1,SBI FOCUSED FUND,1,0.07407407407407407,Focused
+147477,Focused,Regular,A,7.0,27.0,61.4,Focused,Regular,C,21.0,27.0,33.7,Kotak Focused Fund,-2,-0.5185185185185186,Focused
+103309,Focused,Regular,A,8.0,27.0,59.1,Focused,Regular,B,14.0,27.0,46.3,Aditya Birla Sun Life Focused Fund,-1,-0.2222222222222222,Focused
+148409,Focused,Regular,B,10.0,27.0,56.9,Focused,Regular,B,8.0,27.0,58.9,HSBC Focused Fund,0,0.07407407407407407,Focused
+112901,Focused,Regular,A,9.0,27.0,58.3,Focused,Regular,B,12.0,27.0,55.9,DSP Focused Fund,-1,-0.1111111111111111,Focused
+148884,Focused,Regular,B,12.0,27.0,54.7,Focused,Regular,B,15.0,27.0,45.6,Canara Robeco Focused Fund,0,-0.11111111111111116,Focused
+131578,Focused,Regular,B,13.0,27.0,53.5,Focused,Regular,B,10.0,27.0,58.1,360 ONE Focused Fund,0,0.1111111111111111,Focused
+151778,Focused,Regular,B,11.0,27.0,54.9,Focused,Regular,B,19.0,27.0,41.9,ITI Focused Fund,0,-0.29629629629629634,Focused
+107410,Focused,Regular,B,15.0,27.0,49.3,Focused,Regular,B,16.0,27.0,44.1,JM Focused Fund,0,-0.03703703703703698,Focused
+109275,Focused,Regular,B,14.0,27.0,50.2,Focused,Regular,A+,3.0,27.0,79.6,Quant Focused Fund,2,0.4074074074074074,Focused
+150382,Focused,Regular,B,16.0,27.0,40.8,Focused,Regular,C,25.0,27.0,16.7,Edelweiss Focused Fund,-1,-0.33333333333333337,Focused
+122387,Focused,Regular,B,17.0,27.0,39.9,Focused,Regular,A+,1.0,27.0,97.4,Motilal Oswal Focused Fund,2,0.5925925925925926,Focused
+105817,Focused,Regular,B,18.0,27.0,36.7,Focused,Regular,C,26.0,27.0,15.2,Franklin India Focused Equity Fund,-1,-0.2962962962962963,Focused
+104637,Focused,Regular,B,19.0,27.0,35.6,Focused,Regular,C,23.0,27.0,28.5,Nippon India Focused Fund,-1,-0.14814814814814814,Focused
+149090,Focused,Regular,C,23.0,27.0,26.7,Focused,Regular,B,17.0,27.0,42.6,UTI Focused Fund (30 stocks),1,0.2222222222222222,Focused
+147490,Focused,Regular,C,20.0,27.0,31.2,Focused,Regular,B,7.0,27.0,61.9,Union Focused Fund,1,0.48148148148148145,Focused
+117560,Focused,Regular,C,22.0,27.0,27.3,Focused,Regular,B,8.0,27.0,58.9,Axis Focused Fund,1,0.5185185185185185,Focused
+149532,Focused,Regular,C,21.0,27.0,27.7,Focused,Regular,B,17.0,27.0,42.6,Sundaram Focused Fund (Formerly Known as Principal Focused Multicap Fund),1,0.14814814814814814,Focused
+147760,Focused,Regular,C,24.0,27.0,26.6,Focused,Regular,C,27.0,27.0,14.4,Tata Focused Fund,0,-0.11111111111111116,Focused
+147203,Focused,Regular,C,25.0,27.0,20.1,Focused,Regular,B,6.0,27.0,63.3,Mirae Asset Focused Fund,1,0.7037037037037037,Focused
+150263,Focused,Regular,C,27.0,27.0,13.2,Focused,Regular,C,20.0,27.0,39.6,Baroda BNP Paribas Focused Fund,0,0.2592592592592593,Focused
+152009,Focused,Regular,C,26.0,27.0,15.4,Focused,Regular,B,13.0,27.0,55.2,LIC MF Focused Fund,1,0.48148148148148145,Focused
+147701,Large & Mid Cap,Regular,A+,1.0,26.0,91.4,Large & Mid Cap,Regular,A+,3.0,26.0,79.6,Motilal Oswal Large and Midcap Fund,0,-0.07692307692307693,Large & Mid Cap
+108596,Large & Mid Cap,Regular,A+,2.0,26.0,85.8,Large & Mid Cap,Regular,B,7.0,26.0,61.1,Bandhan Large & Mid Cap Fund,-2,-0.1923076923076923,Large & Mid Cap
+106144,Large & Mid Cap,Regular,A+,3.0,26.0,83.7,Large & Mid Cap,Regular,A+,1.0,26.0,93.7,Invesco India Large & Mid Cap Fund,0,0.07692307692307693,Large & Mid Cap
+100664,Large & Mid Cap,Regular,A,5.0,26.0,75.7,Large & Mid Cap,Regular,B,13.0,26.0,49.7,UTI Large & Mid Cap Fund,-1,-0.3076923076923077,Large & Mid Cap
+100349,Large & Mid Cap,Regular,A,4.0,26.0,76.7,Large & Mid Cap,Regular,C,23.0,26.0,25.1,ICICI Prudential Large & Mid Cap Fund,-2,-0.7307692307692307,Large & Mid Cap
+100380,Large & Mid Cap,Regular,A,6.0,26.0,68.4,Large & Mid Cap,Regular,C,21.0,26.0,38.4,Nippon India Vision Large & Mid Cap Fund,-2,-0.5769230769230769,Large & Mid Cap
+146771,Large & Mid Cap,Regular,A,7.0,26.0,66.2,Large & Mid Cap,Regular,A+,2.0,26.0,80.7,HSBC Large & Mid Cap Fund,1,0.1923076923076923,Large & Mid Cap
+103234,Large & Mid Cap,Regular,B,9.0,26.0,59.1,Large & Mid Cap,Regular,B,14.0,26.0,49.1,Kotak Large & Mid Cap Fund,0,-0.1923076923076923,Large & Mid Cap
+145112,Large & Mid Cap,Regular,A,8.0,26.0,61.1,Large & Mid Cap,Regular,B,11.0,26.0,52.2,Axis Large & Mid Cap Fund,-1,-0.11538461538461536,Large & Mid Cap
+103819,Large & Mid Cap,Regular,B,11.0,26.0,57.5,Large & Mid Cap,Regular,C,20.0,26.0,39.5,DSP Large & Mid Cap Fund,-1,-0.3461538461538462,Large & Mid Cap
+103024,Large & Mid Cap,Regular,B,12.0,26.0,56.5,Large & Mid Cap,Regular,C,24.0,26.0,24.1,SBI LARGE & MIDCAP FUND,-1,-0.46153846153846156,Large & Mid Cap
+130496,Large & Mid Cap,Regular,B,13.0,26.0,56.2,Large & Mid Cap,Regular,B,19.0,26.0,39.7,HDFC Large & Mid Cap Fund,0,-0.23076923076923073,Large & Mid Cap
+104513,Large & Mid Cap,Regular,B,10.0,26.0,57.6,Large & Mid Cap,Regular,A+,5.0,26.0,78.3,Quant Large & Mid Cap Fund,2,0.19230769230769232,Large & Mid Cap
+110599,Large & Mid Cap,Regular,B,16.0,26.0,48.5,Large & Mid Cap,Regular,A+,4.0,26.0,78.9,BANK OF INDIA LARGE & MID CAP FUND,2,0.46153846153846156,Large & Mid Cap
+148471,Large & Mid Cap,Regular,B,14.0,26.0,50.3,Large & Mid Cap,Regular,B,9.0,26.0,59.0,Baroda BNP Paribas Large and Mid Cap fund,0,0.1923076923076923,Large & Mid Cap
+140172,Large & Mid Cap,Regular,B,15.0,26.0,49.0,Large & Mid Cap,Regular,B,10.0,26.0,53.7,Edelweiss Large & Mid Cap Fund,0,0.19230769230769224,Large & Mid Cap
+102920,Large & Mid Cap,Regular,C,17.0,26.0,39.5,Large & Mid Cap,Regular,B,6.0,26.0,61.2,Canara Robeco Large and Mid Cap Fund,1,0.4230769230769231,Large & Mid Cap
+105001,Large & Mid Cap,Regular,C,18.0,26.0,36.3,Large & Mid Cap,Regular,B,17.0,26.0,42.3,Sundaram Large and Midcap Fund,1,0.038461538461538436,Large & Mid Cap
+147843,Large & Mid Cap,Regular,C,19.0,26.0,30.6,Large & Mid Cap,Regular,B,8.0,26.0,59.3,Mahindra Manulife Large & Mid Cap Fund,1,0.423076923076923,Large & Mid Cap
+112932,Large & Mid Cap,Regular,C,20.0,26.0,27.2,Large & Mid Cap,Regular,B,15.0,26.0,43.6,Mirae Asset Large & Midcap Fund,1,0.1923076923076924,Large & Mid Cap
+147748,Large & Mid Cap,Regular,C,21.0,26.0,26.0,Large & Mid Cap,Regular,B,12.0,26.0,50.5,Union Large & Midcap Fund,1,0.34615384615384615,Large & Mid Cap
+133711,Large & Mid Cap,Regular,C,22.0,26.0,25.4,Large & Mid Cap,Regular,B,16.0,26.0,42.6,LIC MF Large & Mid Cap Fund,1,0.23076923076923073,Large & Mid Cap
+102883,Large & Mid Cap,Regular,C,23.0,26.0,20.7,Large & Mid Cap,Regular,C,25.0,26.0,19.3,Franklin India Large & Mid Cap Fund,0,-0.07692307692307698,Large & Mid Cap
+101824,Large & Mid Cap,Regular,C,24.0,26.0,18.4,Large & Mid Cap,Regular,C,26.0,26.0,7.4,Tata Large & Mid Cap Fund,0,-0.07692307692307687,Large & Mid Cap
+100033,Large & Mid Cap,Regular,C,25.0,26.0,17.7,Large & Mid Cap,Regular,B,18.0,26.0,40.1,Aditya Birla Sun Life Large & Mid Cap Fund,1,0.2692307692307693,Large & Mid Cap
+135678,Large & Mid Cap,Regular,C,26.0,26.0,8.1,Large & Mid Cap,Regular,C,22.0,26.0,30.8,Navi Large & Midcap Fund,0,0.15384615384615385,Large & Mid Cap
+112098,Large Cap,Regular,A+,1.0,30.0,86.1,Large Cap,Regular,A+,1.0,30.0,89.0,Invesco India Large Cap Fund,0,0.0,Large Cap
+106235,Large Cap,Regular,A,2.0,30.0,82.6,Large Cap,Regular,C,25.0,30.0,34.5,Nippon India Large Cap Fund,-2,-0.7666666666666667,Large Cap
+108466,Large Cap,Regular,A,4.0,30.0,79.8,Large Cap,Regular,C,29.0,30.0,25.2,ICICI Prudential Large Cap Fund (erstwhile Bluechip Fund),-2,-0.8333333333333334,Large Cap
+108799,Large Cap,Regular,A+,3.0,30.0,80.4,Large Cap,Regular,A+,3.0,30.0,80.8,BANDHAN LARGE CAP FUND,0,0.0,Large Cap
+150799,Large Cap,Regular,A,5.0,30.0,74.7,Large Cap,Regular,A,6.0,30.0,66.1,WhiteOak Capital Large Cap Fund,0,-0.033333333333333354,Large Cap
+101635,Large Cap,Regular,A,6.0,30.0,73.1,Large Cap,Regular,B,18.0,30.0,44.4,DSP Large Cap Fund,-1,-0.39999999999999997,Large Cap
+101209,Large Cap,Regular,A,7.0,30.0,71.1,Large Cap,Regular,A+,2.0,30.0,84.2,Taurus Large Cap Fund,1,0.16666666666666669,Large Cap
+150185,Large Cap,Regular,A,8.0,30.0,67.6,Large Cap,Regular,B,12.0,30.0,52.6,BARODA BNP PARIBAS LARGE CAP FUND,-1,-0.13333333333333336,Large Cap
+150441,Large Cap,Regular,A,9.0,30.0,67.0,Large Cap,Regular,A,5.0,30.0,68.9,quant Large Cap Fund,0,0.13333333333333333,Large Cap
+103174,Large Cap,Regular,B,12.0,30.0,60.6,Large Cap,Regular,B,21.0,30.0,40.0,Aditya Birla Sun Life Large Cap Fund,0,-0.29999999999999993,Large Cap
+100475,Large Cap,Regular,B,11.0,30.0,60.7,Large Cap,Regular,B,16.0,30.0,47.7,Tata Large Cap Fund,0,-0.16666666666666669,Large Cap
+148982,Large Cap,Regular,A,10.0,30.0,60.8,Large Cap,Regular,B,10.0,30.0,55.6,BANK OF INDIA LARGE CAP FUND,-1,0.0,Large Cap
+102000,Large Cap,Regular,B,15.0,30.0,55.5,Large Cap,Regular,C,28.0,30.0,29.7,HDFC Large Cap Fund,-1,-0.43333333333333335,Large Cap
+103504,Large Cap,Regular,B,16.0,30.0,53.6,Large Cap,Regular,C,27.0,30.0,30.4,SBI Large Cap Fund,-1,-0.3666666666666667,Large Cap
+100219,Large Cap,Regular,B,13.0,30.0,56.5,Large Cap,Regular,B,9.0,30.0,56.5,JM Large Cap Fund,0,0.13333333333333336,Large Cap
+101594,Large Cap,Regular,B,14.0,30.0,55.8,Large Cap,Regular,B,20.0,30.0,41.1,HSBC Large Cap Fund,0,-0.19999999999999996,Large Cap
+113221,Large Cap,Regular,B,17.0,30.0,50.9,Large Cap,Regular,B,10.0,30.0,55.6,Canara Robeco Large Cap Fund,0,0.23333333333333334,Large Cap
+114458,Large Cap,Regular,B,17.0,30.0,50.9,Large Cap,Regular,C,22.0,30.0,36.7,Kotak Large Cap Fund,-1,-0.16666666666666663,Large Cap
+100471,Large Cap,Regular,B,19.0,30.0,50.2,Large Cap,Regular,B,14.0,30.0,51.8,Franklin India Large Cap Fund,0,0.16666666666666663,Large Cap
+111940,Large Cap,Regular,B,20.0,30.0,45.8,Large Cap,Regular,B,15.0,30.0,51.5,Edelweiss Large Cap Fund,0,0.16666666666666663,Large Cap
+116547,Large Cap,Regular,B,21.0,30.0,40.2,Large Cap,Regular,B,7.0,30.0,62.9,Groww Large Cap Fund,0,0.4666666666666666,Large Cap
+112277,Large Cap,Regular,C,23.0,30.0,30.1,Large Cap,Regular,B,8.0,30.0,58.2,Axis Large Cap Fund,1,0.5,Large Cap
+148351,Large Cap,Regular,B,22.0,30.0,31.0,Large Cap,Regular,A,4.0,30.0,71.7,ITI Large Cap Fund,1,0.6,Large Cap
+107578,Large Cap,Regular,C,24.0,30.0,29.6,Large Cap,Regular,B,19.0,30.0,43.1,Mirae Asset Large Cap Fund,1,0.16666666666666674,Large Cap
+146551,Large Cap,Regular,C,25.0,30.0,25.1,Large Cap,Regular,C,24.0,30.0,35.9,Mahindra Manulife Large Cap Fund,0,0.033333333333333326,Large Cap
+100651,Large Cap,Regular,C,26.0,30.0,22.8,Large Cap,Regular,C,23.0,30.0,36.6,UTI - Large Cap Fund,0,0.09999999999999998,Large Cap
+141247,Large Cap,Regular,C,28.0,30.0,18.1,Large Cap,Regular,C,26.0,30.0,34.3,Union Largecap Fund,0,0.06666666666666665,Large Cap
+148504,Large Cap,Regular,C,27.0,30.0,18.8,Large Cap,Regular,C,30.0,30.0,17.1,Sundaram Large Cap Fund ( Formerly Know as Sundaram Blue Chip Fund),0,-0.09999999999999998,Large Cap
+106871,Large Cap,Regular,C,29.0,30.0,10.3,Large Cap,Regular,B,13.0,30.0,52.5,LIC MF Large Cap Fund,1,0.5333333333333333,Large Cap
+138308,Large Cap,Regular,C,30.0,30.0,9.2,Large Cap,Regular,B,17.0,30.0,45.4,PGIM India Large Cap Fund,1,0.43333333333333335,Large Cap
+105503,Mid Cap,Regular,A+,1.0,28.0,81.4,Mid Cap,Regular,A+,1.0,28.0,81.3,Invesco India Mid Cap Fund,0,0.0,Mid Cap
+100376,Mid Cap,Regular,A+,2.0,28.0,79.6,Mid Cap,Regular,B,20.0,28.0,42.2,Nippon India Growth Mid Cap Fund,-2,-0.6428571428571429,Mid Cap
+105758,Mid Cap,Regular,A+,3.0,28.0,78.6,Mid Cap,Regular,C,24.0,28.0,37.7,HDFC Mid Cap Fund,-3,-0.75,Mid Cap
+151034,Mid Cap,Regular,A,4.0,28.0,78.3,Mid Cap,Regular,A,2.0,28.0,67.8,HSBC Midcap Fund,0,0.07142857142857142,Mid Cap
+102528,Mid Cap,Regular,A,5.0,28.0,76.6,Mid Cap,Regular,B,18.0,28.0,43.9,ICICI Prudential Mid Cap Fund,-1,-0.4642857142857143,Mid Cap
+140225,Mid Cap,Regular,A,6.0,28.0,74.7,Mid Cap,Regular,B,11.0,28.0,55.3,Edelweiss Mid Cap Fund,-1,-0.17857142857142858,Mid Cap
+101539,Mid Cap,Regular,A,7.0,28.0,71.2,Mid Cap,Regular,C,23.0,28.0,40.2,Sundaram Mid Cap Fund,-2,-0.5714285714285714,Mid Cap
+150583,Mid Cap,Regular,A,8.0,28.0,66.1,Mid Cap,Regular,B,8.0,28.0,60.1,WhiteOak Capital Mid Cap Fund,-1,0.0,Mid Cap
+142109,Mid Cap,Regular,A,9.0,28.0,61.0,Mid Cap,Regular,B,17.0,28.0,51.0,Mahindra Manulife Mid Cap Fund,-1,-0.28571428571428564,Mid Cap
+104908,Mid Cap,Regular,B,10.0,28.0,59.9,Mid Cap,Regular,C,26.0,28.0,28.7,Kotak Mid Cap Fund,-1,-0.5714285714285714,Mid Cap
+148732,Mid Cap,Regular,B,12.0,28.0,58.1,Mid Cap,Regular,B,19.0,28.0,43.8,ITI Mid Cap Fund,0,-0.25000000000000006,Mid Cap
+150812,Mid Cap,Regular,B,13.0,28.0,54.8,Mid Cap,Regular,B,7.0,28.0,63.3,JM Mid Cap Fund,0,0.2142857142857143,Mid Cap
+150402,Mid Cap,Regular,B,11.0,28.0,59.6,Mid Cap,Regular,B,5.0,28.0,64.8,BANDHAN MID CAP FUND,0,0.21428571428571427,Mid Cap
+114564,Mid Cap,Regular,B,14.0,28.0,49.9,Mid Cap,Regular,B,14.0,28.0,52.5,Axis Midcap Fund,0,0.0,Mid Cap
+150816,Mid Cap,Regular,B,15.0,28.0,49.3,Mid Cap,Regular,B,4.0,28.0,64.9,Canara Robeco Mid Cap Fund,0,0.39285714285714285,Mid Cap
+150209,Mid Cap,Regular,B,16.0,28.0,45.0,Mid Cap,Regular,B,15.0,28.0,51.6,Baroda BNP Paribas Mid Cap Fund,0,0.0357142857142857,Mid Cap
+148071,Mid Cap,Regular,C,17.0,28.0,44.1,Mid Cap,Regular,B,6.0,28.0,64.0,Union Midcap Fund,1,0.3928571428571428,Mid Cap
+100473,Mid Cap,Regular,B,18.0,28.0,42.1,Mid Cap,Regular,C,27.0,28.0,22.8,Franklin India Mid Cap Fund,-1,-0.3214285714285714,Mid Cap
+147479,Mid Cap,Regular,B,19.0,28.0,39.4,Mid Cap,Regular,B,12.0,28.0,54.0,Mirae Asset Midcap Fund,0,0.25000000000000006,Mid Cap
+102328,Mid Cap,Regular,B,20.0,28.0,37.9,Mid Cap,Regular,B,16.0,28.0,51.2,Tata Mid Cap Fund,0,0.1428571428571429,Mid Cap
+101592,Mid Cap,Regular,C,21.0,28.0,36.1,Mid Cap,Regular,C,25.0,28.0,31.4,Aditya Birla Sun Life Midcap Fund,0,-0.1428571428571429,Mid Cap
+101065,Mid Cap,Regular,C,22.0,28.0,32.2,Mid Cap,Regular,B,13.0,28.0,52.8,Quant Mid Cap Fund,1,0.3214285714285714,Mid Cap
+102941,Mid Cap,Regular,C,23.0,28.0,28.0,Mid Cap,Regular,C,28.0,28.0,9.7,SBI MIDCAP FUND,0,-0.1785714285714286,Mid Cap
+104481,Mid Cap,Regular,C,24.0,28.0,25.8,Mid Cap,Regular,C,21.0,28.0,41.6,DSP Midcap Fund,0,0.1071428571428571,Mid Cap
+152001,Mid Cap,Regular,C,25.0,28.0,24.0,Mid Cap,Regular,A,3.0,28.0,67.0,LIC MF Mid Cap Fund,2,0.7857142857142858,Mid Cap
+125305,Mid Cap,Regular,C,26.0,28.0,20.0,Mid Cap,Regular,B,10.0,28.0,56.0,PGIM India Midcap Fund,1,0.5714285714285714,Mid Cap
+102394,Mid Cap,Regular,C,27.0,28.0,19.8,Mid Cap,Regular,C,22.0,28.0,41.0,UTI - Mid Cap Fund,0,0.1785714285714286,Mid Cap
+100477,Mid Cap,Regular,C,28.0,28.0,14.2,Mid Cap,Regular,B,9.0,28.0,59.4,Taurus Mid Cap Fund,1,0.6785714285714286,Mid Cap
+149382,Multi Cap,Regular,A+,1.0,23.0,84.9,Multi Cap,Regular,A+,1.0,23.0,97.1,Axis Multicap Fund,0,0.0,Multi Cap
+149182,Multi Cap,Regular,A+,2.0,23.0,79.7,Multi Cap,Regular,B,9.0,23.0,55.1,Kotak Multi Cap Fund,-2,-0.30434782608695654,Multi Cap
+152072,Multi Cap,Regular,A,5.0,23.0,70.9,Multi Cap,Regular,A+,2.0,23.0,78.3,WhiteOak Capital Multi Cap Fund,1,0.13043478260869565,Multi Cap
+151445,Multi Cap,Regular,A,6.0,23.0,69.5,Multi Cap,Regular,A,3.0,23.0,71.7,BANK OF INDIA MULTI CAP FUND,0,0.13043478260869565,Multi Cap
+141224,Multi Cap,Regular,A,7.0,23.0,68.8,Multi Cap,Regular,A,4.0,23.0,68.8,Mahindra Manulife Multi Cap Fund,0,0.13043478260869568,Multi Cap
+150661,Multi Cap,Regular,A+,3.0,23.0,74.1,Multi Cap,Regular,B,14.0,23.0,50.0,LIC MF Multi Cap Fund,-2,-0.4782608695652174,Multi Cap
+101228,Multi Cap,Regular,A,4.0,23.0,72.5,Multi Cap,Regular,B,12.0,23.0,50.7,ICICI Prudential Multi Cap Fund,-1,-0.34782608695652173,Multi Cap
+101161,Multi Cap,Regular,B,8.0,23.0,66.5,Multi Cap,Regular,B,15.0,23.0,43.5,Nippon India Multi Cap Fund,0,-0.30434782608695654,Multi Cap
+151289,Multi Cap,Regular,B,9.0,23.0,63.0,Multi Cap,Regular,B,17.0,23.0,38.4,HSBC Multi Cap Fund,0,-0.3478260869565217,Multi Cap
+152095,Multi Cap,Regular,B,11.0,23.0,53.9,Multi Cap,Regular,B,6.0,23.0,61.6,Edelweiss Multi Cap Fund,0,0.2173913043478261,Multi Cap
+148918,Multi Cap,Regular,B,10.0,23.0,58.3,Multi Cap,Regular,B,8.0,23.0,55.8,Aditya Birla Sun Life Multi-Cap Fund,0,0.08695652173913043,Multi Cap
+149886,Multi Cap,Regular,B,12.0,23.0,52.3,Multi Cap,Regular,A,5.0,23.0,65.9,SBI MultiCap Fund,1,0.30434782608695654,Multi Cap
+147184,Multi Cap,Regular,B,13.0,23.0,50.2,Multi Cap,Regular,B,16.0,23.0,39.9,ITI Multi Cap Fund,0,-0.13043478260869568,Multi Cap
+150855,Multi Cap,Regular,B,15.0,23.0,39.4,Multi Cap,Regular,B,7.0,23.0,60.1,Union Multicap Fund,0,0.34782608695652173,Multi Cap
+102020,Multi Cap,Regular,B,14.0,23.0,42.1,Multi Cap,Regular,B,12.0,23.0,50.7,Baroda BNP Paribas Multi Cap Fund,0,0.08695652173913049,Multi Cap
+151821,Multi Cap,Regular,B,16.0,23.0,38.9,Multi Cap,Regular,B,9.0,23.0,55.1,Canara Robeco Multi Cap Fund,0,0.3043478260869565,Multi Cap
+107353,Multi Cap,Regular,B,17.0,23.0,30.8,Multi Cap,Regular,C,19.0,23.0,29.7,Invesco India Multi Cap Fund,-1,-0.08695652173913049,Multi Cap
+151812,Multi Cap,Regular,C,18.0,23.0,29.6,Multi Cap,Regular,C,18.0,23.0,34.1,Mirae Asset Multicap Fund,0,0.0,Multi Cap
+149366,Multi Cap,Regular,C,19.0,23.0,29.0,Multi Cap,Regular,C,22.0,23.0,19.6,HDFC Multi Cap Fund,0,-0.13043478260869568,Multi Cap
+100631,Multi Cap,Regular,C,20.0,23.0,20.1,Multi Cap,Regular,C,21.0,23.0,21.0,Quant Multi Cap Fund,0,-0.04347826086956519,Multi Cap
+149305,Multi Cap,Regular,C,21.0,23.0,18.5,Multi Cap,Regular,B,11.0,23.0,53.6,BANDHAN MULTI CAP FUND,1,0.4347826086956521,Multi Cap
+149667,Multi Cap,Regular,C,22.0,23.0,17.6,Multi Cap,Regular,C,19.0,23.0,29.7,Sundaram Multi Cap Fund (Formerly Known as Principal Multi Cap Growth Fund),0,0.13043478260869568,Multi Cap
+151235,Multi Cap,Regular,C,23.0,23.0,15.5,Multi Cap,Regular,C,22.0,23.0,19.6,TATA MULTICAP FUND,0,0.04347826086956519,Multi Cap
+147944,Small Cap,Regular,A+,1.0,25.0,91.5,Small Cap,Regular,A,5.0,25.0,67.2,BANDHAN Small Cap Fund,-1,-0.16,Small Cap
+145139,Small Cap,Regular,A+,2.0,25.0,81.9,Small Cap,Regular,A+,3.0,25.0,77.6,Invesco India Small Cap Fund,0,-0.039999999999999994,Small Cap
+150912,Small Cap,Regular,A+,3.0,25.0,74.2,Small Cap,Regular,A+,1.0,25.0,86.4,Mahindra Manulife Small Cap Fund,0,0.07999999999999999,Small Cap
+147920,Small Cap,Regular,A,4.0,25.0,72.6,Small Cap,Regular,A,4.0,25.0,71.4,ITI Small Cap Fund,0,0.0,Small Cap
+100177,Small Cap,Regular,A,5.0,25.0,72.2,Small Cap,Regular,B,12.0,25.0,49.7,Quant Small Cap Fund,-1,-0.27999999999999997,Small Cap
+113177,Small Cap,Regular,A,6.0,25.0,63.4,Small Cap,Regular,C,20.0,25.0,36.4,Nippon India Small Cap Fund,-2,-0.56,Small Cap
+152003,Small Cap,Regular,A,8.0,25.0,61.1,Small Cap,Regular,A+,2.0,25.0,83.8,LIC MF Small Cap Fund,1,0.24,Small Cap
+145677,Small Cap,Regular,A,7.0,25.0,62.0,Small Cap,Regular,A,6.0,25.0,65.0,BANK OF INDIA SMALL CAP FUND,0,0.040000000000000036,Small Cap
+105989,Small Cap,Regular,B,9.0,25.0,58.7,Small Cap,Regular,B,13.0,25.0,45.2,DSP Small Cap Fund,0,-0.16000000000000003,Small Cap
+149020,Small Cap,Regular,B,10.0,25.0,56.9,Small Cap,Regular,B,8.0,25.0,62.2,PGIM India Small Cap Fund,0,0.08000000000000002,Small Cap
+146193,Small Cap,Regular,B,11.0,25.0,52.0,Small Cap,Regular,B,16.0,25.0,41.4,Edelweiss Small Cap Fund,0,-0.2,Small Cap
+100795,Small Cap,Regular,B,13.0,25.0,50.6,Small Cap,Regular,C,24.0,25.0,22.9,Sundaram Small Cap Fund,-1,-0.43999999999999995,Small Cap
+129647,Small Cap,Regular,B,12.0,25.0,51.6,Small Cap,Regular,B,10.0,25.0,57.4,Union Small Cap Fund,0,0.07999999999999996,Small Cap
+125350,Small Cap,Regular,C,14.0,25.0,47.9,Small Cap,Regular,B,15.0,25.0,42.0,Axis Small Cap Fund,1,-0.039999999999999925,Small Cap
+130502,Small Cap,Regular,B,15.0,25.0,40.5,Small Cap,Regular,C,21.0,25.0,30.2,HDFC Small Cap Fund,-1,-0.24,Small Cap
+103360,Small Cap,Regular,B,16.0,25.0,38.9,Small Cap,Regular,C,23.0,25.0,25.5,Franklin India Small Cap Fund,-1,-0.28,Small Cap
+105804,Small Cap,Regular,B,16.0,25.0,38.9,Small Cap,Regular,A,6.0,25.0,65.0,Aditya Birla Sun Life Small Cap Fund,1,0.4,Small Cap
+152130,Small Cap,Regular,B,18.0,25.0,37.1,Small Cap,Regular,B,9.0,25.0,57.8,Baroda BNP Paribas Small Cap Fund,0,0.36,Small Cap
+145208,Small Cap,Regular,C,19.0,25.0,34.7,Small Cap,Regular,B,18.0,25.0,37.4,Tata Small Cap Fund,1,0.040000000000000036,Small Cap
+148617,Small Cap,Regular,C,20.0,25.0,32.5,Small Cap,Regular,B,11.0,25.0,55.6,UTI Small Cap Fund,1,0.36000000000000004,Small Cap
+152108,Small Cap,Regular,C,21.0,25.0,30.5,Small Cap,Regular,C,22.0,25.0,28.4,QUANTUM SMALL CAP FUND,0,-0.040000000000000036,Small Cap
+146127,Small Cap,Regular,C,22.0,25.0,28.9,Small Cap,Regular,B,17.0,25.0,41.2,Canara Robeco Small Cap Fund,1,0.19999999999999996,Small Cap
+102875,Small Cap,Regular,C,24.0,25.0,27.2,Small Cap,Regular,C,19.0,25.0,37.3,Kotak Small Cap Fund,0,0.19999999999999996,Small Cap
+125494,Small Cap,Regular,C,23.0,25.0,27.7,Small Cap,Regular,B,14.0,25.0,44.0,SBI SMALL CAP FUND,1,0.36,Small Cap
+106823,Small Cap,Regular,C,25.0,25.0,26.4,Small Cap,Regular,C,25.0,25.0,19.0,ICICI Prudential Small Cap Fund,0,0.0,Small Cap
+149167,Value,Regular,A+,1.0,24.0,77.9,Value,Regular,A+,1.0,24.0,80.5,Axis Value Fund,0,0.0,Value / Contra
+151110,Value,Regular,A+,2.0,24.0,77.5,Value,Regular,B,8.0,24.0,58.8,HSBC Value Fund,-2,-0.25,Value / Contra
+101764,Value,Regular,A+,3.0,24.0,77.2,Value,Regular,A,5.0,24.0,67.6,HDFC Value Fund,-1,-0.08333333333333334,Value / Contra
+102594,Value,Regular,A,4.0,24.0,72.3,Value,Regular,C,18.0,24.0,40.8,ICICI Prudential Value Fund (erstwhile Value Discovery Fund),-2,-0.5833333333333334,Value / Contra
+149337,Value,Regular,A,6.0,24.0,71.1,Value,Regular,B,7.0,24.0,60.1,Quant Value Fund,-1,-0.041666666666666685,Value / Contra
+108167,Value,Regular,A,7.0,24.0,65.2,Value,Regular,A,6.0,24.0,67.2,Aditya Birla Sun Life Value Fund,0,0.041666666666666685,Value / Contra
+103085,Value,Regular,B,10.0,24.0,62.4,Value,Regular,C,22.0,24.0,31.1,Nippon India Value Fund,-1,-0.49999999999999994,Value / Contra
+152016,Value,Regular,B,9.0,24.0,63.9,Value,Regular,A+,3.0,24.0,75.5,LIC MF Value Fund,2,0.25,Value / Contra
+101672,Value,Regular,B,11.0,24.0,56.8,Value,Regular,A,4.0,24.0,71.5,Tata Value Fund,1,0.29166666666666663,Value / Contra
+148594,Value,Regular,B,12.0,24.0,54.6,Value,Regular,B,11.0,24.0,50.5,DSP Value Fund,0,0.041666666666666685,Value / Contra
+103098,Value,Regular,B,14.0,24.0,45.6,Value,Regular,B,13.0,24.0,48.1,UTI Value Fund,0,0.04166666666666674,Value / Contra
+145471,Value,Regular,B,16.0,24.0,40.1,Value,Regular,C,19.0,24.0,38.0,Union Value Fund,-1,-0.125,Value / Contra
+100254,Value,Regular,C,15.0,24.0,41.4,Value,Regular,B,14.0,24.0,43.2,JM Value Fund,1,0.04166666666666663,Value / Contra
+108909,Value,Regular,B,17.0,24.0,34.2,Value,Regular,B,9.0,24.0,53.4,Bandhan Value Fund,0,0.33333333333333337,Value / Contra
+148973,Value,Regular,C,18.0,24.0,32.6,Value,Regular,C,20.0,24.0,37.7,ITI Value Fund,0,-0.08333333333333337,Value / Contra
+100496,Value,Regular,C,19.0,24.0,31.8,Value,Regular,C,23.0,24.0,26.5,Templeton India Value Fund,0,-0.16666666666666674,Value / Contra
+135343,Value,Regular,C,21.0,24.0,28.9,Value,Regular,B,12.0,24.0,48.4,Groww Value Fund,1,0.375,Value / Contra
+141068,Value,Regular,C,20.0,24.0,30.1,Value,Regular,C,21.0,24.0,34.4,Quantum Value Fund,0,-0.04166666666666663,Value / Contra
+149088,Value,Regular,C,22.0,24.0,22.7,Value,Regular,B,16.0,24.0,41.9,Canara Robeco Value Fund,1,0.25,Value / Contra
+151747,Value,Regular,C,23.0,24.0,20.0,Value,Regular,B,15.0,24.0,42.7,Baroda BNP Paribas Value Fund,1,0.33333333333333337,Value / Contra
+101853,Value,Regular,C,24.0,24.0,6.6,Value,Regular,C,24.0,24.0,13.1,Sundaram Value Fund,0,0.0,Value / Contra

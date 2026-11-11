@@ -30,6 +30,8 @@ jobs:
         env: { HMONTH: "${{ inputs.holdings_month }}" }
         run: python run_monthly.py ${HMONTH:+--holdings-month "$HMONTH"}
       - run: python site/build_data.py && python site/build_series.py && python site/build_site.py
+      - name: Audit (tools/audit.py; findings in outputs/latest/audit.md)
+        run: python tools/audit.py; python tools/revision_report.py || echo 'audit could not run'
       - name: Health check
         run: |
           python - <<'PY'

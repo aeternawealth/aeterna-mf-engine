@@ -123,7 +123,14 @@ def assign_tiers_v7(g: pd.DataFrame) -> pd.DataFrame:
         tier[(pos > bottom) & (pos > k30)] = "C"
     g["flags"] = red_flags(g)
     breach = g["flags"].map(lambda f: "mandate_breach" in f)
-    tier[breach & tier.isin(["A+", "A"])] = "B"
+    g["tier_before_cap"] = None
+    if C.EQUITY_MODEL == "v8":   # outside SEBI's limits two months running: one rating lower, with the reason on the page
+        down = {"A+": "A", "A": "B", "B": "C"}
+        hit = breach & tier.isin(list(down))
+        g.loc[hit, "tier_before_cap"] = tier[hit]
+        tier[hit] = tier[hit].map(down)
+    else:
+        tier[breach & tier.isin(["A+", "A"])] = "B"
     g["guard_capped"] = False
     g["behind_index_3y"] = (g["excess_cagr_3y"] < 0) if "excess_cagr_3y" in g.columns else False
     tier[s.isna()] = "Unrated"

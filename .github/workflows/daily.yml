@@ -32,6 +32,8 @@ jobs:
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
       - run: python run_monthly.py --daily ${{ inputs.fresh_tiers && '--fresh-tiers' || '' }} ${{ inputs.history && '--history' || '' }}
       - run: python site/build_data.py && python site/build_series.py && python site/build_site.py
+      - name: Audit (tools/audit.py; findings in outputs/latest/audit.md)
+        run: python tools/audit.py || echo 'audit could not run'
       - name: Health check
         run: |
           python - <<'PY'

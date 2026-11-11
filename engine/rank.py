@@ -322,7 +322,7 @@ def one_month_lead(out, navs, tri, as_of):
 
 
 DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "category", "peer_group", "plan_type", "benchmark", "bench_type",
-                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "market_mode", "behind_index_3y", "one_month_lead", "one_month_gain", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
+                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "market_mode", "behind_index_3y", "tier_before_cap", "one_month_lead", "one_month_gain", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
                 "cagr_1y", "cagr_3y", "cagr_5y", "excess_cagr_3y", "excess_cagr_5y",
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",

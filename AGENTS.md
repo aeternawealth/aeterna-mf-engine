@@ -159,3 +159,13 @@ python run_monthly.py --offline    # reuse cached data
 - Debt NAV face-value changes (one-day moves of -40% or more, or +60% or more) are removed before any metric (`metrics.debt_clean`).
 - Hybrid and debt funds: equity portfolio analytics (active share, market-cap mix, mandate checks) are not used.
 - Tax shown per fund: equity (65%+ Indian equity), other (non-equity, non-debt), debt (slab rate).
+
+## Audit protocol (November 2026): every change, every run
+
+Do this without being asked.
+
+- **Before every publish to `main`:** build the site and run `python tools/audit.py`. Nothing marked FAIL may go live. Look at every CHECK line, confirm the flag is real, and fix it or explain it in the reply.
+- **Before telling the owner a change is done:** check it as a visitor would, in a real browser, at phone width (390px) and desktop width, in dark and light mode. That covers hidden elements, overlapping labels, sideways scrolling, placeholder text ('nan', 'undefined', 'None') and script errors.
+- **Rating changes:** for every fund that is #1 in its group or scores 75+ but is not A+, the reason must be a real flag, shown on its page. A portfolio flag must survive data gaps: holdings missing from AMFI's market-cap list count towards the rule.
+- **Every run:** the daily and monthly workflows run the audit after building the site (`outputs/latest/audit.md`). The monthly run also writes `outputs/latest/revision_report.md`: what changed in the ratings and why, fund by fund. The monthly scheduled check emails it to the owner.
+- **When ratings change:** on the 11th (after fund houses publish portfolios by the 10th) and the 16th (late portfolios). Daily runs update NAVs and returns only.

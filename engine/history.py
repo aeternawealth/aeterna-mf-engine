@@ -137,6 +137,7 @@ def update(u, navs, tri, current: pd.DataFrame | None = None, months: int = HIST
 
 def _band(p: float) -> str:
     if not np.isfinite(p): return "no figure"
+    if p > 1: p = p / 100      # the engine's percentiles run 0-100
     return ("the top 10%" if p >= .9 else "the top quarter" if p >= .75 else "the upper half" if p >= .5
             else "the lower half" if p >= .25 else "the bottom quarter" if p > .1 else "the bottom 10%")
 
@@ -148,6 +149,11 @@ def _reason(prev: pd.Series, cur: pd.Series) -> str:
     if prev["tier"] == "Unrated":
         return "Rated for the first time: it now has enough history."
     bits = []
+    sa, sb = prev.get("score"), cur.get("score")
+    if cur["tier"] != prev["tier"] and pd.notna(sa) and pd.notna(sb):
+        cut = {"A+": 75, "A": 65}
+        need = cut.get(cur["tier"]) if ORDER.get(cur["tier"], 9) < ORDER.get(prev["tier"], 9) else cut.get(prev["tier"])
+        bits.append(f"its score went from {float(sa):.0f} to {float(sb):.0f}" + (f" ({'A+' if need == 75 else 'A'} needs {need})" if need else ""))
     ma, mb = str(prev.get("market_mode") or "normal"), str(cur.get("market_mode") or "normal")
     if ma != mb and mb == "after a fall":
         bits.append("its category's index fell below its 200-day average, so the after-a-fall criteria now count for half the score")

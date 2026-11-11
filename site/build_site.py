@@ -185,8 +185,9 @@ def review_status(f, hist):
         state, cls, txt = "Review now", "rv-now", "Its NAV has stopped updating: the scheme may have merged or closed."
     else:
         state, cls, txt = "Not rated yet", "rv-new", "Too little history for a rating (3 years), so there is no review signal yet."
-    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b><a href="/#method" class="rv-how">How the review rule works</a></div>'
-            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p></div>')
+    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b></div>'
+            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p>'
+            f'<p style="margin-top:10px"><a href="/#method" class="rv-how">How the review rule works</a></p></div>')
 
 
 TIER_WORD = {"A+": "A+ (a score of 75 or more)", "A": "A (65 or more)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
@@ -372,7 +373,7 @@ MOTION_JS = ("<script>(function(){if(!('IntersectionObserver' in window)||matchM
              "var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);if(el.hasAttribute('data-fig'))fig(el);else el.classList.add('in')})},{rootMargin:'0px 0px -10% 0px'});"
              "function fig(el){var m=el.textContent.match(/^(\\D*)([\\d,]*\\.?\\d+)([\\s\\S]*)$/);if(!m)return;var to=+m[2].replace(/,/g,''),dp=(m[2].split('.')[1]||'').length,t0=performance.now();"
              "(function st(t){var k=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-k,4);el.textContent=m[1]+(to*e).toLocaleString('en-IN',{minimumFractionDigits:dp,maximumFractionDigits:dp})+m[3];if(k<1)requestAnimationFrame(st);else el.textContent=m[0]})(t0)}"
-             "[].forEach.call(document.querySelectorAll('main .card,main .tablewrap,main .note,main figure'),function(el){if(el.closest('.rv'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('rv');io.observe(el)}});"
+             "[].forEach.call(document.querySelectorAll('main .card,main .tablewrap,main .note,main figure'),function(el){if(el.closest('.sr'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('sr');io.observe(el)}});"
              "[].forEach.call(document.querySelectorAll('main .big-fig'),function(el){if(/^\\D*[\\d,]*\\.?\\d/.test(el.textContent.trim())&&!el.children.length){el.setAttribute('data-fig','');io.observe(el)}});"
              "[].forEach.call(document.querySelectorAll('main a.card'),function(el){el.classList.add('glow')});"
              "if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.addEventListener('pointermove',function(e){var g=e.target.closest&&e.target.closest('.glow');if(!g)return;var r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true})})();</script>")

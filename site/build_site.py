@@ -185,8 +185,9 @@ def review_status(f, hist):
         state, cls, txt = "Review now", "rv-now", "Its NAV has stopped updating: the scheme may have merged or closed."
     else:
         state, cls, txt = "Not rated yet", "rv-new", "Too little history for a rating (3 years), so there is no review signal yet."
-    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b><a href="/#method" class="rv-how">How the review rule works</a></div>'
-            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p></div>')
+    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b></div>'
+            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p>'
+            f'<p style="margin-top:10px"><a href="/#method" class="rv-how">How the review rule works</a></p></div>')
 
 
 TIER_WORD = {"A+": "A+ (a score of 75 or more)", "A": "A (65 or more)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}

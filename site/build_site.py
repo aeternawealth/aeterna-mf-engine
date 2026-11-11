@@ -133,7 +133,62 @@ TAX_TEXT = {"equity": "Taxed as an equity fund: gains on units held over a year 
             "other": "Taxed as a non-equity, non-debt fund: gains on units held over two years at 12.5%; within two years, at your slab rate.",
             "debt": "Taxed at your income-tax slab rate on all gains, however long you hold (more than 65% of the fund is in debt)."}
 
-TIER_WORD = {"A+": "A+ (top 10% of its peer group)", "A": "A (top 30%)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
+RET_RANK = {}   # (code, period) -> (rank by return over the index, funds ranked)
+RH = {}   # rating history per scheme code, from outputs/latest/rating_history.json (written by the monthly run)
+RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B','C','Unrated'],Y={'A+':26,'A':62,'B':98,'C':134,'Unrated':168},CL={'A+':'var(--t-ap)','A':'var(--t-a)','B':'var(--t-b)','C':'var(--t-c)','Unrated':'var(--t-u)'};
+ const W=el.clientWidth<560?420:760,L=W<500?58:64,R=14,n=H.length,x=i=>L+(n>1?i/(n-1):.5)*(W-L-R),mo=m=>{const[a,b]=m.split('-');return new Date(+a,+b-1,1).toLocaleDateString('en-IN',{month:'short',year:'2-digit'})};
+ let d='';H.forEach((h,i)=>{d+=(i?`H${x(i).toFixed(1)}V${Y[h[1]]}`:`M${x(0).toFixed(1)} ${Y[h[1]]}`)});
+ const ticks=[0,Math.round((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i);
+ el.innerHTML=`<svg viewBox="0 0 ${W} 196" role="img" aria-label="Rating each month, ${mo(H[0][0])} to ${mo(H[n-1][0])}">${T.map(t=>`<line x1="${L}" x2="${W-R}" y1="${Y[t]}" y2="${Y[t]}" stroke="var(--rule)"/><text x="${L-12}" y="${Y[t]+4}" text-anchor="end" font-size="12.5" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${t}</text>`).join('')}
+ ${H.map((h,i)=>h[6]==='after a fall'?`<rect x="${(x(i)-(W-L-R)/Math.max(1,n-1)/2).toFixed(1)}" y="12" width="${((W-L-R)/Math.max(1,n-1)).toFixed(1)}" height="166" fill="var(--brass)" opacity=".09"/>`:'').join('')}
+ <path class="rh-line" pathLength="1" d="${d}" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linejoin="round"/>
+ ${H.map((h,i)=>`<circle class="rh-dot${h[5]?' ch':''}" cx="${x(i).toFixed(1)}" cy="${Y[h[1]]}" r="${h[5]?6:4}" fill="${CL[h[1]]}" stroke="var(--surface)" stroke-width="1.5" style="--d:${300+i*25}ms"/>`).join('')}
+ ${ticks.map(i=>`<text x="${x(i)}" y="190" text-anchor="${i===0?'start':i===n-1?'end':'middle'}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-3)">${mo(H[i][0])}</text>`).join('')}
+ <line id="rhG" y1="14" y2="176" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhHit" x="${L-10}" y="0" width="${W-L-R+20}" height="196" fill="transparent"/></svg><div class="rh-tip" id="rhTip" aria-live="polite"></div>`;
+ const tip=document.getElementById('rhTip'),g=document.getElementById('rhG'),hit=document.getElementById('rhHit');
+ const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]+' ('+({'A+':'Leading','A':'Strong','B':'In line','C':'Lagging','Watch':'Under review'}[h[1]]||'')+')'}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
+ const at=e=>{const r=hit.getBoundingClientRect();return Math.max(0,Math.min(n-1,Math.round(((e.clientX-r.left)/r.width*(W-L-R+20)-10)/(W-L-R)*(n-1))))};
+ hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
+ let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
+document.querySelectorAll('.rh-chart').forEach(rhDraw);"""
+EQUITY_ACTIVE = {"Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Focused", "ELSS", "Value / Contra", "Dividend Yield", "Sectoral/Thematic"}
+REVIEW_FLAGS = {"mandate_breach": "its portfolio is outside SEBI's limits for the category"}
+
+
+def review_status(f, hist):
+    """Where an active equity fund stands under the review rule (Method page, 'How we use the ratings')."""
+    if f.get("category") not in EQUITY_ACTIVE:
+        return ""
+    t, elss = f.get("tier"), f.get("category") == "ELSS"
+    wait = "its 3-year lock-in ends" if elss else "you have held it for 12 months"
+    flags = [x for x in str(f.get("flags") or "").split(",") if x.strip()]
+    hit = [REVIEW_FLAGS[x.strip()] for x in flags if x.strip() in REVIEW_FLAGS]
+    below = 0
+    for h in reversed(hist or []):
+        if h[1] in ("B", "C"): below += 1
+        else: break
+    since = ""
+    if below and hist:
+        m = hist[len(hist) - below][0]
+        since = f" since {date(int(m[:4]), int(m[5:7]), 1).strftime('%b %Y')} ({below} month{'s' if below > 1 else ''})"
+    if hit:
+        state, cls, txt = "Review now", "rv-now", f"A red flag brings a review at any time: {'; '.join(hit)}."
+    elif t == "A+":
+        state, cls, txt = "In the A+ group", "rv-ap", "A score of 75 or more out of 100 against its peer group: the group new money in this category goes to under our review rule."
+    elif t == "A":
+        state, cls, txt = "Keep", "rv-a", "Rated A: if you hold it, it stays. New money in this category goes to A+ funds."
+    elif t in ("B", "C"):
+        state, cls, txt = "Review due", "rv-due", (f"Rated {t}{since}. Below A, a fund comes up for review once {wait}"
+                                                   + ("" if elss else ", when the exit load has ended in almost every equity fund") + ". We weigh the tax on the gain before replacing it.")
+    elif f.get("gate") and "stale" in str(f.get("gate")):
+        state, cls, txt = "Review now", "rv-now", "Its NAV has stopped updating: the scheme may have merged or closed."
+    else:
+        state, cls, txt = "Not rated yet", "rv-new", "Too little history for a rating (3 years), so there is no review signal yet."
+    return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b><a href="/#method" class="rv-how">How the review rule works</a></div>'
+            f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p></div>')
+
+
+TIER_WORD = {"A+": "A+ (a score of 75 or more)", "A": "A (65 or more)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
 
 
 def slug(s):
@@ -350,9 +405,14 @@ def write(path, text):
     p.write_text(text, encoding="utf-8")
 
 
-def tier_badge(t):
+TIER_LABEL = {"A+": "Leading", "A": "Strong", "B": "In line", "C": "Lagging", "Watch": "Under review", "Unrated": "Not yet rated"}   # same as TW in app.html
+
+
+def tier_badge(t, word=False):
     cls = {"A+": "t-ap", "A": "t-a", "B": "t-b", "C": "t-c"}.get(t, "t-u")
-    return f'<span class="tier {cls}">{e(t if t and t != "Unrated" else "–")}</span>'
+    w = TIER_LABEL.get(t, TIER_LABEL["Unrated"])
+    b = f'<span class="tier {cls}" title="{e((t + ": " if t in ("A+", "A", "B", "C", "Watch") else "") + w + " in its category")}">{e(t if t and t != "Unrated" else "–")}</span>'
+    return f'<span class="row" style="gap:8px;display:inline-flex">{b}<span class="tier-w">{e(w)}</span></span>' if word else b
 
 
 def cap_note(f):
@@ -414,6 +474,21 @@ def main():
     if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
         shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
     (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
+    # rank by return over the index in each period, within the peer group and plan: what the fund page's returns
+    # table shows (the ratings page's period view ranks a blend of return, falls, consistency and cost instead)
+    RET_RANK.clear()
+    by = {}
+    for f in funds:
+        for h in ("6M", "1Y", "3Y", "5Y"):
+            if f.get("excess_" + h) is not None:
+                by.setdefault((f.get("peer_group"), f.get("plan_type"), h), []).append(f)
+    for (pg, pl, h), g in by.items():
+        g = sorted(g, key=lambda x: -x["excess_" + h])
+        for i, x in enumerate(g):
+            RET_RANK[(x["code"], h)] = (1 + sum(1 for y in g[:i] if y["excess_" + h] > x["excess_" + h]), len(g))
+    rhp = S.parent / "outputs" / "latest" / "rating_history.json"
+    if rhp.exists():
+        RH.update(json.loads(rhp.read_text(encoding="utf-8")))
     import build_pages as P
     Bm = sys.modules[__name__]
     for f in funds:
@@ -470,8 +545,8 @@ def main():
         rows = ""
         for h, lab in (("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)
-            rk = f.get("rank_" + h)
-            rank_s = "%d / %d" % (int(rk), int(f.get("peers_" + h) or 0)) if rk is not None else "–"
+            rr = RET_RANK.get((f["code"], h))
+            rank_s = "%d / %d" % rr if rr else "–"
             idx_s = pct(r - x) if r is not None and x is not None else "–"
             cls = "pos" if (x or 0) > 0 else ("neg" if x is not None else "")
             rows += (f"<tr><td class='l'>{lab}</td><td class='num'>{pct(r)}</td><td class='num'>{idx_s}</td>"
@@ -538,6 +613,24 @@ def main():
         rate_text = ("%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
             else "Not rated yet: a rating needs at least 3 years of history (1 year for index funds)."
         cap_html = ('<p class="flag" style="font-size:13.5px;margin-top:4px">%s</p>' % e(cn)) if cn else ""
+        sc = f.get("score")
+        if rated and f.get("market_mode") and sc is not None and f.get("tier") in ("A", "B", "C"):   # v8 equity: distance to the next tier
+            nxt, cut = ("A+", 75) if f["tier"] == "A" else ("A", 65)
+            gap = cut - float(sc)
+            if gap > 0:
+                cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Score %s: %s point%s below %s (%s needs %d).</p>'
+                             % (num(sc, 1), num(gap, 1), "" if round(gap, 1) == 1 else "s", nxt, nxt, cut))
+        if rated and f.get("market_mode"):   # v7 equity: which criteria the month was rated on, and the 3-year note
+            cap_html += ('<p class="muted" style="font-size:13px;margin-top:6px"><span class="mode %s">%s</span> %s</p>'
+                         % (("mode-n", "Normal mode", "Rated on the normal criteria for its category.") if f["market_mode"] == "normal" else
+                            ("mode-f", "After-a-fall mode", "Its category's index was below its 200-day average on the rating day, so half the score comes from the after-a-fall criteria.")))
+            if f.get("behind_index_3y"):
+                cap_html += '<p class="muted" style="font-size:13px;margin-top:4px">Behind its index over 3 years, after costs. Shown for information; it does not cap the rating.</p>'
+            if f.get("one_month_lead"):
+                cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Most of its lead over the index in the last 6 months came from one month (%s, %s). '
+                             'One large gain can fade; the rating does not adjust for it.</p>' % (e(f["one_month_lead"]), spct(f.get("one_month_gain"))))
+        cap_html += (' <a href="/#method" style="font-size:13px">How ratings work</a> · <a href="/ratings-update/" style="font-size:13px">What changed in November 2026</a>'
+                     if rated and f.get("market_mode") else "")
         d1 = f.get("nav_chg_1d")
         day_html = (f'<div><div class="muted" style="font-size:13px">1-day change</div><div class="mono {"pos" if d1 > 0 else "neg" if d1 < 0 else ""}" style="font-size:20px">{spct(d1, 2)}</div></div>') if d1 is not None else ""
         flow_html = ""
@@ -545,6 +638,20 @@ def main():
             fr = [(f"Net flow, quarter to {e(f.get('flow_quarter') or '')}", spct(f.get("flow_1q")) + " of AUM"), ("Net flow, last 4 quarters", spct(f.get("flow_4q")) + " of AUM")]
             flow_html = ('<h3 style="margin-top:28px">Money flows</h3><div class="kv" style="margin-top:8px">' + "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in fr)
                          + '</div><p class="muted" style="font-size:12.5px;margin-top:8px">Estimated from AMFI quarterly average AUM after removing the change in NAV.</p>')
+        rh_html = ""
+        hh = RH.get(str(f["code"])) or []
+        if len(hh) >= 3:
+            mo = lambda m: date(int(m[:4]), int(m[5:7]), 1).strftime("%b %Y")
+            chg = [h for h in hh if h[5]][::-1][:6]
+            def chg_head(p, h):
+                rk = f"rank {p[2]} → {h[2]} of {h[3]}" if h[2] and p[2] else ""
+                return (f"{e(h[1])}, {rk}" if p[1] == h[1] else f"{e(p[1])} → {e(h[1])}" + (f" ({rk})" if rk else ""))
+            items = "".join(f"<li><b>{mo(h[0])}: {chg_head(p, h)}</b>. {e(h[5])}</li>" for h in chg for p in [hh[hh.index(h) - 1]])
+            rh_html = (f'<h2 style="margin-top:36px;font-size:26px">Rating history</h2><p class="muted" style="margin-top:8px">The rating at each month-end over the last {len(hh)} months. '
+                       'Hover or tap the chart for a month; larger dots mark a change and shaded months were rated in after-a-fall mode. Months before November 2026 are rebuilt with today\'s rules, using only data available at each month-end.</p>'
+                       f'<div class="card rh-card" style="margin-top:14px"><div class="rh-chart" data-h="{e(json.dumps(hh, separators=(",", ":")))}"></div></div>'
+                       + (f'<h3 style="margin-top:18px;font-size:18px">Recent changes</h3><ul class="rh-list">{items}</ul>' if chg else '<p class="muted" style="margin-top:12px">No change of rating in this period.</p>')
+                       + f'<script>{RH_JS}</script>')
         range_html = ""
         if f.get("hist3y_n") and not arb and asset_class(f["category"]) != "Debt":
             rd = {k: f.get(k) for k in ("hist3y_worst", "hist3y_p10", "hist3y_median", "hist3y_p90", "hist3y_best", "hist3y_n", "hist3y_pos", "hist3y_gt7")}
@@ -560,11 +667,13 @@ def main():
 <div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="/#contact">Ask about this fund</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
- <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'))}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
+ <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
+{review_status(f, RH.get(str(f["code"])))}
+{rh_html}
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
-<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>{rows}</tbody></table></div>
-<p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends.</p>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>
 {liq_html}
 {range_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>
@@ -762,6 +871,31 @@ def main():
     full.append(f"## Disclosures\nMutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} "
                 f"earns commission from asset management companies on Regular plans; Direct plans cost less and pay no commission.\n")
     (DIST / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
+
+    # ---- client note on the November 2026 ratings change
+    write("/ratings-update/", page("Our fund ratings changed in November 2026 | Aeterna Wealth",
+        "Why some well-known equity funds now have a lower rating, and what it means if you hold one.", "/ratings-update/",
+        "<section class='band'><div class='wrap prose' style='max-width:760px'>"
+        "<p class='eyebrow'>Note for clients · November 2026</p><h1>Our fund ratings changed this month</h1>"
+        "<p class='lede' style='margin-top:12px'>If a fund you hold now shows a lower rating, there is nothing you need to do today. Here is what changed and why.</p>"
+        "<h2>What changed</h2><p>We tested about 40 ways of rating equity funds on eleven years of real data, with the same code that rates funds on this site, "
+        "and kept the one whose top-rated funds most often went on to beat their index. Ratings are now set by score: A+ at 75 out of 100 or more, A at 65 or more, "
+        "so a category can have several A+ funds, or none in a given month.</p>"
+        "<h2>Why some well-known funds moved down</h2><p>The ratings favour funds that have been ahead of their index in recent months and that keep up when the market rises. "
+        "Several large, long-established funds have trailed their index lately, so they rank lower for now. A lower rating describes the recent record against the index. "
+        "It is not a view on the fund house, and ratings change month to month.</p>"
+        "<h2>If you hold a fund now rated B or C</h2><ul>"
+        "<li>No action is needed today. Under our review rule a fund comes up for review only after it has been rated below A for 12 months, by when the exit load has ended in almost every equity fund.</li>"
+        "<li>For ELSS funds, a review applies only after the 3-year lock-in.</li>"
+        "<li>Before any switch we weigh the tax on your gain and your own plan. We go through this with you in your review.</li></ul>"
+        "<h2>New investments</h2><p>Under the same rule, new money in a category goes to the funds rated A+ in that category at the time.</p>"
+        "<h2>What the ratings cannot do</h2><p>Ratings describe the past and are not a forecast. In years when large companies lead the market, "
+        "funds rated on recent strength have done no better than the rest. We publish these limits, and the full test results, on the "
+        "<a href='/#method'>Method page</a>.</p>"
+        "<p style='margin-top:20px'><a class='btn' href='/#contact'>Talk to us about your funds</a></p>"
+        "<p class='muted' style='font-size:12.5px;margin-top:24px'>Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889), not an investment adviser. "
+        "We earn commission from fund houses on Regular plans. Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>"
+        "</div></section>"))
 
     # ---- 404 and domain
     write("/404.html", page("Page not found | Aeterna Wealth", "This page does not exist.", "/404.html",

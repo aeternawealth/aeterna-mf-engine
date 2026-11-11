@@ -9,7 +9,7 @@ import pandas as pd
 
 from . import config as C
 from .metrics import arbitrage_metrics, debt_clean, debt_metrics, lean_metrics, median_series, fund_metrics, horizon_metrics, index_metrics
-from .protocols import assign_tiers, score_group
+from .protocols import _pct, assign_tiers, assign_tiers_v7, score_group
 
 
 def _key(s: str) -> str:
@@ -257,8 +257,28 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
     for (pg, plan), g in df.groupby(["peer_group", "plan_type"]):
         ok = g[g.gate == "ok"]
         rest = g[g.gate != "ok"].copy()
-        proto_name, proto = C.protocol_for(g.category.iloc[0])
-        if len(ok):
+        cat = g.category.iloc[0]
+        proto_name, proto = C.protocol_for(cat)
+        v7 = C.EQUITY_MODEL in ("v7", "v8") and cat in C.V7_CATEGORIES
+        if len(ok) and v7:
+            # market mode: when the category's own index is below its 200-day average on the rating date, the score
+            # is half the category model and half the after-a-fall (rebound) criteria
+            b = ok["benchmark"].mode()
+            bs = tri[b.iloc[0]][:as_of].dropna() if len(b) and b.iloc[0] in tri else pd.Series(dtype=float)
+            fall = len(bs) > C.V7_MARKET_DAYS and bs.iloc[-1] < bs.iloc[-C.V7_MARKET_DAYS:].mean()
+            s1 = score_group(ok, proto)
+            if C.EQUITY_MODEL == "v8" and cat in C.V8_ENSEMBLE:   # each view's score as a place in the group, averaged
+                parts = [_pct(score_group(ok, p)["score"], True) for p in C.V8_ENSEMBLE[cat]]
+                s1["score"] = (sum(x.fillna(50) for x in parts) / len(parts)).where(s1["score"].notna()).round(1)
+            if fall:
+                s2 = score_group(ok, C.v7_rebound(cat))
+                s1["score"] = ((s1["score"] + s2["score"].fillna(s1["score"])) / 2).round(1)
+                for c in s2.columns:
+                    if c.startswith("p_") and c not in s1.columns:
+                        s1[c] = s2[c]
+            s1["market_mode"] = "after a fall" if fall else "normal"
+            ok = assign_tiers_v7(s1)
+        elif len(ok):
             ok = assign_tiers(score_group(ok, proto))
         rest["tier"] = "Unrated"
         part = pd.concat([ok, rest])
@@ -271,13 +291,38 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         out["manual_flags"] = out["code"].map(f)
         hit = out["manual_flags"].notna()
         out.loc[hit & out.tier.isin(["A+", "A"]), "tier"] = "Watch"
+    out = one_month_lead(out, navs, tri, as_of)
     out["as_of"] = as_of.date().isoformat()
     return out.sort_values(["category", "peer_group", "plan_type", "score"], ascending=[True, True, True, False])
 
 
 # ------------------------------------------------------------- outputs
+def one_month_lead(out, navs, tri, as_of):
+    """Rated equity funds whose lead over the index in the last 6 month-ends came from a single month: without that
+    month they would not be ahead. Shown on the fund page as a note; it does not change the rating (tested in
+    audit/live/lumpiness_v8.csv.gz: such A+ funds did worse before COVID and slightly better after)."""
+    out["one_month_lead"] = None
+    out["one_month_gain"] = np.nan
+    for i, r in out[out.get("market_mode", pd.Series(dtype=object)).notna() & out["tier"].isin(["A+", "A", "B", "C"])].iterrows():
+        d, b = navs.get(r["code"]), r.get("benchmark")
+        if d is None or b not in tri:
+            continue
+        nav = d.set_index("date")["nav"][:as_of].resample("ME").last()
+        bm = tri[b][:as_of].dropna().resample("ME").last()
+        ex = (nav.pct_change() - bm.pct_change()).dropna()
+        if len(ex) and ex.index[-1].month == as_of.month and ex.index[-1].year == as_of.year and as_of.day < 25:
+            ex = ex.iloc[:-1]      # the current month is not over yet
+        ex = ex.iloc[-6:]
+        if len(ex) < 6:
+            continue
+        if ex.sum() > 0 and ex.sum() - ex.max() <= 0:
+            out.at[i, "one_month_lead"] = ex.idxmax().strftime("%b %Y")
+            out.at[i, "one_month_gain"] = round(float(ex.max()), 4)
+    return out
+
+
 DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "category", "peer_group", "plan_type", "benchmark", "bench_type",
-                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
+                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "market_mode", "behind_index_3y", "one_month_lead", "one_month_gain", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
                 "cagr_1y", "cagr_3y", "cagr_5y", "excess_cagr_3y", "excess_cagr_5y",
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",

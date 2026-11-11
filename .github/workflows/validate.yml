@@ -1,0 +1,37 @@
+# Live-engine backtest (audit/validate_live.py): the production ranking code at every month-end since 2015 on real
+# AMFI NAVs and NSE total-return indices, one job per model. Commits audit/live/*. Does not touch the site or ratings.
+name: Live-engine backtest
+on:
+  push:
+    branches: [staging]
+    paths: ["audit/validate_trigger.txt"]
+  workflow_dispatch:
+    inputs:
+      models: { description: 'JSON list of models', default: '["v7","v3","v5"]' }
+permissions:
+  contents: write
+concurrency: { group: "validate-${{ inputs.models || 'all' }}", cancel-in-progress: true }
+jobs:
+  rate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix: { model: "${{ fromJSON(inputs.models || '[\"v7\",\"v3\",\"v5\"]') }}" }
+    env:
+      AETERNA_EQUITY_MODEL: ${{ matrix.model }}
+      BUDGET_MIN: "290"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
+      - run: python audit/validate_live.py fetch
+      - run: python audit/validate_live.py rate ${{ matrix.model }}
+      - name: Commit the results
+        run: |
+          git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
+          if [ "${{ matrix.model }}" = "v7" ]; then F="audit/live"; else F="audit/live/rated_${{ matrix.model }}.csv.gz"; rm -f audit/live/funds.csv audit/live/nav_me.csv.gz audit/live/tri_me.csv.gz; git checkout HEAD -- audit/live 2>/dev/null || true; fi
+          git add -f $F && git commit -m "Live-engine backtest ${{ matrix.model }} $(date -u +%F)" || echo "nothing to commit"
+          for i in 1 2 3 4 5; do git push && exit 0; sleep $((i*7)); git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
+          exit 1

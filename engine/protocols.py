@@ -97,6 +97,40 @@ def red_flags(g: pd.DataFrame) -> pd.Series:
     return flags
 
 
+def assign_tiers_v7(g: pd.DataFrame) -> pd.DataFrame:
+    """v7 equity tiers (audit/research_final2.py): by place in the peer group. A+ = top 10%, at least 3 places where
+    the group has 15 or more funds; A = up to the top 30%; C = the bottom 30%; B = the rest. The fund's 3-year
+    record against its index is shown on its page but no longer caps the rating (in the test the cap lowered
+    results in every category). Statistical red flags are shown as notes; a portfolio outside SEBI's limits in two
+    consecutive months still caps at B, and qualitative flags (manager exit, merger) still bring 'Watch'."""
+    g = g.copy()
+    s = g["score"]
+    n = int(s.notna().sum())
+    g["peer_rank"] = s.rank(ascending=False, method="min")
+    g["peer_count"] = n
+    pos = s.rank(ascending=False, method="first")
+    k = max(int(np.ceil(.1 * n)), C.V7_MIN_APLUS if n >= 15 else 1)
+    k30 = max(k, int(np.ceil(.3 * n)))
+    bottom = n - int(np.floor(.3 * n))
+    tier = pd.Series("B", index=g.index)
+    if C.EQUITY_MODEL == "v8":   # by score, any number of funds: A+ at 75 or more, A at 65 or more; C = the bottom 30% below that
+        tier[(pos > bottom) & (s < C.V8_A)] = "C"
+        tier[s >= C.V8_A] = "A"
+        tier[s >= C.V8_APLUS] = "A+"
+    else:
+        tier[pos <= k30] = "A"
+        tier[pos <= k] = "A+"
+        tier[(pos > bottom) & (pos > k30)] = "C"
+    g["flags"] = red_flags(g)
+    breach = g["flags"].map(lambda f: "mandate_breach" in f)
+    tier[breach & tier.isin(["A+", "A"])] = "B"
+    g["guard_capped"] = False
+    g["behind_index_3y"] = (g["excess_cagr_3y"] < 0) if "excess_cagr_3y" in g.columns else False
+    tier[s.isna()] = "Unrated"
+    g["tier"] = tier
+    return g
+
+
 def assign_tiers(g: pd.DataFrame) -> pd.DataFrame:
     g = g.copy()
     g["peer_rank"] = g["score"].rank(ascending=False, method="min")

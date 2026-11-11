@@ -31,6 +31,8 @@ def main():
                     help="weekday-morning refresh: new NAVs/index -> returns & period ranks; Overall tiers frozen from the last monthly run")
     ap.add_argument("--fresh-tiers", action="store_true",
                     help="with --daily: re-rate Overall tiers today instead of keeping the monthly snapshot (model changes on staging)")
+    ap.add_argument("--history", action="store_true",
+                    help="with --daily: also fill and update the monthly rating history (the monthly run always does)")
     ap.add_argument("--backtest", action="store_true")
     ap.add_argument("--as-of", default=None)
     ap.add_argument("--holdings-month", default=None, help="YYYY-MM (default: previous calendar month)")
@@ -111,7 +113,7 @@ def main():
         out = out.merge(fl, on="pair_key", how="left")
     month = "latest" if a.daily else (pd.Timestamp(a.as_of) if a.as_of else tri.index.max()).strftime("%Y-%m")
     snap = C.OUT / "ratings_snapshot.csv"
-    keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped"] + [c for c in out.columns if c.startswith("pillar_")]
+    keep = ["code", "tier", "score", "peer_rank", "peer_count", "flags", "guard_capped", "market_mode", "behind_index_3y"] + [c for c in out.columns if c.startswith("pillar_")]
     if a.daily and snap.exists() and not a.fresh_tiers:   # Overall rating changes only monthly
         s0 = pd.read_csv(snap)
         # a category with no fund in the snapshot is new (added since the last monthly run): rate it today
@@ -132,6 +134,16 @@ def main():
     from engine.rank import data_meta
     folder = write_outputs(out, C.OUT / month, holdings_top=hold.attrs.get("top") if len(hold) else None,
                            meta=data_meta(hmonth if len(hold) else None, tri.index.max()))
+    if not a.daily or a.history:   # monthly rating history and the reasons behind each change, for the fund pages
+        from engine import history as RH
+        try:
+            hist = RH.update(u, navs, tri, current=out if (not a.daily or a.fresh_tiers) else None, log=log, liquid=liquid, bond=bond,
+                             ter=ingest.load_manual("ter"), aum=ingest.load_manual("aum"), budget_min=15 if a.daily else 45)
+            n = RH.site_json(hist, folder / "rating_history.json")
+            log(f"  rating history: {hist['month'].nunique()} months, {n} funds")
+        except Exception as e:   # the history is a display feature: never fail the ratings run for it
+            import traceback
+            log(f"  rating history failed: {type(e).__name__}: {e}\n{traceback.format_exc()[-1500:]}")
     dash = dashboard.build(folder)
     if not a.daily:   # the website always reads outputs/latest
         import shutil

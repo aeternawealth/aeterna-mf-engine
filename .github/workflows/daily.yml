@@ -7,6 +7,10 @@ on:
     - cron: "15 3 * * 2-6"
   workflow_dispatch:
     inputs:
+      history:
+        description: "Also fill and update the monthly rating history"
+        type: boolean
+        default: false
       fresh_tiers:
         description: "Re-rate Overall tiers today (model changes on staging)"
         type: boolean
@@ -15,7 +19,7 @@ permissions:
   contents: write
 concurrency: { group: data-refresh, cancel-in-progress: false }
 env:
-  AETERNA_EQUITY_MODEL: ${{ github.ref_name == 'staging' && 'v5' || 'v3' }}   # the candidate model runs on staging only
+  AETERNA_EQUITY_MODEL: v8   # tested on the live engine (audit/validate_live.py); set v3 here to return to the old ratings
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -26,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v6
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
-      - run: python run_monthly.py --daily ${{ inputs.fresh_tiers && '--fresh-tiers' || '' }}
+      - run: python run_monthly.py --daily ${{ inputs.fresh_tiers && '--fresh-tiers' || '' }} ${{ inputs.history && '--history' || '' }}
       - run: python site/build_data.py && python site/build_series.py && python site/build_site.py
       - name: Health check
         run: |
@@ -41,7 +45,7 @@ jobs:
       - name: Commit refreshed data
         run: |
           git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
-          git add outputs/latest data/raw site/data site/dist && git commit -m "Daily NAV refresh $(date -u +%F)" || echo "nothing to commit"
+          git add outputs/latest data/raw site/data site/dist && (git add outputs/rating_history.csv.gz 2>/dev/null || true) && git commit -m "Daily NAV refresh $(date -u +%F)" || echo "nothing to commit"
           # main may have moved during the run (code pushes, the office-PC upload): rebase our data commit onto it
           for i in 1 2 3; do git push && exit 0; git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }; done
           echo "push failed 3 times"; exit 1

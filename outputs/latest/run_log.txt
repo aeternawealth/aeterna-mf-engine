@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-11 04:05
+Aeterna MF Engine run 2026-11-11 05:48
 [1/7] Universe (AMFI NAVAll)
   2741 equity + index schemes (growth, Direct & Regular)
   Month-end AUM (30 Oct 2026): 1357/1380 schemes
@@ -52,7 +52,9 @@ Aeterna MF Engine run 2026-11-11 04:05
   metrics 2200/2741
   metrics 2400/2741
   metrics 2600/2741
-  new categories rated today (not in the monthly snapshot): Aggressive Hybrid, Arbitrage, Balanced Advantage, Balanced Hybrid, Banking & PSU, Conservative Hybrid, Corporate Bond, Credit Risk, Dynamic Term, Equity Savings, Floating Rate, Gilt, Gilt 10-Year Constant Maturity, Liquid, Long Term, Medium Term, Medium to Long Term, Money Market, Multi Asset Allocation, Overnight, Short Term, Ultra Short Term, Ultra Short to Short Term
+  rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
+  rating history: 1 of 1 months rated in 1.3 min
+  rating history: 36 months, 1151 funds
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                             A  A+    B   C  Unrated
 category                                                
@@ -62,33 +64,33 @@ Balanced Advantage              12   8   22  18       16
 Balanced Hybrid                  2   0    2   0        4
 Banking & PSU                    7   4   16  10        3
 Conservative Hybrid              7   4    7  16        0
-Contra                           3   1    2   0        5
+Contra                           0   2    4   0        5
 Corporate Bond                   6   5   19  12        0
 Credit Risk                      8   0   10   6        0
-Dividend Yield                   4   2    8   4        6
+Dividend Yield                   0   2   12   4        6
 Dynamic Term                     9   5   18  12        2
-ELSS                            16   8   24  26        2
+ELSS                             8   2   42  22        2
 Equity Savings                   8   3   17  10        8
-Flexi Cap                       14   8   30  20       20
+Flexi Cap                       14   4   34  20       20
 Floating Rate                    6   2    9   7        0
-Focused                         12   6   20  16        2
+Focused                          0   8   30  16        2
 Gilt                             5   6   19  12        4
 Gilt 10-Year Constant Maturity   4   0    5   1        0
-Index Fund                      82  47  258  63       90
-Large & Mid Cap                 10   6   19  17       22
-Large Cap                       14   6   24  16        8
+Index Fund                      82  45  259  64       90
+Large & Mid Cap                  1   9   28  14       22
+Large Cap                        5   7   30  18        8
 Liquid                          13   8   28  19       17
 Long Term                        1   2    7   4        8
 Medium Term                      8   0   10   6        0
 Medium to Long Term              4   4   10   6        4
-Mid Cap                         12   6   21  17       10
+Mid Cap                          4   2   34  16       10
 Money Market                     9   4   21  12        8
 Multi Asset Allocation           4   4   14   8       44
-Multi Cap                        8   6   20  12       18
+Multi Cap                        5   4   25  12       18
 Overnight                       12   8   28  18       13
-Sectoral/Thematic               48  35  109  84      225
+Sectoral/Thematic               34  21  145  78      223
 Short Term                       9   5   16  11        4
-Small Cap                       10   6   19  15       22
+Small Cap                        8   6   22  14       22
 Ultra Short Term                 9   5   20  12        6
 Ultra Short to Short Term       10   3   17  10       10
-Value                            6   5   15  15        6
+Value                            5   4   19  13        6

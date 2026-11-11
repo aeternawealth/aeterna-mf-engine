@@ -37,7 +37,7 @@ SIG = ["mom_1m", "mom_3m", "mom_6m", "mom_12m", "style_small", "style_mid", "sty
 G = ["month", "peer_group", "plan_type"]
 
 # ------------------------------------------------------------------ data
-R = {m: pd.read_csv(f"{L}rated_{m}.csv.gz", low_memory=False) for m in ("v7", "v3", "v5") if __import__("os").path.exists(f"{L}rated_{m}.csv.gz")}
+R = {m: pd.read_csv(f"{L}rated_{m}.csv.gz", low_memory=False) for m in ("v7", "v3", "v5", "v8") if __import__("os").path.exists(f"{L}rated_{m}.csv.gz")}
 M = R["v7"].copy()
 M["cat"] = M.category.replace({"Value": "Value / Contra", "Contra": "Value / Contra"})
 M = M[M.cat.isin(CATS) & M.score.notna()].reset_index(drop=True)
@@ -184,7 +184,7 @@ GR = lambda x: x.groupby([M[g] for g in G]).rank(pct=True) * 100
 SC["ensemble (6 styles)"] = sum(GR(SC[k]) for k in ("core", "small-cap", "quality", "value + momentum", "low volatility", "quality tilt")) / 6
 SC["ensemble (momentum + defence)"] = sum(GR(SC[k]) for k in ("core", "downside protection", "quality tilt")) / 3
 SC["ensemble (momentum + value + quality)"] = sum(GR(SC[k]) for k in ("small-cap", "value + quality", "momentum + upside")) / 3
-for m in ("v3", "v5", "v7"):   # engine runs: their own scores and tiers
+for m in ("v3", "v5", "v7", "v8"):   # engine runs: their own scores and tiers
     if m in R:
         e = R[m][["month", "code", "score", "tier"]].rename(columns={"score": f"s_{m}", "tier": f"t_{m}"})
         M = M.drop(columns=[c for c in e.columns if c not in ("month", "code") and c in M]).merge(e, on=["month", "code"], how="left")
@@ -293,7 +293,7 @@ for c in CATS:
     for k, s in SC.items():
         cands[(k, "fixed")] = s
         cands[(k, "market mode")] = np.where(M.fall, (s + reb.fillna(s)) / 2, s)
-    for m in ("v3", "v5", "v7"):
+    for m in ("v3", "v5", "v7", "v8"):
         if f"s_{m}" in M: cands[(f"engine {m}", "as run")] = M[f"s_{m}"]
     if ONLY: cands = {kk: v for kk, v in cands.items() if kk[0] in ONLY}
     for (k, mode), s in cands.items():

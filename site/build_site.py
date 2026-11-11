@@ -619,7 +619,11 @@ def main():
                             ("mode-f", "After-a-fall mode", "Its category's index was below its 200-day average on the rating day, so half the score comes from the after-a-fall criteria.")))
             if f.get("behind_index_3y"):
                 cap_html += '<p class="muted" style="font-size:13px;margin-top:4px">Behind its index over 3 years, after costs. Shown for information; it does not cap the rating.</p>'
-        cap_html += ' <a href="/#method" style="font-size:13px">How ratings work</a>' if rated and f.get("market_mode") else ""
+            if f.get("one_month_lead"):
+                cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Most of its lead over the index in the last 6 months came from one month (%s, %s). '
+                             'One large gain can fade; the rating does not adjust for it.</p>' % (e(f["one_month_lead"]), spct(f.get("one_month_gain"))))
+        cap_html += (' <a href="/#method" style="font-size:13px">How ratings work</a> · <a href="/ratings-update/" style="font-size:13px">What changed in November 2026</a>'
+                     if rated and f.get("market_mode") else "")
         d1 = f.get("nav_chg_1d")
         day_html = (f'<div><div class="muted" style="font-size:13px">1-day change</div><div class="mono {"pos" if d1 > 0 else "neg" if d1 < 0 else ""}" style="font-size:20px">{spct(d1, 2)}</div></div>') if d1 is not None else ""
         flow_html = ""
@@ -860,6 +864,31 @@ def main():
     full.append(f"## Disclosures\nMutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} "
                 f"earns commission from asset management companies on Regular plans; Direct plans cost less and pay no commission.\n")
     (DIST / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
+
+    # ---- client note on the November 2026 ratings change
+    write("/ratings-update/", page("Our fund ratings changed in November 2026 | Aeterna Wealth",
+        "Why some well-known equity funds now have a lower rating, and what it means if you hold one.", "/ratings-update/",
+        "<section class='band'><div class='wrap prose' style='max-width:760px'>"
+        "<p class='eyebrow'>Note for clients · November 2026</p><h1>Our fund ratings changed this month</h1>"
+        "<p class='lede' style='margin-top:12px'>If a fund you hold now shows a lower rating, there is nothing you need to do today. Here is what changed and why.</p>"
+        "<h2>What changed</h2><p>We tested about 40 ways of rating equity funds on eleven years of real data, with the same code that rates funds on this site, "
+        "and kept the one whose top-rated funds most often went on to beat their index. Ratings are now set by score: A+ at 75 out of 100 or more, A at 65 or more, "
+        "so a category can have several A+ funds, or none in a given month.</p>"
+        "<h2>Why some well-known funds moved down</h2><p>The ratings favour funds that have been ahead of their index in recent months and that keep up when the market rises. "
+        "Several large, long-established funds have trailed their index lately, so they rank lower for now. A lower rating describes the recent record against the index. "
+        "It is not a view on the fund house, and ratings change month to month.</p>"
+        "<h2>If you hold a fund now rated B or C</h2><ul>"
+        "<li>No action is needed today. Under our review rule a fund comes up for review only after it has been rated below A for 12 months, by when the exit load has ended in almost every equity fund.</li>"
+        "<li>For ELSS funds, a review applies only after the 3-year lock-in.</li>"
+        "<li>Before any switch we weigh the tax on your gain and your own plan. We go through this with you in your review.</li></ul>"
+        "<h2>New investments</h2><p>Under the same rule, new money in a category goes to the funds rated A+ in that category at the time.</p>"
+        "<h2>What the ratings cannot do</h2><p>Ratings describe the past and are not a forecast. In years when large companies lead the market, "
+        "funds rated on recent strength have done no better than the rest. We publish these limits, and the full test results, on the "
+        "<a href='/#method'>Method page</a>.</p>"
+        "<p style='margin-top:20px'><a class='btn' href='/#contact'>Talk to us about your funds</a></p>"
+        "<p class='muted' style='font-size:12.5px;margin-top:24px'>Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889), not an investment adviser. "
+        "We earn commission from fund houses on Regular plans. Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>"
+        "</div></section>"))
 
     # ---- 404 and domain
     write("/404.html", page("Page not found | Aeterna Wealth", "This page does not exist.", "/404.html",

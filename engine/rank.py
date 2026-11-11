@@ -291,13 +291,38 @@ def rank_universe(u, navs, tri, as_of=None, ter=None, aum=None, flags=None, hold
         out["manual_flags"] = out["code"].map(f)
         hit = out["manual_flags"].notna()
         out.loc[hit & out.tier.isin(["A+", "A"]), "tier"] = "Watch"
+    out = one_month_lead(out, navs, tri, as_of)
     out["as_of"] = as_of.date().isoformat()
     return out.sort_values(["category", "peer_group", "plan_type", "score"], ascending=[True, True, True, False])
 
 
 # ------------------------------------------------------------- outputs
+def one_month_lead(out, navs, tri, as_of):
+    """Rated equity funds whose lead over the index in the last 6 month-ends came from a single month: without that
+    month they would not be ahead. Shown on the fund page as a note; it does not change the rating (tested in
+    audit/live/lumpiness_v8.csv.gz: such A+ funds did worse before COVID and slightly better after)."""
+    out["one_month_lead"] = None
+    out["one_month_gain"] = np.nan
+    for i, r in out[out.get("market_mode", pd.Series(dtype=object)).notna() & out["tier"].isin(["A+", "A", "B", "C"])].iterrows():
+        d, b = navs.get(r["code"]), r.get("benchmark")
+        if d is None or b not in tri:
+            continue
+        nav = d.set_index("date")["nav"][:as_of].resample("ME").last()
+        bm = tri[b][:as_of].dropna().resample("ME").last()
+        ex = (nav.pct_change() - bm.pct_change()).dropna()
+        if len(ex) and ex.index[-1].month == as_of.month and ex.index[-1].year == as_of.year and as_of.day < 25:
+            ex = ex.iloc[:-1]      # the current month is not over yet
+        ex = ex.iloc[-6:]
+        if len(ex) < 6:
+            continue
+        if ex.sum() > 0 and ex.sum() - ex.max() <= 0:
+            out.at[i, "one_month_lead"] = ex.idxmax().strftime("%b %Y")
+            out.at[i, "one_month_gain"] = round(float(ex.max()), 4)
+    return out
+
+
 DISPLAY_COLS = ["code", "name", "amc", "asset_class", "tax", "bench_label", "category", "peer_group", "plan_type", "benchmark", "bench_type",
-                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "market_mode", "behind_index_3y", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
+                "tier", "score", "peer_rank", "peer_count", "flags", "gate", "guard_capped", "market_mode", "behind_index_3y", "one_month_lead", "one_month_gain", "nav_date", "nav_latest", "nav_prev", "nav_prev_date", "nav_chg_1d", "ter_date", "age_years",
                 "cagr_1y", "cagr_3y", "cagr_5y", "excess_cagr_3y", "excess_cagr_5y",
                 "roll3y_excess_median", "roll3y_hit_rate", "roll3y_excess_p10", "roll1y_hit_rate",
                 "info_ratio_3y", "sortino_3y", "downside_capture_3y", "upside_capture_3y",

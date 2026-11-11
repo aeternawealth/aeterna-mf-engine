@@ -530,7 +530,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
         <div class="ddmenu"><a href="#about">About Aeterna<small>Who we are and how we work</small></a><a href="#contact">Contact<small>Call, WhatsApp or write to us</small></a><a href="/disclosures/">Disclosures<small>How we are paid, and our registrations</small></a></div></div>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
-    <a class="brand" href="#home" aria-label="Aeterna Wealth home">
+    <a class="brand" href="/" aria-label="Aeterna Wealth home">
       <svg width="32" height="31" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
       <b>Aeterna Wealth</b>
     </a>
@@ -1648,6 +1648,10 @@ function route(){
 }
 $$('.dd').forEach(d=>{const b=d.querySelector('.ddbtn');b.onclick=e=>{$$('.dd').forEach(x=>{if(x!==d){x.classList.remove('open');x.querySelector('.ddbtn').setAttribute('aria-expanded','false')}});const o=d.classList.toggle('open');b.setAttribute('aria-expanded',o)}});
 document.addEventListener('click',e=>{$$('.dd').forEach(d=>{if(!d.contains(e.target)){d.classList.remove('open');d.querySelector('.ddbtn').setAttribute('aria-expanded','false')}})});
+// the logo always lands on the top of the home page, also when already on it
+$('a.brand').addEventListener('click',e=>{if(location.pathname!=='/')return;e.preventDefault();
+  if(location.hash&&location.hash!=='#home'){history.pushState(null,'','/');route()}
+  window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
 load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});

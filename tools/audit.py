@@ -115,7 +115,7 @@ PAGE_JS = r"""async () => {
 
 
 def pick_pages():
-    pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/"]
+    pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/", "/portfolio-check/"]
     f = json.loads((ROOT / "site" / "data" / "funds.json").read_text()) if (ROOT / "site" / "data" / "funds.json").exists() else []
     urls = json.loads((DIST / "data" / "fund-urls.json").read_text()) if (DIST / "data" / "fund-urls.json").exists() else {}
     flagged = [x for x in f if x.get("flags") and str(x["code"]) in urls][:3]

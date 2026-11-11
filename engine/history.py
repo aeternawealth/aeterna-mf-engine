@@ -48,7 +48,7 @@ ORDER = {"A+": 0, "A": 1, "B": 2, "C": 3}
 
 def _equity(u: pd.DataFrame) -> pd.DataFrame:
     """Active equity funds: every category rated by an equity protocol."""
-    ok = u["category"].map(lambda c: any(k in C.protocol_for(c)[0] for k in ("equity", "Small/Mid", "Thematic")))
+    ok = u["category"].map(lambda c: any(k in C.protocol_for(c)[0].lower() for k in ("equity", "small/mid", "thematic")))
     return u[ok]
 
 

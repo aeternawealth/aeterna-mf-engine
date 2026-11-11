@@ -142,7 +142,8 @@ def main():
             n = RH.site_json(hist, folder / "rating_history.json")
             log(f"  rating history: {hist['month'].nunique()} months, {n} funds")
         except Exception as e:   # the history is a display feature: never fail the ratings run for it
-            log(f"  rating history failed: {type(e).__name__}: {e}")
+            import traceback
+            log(f"  rating history failed: {type(e).__name__}: {e}\n{traceback.format_exc()[-1500:]}")
     dash = dashboard.build(folder)
     if not a.daily:   # the website always reads outputs/latest
         import shutil

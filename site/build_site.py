@@ -631,6 +631,12 @@ def main():
                             ("mode-f", "After-a-fall mode", "Its category's index was below its 200-day average on the rating day, so half the score comes from the after-a-fall criteria.")))
             if f.get("behind_index_3y"):
                 cap_html += '<p class="muted" style="font-size:13px;margin-top:4px">Behind its index over 3 years, after costs. Shown for information; it does not cap the rating.</p>'
+            if (f.get("tier") in ("B", "C") and (f.get("roll3y_hit_rate") or 0) >= .8 and (f.get("excess_5Y") if f.get("excess_5Y") is not None else -1) > .01
+                    and (f.get("info_ratio_3y") if f.get("info_ratio_3y") is not None else -1) > .3):
+                # the rating leans on the last 1-12 months; a long, steady record against the index is shown beside it
+                cap_html += ('<p style="font-size:13.5px;margin-top:6px"><span class="mode mode-n">Strong long record</span> Ahead of its index in %s of rolling '
+                             '3-year periods, and %s a year over 5 years. The rating leans on recent months; this record is shown for balance.</p>'
+                             % (pct(f["roll3y_hit_rate"], 0), spct(f["excess_5Y"])))
             if f.get("one_month_lead"):
                 cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Most of its lead over the index in the last 6 months came from one month (%s, %s). '
                              'One large gain can fade; the rating does not adjust for it.</p>' % (e(f["one_month_lead"]), spct(f.get("one_month_gain"))))

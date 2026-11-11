@@ -69,7 +69,11 @@ def fwd(h):
 F = pd.concat([fwd(1), fwd(12), fwd(36)], axis=1)
 F.index.names = ["t", "code"]
 M = M.merge(F.reset_index(), on=["t", "code"], how="left")
-M["period"] = np.where(M.t <= "2020-02-29", "pre", np.where(M.t >= "2020-04-01", "post", "covid"))
+# "pre" starts in June 2018, once SEBI's October 2017 categories were in force: before that a category label is
+# today's label applied to funds run under other mandates (env PRE_FROM to change)
+import os as _os
+PRE_FROM = _os.environ.get("PRE_FROM", "2018-06-01")
+M["period"] = np.where((M.t >= PRE_FROM) & (M.t <= "2020-02-29"), "pre", np.where(M.t >= "2020-04-01", "post", "other"))
 print(f"panel: {len(M)} fund-months, {M.code.nunique()} funds, {M.month.min()}..{M.month.max()}; "
       f"1y outcome known for {M.fwd_12.notna().mean():.0%}", flush=True)
 

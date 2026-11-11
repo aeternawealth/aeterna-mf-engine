@@ -1,4 +1,114 @@
 category,model,mode,tiers,year,aplus_1y
+Large Cap,engine v3,as run,quota,2015,0.9696969696969697
+Large Cap,engine v3,as run,quota,2016,0.5
+Large Cap,engine v3,as run,quota,2017,0.09722222222222221
+Large Cap,engine v3,as run,quota,2018,0.3888888888888889
+Large Cap,engine v3,as run,quota,2019,0.5277777777777778
+Large Cap,engine v3,as run,quota,2020,0.1527777777777778
+Large Cap,engine v3,as run,quota,2021,0.027777777777777776
+Large Cap,engine v3,as run,quota,2022,0.7083333333333334
+Large Cap,engine v3,as run,quota,2023,0.5972222222222222
+Large Cap,engine v3,as run,quota,2024,0.7222222222222222
+Large Cap,engine v3,as run,quota,2025,0.5151515151515151
+Large Cap,engine v3,as run,quota+75/65,2015,0.8135593220338984
+Large Cap,engine v3,as run,quota+75/65,2016,0.5319042871385842
+Large Cap,engine v3,as run,quota+75/65,2017,0.14427083333333335
+Large Cap,engine v3,as run,quota+75/65,2018,0.36485788113695095
+Large Cap,engine v3,as run,quota+75/65,2019,0.4765306122448979
+Large Cap,engine v3,as run,quota+75/65,2020,0.1472560975609756
+Large Cap,engine v3,as run,quota+75/65,2021,0.020833333333333332
+Large Cap,engine v3,as run,quota+75/65,2022,0.6974747474747475
+Large Cap,engine v3,as run,quota+75/65,2023,0.5833333333333333
+Large Cap,engine v3,as run,quota+75/65,2024,0.7095099667774087
+Large Cap,engine v3,as run,quota+75/65,2025,0.5273752012882448
+Large Cap,engine v3,as run,quota+80/70,2015,0.9069767441860465
+Large Cap,engine v3,as run,quota+80/70,2016,0.5182926829268293
+Large Cap,engine v3,as run,quota+80/70,2017,0.10070850202429149
+Large Cap,engine v3,as run,quota+80/70,2018,0.3842688842688843
+Large Cap,engine v3,as run,quota+80/70,2019,0.5097222222222222
+Large Cap,engine v3,as run,quota+80/70,2020,0.1527777777777778
+Large Cap,engine v3,as run,quota+80/70,2021,0.025
+Large Cap,engine v3,as run,quota+80/70,2022,0.7027027027027026
+Large Cap,engine v3,as run,quota+80/70,2023,0.5972222222222222
+Large Cap,engine v3,as run,quota+80/70,2024,0.7222222222222222
+Large Cap,engine v3,as run,quota+80/70,2025,0.5348075348075347
+Large Cap,engine v3,as run,quota+70/60,2015,0.6901408450704225
+Large Cap,engine v3,as run,quota+70/60,2016,0.5291353383458647
+Large Cap,engine v3,as run,quota+70/60,2017,0.15477964658292528
+Large Cap,engine v3,as run,quota+70/60,2018,0.382051282051282
+Large Cap,engine v3,as run,quota+70/60,2019,0.45382513661202184
+Large Cap,engine v3,as run,quota+70/60,2020,0.14403508771929824
+Large Cap,engine v3,as run,quota+70/60,2021,0.045454545454545456
+Large Cap,engine v3,as run,quota+70/60,2022,0.6999178981937603
+Large Cap,engine v3,as run,quota+70/60,2023,0.6278985507246377
+Large Cap,engine v3,as run,quota+70/60,2024,0.7216386554621849
+Large Cap,engine v3,as run,quota+70/60,2025,0.5719602977667494
+Large Cap,engine v3,as run,top 20%,2015,0.8863636363636364
+Large Cap,engine v3,as run,top 20%,2016,0.5416666666666667
+Large Cap,engine v3,as run,top 20%,2017,0.125
+Large Cap,engine v3,as run,top 20%,2018,0.39937943262411346
+Large Cap,engine v3,as run,top 20%,2019,0.45833333333333337
+Large Cap,engine v3,as run,top 20%,2020,0.13541666666666669
+Large Cap,engine v3,as run,top 20%,2021,0.020833333333333332
+Large Cap,engine v3,as run,top 20%,2022,0.71875
+Large Cap,engine v3,as run,top 20%,2023,0.6372549019607843
+Large Cap,engine v3,as run,top 20%,2024,0.7166666666666667
+Large Cap,engine v3,as run,top 20%,2025,0.5545454545454546
+Large Cap,engine v3,as run,A+70/A60,2015,0.6901408450704225
+Large Cap,engine v3,as run,A+70/A60,2016,0.5291353383458647
+Large Cap,engine v3,as run,A+70/A60,2017,0.15477964658292528
+Large Cap,engine v3,as run,A+70/A60,2018,0.382051282051282
+Large Cap,engine v3,as run,A+70/A60,2019,0.45382513661202184
+Large Cap,engine v3,as run,A+70/A60,2020,0.14403508771929824
+Large Cap,engine v3,as run,A+70/A60,2021,0.045454545454545456
+Large Cap,engine v3,as run,A+70/A60,2022,0.6999178981937603
+Large Cap,engine v3,as run,A+70/A60,2023,0.6278985507246377
+Large Cap,engine v3,as run,A+70/A60,2024,0.7216386554621849
+Large Cap,engine v3,as run,A+70/A60,2025,0.5719602977667494
+Large Cap,engine v3,as run,A+80/A70,2015,0.9069767441860465
+Large Cap,engine v3,as run,A+80/A70,2016,0.5182926829268293
+Large Cap,engine v3,as run,A+80/A70,2017,0.10363247863247863
+Large Cap,engine v3,as run,A+80/A70,2018,0.3956349206349207
+Large Cap,engine v3,as run,A+80/A70,2019,0.4847428073234525
+Large Cap,engine v3,as run,A+80/A70,2020,0.140625
+Large Cap,engine v3,as run,A+80/A70,2021,0.02564102564102564
+Large Cap,engine v3,as run,A+80/A70,2022,0.7261904761904762
+Large Cap,engine v3,as run,A+80/A70,2023,0.7083333333333333
+Large Cap,engine v3,as run,A+80/A70,2024,0.7952380952380952
+Large Cap,engine v3,as run,A+80/A70,2025,0.5255411255411255
+Large Cap,engine v3,as run,A+75/A65,2015,0.8135593220338984
+Large Cap,engine v3,as run,A+75/A65,2016,0.5319042871385842
+Large Cap,engine v3,as run,A+75/A65,2017,0.14427083333333335
+Large Cap,engine v3,as run,A+75/A65,2018,0.35793650793650794
+Large Cap,engine v3,as run,A+75/A65,2019,0.4765306122448979
+Large Cap,engine v3,as run,A+75/A65,2020,0.1472560975609756
+Large Cap,engine v3,as run,A+75/A65,2021,0.020833333333333332
+Large Cap,engine v3,as run,A+75/A65,2022,0.689159891598916
+Large Cap,engine v3,as run,A+75/A65,2023,0.5833333333333333
+Large Cap,engine v3,as run,A+75/A65,2024,0.7339285714285715
+Large Cap,engine v3,as run,A+75/A65,2025,0.5273752012882448
+Large Cap,engine v3,as run,A+85/A70,2015,0.9655172413793104
+Large Cap,engine v3,as run,A+85/A70,2016,0.4861111111111111
+Large Cap,engine v3,as run,A+85/A70,2017,0.10795454545454546
+Large Cap,engine v3,as run,A+85/A70,2018,0.6115384615384616
+Large Cap,engine v3,as run,A+85/A70,2019,0.556390977443609
+Large Cap,engine v3,as run,A+85/A70,2020,0.11090909090909092
+Large Cap,engine v3,as run,A+85/A70,2021,0.016666666666666666
+Large Cap,engine v3,as run,A+85/A70,2022,0.7125
+Large Cap,engine v3,as run,A+85/A70,2023,0.8333333333333333
+Large Cap,engine v3,as run,A+85/A70,2024,0.8887499999999999
+Large Cap,engine v3,as run,A+85/A70,2025,0.4642857142857143
+Large Cap,engine v3,as run,engine tiers,2015,0.9696969696969697
+Large Cap,engine v3,as run,engine tiers,2016,0.5
+Large Cap,engine v3,as run,engine tiers,2017,0.09722222222222221
+Large Cap,engine v3,as run,engine tiers,2018,0.43529411764705883
+Large Cap,engine v3,as run,engine tiers,2019,0.5234848484848484
+Large Cap,engine v3,as run,engine tiers,2020,0.10294117647058823
+Large Cap,engine v3,as run,engine tiers,2021,0.027777777777777776
+Large Cap,engine v3,as run,engine tiers,2022,0.7272727272727273
+Large Cap,engine v3,as run,engine tiers,2023,0.6484848484848484
+Large Cap,engine v3,as run,engine tiers,2024,0.7648467432950192
+Large Cap,engine v3,as run,engine tiers,2025,0.5151515151515151
 Large Cap,engine v8,as run,quota,2015,0.5757575757575758
 Large Cap,engine v8,as run,quota,2016,0.7777777777777778
 Large Cap,engine v8,as run,quota,2017,0.1527777777777778
@@ -109,6 +219,116 @@ Large Cap,engine v8,as run,engine tiers,2022,0.9057017543859649
 Large Cap,engine v8,as run,engine tiers,2023,0.7325119236883944
 Large Cap,engine v8,as run,engine tiers,2024,0.38933873144399456
 Large Cap,engine v8,as run,engine tiers,2025,0.7307692307692307
+Large & Mid Cap,engine v3,as run,quota,2015,0.6363636363636364
+Large & Mid Cap,engine v3,as run,quota,2016,0.7222222222222222
+Large & Mid Cap,engine v3,as run,quota,2017,0.1527777777777778
+Large & Mid Cap,engine v3,as run,quota,2018,0.6527777777777778
+Large & Mid Cap,engine v3,as run,quota,2019,0.7083333333333333
+Large & Mid Cap,engine v3,as run,quota,2020,0.3611111111111111
+Large & Mid Cap,engine v3,as run,quota,2021,0.19444444444444445
+Large & Mid Cap,engine v3,as run,quota,2022,0.05555555555555555
+Large & Mid Cap,engine v3,as run,quota,2023,0.5694444444444444
+Large & Mid Cap,engine v3,as run,quota,2024,0.5694444444444444
+Large & Mid Cap,engine v3,as run,quota,2025,0.5454545454545454
+Large & Mid Cap,engine v3,as run,quota+75/65,2015,0.55
+Large & Mid Cap,engine v3,as run,quota+75/65,2016,0.7267267267267268
+Large & Mid Cap,engine v3,as run,quota+75/65,2017,0.14155405405405405
+Large & Mid Cap,engine v3,as run,quota+75/65,2018,0.6546941678520626
+Large & Mid Cap,engine v3,as run,quota+75/65,2019,0.6418478260869566
+Large & Mid Cap,engine v3,as run,quota+75/65,2020,0.2785714285714286
+Large & Mid Cap,engine v3,as run,quota+75/65,2021,0.22097560975609756
+Large & Mid Cap,engine v3,as run,quota+75/65,2022,0.12071881606765328
+Large & Mid Cap,engine v3,as run,quota+75/65,2023,0.6571428571428571
+Large & Mid Cap,engine v3,as run,quota+75/65,2024,0.5793785310734463
+Large & Mid Cap,engine v3,as run,quota+75/65,2025,0.5892857142857143
+Large & Mid Cap,engine v3,as run,quota+80/70,2015,0.6363636363636364
+Large & Mid Cap,engine v3,as run,quota+80/70,2016,0.7222222222222222
+Large & Mid Cap,engine v3,as run,quota+80/70,2017,0.1527777777777778
+Large & Mid Cap,engine v3,as run,quota+80/70,2018,0.6527777777777778
+Large & Mid Cap,engine v3,as run,quota+80/70,2019,0.7
+Large & Mid Cap,engine v3,as run,quota+80/70,2020,0.34559643255295425
+Large & Mid Cap,engine v3,as run,quota+80/70,2021,0.2111111111111111
+Large & Mid Cap,engine v3,as run,quota+80/70,2022,0.08139534883720931
+Large & Mid Cap,engine v3,as run,quota+80/70,2023,0.5861111111111111
+Large & Mid Cap,engine v3,as run,quota+80/70,2024,0.57280750137893
+Large & Mid Cap,engine v3,as run,quota+80/70,2025,0.5480087288597927
+Large & Mid Cap,engine v3,as run,quota+70/60,2015,0.5
+Large & Mid Cap,engine v3,as run,quota+70/60,2016,0.6647368421052632
+Large & Mid Cap,engine v3,as run,quota+70/60,2017,0.10505319148936171
+Large & Mid Cap,engine v3,as run,quota+70/60,2018,0.6527272727272727
+Large & Mid Cap,engine v3,as run,quota+70/60,2019,0.634850166481687
+Large & Mid Cap,engine v3,as run,quota+70/60,2020,0.22068511198945984
+Large & Mid Cap,engine v3,as run,quota+70/60,2021,0.26564537157757495
+Large & Mid Cap,engine v3,as run,quota+70/60,2022,0.3062144212523719
+Large & Mid Cap,engine v3,as run,quota+70/60,2023,0.6527777777777777
+Large & Mid Cap,engine v3,as run,quota+70/60,2024,0.5682926829268293
+Large & Mid Cap,engine v3,as run,quota+70/60,2025,0.6063706563706563
+Large & Mid Cap,engine v3,as run,top 20%,2015,0.6363636363636364
+Large & Mid Cap,engine v3,as run,top 20%,2016,0.7222222222222222
+Large & Mid Cap,engine v3,as run,top 20%,2017,0.1527777777777778
+Large & Mid Cap,engine v3,as run,top 20%,2018,0.6527777777777778
+Large & Mid Cap,engine v3,as run,top 20%,2019,0.6973684210526316
+Large & Mid Cap,engine v3,as run,top 20%,2020,0.3125
+Large & Mid Cap,engine v3,as run,top 20%,2021,0.26041666666666663
+Large & Mid Cap,engine v3,as run,top 20%,2022,0.14583333333333331
+Large & Mid Cap,engine v3,as run,top 20%,2023,0.65
+Large & Mid Cap,engine v3,as run,top 20%,2024,0.5666666666666667
+Large & Mid Cap,engine v3,as run,top 20%,2025,0.6
+Large & Mid Cap,engine v3,as run,A+70/A60,2015,0.5
+Large & Mid Cap,engine v3,as run,A+70/A60,2016,0.6618918918918919
+Large & Mid Cap,engine v3,as run,A+70/A60,2017,0.10505319148936171
+Large & Mid Cap,engine v3,as run,A+70/A60,2018,0.6527272727272727
+Large & Mid Cap,engine v3,as run,A+70/A60,2019,0.634850166481687
+Large & Mid Cap,engine v3,as run,A+70/A60,2020,0.22068511198945984
+Large & Mid Cap,engine v3,as run,A+70/A60,2021,0.26564537157757495
+Large & Mid Cap,engine v3,as run,A+70/A60,2022,0.3062144212523719
+Large & Mid Cap,engine v3,as run,A+70/A60,2023,0.6527777777777777
+Large & Mid Cap,engine v3,as run,A+70/A60,2024,0.5682926829268293
+Large & Mid Cap,engine v3,as run,A+70/A60,2025,0.6063706563706563
+Large & Mid Cap,engine v3,as run,A+80/A70,2015,0.76
+Large & Mid Cap,engine v3,as run,A+80/A70,2016,0.9615384615384616
+Large & Mid Cap,engine v3,as run,A+80/A70,2017,0.22333333333333333
+Large & Mid Cap,engine v3,as run,A+80/A70,2018,0.6660079051383399
+Large & Mid Cap,engine v3,as run,A+80/A70,2019,0.8482404692082112
+Large & Mid Cap,engine v3,as run,A+80/A70,2020,0.356280193236715
+Large & Mid Cap,engine v3,as run,A+80/A70,2021,0.18301314459049545
+Large & Mid Cap,engine v3,as run,A+80/A70,2022,0.08139534883720931
+Large & Mid Cap,engine v3,as run,A+80/A70,2023,0.6269736842105263
+Large & Mid Cap,engine v3,as run,A+80/A70,2024,0.5671768707482994
+Large & Mid Cap,engine v3,as run,A+80/A70,2025,0.5480087288597927
+Large & Mid Cap,engine v3,as run,A+75/A65,2015,0.55
+Large & Mid Cap,engine v3,as run,A+75/A65,2016,0.8186813186813187
+Large & Mid Cap,engine v3,as run,A+75/A65,2017,0.14924812030075188
+Large & Mid Cap,engine v3,as run,A+75/A65,2018,0.643048128342246
+Large & Mid Cap,engine v3,as run,A+75/A65,2019,0.6243243243243244
+Large & Mid Cap,engine v3,as run,A+75/A65,2020,0.2785714285714286
+Large & Mid Cap,engine v3,as run,A+75/A65,2021,0.2112820512820513
+Large & Mid Cap,engine v3,as run,A+75/A65,2022,0.12071881606765328
+Large & Mid Cap,engine v3,as run,A+75/A65,2023,0.6753246753246753
+Large & Mid Cap,engine v3,as run,A+75/A65,2024,0.5793785310734463
+Large & Mid Cap,engine v3,as run,A+75/A65,2025,0.5892857142857143
+Large & Mid Cap,engine v3,as run,A+85/A70,2015,0.8636363636363636
+Large & Mid Cap,engine v3,as run,A+85/A70,2016,1.0
+Large & Mid Cap,engine v3,as run,A+85/A70,2017,0.24242424242424243
+Large & Mid Cap,engine v3,as run,A+85/A70,2018,0.6769005847953216
+Large & Mid Cap,engine v3,as run,A+85/A70,2019,0.9722222222222222
+Large & Mid Cap,engine v3,as run,A+85/A70,2020,0.674731182795699
+Large & Mid Cap,engine v3,as run,A+85/A70,2021,0.09462915601023017
+Large & Mid Cap,engine v3,as run,A+85/A70,2022,0.019230769230769232
+Large & Mid Cap,engine v3,as run,A+85/A70,2023,0.6666666666666666
+Large & Mid Cap,engine v3,as run,A+85/A70,2024,0.4432773109243697
+Large & Mid Cap,engine v3,as run,A+85/A70,2025,0.5321428571428571
+Large & Mid Cap,engine v3,as run,engine tiers,2015,0.8636363636363636
+Large & Mid Cap,engine v3,as run,engine tiers,2016,1.0
+Large & Mid Cap,engine v3,as run,engine tiers,2017,0.22916666666666669
+Large & Mid Cap,engine v3,as run,engine tiers,2018,0.6845238095238095
+Large & Mid Cap,engine v3,as run,engine tiers,2019,0.8846153846153846
+Large & Mid Cap,engine v3,as run,engine tiers,2020,0.4007936507936508
+Large & Mid Cap,engine v3,as run,engine tiers,2021,0.1746031746031746
+Large & Mid Cap,engine v3,as run,engine tiers,2022,0.05714285714285714
+Large & Mid Cap,engine v3,as run,engine tiers,2023,0.7666666666666666
+Large & Mid Cap,engine v3,as run,engine tiers,2024,0.5916666666666667
+Large & Mid Cap,engine v3,as run,engine tiers,2025,0.5454545454545454
 Large & Mid Cap,engine v8,as run,quota,2015,0.8787878787878788
 Large & Mid Cap,engine v8,as run,quota,2016,0.8194444444444444
 Large & Mid Cap,engine v8,as run,quota,2017,0.1527777777777778
@@ -218,6 +438,115 @@ Large & Mid Cap,engine v8,as run,engine tiers,2022,0.6516203703703703
 Large & Mid Cap,engine v8,as run,engine tiers,2023,0.7382428940568475
 Large & Mid Cap,engine v8,as run,engine tiers,2024,0.5125
 Large & Mid Cap,engine v8,as run,engine tiers,2025,0.9545454545454546
+Mid Cap,engine v3,as run,quota,2015,0.48484848484848486
+Mid Cap,engine v3,as run,quota,2016,0.041666666666666664
+Mid Cap,engine v3,as run,quota,2017,0.09722222222222221
+Mid Cap,engine v3,as run,quota,2018,0.875
+Mid Cap,engine v3,as run,quota,2019,0.7638888888888888
+Mid Cap,engine v3,as run,quota,2020,0.08333333333333333
+Mid Cap,engine v3,as run,quota,2021,0.4444444444444444
+Mid Cap,engine v3,as run,quota,2022,0.08333333333333333
+Mid Cap,engine v3,as run,quota,2023,0.3055555555555556
+Mid Cap,engine v3,as run,quota,2024,0.6111111111111112
+Mid Cap,engine v3,as run,quota,2025,0.7424242424242424
+Mid Cap,engine v3,as run,quota+75/65,2015,0.48484848484848486
+Mid Cap,engine v3,as run,quota+75/65,2016,0.041666666666666664
+Mid Cap,engine v3,as run,quota+75/65,2017,0.09722222222222221
+Mid Cap,engine v3,as run,quota+75/65,2018,0.875
+Mid Cap,engine v3,as run,quota+75/65,2019,0.7526276276276276
+Mid Cap,engine v3,as run,quota+75/65,2020,0.08139534883720931
+Mid Cap,engine v3,as run,quota+75/65,2021,0.4444444444444444
+Mid Cap,engine v3,as run,quota+75/65,2022,0.12097971301335972
+Mid Cap,engine v3,as run,quota+75/65,2023,0.3068309070548712
+Mid Cap,engine v3,as run,quota+75/65,2024,0.5935374149659864
+Mid Cap,engine v3,as run,quota+75/65,2025,0.7335294117647059
+Mid Cap,engine v3,as run,quota+80/70,2015,0.48484848484848486
+Mid Cap,engine v3,as run,quota+80/70,2016,0.041666666666666664
+Mid Cap,engine v3,as run,quota+80/70,2017,0.09722222222222221
+Mid Cap,engine v3,as run,quota+80/70,2018,0.875
+Mid Cap,engine v3,as run,quota+80/70,2019,0.7638888888888888
+Mid Cap,engine v3,as run,quota+80/70,2020,0.08333333333333333
+Mid Cap,engine v3,as run,quota+80/70,2021,0.4444444444444444
+Mid Cap,engine v3,as run,quota+80/70,2022,0.08333333333333333
+Mid Cap,engine v3,as run,quota+80/70,2023,0.3055555555555556
+Mid Cap,engine v3,as run,quota+80/70,2024,0.6111111111111112
+Mid Cap,engine v3,as run,quota+80/70,2025,0.7333333333333334
+Mid Cap,engine v3,as run,quota+70/60,2015,0.4107142857142857
+Mid Cap,engine v3,as run,quota+70/60,2016,0.08921694480102696
+Mid Cap,engine v3,as run,quota+70/60,2017,0.0945945945945946
+Mid Cap,engine v3,as run,quota+70/60,2018,0.868421052631579
+Mid Cap,engine v3,as run,quota+70/60,2019,0.7513513513513514
+Mid Cap,engine v3,as run,quota+70/60,2020,0.10784313725490197
+Mid Cap,engine v3,as run,quota+70/60,2021,0.38863636363636367
+Mid Cap,engine v3,as run,quota+70/60,2022,0.16420361247947454
+Mid Cap,engine v3,as run,quota+70/60,2023,0.3875
+Mid Cap,engine v3,as run,quota+70/60,2024,0.5971896955503513
+Mid Cap,engine v3,as run,quota+70/60,2025,0.7404351087771943
+Mid Cap,engine v3,as run,top 20%,2015,0.48484848484848486
+Mid Cap,engine v3,as run,top 20%,2016,0.041666666666666664
+Mid Cap,engine v3,as run,top 20%,2017,0.09722222222222221
+Mid Cap,engine v3,as run,top 20%,2018,0.875
+Mid Cap,engine v3,as run,top 20%,2019,0.7638888888888888
+Mid Cap,engine v3,as run,top 20%,2020,0.08333333333333333
+Mid Cap,engine v3,as run,top 20%,2021,0.4444444444444444
+Mid Cap,engine v3,as run,top 20%,2022,0.08333333333333333
+Mid Cap,engine v3,as run,top 20%,2023,0.3188405797101449
+Mid Cap,engine v3,as run,top 20%,2024,0.5729166666666667
+Mid Cap,engine v3,as run,top 20%,2025,0.7352657004830918
+Mid Cap,engine v3,as run,A+70/A60,2015,0.4107142857142857
+Mid Cap,engine v3,as run,A+70/A60,2016,0.06971153846153846
+Mid Cap,engine v3,as run,A+70/A60,2017,0.08237327188940091
+Mid Cap,engine v3,as run,A+70/A60,2018,0.8648648648648649
+Mid Cap,engine v3,as run,A+70/A60,2019,0.7461538461538462
+Mid Cap,engine v3,as run,A+70/A60,2020,0.10784313725490197
+Mid Cap,engine v3,as run,A+70/A60,2021,0.38863636363636367
+Mid Cap,engine v3,as run,A+70/A60,2022,0.16420361247947454
+Mid Cap,engine v3,as run,A+70/A60,2023,0.3875
+Mid Cap,engine v3,as run,A+70/A60,2024,0.5971896955503513
+Mid Cap,engine v3,as run,A+70/A60,2025,0.7404351087771943
+Mid Cap,engine v3,as run,A+80/A70,2015,0.4
+Mid Cap,engine v3,as run,A+80/A70,2016,0.0
+Mid Cap,engine v3,as run,A+80/A70,2017,0.13247863247863248
+Mid Cap,engine v3,as run,A+80/A70,2018,1.0
+Mid Cap,engine v3,as run,A+80/A70,2019,0.8920454545454546
+Mid Cap,engine v3,as run,A+80/A70,2020,0.02631578947368421
+Mid Cap,engine v3,as run,A+80/A70,2021,0.2238095238095238
+Mid Cap,engine v3,as run,A+80/A70,2022,0.0
+Mid Cap,engine v3,as run,A+80/A70,2023,0.3542319749216301
+Mid Cap,engine v3,as run,A+80/A70,2024,0.536875
+Mid Cap,engine v3,as run,A+80/A70,2025,0.7181818181818183
+Mid Cap,engine v3,as run,A+75/A65,2015,0.4482758620689655
+Mid Cap,engine v3,as run,A+75/A65,2016,0.0
+Mid Cap,engine v3,as run,A+75/A65,2017,0.14166666666666666
+Mid Cap,engine v3,as run,A+75/A65,2018,0.9473684210526316
+Mid Cap,engine v3,as run,A+75/A65,2019,0.8131313131313131
+Mid Cap,engine v3,as run,A+75/A65,2020,0.08139534883720931
+Mid Cap,engine v3,as run,A+75/A65,2021,0.42789968652037613
+Mid Cap,engine v3,as run,A+75/A65,2022,0.12208713272543059
+Mid Cap,engine v3,as run,A+75/A65,2023,0.3110983323749281
+Mid Cap,engine v3,as run,A+75/A65,2024,0.6007964161274266
+Mid Cap,engine v3,as run,A+75/A65,2025,0.7335294117647059
+Mid Cap,engine v3,as run,A+85/A70,2016,0.0
+Mid Cap,engine v3,as run,A+85/A70,2020,0.0
+Mid Cap,engine v3,as run,A+85/A70,2021,0.125
+Mid Cap,engine v3,as run,A+85/A70,2022,0.0
+Mid Cap,engine v3,as run,A+85/A70,2023,0.3888888888888889
+Mid Cap,engine v3,as run,A+85/A70,2024,0.24545454545454548
+Mid Cap,engine v3,as run,A+85/A70,2025,0.6602870813397129
+Mid Cap,engine v3,as run,A+85/A70,2017,0.08333333333333333
+Mid Cap,engine v3,as run,A+85/A70,2018,1.0
+Mid Cap,engine v3,as run,A+85/A70,2019,0.75
+Mid Cap,engine v3,as run,engine tiers,2015,0.5
+Mid Cap,engine v3,as run,engine tiers,2016,0.0
+Mid Cap,engine v3,as run,engine tiers,2017,0.0
+Mid Cap,engine v3,as run,engine tiers,2020,0.022727272727272728
+Mid Cap,engine v3,as run,engine tiers,2021,0.43229166666666663
+Mid Cap,engine v3,as run,engine tiers,2022,0.0625
+Mid Cap,engine v3,as run,engine tiers,2023,0.3620689655172414
+Mid Cap,engine v3,as run,engine tiers,2024,0.536875
+Mid Cap,engine v3,as run,engine tiers,2025,0.7272727272727273
+Mid Cap,engine v3,as run,engine tiers,2018,1.0
+Mid Cap,engine v3,as run,engine tiers,2019,0.85
 Mid Cap,engine v8,as run,quota,2015,0.42424242424242425
 Mid Cap,engine v8,as run,quota,2016,0.1527777777777778
 Mid Cap,engine v8,as run,quota,2017,0.19444444444444442
@@ -327,6 +656,116 @@ Mid Cap,engine v8,as run,engine tiers,2022,0.41666666666666663
 Mid Cap,engine v8,as run,engine tiers,2023,0.5454545454545454
 Mid Cap,engine v8,as run,engine tiers,2024,0.38541666666666663
 Mid Cap,engine v8,as run,engine tiers,2025,0.6845238095238095
+Small Cap,engine v3,as run,quota,2015,1.0
+Small Cap,engine v3,as run,quota,2016,0.25
+Small Cap,engine v3,as run,quota,2017,0.6578947368421053
+Small Cap,engine v3,as run,quota,2018,0.8958333333333333
+Small Cap,engine v3,as run,quota,2019,0.75
+Small Cap,engine v3,as run,quota,2020,0.41666666666666663
+Small Cap,engine v3,as run,quota,2021,0.8200000000000001
+Small Cap,engine v3,as run,quota,2022,0.4722222222222222
+Small Cap,engine v3,as run,quota,2023,0.4027777777777778
+Small Cap,engine v3,as run,quota,2024,0.4722222222222222
+Small Cap,engine v3,as run,quota,2025,0.8484848484848485
+Small Cap,engine v3,as run,quota+75/65,2015,1.0
+Small Cap,engine v3,as run,quota+75/65,2016,0.5019607843137255
+Small Cap,engine v3,as run,quota+75/65,2017,0.7541666666666667
+Small Cap,engine v3,as run,quota+75/65,2018,0.9260752688172043
+Small Cap,engine v3,as run,quota+75/65,2019,0.6720430107526881
+Small Cap,engine v3,as run,quota+75/65,2020,0.38666666666666666
+Small Cap,engine v3,as run,quota+75/65,2021,0.8026061776061776
+Small Cap,engine v3,as run,quota+75/65,2022,0.48267008985879334
+Small Cap,engine v3,as run,quota+75/65,2023,0.3648989898989899
+Small Cap,engine v3,as run,quota+75/65,2024,0.47860360360360366
+Small Cap,engine v3,as run,quota+75/65,2025,0.7613190730837789
+Small Cap,engine v3,as run,quota+80/70,2015,1.0
+Small Cap,engine v3,as run,quota+80/70,2016,0.36184210526315785
+Small Cap,engine v3,as run,quota+80/70,2017,0.6636155606407322
+Small Cap,engine v3,as run,quota+80/70,2018,0.9114583333333333
+Small Cap,engine v3,as run,quota+80/70,2019,0.7416666666666667
+Small Cap,engine v3,as run,quota+80/70,2020,0.41666666666666663
+Small Cap,engine v3,as run,quota+80/70,2021,0.8200000000000001
+Small Cap,engine v3,as run,quota+80/70,2022,0.4722222222222222
+Small Cap,engine v3,as run,quota+80/70,2023,0.4027777777777778
+Small Cap,engine v3,as run,quota+80/70,2024,0.4722222222222222
+Small Cap,engine v3,as run,quota+80/70,2025,0.8546218487394958
+Small Cap,engine v3,as run,quota+70/60,2015,1.0
+Small Cap,engine v3,as run,quota+70/60,2016,0.5404589371980677
+Small Cap,engine v3,as run,quota+70/60,2017,0.7804054054054055
+Small Cap,engine v3,as run,quota+70/60,2018,0.9339285714285714
+Small Cap,engine v3,as run,quota+70/60,2019,0.6711711711711712
+Small Cap,engine v3,as run,quota+70/60,2020,0.3373819163292847
+Small Cap,engine v3,as run,quota+70/60,2021,0.8485999050783104
+Small Cap,engine v3,as run,quota+70/60,2022,0.5336745689655172
+Small Cap,engine v3,as run,quota+70/60,2023,0.28782505910165485
+Small Cap,engine v3,as run,quota+70/60,2024,0.5389016018306636
+Small Cap,engine v3,as run,quota+70/60,2025,0.6745625266752027
+Small Cap,engine v3,as run,top 20%,2015,1.0
+Small Cap,engine v3,as run,top 20%,2016,0.27884615384615385
+Small Cap,engine v3,as run,top 20%,2017,0.6699561403508771
+Small Cap,engine v3,as run,top 20%,2018,0.8958333333333333
+Small Cap,engine v3,as run,top 20%,2019,0.75
+Small Cap,engine v3,as run,top 20%,2020,0.41666666666666663
+Small Cap,engine v3,as run,top 20%,2021,0.8200000000000001
+Small Cap,engine v3,as run,top 20%,2022,0.4722222222222222
+Small Cap,engine v3,as run,top 20%,2023,0.3918918918918919
+Small Cap,engine v3,as run,top 20%,2024,0.5208333333333334
+Small Cap,engine v3,as run,top 20%,2025,0.8181818181818181
+Small Cap,engine v3,as run,A+70/A60,2015,1.0
+Small Cap,engine v3,as run,A+70/A60,2016,0.5404589371980677
+Small Cap,engine v3,as run,A+70/A60,2017,0.7804054054054055
+Small Cap,engine v3,as run,A+70/A60,2018,0.9339285714285714
+Small Cap,engine v3,as run,A+70/A60,2019,0.6711711711711712
+Small Cap,engine v3,as run,A+70/A60,2020,0.3373819163292847
+Small Cap,engine v3,as run,A+70/A60,2021,0.8485999050783104
+Small Cap,engine v3,as run,A+70/A60,2022,0.5336745689655172
+Small Cap,engine v3,as run,A+70/A60,2023,0.28782505910165485
+Small Cap,engine v3,as run,A+70/A60,2024,0.5389016018306636
+Small Cap,engine v3,as run,A+70/A60,2025,0.6745625266752027
+Small Cap,engine v3,as run,A+80/A70,2015,1.0
+Small Cap,engine v3,as run,A+80/A70,2016,0.23684210526315788
+Small Cap,engine v3,as run,A+80/A70,2017,0.8478260869565217
+Small Cap,engine v3,as run,A+80/A70,2018,0.9055059523809523
+Small Cap,engine v3,as run,A+80/A70,2019,0.7416666666666667
+Small Cap,engine v3,as run,A+80/A70,2020,0.37337662337662336
+Small Cap,engine v3,as run,A+80/A70,2021,0.5583333333333333
+Small Cap,engine v3,as run,A+80/A70,2022,0.3666666666666667
+Small Cap,engine v3,as run,A+80/A70,2023,0.4715384615384616
+Small Cap,engine v3,as run,A+80/A70,2024,0.4226086956521739
+Small Cap,engine v3,as run,A+80/A70,2025,0.861904761904762
+Small Cap,engine v3,as run,A+75/A65,2015,1.0
+Small Cap,engine v3,as run,A+75/A65,2016,0.5019607843137255
+Small Cap,engine v3,as run,A+75/A65,2017,0.7250000000000001
+Small Cap,engine v3,as run,A+75/A65,2018,0.9260752688172043
+Small Cap,engine v3,as run,A+75/A65,2019,0.6720430107526881
+Small Cap,engine v3,as run,A+75/A65,2020,0.38666666666666666
+Small Cap,engine v3,as run,A+75/A65,2021,0.8026061776061776
+Small Cap,engine v3,as run,A+75/A65,2022,0.4623693379790941
+Small Cap,engine v3,as run,A+75/A65,2023,0.3648989898989899
+Small Cap,engine v3,as run,A+75/A65,2024,0.46839826839826837
+Small Cap,engine v3,as run,A+75/A65,2025,0.7613190730837789
+Small Cap,engine v3,as run,A+85/A70,2015,1.0
+Small Cap,engine v3,as run,A+85/A70,2016,1.0
+Small Cap,engine v3,as run,A+85/A70,2017,0.7
+Small Cap,engine v3,as run,A+85/A70,2018,0.8636363636363636
+Small Cap,engine v3,as run,A+85/A70,2019,0.8913043478260869
+Small Cap,engine v3,as run,A+85/A70,2020,0.2361111111111111
+Small Cap,engine v3,as run,A+85/A70,2023,0.7341269841269842
+Small Cap,engine v3,as run,A+85/A70,2024,0.4567307692307692
+Small Cap,engine v3,as run,A+85/A70,2025,1.0
+Small Cap,engine v3,as run,A+85/A70,2021,0.0
+Small Cap,engine v3,as run,A+85/A70,2022,0.0
+Small Cap,engine v3,as run,engine tiers,2015,1.0
+Small Cap,engine v3,as run,engine tiers,2016,0.3035714285714286
+Small Cap,engine v3,as run,engine tiers,2017,0.6699561403508771
+Small Cap,engine v3,as run,engine tiers,2018,0.8958333333333333
+Small Cap,engine v3,as run,engine tiers,2019,0.75
+Small Cap,engine v3,as run,engine tiers,2020,0.41666666666666663
+Small Cap,engine v3,as run,engine tiers,2021,0.8241106719367588
+Small Cap,engine v3,as run,engine tiers,2022,0.375
+Small Cap,engine v3,as run,engine tiers,2023,0.45153846153846156
+Small Cap,engine v3,as run,engine tiers,2024,0.4513888888888889
+Small Cap,engine v3,as run,engine tiers,2025,0.850108225108225
 Small Cap,engine v8,as run,quota,2015,0.9090909090909091
 Small Cap,engine v8,as run,quota,2016,0.4166666666666667
 Small Cap,engine v8,as run,quota,2017,0.868421052631579
@@ -430,6 +869,116 @@ Small Cap,engine v8,as run,engine tiers,2022,0.725
 Small Cap,engine v8,as run,engine tiers,2023,0.44664031620553357
 Small Cap,engine v8,as run,engine tiers,2024,0.6956521739130435
 Small Cap,engine v8,as run,engine tiers,2025,0.7958333333333334
+Flexi Cap,engine v3,as run,quota,2015,0.5757575757575758
+Flexi Cap,engine v3,as run,quota,2016,0.4444444444444445
+Flexi Cap,engine v3,as run,quota,2017,0.09722222222222221
+Flexi Cap,engine v3,as run,quota,2018,0.4722222222222222
+Flexi Cap,engine v3,as run,quota,2019,0.6111111111111112
+Flexi Cap,engine v3,as run,quota,2020,0.3055555555555556
+Flexi Cap,engine v3,as run,quota,2021,0.2222222222222222
+Flexi Cap,engine v3,as run,quota,2022,0.4027777777777778
+Flexi Cap,engine v3,as run,quota,2023,0.5833333333333334
+Flexi Cap,engine v3,as run,quota,2024,0.5972222222222222
+Flexi Cap,engine v3,as run,quota,2025,0.5277777777777778
+Flexi Cap,engine v3,as run,quota+75/65,2015,0.5681818181818182
+Flexi Cap,engine v3,as run,quota+75/65,2016,0.4544573643410853
+Flexi Cap,engine v3,as run,quota+75/65,2017,0.13541666666666666
+Flexi Cap,engine v3,as run,quota+75/65,2018,0.5140553947912361
+Flexi Cap,engine v3,as run,quota+75/65,2019,0.5935672514619883
+Flexi Cap,engine v3,as run,quota+75/65,2020,0.32857142857142857
+Flexi Cap,engine v3,as run,quota+75/65,2021,0.15862745098039216
+Flexi Cap,engine v3,as run,quota+75/65,2022,0.33938256153525237
+Flexi Cap,engine v3,as run,quota+75/65,2023,0.6206675224646983
+Flexi Cap,engine v3,as run,quota+75/65,2024,0.5963203463203464
+Flexi Cap,engine v3,as run,quota+75/65,2025,0.5626470588235294
+Flexi Cap,engine v3,as run,quota+80/70,2015,0.5882352941176471
+Flexi Cap,engine v3,as run,quota+80/70,2016,0.4444444444444445
+Flexi Cap,engine v3,as run,quota+80/70,2017,0.11742424242424242
+Flexi Cap,engine v3,as run,quota+80/70,2018,0.519927536231884
+Flexi Cap,engine v3,as run,quota+80/70,2019,0.6111111111111112
+Flexi Cap,engine v3,as run,quota+80/70,2020,0.30105105105105107
+Flexi Cap,engine v3,as run,quota+80/70,2021,0.2195945945945946
+Flexi Cap,engine v3,as run,quota+80/70,2022,0.39400584795321636
+Flexi Cap,engine v3,as run,quota+80/70,2023,0.5833333333333334
+Flexi Cap,engine v3,as run,quota+80/70,2024,0.5811781609195402
+Flexi Cap,engine v3,as run,quota+80/70,2025,0.4955357142857143
+Flexi Cap,engine v3,as run,quota+70/60,2015,0.5681818181818182
+Flexi Cap,engine v3,as run,quota+70/60,2016,0.43503325942350335
+Flexi Cap,engine v3,as run,quota+70/60,2017,0.14874274661508702
+Flexi Cap,engine v3,as run,quota+70/60,2018,0.5304442036836403
+Flexi Cap,engine v3,as run,quota+70/60,2019,0.6129166666666667
+Flexi Cap,engine v3,as run,quota+70/60,2020,0.3894110275689223
+Flexi Cap,engine v3,as run,quota+70/60,2021,0.1157563025210084
+Flexi Cap,engine v3,as run,quota+70/60,2022,0.4085010593220339
+Flexi Cap,engine v3,as run,quota+70/60,2023,0.7085164835164836
+Flexi Cap,engine v3,as run,quota+70/60,2024,0.5658227848101265
+Flexi Cap,engine v3,as run,quota+70/60,2025,0.5962293243622092
+Flexi Cap,engine v3,as run,top 20%,2015,0.5757575757575758
+Flexi Cap,engine v3,as run,top 20%,2016,0.4444444444444445
+Flexi Cap,engine v3,as run,top 20%,2017,0.09722222222222221
+Flexi Cap,engine v3,as run,top 20%,2018,0.4722222222222222
+Flexi Cap,engine v3,as run,top 20%,2019,0.6111111111111112
+Flexi Cap,engine v3,as run,top 20%,2020,0.3026315789473684
+Flexi Cap,engine v3,as run,top 20%,2021,0.16666666666666669
+Flexi Cap,engine v3,as run,top 20%,2022,0.34098639455782315
+Flexi Cap,engine v3,as run,top 20%,2023,0.6700680272108843
+Flexi Cap,engine v3,as run,top 20%,2024,0.6244107744107744
+Flexi Cap,engine v3,as run,top 20%,2025,0.5476329631794272
+Flexi Cap,engine v3,as run,A+70/A60,2015,0.5681818181818182
+Flexi Cap,engine v3,as run,A+70/A60,2016,0.42954545454545456
+Flexi Cap,engine v3,as run,A+70/A60,2017,0.14874274661508702
+Flexi Cap,engine v3,as run,A+70/A60,2018,0.5304442036836403
+Flexi Cap,engine v3,as run,A+70/A60,2019,0.6129166666666667
+Flexi Cap,engine v3,as run,A+70/A60,2020,0.3894110275689223
+Flexi Cap,engine v3,as run,A+70/A60,2021,0.1157563025210084
+Flexi Cap,engine v3,as run,A+70/A60,2022,0.4085010593220339
+Flexi Cap,engine v3,as run,A+70/A60,2023,0.7085164835164836
+Flexi Cap,engine v3,as run,A+70/A60,2024,0.5658227848101265
+Flexi Cap,engine v3,as run,A+70/A60,2025,0.5962293243622092
+Flexi Cap,engine v3,as run,A+80/A70,2015,0.59375
+Flexi Cap,engine v3,as run,A+80/A70,2016,0.46875
+Flexi Cap,engine v3,as run,A+80/A70,2017,0.11814024390243902
+Flexi Cap,engine v3,as run,A+80/A70,2018,0.6092132505175983
+Flexi Cap,engine v3,as run,A+80/A70,2019,0.5969696969696969
+Flexi Cap,engine v3,as run,A+80/A70,2020,0.39230769230769236
+Flexi Cap,engine v3,as run,A+80/A70,2021,0.26071428571428573
+Flexi Cap,engine v3,as run,A+80/A70,2022,0.4045864045864046
+Flexi Cap,engine v3,as run,A+80/A70,2023,0.5678571428571428
+Flexi Cap,engine v3,as run,A+80/A70,2024,0.5770114942528736
+Flexi Cap,engine v3,as run,A+80/A70,2025,0.4908814589665653
+Flexi Cap,engine v3,as run,A+75/A65,2015,0.5681818181818182
+Flexi Cap,engine v3,as run,A+75/A65,2016,0.48971377459749554
+Flexi Cap,engine v3,as run,A+75/A65,2017,0.12351190476190477
+Flexi Cap,engine v3,as run,A+75/A65,2018,0.5207627118644068
+Flexi Cap,engine v3,as run,A+75/A65,2019,0.5788923719958203
+Flexi Cap,engine v3,as run,A+75/A65,2020,0.35
+Flexi Cap,engine v3,as run,A+75/A65,2021,0.16237745098039216
+Flexi Cap,engine v3,as run,A+75/A65,2022,0.33938256153525237
+Flexi Cap,engine v3,as run,A+75/A65,2023,0.6319444444444444
+Flexi Cap,engine v3,as run,A+75/A65,2024,0.5963203463203464
+Flexi Cap,engine v3,as run,A+75/A65,2025,0.5626470588235294
+Flexi Cap,engine v3,as run,A+85/A70,2015,0.6666666666666666
+Flexi Cap,engine v3,as run,A+85/A70,2016,0.8
+Flexi Cap,engine v3,as run,A+85/A70,2017,0.0
+Flexi Cap,engine v3,as run,A+85/A70,2018,0.717391304347826
+Flexi Cap,engine v3,as run,A+85/A70,2019,0.5
+Flexi Cap,engine v3,as run,A+85/A70,2020,0.4732142857142857
+Flexi Cap,engine v3,as run,A+85/A70,2021,0.36458333333333337
+Flexi Cap,engine v3,as run,A+85/A70,2022,0.5525
+Flexi Cap,engine v3,as run,A+85/A70,2023,0.6204545454545455
+Flexi Cap,engine v3,as run,A+85/A70,2024,0.6933333333333334
+Flexi Cap,engine v3,as run,A+85/A70,2025,0.7414772727272727
+Flexi Cap,engine v3,as run,engine tiers,2015,0.6818181818181818
+Flexi Cap,engine v3,as run,engine tiers,2016,0.5325
+Flexi Cap,engine v3,as run,engine tiers,2017,0.08
+Flexi Cap,engine v3,as run,engine tiers,2018,0.5541666666666667
+Flexi Cap,engine v3,as run,engine tiers,2019,0.6304347826086956
+Flexi Cap,engine v3,as run,engine tiers,2020,0.4115384615384615
+Flexi Cap,engine v3,as run,engine tiers,2021,0.2315126050420168
+Flexi Cap,engine v3,as run,engine tiers,2022,0.4125816993464052
+Flexi Cap,engine v3,as run,engine tiers,2023,0.6111607142857143
+Flexi Cap,engine v3,as run,engine tiers,2024,0.5972222222222222
+Flexi Cap,engine v3,as run,engine tiers,2025,0.5277777777777778
 Flexi Cap,engine v8,as run,quota,2015,0.6363636363636364
 Flexi Cap,engine v8,as run,quota,2016,0.6944444444444444
 Flexi Cap,engine v8,as run,quota,2017,0.08333333333333333
@@ -540,6 +1089,115 @@ Flexi Cap,engine v8,as run,engine tiers,2022,0.9821428571428572
 Flexi Cap,engine v8,as run,engine tiers,2023,0.9242857142857144
 Flexi Cap,engine v8,as run,engine tiers,2024,0.23035714285714284
 Flexi Cap,engine v8,as run,engine tiers,2025,0.7352941176470589
+Multi Cap,engine v3,as run,quota,2015,0.09090909090909091
+Multi Cap,engine v3,as run,quota,2016,0.20833333333333331
+Multi Cap,engine v3,as run,quota,2017,0.5416666666666666
+Multi Cap,engine v3,as run,quota,2018,0.5833333333333334
+Multi Cap,engine v3,as run,quota,2019,0.5
+Multi Cap,engine v3,as run,quota,2020,0.7916666666666667
+Multi Cap,engine v3,as run,quota,2021,1.0
+Multi Cap,engine v3,as run,quota,2022,0.2916666666666667
+Multi Cap,engine v3,as run,quota,2023,0.5833333333333333
+Multi Cap,engine v3,as run,quota,2024,0.5384615384615385
+Multi Cap,engine v3,as run,quota,2025,0.5
+Multi Cap,engine v3,as run,quota+75/65,2015,0.08333333333333333
+Multi Cap,engine v3,as run,quota+75/65,2016,0.20833333333333331
+Multi Cap,engine v3,as run,quota+75/65,2017,0.5673076923076923
+Multi Cap,engine v3,as run,quota+75/65,2018,0.6691176470588236
+Multi Cap,engine v3,as run,quota+75/65,2019,0.5555555555555556
+Multi Cap,engine v3,as run,quota+75/65,2020,0.7416666666666667
+Multi Cap,engine v3,as run,quota+75/65,2021,0.9615384615384616
+Multi Cap,engine v3,as run,quota+75/65,2022,0.2916666666666667
+Multi Cap,engine v3,as run,quota+75/65,2023,0.5833333333333333
+Multi Cap,engine v3,as run,quota+75/65,2024,0.5889423076923077
+Multi Cap,engine v3,as run,quota+75/65,2025,0.5606060606060606
+Multi Cap,engine v3,as run,quota+80/70,2015,0.09090909090909091
+Multi Cap,engine v3,as run,quota+80/70,2016,0.20833333333333331
+Multi Cap,engine v3,as run,quota+80/70,2017,0.5416666666666666
+Multi Cap,engine v3,as run,quota+80/70,2018,0.5833333333333334
+Multi Cap,engine v3,as run,quota+80/70,2019,0.5
+Multi Cap,engine v3,as run,quota+80/70,2020,0.7416666666666667
+Multi Cap,engine v3,as run,quota+80/70,2021,1.0
+Multi Cap,engine v3,as run,quota+80/70,2022,0.2916666666666667
+Multi Cap,engine v3,as run,quota+80/70,2023,0.5833333333333333
+Multi Cap,engine v3,as run,quota+80/70,2024,0.5576923076923077
+Multi Cap,engine v3,as run,quota+80/70,2025,0.5384615384615384
+Multi Cap,engine v3,as run,quota+70/60,2015,0.058823529411764705
+Multi Cap,engine v3,as run,quota+70/60,2016,0.20833333333333331
+Multi Cap,engine v3,as run,quota+70/60,2017,0.675
+Multi Cap,engine v3,as run,quota+70/60,2018,0.6712962962962963
+Multi Cap,engine v3,as run,quota+70/60,2019,0.5227272727272727
+Multi Cap,engine v3,as run,quota+70/60,2020,0.7211538461538461
+Multi Cap,engine v3,as run,quota+70/60,2021,0.8695175438596491
+Multi Cap,engine v3,as run,quota+70/60,2022,0.4375
+Multi Cap,engine v3,as run,quota+70/60,2023,0.6607142857142857
+Multi Cap,engine v3,as run,quota+70/60,2024,0.5727272727272728
+Multi Cap,engine v3,as run,quota+70/60,2025,0.5897435897435896
+Multi Cap,engine v3,as run,top 20%,2015,0.09090909090909091
+Multi Cap,engine v3,as run,top 20%,2016,0.20833333333333331
+Multi Cap,engine v3,as run,top 20%,2017,0.5416666666666666
+Multi Cap,engine v3,as run,top 20%,2018,0.5833333333333334
+Multi Cap,engine v3,as run,top 20%,2019,0.5
+Multi Cap,engine v3,as run,top 20%,2020,0.7916666666666667
+Multi Cap,engine v3,as run,top 20%,2021,1.0
+Multi Cap,engine v3,as run,top 20%,2022,0.2916666666666667
+Multi Cap,engine v3,as run,top 20%,2023,0.5833333333333333
+Multi Cap,engine v3,as run,top 20%,2024,0.5384615384615385
+Multi Cap,engine v3,as run,top 20%,2025,0.5
+Multi Cap,engine v3,as run,A+70/A60,2015,0.058823529411764705
+Multi Cap,engine v3,as run,A+70/A60,2016,0.20833333333333331
+Multi Cap,engine v3,as run,A+70/A60,2017,0.675
+Multi Cap,engine v3,as run,A+70/A60,2018,0.6534391534391535
+Multi Cap,engine v3,as run,A+70/A60,2019,0.43939393939393934
+Multi Cap,engine v3,as run,A+70/A60,2020,0.6461538461538461
+Multi Cap,engine v3,as run,A+70/A60,2021,0.8695175438596491
+Multi Cap,engine v3,as run,A+70/A60,2022,0.4375
+Multi Cap,engine v3,as run,A+70/A60,2023,0.6607142857142857
+Multi Cap,engine v3,as run,A+70/A60,2024,0.5727272727272728
+Multi Cap,engine v3,as run,A+70/A60,2025,0.5897435897435896
+Multi Cap,engine v3,as run,A+80/A70,2015,0.09090909090909091
+Multi Cap,engine v3,as run,A+80/A70,2016,0.11309523809523808
+Multi Cap,engine v3,as run,A+80/A70,2017,0.4
+Multi Cap,engine v3,as run,A+80/A70,2018,0.3333333333333333
+Multi Cap,engine v3,as run,A+80/A70,2019,0.5454545454545454
+Multi Cap,engine v3,as run,A+80/A70,2020,0.7333333333333333
+Multi Cap,engine v3,as run,A+80/A70,2021,1.0
+Multi Cap,engine v3,as run,A+80/A70,2022,0.2916666666666667
+Multi Cap,engine v3,as run,A+80/A70,2023,0.8
+Multi Cap,engine v3,as run,A+80/A70,2024,0.6
+Multi Cap,engine v3,as run,A+80/A70,2025,0.5541666666666667
+Multi Cap,engine v3,as run,A+75/A65,2015,0.08333333333333333
+Multi Cap,engine v3,as run,A+75/A65,2016,0.20833333333333331
+Multi Cap,engine v3,as run,A+75/A65,2017,0.5673076923076923
+Multi Cap,engine v3,as run,A+75/A65,2018,0.5625
+Multi Cap,engine v3,as run,A+75/A65,2019,0.6111111111111112
+Multi Cap,engine v3,as run,A+75/A65,2020,0.8666666666666667
+Multi Cap,engine v3,as run,A+75/A65,2021,0.9615384615384616
+Multi Cap,engine v3,as run,A+75/A65,2022,0.2916666666666667
+Multi Cap,engine v3,as run,A+75/A65,2023,0.6875
+Multi Cap,engine v3,as run,A+75/A65,2024,0.6057692307692308
+Multi Cap,engine v3,as run,A+75/A65,2025,0.5606060606060606
+Multi Cap,engine v3,as run,A+85/A70,2015,0.09090909090909091
+Multi Cap,engine v3,as run,A+85/A70,2016,0.0
+Multi Cap,engine v3,as run,A+85/A70,2017,0.3333333333333333
+Multi Cap,engine v3,as run,A+85/A70,2019,0.5
+Multi Cap,engine v3,as run,A+85/A70,2020,0.3333333333333333
+Multi Cap,engine v3,as run,A+85/A70,2021,1.0
+Multi Cap,engine v3,as run,A+85/A70,2022,0.16666666666666666
+Multi Cap,engine v3,as run,A+85/A70,2023,0.8
+Multi Cap,engine v3,as run,A+85/A70,2025,0.42307692307692313
+Multi Cap,engine v3,as run,A+85/A70,2024,1.0
+Multi Cap,engine v3,as run,engine tiers,2015,0.09090909090909091
+Multi Cap,engine v3,as run,engine tiers,2016,0.20833333333333331
+Multi Cap,engine v3,as run,engine tiers,2017,0.5416666666666666
+Multi Cap,engine v3,as run,engine tiers,2018,0.5654761904761905
+Multi Cap,engine v3,as run,engine tiers,2019,0.41666666666666663
+Multi Cap,engine v3,as run,engine tiers,2020,0.7166666666666667
+Multi Cap,engine v3,as run,engine tiers,2021,1.0
+Multi Cap,engine v3,as run,engine tiers,2022,0.2916666666666667
+Multi Cap,engine v3,as run,engine tiers,2023,0.5961538461538461
+Multi Cap,engine v3,as run,engine tiers,2024,0.43253968253968256
+Multi Cap,engine v3,as run,engine tiers,2025,0.4772727272727273
 Multi Cap,engine v8,as run,quota,2015,0.18181818181818182
 Multi Cap,engine v8,as run,quota,2016,0.0
 Multi Cap,engine v8,as run,quota,2017,0.5416666666666667
@@ -649,6 +1307,116 @@ Multi Cap,engine v8,as run,engine tiers,2022,0.2916666666666667
 Multi Cap,engine v8,as run,engine tiers,2023,0.842948717948718
 Multi Cap,engine v8,as run,engine tiers,2024,0.70625
 Multi Cap,engine v8,as run,engine tiers,2025,0.7060439560439561
+Focused,engine v3,as run,quota,2015,0.45454545454545453
+Focused,engine v3,as run,quota,2016,0.5208333333333333
+Focused,engine v3,as run,quota,2017,0.2777777777777778
+Focused,engine v3,as run,quota,2018,0.6111111111111112
+Focused,engine v3,as run,quota,2019,0.6041666666666667
+Focused,engine v3,as run,quota,2020,0.2152777777777778
+Focused,engine v3,as run,quota,2021,0.125
+Focused,engine v3,as run,quota,2022,0.6166666666666667
+Focused,engine v3,as run,quota,2023,0.5416666666666666
+Focused,engine v3,as run,quota,2024,0.7638888888888888
+Focused,engine v3,as run,quota,2025,0.7121212121212122
+Focused,engine v3,as run,quota+75/65,2015,0.6129032258064516
+Focused,engine v3,as run,quota+75/65,2016,0.5
+Focused,engine v3,as run,quota+75/65,2017,0.3153153153153153
+Focused,engine v3,as run,quota+75/65,2018,0.6097297297297297
+Focused,engine v3,as run,quota+75/65,2019,0.5916666666666667
+Focused,engine v3,as run,quota+75/65,2020,0.33636363636363636
+Focused,engine v3,as run,quota+75/65,2021,0.15404040404040403
+Focused,engine v3,as run,quota+75/65,2022,0.5877016129032258
+Focused,engine v3,as run,quota+75/65,2023,0.5673076923076923
+Focused,engine v3,as run,quota+75/65,2024,0.7608695652173914
+Focused,engine v3,as run,quota+75/65,2025,0.5799396681749622
+Focused,engine v3,as run,quota+80/70,2015,0.5
+Focused,engine v3,as run,quota+80/70,2016,0.5208333333333333
+Focused,engine v3,as run,quota+80/70,2017,0.2777777777777778
+Focused,engine v3,as run,quota+80/70,2018,0.6111111111111112
+Focused,engine v3,as run,quota+80/70,2019,0.5916666666666667
+Focused,engine v3,as run,quota+80/70,2020,0.22691441441441443
+Focused,engine v3,as run,quota+80/70,2021,0.13844086021505375
+Focused,engine v3,as run,quota+80/70,2022,0.6166666666666667
+Focused,engine v3,as run,quota+80/70,2023,0.5416666666666666
+Focused,engine v3,as run,quota+80/70,2024,0.756578947368421
+Focused,engine v3,as run,quota+80/70,2025,0.6515151515151516
+Focused,engine v3,as run,quota+70/60,2015,0.5952380952380952
+Focused,engine v3,as run,quota+70/60,2016,0.4699872286079183
+Focused,engine v3,as run,quota+70/60,2017,0.38510781671159033
+Focused,engine v3,as run,quota+70/60,2018,0.5906504065040651
+Focused,engine v3,as run,quota+70/60,2019,0.598069498069498
+Focused,engine v3,as run,quota+70/60,2020,0.34194528875379937
+Focused,engine v3,as run,quota+70/60,2021,0.1597222222222222
+Focused,engine v3,as run,quota+70/60,2022,0.5281853281853282
+Focused,engine v3,as run,quota+70/60,2023,0.6424061149883682
+Focused,engine v3,as run,quota+70/60,2024,0.656060606060606
+Focused,engine v3,as run,quota+70/60,2025,0.5325471698113208
+Focused,engine v3,as run,top 20%,2015,0.45454545454545453
+Focused,engine v3,as run,top 20%,2016,0.5208333333333333
+Focused,engine v3,as run,top 20%,2017,0.2777777777777778
+Focused,engine v3,as run,top 20%,2018,0.6111111111111112
+Focused,engine v3,as run,top 20%,2019,0.6041666666666667
+Focused,engine v3,as run,top 20%,2020,0.2152777777777778
+Focused,engine v3,as run,top 20%,2021,0.125
+Focused,engine v3,as run,top 20%,2022,0.6166666666666667
+Focused,engine v3,as run,top 20%,2023,0.5526315789473684
+Focused,engine v3,as run,top 20%,2024,0.75
+Focused,engine v3,as run,top 20%,2025,0.5729166666666666
+Focused,engine v3,as run,A+70/A60,2015,0.5952380952380952
+Focused,engine v3,as run,A+70/A60,2016,0.45062695924764895
+Focused,engine v3,as run,A+70/A60,2017,0.4278096800656276
+Focused,engine v3,as run,A+70/A60,2018,0.5898366606170599
+Focused,engine v3,as run,A+70/A60,2019,0.6084033613445379
+Focused,engine v3,as run,A+70/A60,2020,0.34194528875379937
+Focused,engine v3,as run,A+70/A60,2021,0.1597222222222222
+Focused,engine v3,as run,A+70/A60,2022,0.5294840294840295
+Focused,engine v3,as run,A+70/A60,2023,0.6424061149883682
+Focused,engine v3,as run,A+70/A60,2024,0.656060606060606
+Focused,engine v3,as run,A+70/A60,2025,0.5325471698113208
+Focused,engine v3,as run,A+80/A70,2015,0.5
+Focused,engine v3,as run,A+80/A70,2016,0.4090909090909091
+Focused,engine v3,as run,A+80/A70,2017,0.6304347826086957
+Focused,engine v3,as run,A+80/A70,2018,0.5727272727272728
+Focused,engine v3,as run,A+80/A70,2019,0.6654589371980677
+Focused,engine v3,as run,A+80/A70,2020,0.22395833333333334
+Focused,engine v3,as run,A+80/A70,2021,0.11290322580645161
+Focused,engine v3,as run,A+80/A70,2022,0.5833333333333334
+Focused,engine v3,as run,A+80/A70,2023,0.6153846153846154
+Focused,engine v3,as run,A+80/A70,2024,0.8459770114942529
+Focused,engine v3,as run,A+80/A70,2025,0.6515151515151516
+Focused,engine v3,as run,A+75/A65,2015,0.6129032258064516
+Focused,engine v3,as run,A+75/A65,2016,0.16666666666666666
+Focused,engine v3,as run,A+75/A65,2017,0.6486486486486487
+Focused,engine v3,as run,A+75/A65,2018,0.6
+Focused,engine v3,as run,A+75/A65,2019,0.6166666666666667
+Focused,engine v3,as run,A+75/A65,2020,0.33636363636363636
+Focused,engine v3,as run,A+75/A65,2021,0.15404040404040403
+Focused,engine v3,as run,A+75/A65,2022,0.5509259259259259
+Focused,engine v3,as run,A+75/A65,2023,0.5967365967365967
+Focused,engine v3,as run,A+75/A65,2024,0.7584541062801933
+Focused,engine v3,as run,A+75/A65,2025,0.5799396681749622
+Focused,engine v3,as run,A+85/A70,2015,0.125
+Focused,engine v3,as run,A+85/A70,2016,0.5
+Focused,engine v3,as run,A+85/A70,2017,0.3
+Focused,engine v3,as run,A+85/A70,2018,0.3333333333333333
+Focused,engine v3,as run,A+85/A70,2019,0.7777777777777778
+Focused,engine v3,as run,A+85/A70,2020,0.15526315789473683
+Focused,engine v3,as run,A+85/A70,2021,0.0
+Focused,engine v3,as run,A+85/A70,2022,0.6643356643356644
+Focused,engine v3,as run,A+85/A70,2024,0.84375
+Focused,engine v3,as run,A+85/A70,2025,0.7609195402298851
+Focused,engine v3,as run,A+85/A70,2023,1.0
+Focused,engine v3,as run,engine tiers,2015,0.45454545454545453
+Focused,engine v3,as run,engine tiers,2016,0.5032894736842105
+Focused,engine v3,as run,engine tiers,2017,0.375
+Focused,engine v3,as run,engine tiers,2018,0.6314699792960663
+Focused,engine v3,as run,engine tiers,2019,0.6458333333333333
+Focused,engine v3,as run,engine tiers,2020,0.20833333333333334
+Focused,engine v3,as run,engine tiers,2021,0.08333333333333333
+Focused,engine v3,as run,engine tiers,2022,0.6220238095238095
+Focused,engine v3,as run,engine tiers,2023,0.6430769230769231
+Focused,engine v3,as run,engine tiers,2024,0.7565359477124183
+Focused,engine v3,as run,engine tiers,2025,0.7121212121212122
 Focused,engine v8,as run,quota,2015,0.5909090909090909
 Focused,engine v8,as run,quota,2016,0.625
 Focused,engine v8,as run,quota,2017,0.10416666666666666
@@ -759,6 +1527,116 @@ Focused,engine v8,as run,engine tiers,2022,0.8583333333333334
 Focused,engine v8,as run,engine tiers,2023,0.7900246305418719
 Focused,engine v8,as run,engine tiers,2024,0.4037433155080214
 Focused,engine v8,as run,engine tiers,2025,0.4391025641025641
+ELSS,engine v3,as run,quota,2015,0.42424242424242425
+ELSS,engine v3,as run,quota,2016,0.2361111111111111
+ELSS,engine v3,as run,quota,2017,0.3333333333333333
+ELSS,engine v3,as run,quota,2018,0.2638888888888889
+ELSS,engine v3,as run,quota,2019,0.6805555555555556
+ELSS,engine v3,as run,quota,2020,0.5555555555555556
+ELSS,engine v3,as run,quota,2021,0.25
+ELSS,engine v3,as run,quota,2022,0.6111111111111112
+ELSS,engine v3,as run,quota,2023,0.3333333333333333
+ELSS,engine v3,as run,quota,2024,0.2916666666666667
+ELSS,engine v3,as run,quota,2025,0.09090909090909091
+ELSS,engine v3,as run,quota+75/65,2015,0.5333333333333333
+ELSS,engine v3,as run,quota+75/65,2016,0.2807017543859649
+ELSS,engine v3,as run,quota+75/65,2017,0.2923809523809524
+ELSS,engine v3,as run,quota+75/65,2018,0.3254067584480601
+ELSS,engine v3,as run,quota+75/65,2019,0.5800072568940493
+ELSS,engine v3,as run,quota+75/65,2020,0.5669250645994832
+ELSS,engine v3,as run,quota+75/65,2021,0.25701754385964914
+ELSS,engine v3,as run,quota+75/65,2022,0.700956937799043
+ELSS,engine v3,as run,quota+75/65,2023,0.35962301587301587
+ELSS,engine v3,as run,quota+75/65,2024,0.36232251521298176
+ELSS,engine v3,as run,quota+75/65,2025,0.15353037766830868
+ELSS,engine v3,as run,quota+80/70,2015,0.42424242424242425
+ELSS,engine v3,as run,quota+80/70,2016,0.2361111111111111
+ELSS,engine v3,as run,quota+80/70,2017,0.34064327485380114
+ELSS,engine v3,as run,quota+80/70,2018,0.2779204107830552
+ELSS,engine v3,as run,quota+80/70,2019,0.6484480431848854
+ELSS,engine v3,as run,quota+80/70,2020,0.5623123123123124
+ELSS,engine v3,as run,quota+80/70,2021,0.2978848413631022
+ELSS,engine v3,as run,quota+80/70,2022,0.6793981481481481
+ELSS,engine v3,as run,quota+80/70,2023,0.32456140350877194
+ELSS,engine v3,as run,quota+80/70,2024,0.30105105105105107
+ELSS,engine v3,as run,quota+80/70,2025,0.08945841392649903
+ELSS,engine v3,as run,quota+70/60,2015,0.5671641791044776
+ELSS,engine v3,as run,quota+70/60,2016,0.2813336306868867
+ELSS,engine v3,as run,quota+70/60,2017,0.31319086219602066
+ELSS,engine v3,as run,quota+70/60,2018,0.38028169014084506
+ELSS,engine v3,as run,quota+70/60,2019,0.562145005011694
+ELSS,engine v3,as run,quota+70/60,2020,0.5269135802469136
+ELSS,engine v3,as run,quota+70/60,2021,0.32065217391304346
+ELSS,engine v3,as run,quota+70/60,2022,0.7211309523809524
+ELSS,engine v3,as run,quota+70/60,2023,0.4157440573103224
+ELSS,engine v3,as run,quota+70/60,2024,0.3612317914643496
+ELSS,engine v3,as run,quota+70/60,2025,0.25334311806914545
+ELSS,engine v3,as run,top 20%,2015,0.4772727272727273
+ELSS,engine v3,as run,top 20%,2016,0.2834663120567376
+ELSS,engine v3,as run,top 20%,2017,0.27083333333333337
+ELSS,engine v3,as run,top 20%,2018,0.33673469387755106
+ELSS,engine v3,as run,top 20%,2019,0.5833333333333333
+ELSS,engine v3,as run,top 20%,2020,0.5618852459016394
+ELSS,engine v3,as run,top 20%,2021,0.3
+ELSS,engine v3,as run,top 20%,2022,0.6935763888888888
+ELSS,engine v3,as run,top 20%,2023,0.4166666666666667
+ELSS,engine v3,as run,top 20%,2024,0.3987676056338028
+ELSS,engine v3,as run,top 20%,2025,0.21076436001809135
+ELSS,engine v3,as run,A+70/A60,2015,0.5671641791044776
+ELSS,engine v3,as run,A+70/A60,2016,0.2813336306868867
+ELSS,engine v3,as run,A+70/A60,2017,0.31319086219602066
+ELSS,engine v3,as run,A+70/A60,2018,0.38028169014084506
+ELSS,engine v3,as run,A+70/A60,2019,0.562145005011694
+ELSS,engine v3,as run,A+70/A60,2020,0.5269135802469136
+ELSS,engine v3,as run,A+70/A60,2021,0.32065217391304346
+ELSS,engine v3,as run,A+70/A60,2022,0.7211309523809524
+ELSS,engine v3,as run,A+70/A60,2023,0.4157440573103224
+ELSS,engine v3,as run,A+70/A60,2024,0.3612317914643496
+ELSS,engine v3,as run,A+70/A60,2025,0.25334311806914545
+ELSS,engine v3,as run,A+80/A70,2015,0.3181818181818182
+ELSS,engine v3,as run,A+80/A70,2016,0.15217391304347827
+ELSS,engine v3,as run,A+80/A70,2017,0.30303030303030304
+ELSS,engine v3,as run,A+80/A70,2018,0.28427249789739273
+ELSS,engine v3,as run,A+80/A70,2019,0.640625
+ELSS,engine v3,as run,A+80/A70,2020,0.5406593406593406
+ELSS,engine v3,as run,A+80/A70,2021,0.24662668665667165
+ELSS,engine v3,as run,A+80/A70,2022,0.6670875420875422
+ELSS,engine v3,as run,A+80/A70,2023,0.3521462639109698
+ELSS,engine v3,as run,A+80/A70,2024,0.2701612903225806
+ELSS,engine v3,as run,A+80/A70,2025,0.09914529914529915
+ELSS,engine v3,as run,A+75/A65,2015,0.5333333333333333
+ELSS,engine v3,as run,A+75/A65,2016,0.2850877192982456
+ELSS,engine v3,as run,A+75/A65,2017,0.2961309523809524
+ELSS,engine v3,as run,A+75/A65,2018,0.3286445012787724
+ELSS,engine v3,as run,A+75/A65,2019,0.5865384615384616
+ELSS,engine v3,as run,A+75/A65,2020,0.5669250645994832
+ELSS,engine v3,as run,A+75/A65,2021,0.25701754385964914
+ELSS,engine v3,as run,A+75/A65,2022,0.700956937799043
+ELSS,engine v3,as run,A+75/A65,2023,0.35962301587301587
+ELSS,engine v3,as run,A+75/A65,2024,0.36232251521298176
+ELSS,engine v3,as run,A+75/A65,2025,0.15353037766830868
+ELSS,engine v3,as run,A+85/A70,2015,0.5454545454545454
+ELSS,engine v3,as run,A+85/A70,2016,0.05
+ELSS,engine v3,as run,A+85/A70,2017,0.10714285714285714
+ELSS,engine v3,as run,A+85/A70,2018,0.26944444444444443
+ELSS,engine v3,as run,A+85/A70,2019,0.8486842105263157
+ELSS,engine v3,as run,A+85/A70,2020,0.6287878787878788
+ELSS,engine v3,as run,A+85/A70,2021,0.14423076923076922
+ELSS,engine v3,as run,A+85/A70,2022,0.5714285714285714
+ELSS,engine v3,as run,A+85/A70,2023,0.5718954248366013
+ELSS,engine v3,as run,A+85/A70,2024,0.2121212121212121
+ELSS,engine v3,as run,A+85/A70,2025,0.14772727272727273
+ELSS,engine v3,as run,engine tiers,2015,0.42424242424242425
+ELSS,engine v3,as run,engine tiers,2016,0.24285714285714285
+ELSS,engine v3,as run,engine tiers,2017,0.3333333333333333
+ELSS,engine v3,as run,engine tiers,2018,0.26785714285714285
+ELSS,engine v3,as run,engine tiers,2019,0.6805555555555556
+ELSS,engine v3,as run,engine tiers,2020,0.5555555555555556
+ELSS,engine v3,as run,engine tiers,2021,0.251984126984127
+ELSS,engine v3,as run,engine tiers,2022,0.6575091575091575
+ELSS,engine v3,as run,engine tiers,2023,0.399822695035461
+ELSS,engine v3,as run,engine tiers,2024,0.30851063829787234
+ELSS,engine v3,as run,engine tiers,2025,0.09090909090909091
 ELSS,engine v8,as run,quota,2015,0.6363636363636364
 ELSS,engine v8,as run,quota,2016,0.75
 ELSS,engine v8,as run,quota,2017,0.25
@@ -869,6 +1747,116 @@ ELSS,engine v8,as run,engine tiers,2022,0.8518306636155606
 ELSS,engine v8,as run,engine tiers,2023,0.812015503875969
 ELSS,engine v8,as run,engine tiers,2024,0.37946681792399317
 ELSS,engine v8,as run,engine tiers,2025,0.7582417582417582
+Value / Contra,engine v3,as run,quota,2015,0.5
+Value / Contra,engine v3,as run,quota,2016,0.47916666666666663
+Value / Contra,engine v3,as run,quota,2017,0.5625
+Value / Contra,engine v3,as run,quota,2018,0.041666666666666664
+Value / Contra,engine v3,as run,quota,2019,0.7083333333333333
+Value / Contra,engine v3,as run,quota,2020,0.18181818181818182
+Value / Contra,engine v3,as run,quota,2021,0.3372222222222222
+Value / Contra,engine v3,as run,quota,2022,0.9027777777777778
+Value / Contra,engine v3,as run,quota,2023,0.9722222222222222
+Value / Contra,engine v3,as run,quota,2024,0.4444444444444444
+Value / Contra,engine v3,as run,quota,2025,0.2727272727272727
+Value / Contra,engine v3,as run,quota+75/65,2015,0.5384615384615384
+Value / Contra,engine v3,as run,quota+75/65,2016,0.6368243243243243
+Value / Contra,engine v3,as run,quota+75/65,2017,0.5844988344988344
+Value / Contra,engine v3,as run,quota+75/65,2018,0.06
+Value / Contra,engine v3,as run,quota+75/65,2019,0.6818181818181819
+Value / Contra,engine v3,as run,quota+75/65,2020,0.18181818181818182
+Value / Contra,engine v3,as run,quota+75/65,2021,0.3472222222222222
+Value / Contra,engine v3,as run,quota+75/65,2022,0.9027777777777778
+Value / Contra,engine v3,as run,quota+75/65,2023,0.9722222222222222
+Value / Contra,engine v3,as run,quota+75/65,2024,0.4597222222222222
+Value / Contra,engine v3,as run,quota+75/65,2025,0.29480796586059743
+Value / Contra,engine v3,as run,quota+80/70,2015,0.5
+Value / Contra,engine v3,as run,quota+80/70,2016,0.49
+Value / Contra,engine v3,as run,quota+80/70,2017,0.5625
+Value / Contra,engine v3,as run,quota+80/70,2018,0.041666666666666664
+Value / Contra,engine v3,as run,quota+80/70,2019,0.6933333333333334
+Value / Contra,engine v3,as run,quota+80/70,2020,0.18181818181818182
+Value / Contra,engine v3,as run,quota+80/70,2021,0.3372222222222222
+Value / Contra,engine v3,as run,quota+80/70,2022,0.9027777777777778
+Value / Contra,engine v3,as run,quota+80/70,2023,0.9722222222222222
+Value / Contra,engine v3,as run,quota+80/70,2024,0.4444444444444444
+Value / Contra,engine v3,as run,quota+80/70,2025,0.2847593582887701
+Value / Contra,engine v3,as run,quota+70/60,2015,0.627906976744186
+Value / Contra,engine v3,as run,quota+70/60,2016,0.6878378378378378
+Value / Contra,engine v3,as run,quota+70/60,2017,0.46177944862155385
+Value / Contra,engine v3,as run,quota+70/60,2018,0.05263157894736842
+Value / Contra,engine v3,as run,quota+70/60,2019,0.6302083333333333
+Value / Contra,engine v3,as run,quota+70/60,2020,0.14722222222222223
+Value / Contra,engine v3,as run,quota+70/60,2021,0.3527960526315789
+Value / Contra,engine v3,as run,quota+70/60,2022,0.9090909090909092
+Value / Contra,engine v3,as run,quota+70/60,2023,0.9666666666666667
+Value / Contra,engine v3,as run,quota+70/60,2024,0.4098883572567783
+Value / Contra,engine v3,as run,quota+70/60,2025,0.37278582930756843
+Value / Contra,engine v3,as run,top 20%,2015,0.5
+Value / Contra,engine v3,as run,top 20%,2016,0.47916666666666663
+Value / Contra,engine v3,as run,top 20%,2017,0.5625
+Value / Contra,engine v3,as run,top 20%,2018,0.041666666666666664
+Value / Contra,engine v3,as run,top 20%,2019,0.7083333333333333
+Value / Contra,engine v3,as run,top 20%,2020,0.18181818181818182
+Value / Contra,engine v3,as run,top 20%,2021,0.3372222222222222
+Value / Contra,engine v3,as run,top 20%,2022,0.9027777777777778
+Value / Contra,engine v3,as run,top 20%,2023,0.9722222222222222
+Value / Contra,engine v3,as run,top 20%,2024,0.41621621621621624
+Value / Contra,engine v3,as run,top 20%,2025,0.38636363636363635
+Value / Contra,engine v3,as run,A+70/A60,2015,0.627906976744186
+Value / Contra,engine v3,as run,A+70/A60,2016,0.6878378378378378
+Value / Contra,engine v3,as run,A+70/A60,2017,0.46177944862155385
+Value / Contra,engine v3,as run,A+70/A60,2018,0.05263157894736842
+Value / Contra,engine v3,as run,A+70/A60,2019,0.6302083333333333
+Value / Contra,engine v3,as run,A+70/A60,2020,0.14946236559139786
+Value / Contra,engine v3,as run,A+70/A60,2021,0.3527960526315789
+Value / Contra,engine v3,as run,A+70/A60,2022,0.9090909090909092
+Value / Contra,engine v3,as run,A+70/A60,2023,0.9651162790697674
+Value / Contra,engine v3,as run,A+70/A60,2024,0.4098883572567783
+Value / Contra,engine v3,as run,A+70/A60,2025,0.37278582930756843
+Value / Contra,engine v3,as run,A+80/A70,2015,0.5
+Value / Contra,engine v3,as run,A+80/A70,2016,0.425
+Value / Contra,engine v3,as run,A+80/A70,2017,0.6875
+Value / Contra,engine v3,as run,A+80/A70,2018,0.05
+Value / Contra,engine v3,as run,A+80/A70,2019,0.7351190476190477
+Value / Contra,engine v3,as run,A+80/A70,2020,0.1893939393939394
+Value / Contra,engine v3,as run,A+80/A70,2021,0.2556390977443609
+Value / Contra,engine v3,as run,A+80/A70,2022,1.0
+Value / Contra,engine v3,as run,A+80/A70,2023,1.0
+Value / Contra,engine v3,as run,A+80/A70,2024,0.4125
+Value / Contra,engine v3,as run,A+80/A70,2025,0.2833333333333333
+Value / Contra,engine v3,as run,A+75/A65,2015,0.5384615384615384
+Value / Contra,engine v3,as run,A+75/A65,2016,0.6368243243243243
+Value / Contra,engine v3,as run,A+75/A65,2017,0.5989583333333333
+Value / Contra,engine v3,as run,A+75/A65,2018,0.06
+Value / Contra,engine v3,as run,A+75/A65,2019,0.6818181818181819
+Value / Contra,engine v3,as run,A+75/A65,2020,0.1875
+Value / Contra,engine v3,as run,A+75/A65,2021,0.32620689655172413
+Value / Contra,engine v3,as run,A+75/A65,2022,0.9074074074074074
+Value / Contra,engine v3,as run,A+75/A65,2023,1.0
+Value / Contra,engine v3,as run,A+75/A65,2024,0.4353281853281853
+Value / Contra,engine v3,as run,A+75/A65,2025,0.29444444444444445
+Value / Contra,engine v3,as run,A+85/A70,2015,0.5454545454545454
+Value / Contra,engine v3,as run,A+85/A70,2016,0.2727272727272727
+Value / Contra,engine v3,as run,A+85/A70,2017,0.6428571428571428
+Value / Contra,engine v3,as run,A+85/A70,2018,0.06666666666666667
+Value / Contra,engine v3,as run,A+85/A70,2019,0.78125
+Value / Contra,engine v3,as run,A+85/A70,2020,0.19298245614035087
+Value / Contra,engine v3,as run,A+85/A70,2021,0.17857142857142858
+Value / Contra,engine v3,as run,A+85/A70,2022,1.0
+Value / Contra,engine v3,as run,A+85/A70,2023,1.0
+Value / Contra,engine v3,as run,A+85/A70,2024,0.29395604395604397
+Value / Contra,engine v3,as run,A+85/A70,2025,0.2857142857142857
+Value / Contra,engine v3,as run,engine tiers,2015,0.5
+Value / Contra,engine v3,as run,engine tiers,2016,0.47916666666666663
+Value / Contra,engine v3,as run,engine tiers,2017,0.5625
+Value / Contra,engine v3,as run,engine tiers,2018,0.041666666666666664
+Value / Contra,engine v3,as run,engine tiers,2019,0.775
+Value / Contra,engine v3,as run,engine tiers,2020,0.18840579710144928
+Value / Contra,engine v3,as run,engine tiers,2021,0.2708333333333333
+Value / Contra,engine v3,as run,engine tiers,2022,0.8125
+Value / Contra,engine v3,as run,engine tiers,2023,1.0
+Value / Contra,engine v3,as run,engine tiers,2024,0.40785714285714286
+Value / Contra,engine v3,as run,engine tiers,2025,0.2727272727272727
 Value / Contra,engine v8,as run,quota,2015,0.5909090909090909
 Value / Contra,engine v8,as run,quota,2016,0.8333333333333334
 Value / Contra,engine v8,as run,quota,2017,0.3541666666666667
@@ -977,6 +1965,32 @@ Value / Contra,engine v8,as run,engine tiers,2022,0.9838709677419355
 Value / Contra,engine v8,as run,engine tiers,2023,0.9861111111111112
 Value / Contra,engine v8,as run,engine tiers,2024,0.33333333333333337
 Value / Contra,engine v8,as run,engine tiers,2025,0.8011363636363636
+Dividend Yield,engine v3,as run,quota,2023,0.5
+Dividend Yield,engine v3,as run,quota,2024,1.0
+Dividend Yield,engine v3,as run,quota,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,quota+75/65,2023,0.5
+Dividend Yield,engine v3,as run,quota+75/65,2024,1.0
+Dividend Yield,engine v3,as run,quota+75/65,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,quota+80/70,2023,0.5
+Dividend Yield,engine v3,as run,quota+80/70,2024,1.0
+Dividend Yield,engine v3,as run,quota+80/70,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,quota+70/60,2023,0.5
+Dividend Yield,engine v3,as run,quota+70/60,2024,0.9615384615384616
+Dividend Yield,engine v3,as run,quota+70/60,2025,0.46153846153846156
+Dividend Yield,engine v3,as run,top 20%,2023,0.5
+Dividend Yield,engine v3,as run,top 20%,2024,1.0
+Dividend Yield,engine v3,as run,top 20%,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,A+70/A60,2023,0.5
+Dividend Yield,engine v3,as run,A+70/A60,2024,0.9545454545454546
+Dividend Yield,engine v3,as run,A+70/A60,2025,0.46153846153846156
+Dividend Yield,engine v3,as run,A+80/A70,2024,1.0
+Dividend Yield,engine v3,as run,A+80/A70,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,A+75/A65,2024,1.0
+Dividend Yield,engine v3,as run,A+75/A65,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,A+85/A70,2025,0.5454545454545454
+Dividend Yield,engine v3,as run,engine tiers,2023,0.5
+Dividend Yield,engine v3,as run,engine tiers,2024,1.0
+Dividend Yield,engine v3,as run,engine tiers,2025,0.5454545454545454
 Dividend Yield,engine v8,as run,quota,2023,1.0
 Dividend Yield,engine v8,as run,quota,2024,0.08333333333333333
 Dividend Yield,engine v8,as run,quota,2025,0.8181818181818181
@@ -1006,6 +2020,116 @@ Dividend Yield,engine v8,as run,A+85/A70,2025,1.0
 Dividend Yield,engine v8,as run,engine tiers,2023,1.0
 Dividend Yield,engine v8,as run,engine tiers,2024,0.25
 Dividend Yield,engine v8,as run,engine tiers,2025,1.0
+Sectoral/Thematic,engine v3,as run,quota,2015,0.7575757575757576
+Sectoral/Thematic,engine v3,as run,quota,2016,0.7309954102122778
+Sectoral/Thematic,engine v3,as run,quota,2017,0.23118279569892475
+Sectoral/Thematic,engine v3,as run,quota,2018,0.19387755102040816
+Sectoral/Thematic,engine v3,as run,quota,2019,0.5166666666666667
+Sectoral/Thematic,engine v3,as run,quota,2020,0.4833333333333334
+Sectoral/Thematic,engine v3,as run,quota,2021,0.41666666666666663
+Sectoral/Thematic,engine v3,as run,quota,2022,0.7743055555555556
+Sectoral/Thematic,engine v3,as run,quota,2023,0.605517848164907
+Sectoral/Thematic,engine v3,as run,quota,2024,0.3520710059171598
+Sectoral/Thematic,engine v3,as run,quota,2025,0.640625
+Sectoral/Thematic,engine v3,as run,quota+75/65,2015,0.7321428571428571
+Sectoral/Thematic,engine v3,as run,quota+75/65,2016,0.745017884517118
+Sectoral/Thematic,engine v3,as run,quota+75/65,2017,0.20709430756159727
+Sectoral/Thematic,engine v3,as run,quota+75/65,2018,0.1899144112884571
+Sectoral/Thematic,engine v3,as run,quota+75/65,2019,0.4899500907441017
+Sectoral/Thematic,engine v3,as run,quota+75/65,2020,0.4919607843137255
+Sectoral/Thematic,engine v3,as run,quota+75/65,2021,0.3965924426450742
+Sectoral/Thematic,engine v3,as run,quota+75/65,2022,0.711902640080205
+Sectoral/Thematic,engine v3,as run,quota+75/65,2023,0.5869197292069632
+Sectoral/Thematic,engine v3,as run,quota+75/65,2024,0.390641225337487
+Sectoral/Thematic,engine v3,as run,quota+75/65,2025,0.6651362984218078
+Sectoral/Thematic,engine v3,as run,quota+80/70,2015,0.7397260273972602
+Sectoral/Thematic,engine v3,as run,quota+80/70,2016,0.7384374183433499
+Sectoral/Thematic,engine v3,as run,quota+80/70,2017,0.2249918540241121
+Sectoral/Thematic,engine v3,as run,quota+80/70,2018,0.19018510546706846
+Sectoral/Thematic,engine v3,as run,quota+80/70,2019,0.4989346590909091
+Sectoral/Thematic,engine v3,as run,quota+80/70,2020,0.49942385250624166
+Sectoral/Thematic,engine v3,as run,quota+80/70,2021,0.4241781248231766
+Sectoral/Thematic,engine v3,as run,quota+80/70,2022,0.7485542168674699
+Sectoral/Thematic,engine v3,as run,quota+80/70,2023,0.6013027852650494
+Sectoral/Thematic,engine v3,as run,quota+80/70,2024,0.3479480164158687
+Sectoral/Thematic,engine v3,as run,quota+80/70,2025,0.6433157369096876
+Sectoral/Thematic,engine v3,as run,quota+70/60,2015,0.7338129496402878
+Sectoral/Thematic,engine v3,as run,quota+70/60,2016,0.7203647416413375
+Sectoral/Thematic,engine v3,as run,quota+70/60,2017,0.22282728881026093
+Sectoral/Thematic,engine v3,as run,quota+70/60,2018,0.23473748473748474
+Sectoral/Thematic,engine v3,as run,quota+70/60,2019,0.48744706594071385
+Sectoral/Thematic,engine v3,as run,quota+70/60,2020,0.4925310125349094
+Sectoral/Thematic,engine v3,as run,quota+70/60,2021,0.3935951576576577
+Sectoral/Thematic,engine v3,as run,quota+70/60,2022,0.7182890855457227
+Sectoral/Thematic,engine v3,as run,quota+70/60,2023,0.596162618314517
+Sectoral/Thematic,engine v3,as run,quota+70/60,2024,0.43634259259259256
+Sectoral/Thematic,engine v3,as run,quota+70/60,2025,0.6776458101009015
+Sectoral/Thematic,engine v3,as run,top 20%,2015,0.7727272727272727
+Sectoral/Thematic,engine v3,as run,top 20%,2016,0.6791208791208792
+Sectoral/Thematic,engine v3,as run,top 20%,2017,0.2285714285714286
+Sectoral/Thematic,engine v3,as run,top 20%,2018,0.19388263780088305
+Sectoral/Thematic,engine v3,as run,top 20%,2019,0.5303030303030303
+Sectoral/Thematic,engine v3,as run,top 20%,2020,0.43939393939393945
+Sectoral/Thematic,engine v3,as run,top 20%,2021,0.36
+Sectoral/Thematic,engine v3,as run,top 20%,2022,0.7155172413793104
+Sectoral/Thematic,engine v3,as run,top 20%,2023,0.5702702702702702
+Sectoral/Thematic,engine v3,as run,top 20%,2024,0.4165025092631678
+Sectoral/Thematic,engine v3,as run,top 20%,2025,0.6771640363462458
+Sectoral/Thematic,engine v3,as run,A+70/A60,2015,0.7338129496402878
+Sectoral/Thematic,engine v3,as run,A+70/A60,2016,0.7203647416413375
+Sectoral/Thematic,engine v3,as run,A+70/A60,2017,0.2225928539354673
+Sectoral/Thematic,engine v3,as run,A+70/A60,2018,0.244108301337217
+Sectoral/Thematic,engine v3,as run,A+70/A60,2019,0.49203730272596846
+Sectoral/Thematic,engine v3,as run,A+70/A60,2020,0.49389208257120465
+Sectoral/Thematic,engine v3,as run,A+70/A60,2021,0.39363649363649367
+Sectoral/Thematic,engine v3,as run,A+70/A60,2022,0.7165178571428572
+Sectoral/Thematic,engine v3,as run,A+70/A60,2023,0.5862467972559715
+Sectoral/Thematic,engine v3,as run,A+70/A60,2024,0.45498711917562723
+Sectoral/Thematic,engine v3,as run,A+70/A60,2025,0.6901960784313725
+Sectoral/Thematic,engine v3,as run,A+80/A70,2015,0.6949152542372882
+Sectoral/Thematic,engine v3,as run,A+80/A70,2016,0.7270811380400422
+Sectoral/Thematic,engine v3,as run,A+80/A70,2017,0.10532915360501567
+Sectoral/Thematic,engine v3,as run,A+80/A70,2018,0.17435897435897435
+Sectoral/Thematic,engine v3,as run,A+80/A70,2019,0.48037439613526567
+Sectoral/Thematic,engine v3,as run,A+80/A70,2020,0.4872222222222222
+Sectoral/Thematic,engine v3,as run,A+80/A70,2021,0.39352712523238126
+Sectoral/Thematic,engine v3,as run,A+80/A70,2022,0.7157681940700809
+Sectoral/Thematic,engine v3,as run,A+80/A70,2023,0.5209212376933896
+Sectoral/Thematic,engine v3,as run,A+80/A70,2024,0.3128424180518154
+Sectoral/Thematic,engine v3,as run,A+80/A70,2025,0.6536458333333333
+Sectoral/Thematic,engine v3,as run,A+75/A65,2015,0.7321428571428571
+Sectoral/Thematic,engine v3,as run,A+75/A65,2016,0.7431469298245614
+Sectoral/Thematic,engine v3,as run,A+75/A65,2017,0.1659742696328062
+Sectoral/Thematic,engine v3,as run,A+75/A65,2018,0.20374476472037448
+Sectoral/Thematic,engine v3,as run,A+75/A65,2019,0.4973759541984733
+Sectoral/Thematic,engine v3,as run,A+75/A65,2020,0.49628231525966593
+Sectoral/Thematic,engine v3,as run,A+75/A65,2021,0.3801609349554555
+Sectoral/Thematic,engine v3,as run,A+75/A65,2022,0.6987401103650024
+Sectoral/Thematic,engine v3,as run,A+75/A65,2023,0.5408220720720721
+Sectoral/Thematic,engine v3,as run,A+75/A65,2024,0.4085108281770585
+Sectoral/Thematic,engine v3,as run,A+75/A65,2025,0.6913955230090705
+Sectoral/Thematic,engine v3,as run,A+85/A70,2015,0.75
+Sectoral/Thematic,engine v3,as run,A+85/A70,2016,0.6353276353276354
+Sectoral/Thematic,engine v3,as run,A+85/A70,2017,0.12770897832817338
+Sectoral/Thematic,engine v3,as run,A+85/A70,2018,0.025
+Sectoral/Thematic,engine v3,as run,A+85/A70,2019,0.4675324675324676
+Sectoral/Thematic,engine v3,as run,A+85/A70,2020,0.3638392857142857
+Sectoral/Thematic,engine v3,as run,A+85/A70,2021,0.4057297715834301
+Sectoral/Thematic,engine v3,as run,A+85/A70,2022,0.7346491228070176
+Sectoral/Thematic,engine v3,as run,A+85/A70,2023,0.771551724137931
+Sectoral/Thematic,engine v3,as run,A+85/A70,2024,0.2702380952380952
+Sectoral/Thematic,engine v3,as run,A+85/A70,2025,0.5971896955503513
+Sectoral/Thematic,engine v3,as run,engine tiers,2015,0.7538461538461538
+Sectoral/Thematic,engine v3,as run,engine tiers,2016,0.7315512048192772
+Sectoral/Thematic,engine v3,as run,engine tiers,2017,0.23184147076552142
+Sectoral/Thematic,engine v3,as run,engine tiers,2018,0.20123456790123456
+Sectoral/Thematic,engine v3,as run,engine tiers,2019,0.44047619047619047
+Sectoral/Thematic,engine v3,as run,engine tiers,2020,0.468013468013468
+Sectoral/Thematic,engine v3,as run,engine tiers,2021,0.3556168647425014
+Sectoral/Thematic,engine v3,as run,engine tiers,2022,0.7230458221024259
+Sectoral/Thematic,engine v3,as run,engine tiers,2023,0.5040784917275876
+Sectoral/Thematic,engine v3,as run,engine tiers,2024,0.3311485178012811
+Sectoral/Thematic,engine v3,as run,engine tiers,2025,0.678675799086758
 Sectoral/Thematic,engine v8,as run,quota,2015,0.696969696969697
 Sectoral/Thematic,engine v8,as run,quota,2016,0.7797619047619048
 Sectoral/Thematic,engine v8,as run,quota,2017,0.20967741935483872

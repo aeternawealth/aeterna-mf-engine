@@ -5,7 +5,7 @@ R = pd.read_csv("audit/live/compare_results_v8.csv")
 R = R[(R.model == "engine v8") & (R.tiers == "engine tiers")]
 NAME = {"Large & Mid Cap": "all-rounder", "Mid Cap": "mid-cap", "Small Cap": "small-cap", "Multi Cap": "momentum and defence", "Focused": "conviction"}
 f = lambda x: None if pd.isna(x) else round(float(x), 3)
-out = {"periods": {"pre": "Feb 2015 - Feb 2020", "post": "Apr 2020 - Oct 2025"}, "plans": "Regular and Direct", "engine": "v8", "categories": {}}
+out = {"periods": {"pre": "Jun 2018 - Feb 2020", "post": "Apr 2020 - Oct 2025"}, "plans": "Regular and Direct", "engine": "v8", "categories": {}}
 for _, r in R.iterrows():
     c = r.category
     if c == "Dividend Yield": continue

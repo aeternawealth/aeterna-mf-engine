@@ -613,6 +613,13 @@ def main():
         rate_text = ("%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
             else "Not rated yet: a rating needs at least 3 years of history (1 year for index funds)."
         cap_html = ('<p class="flag" style="font-size:13.5px;margin-top:4px">%s</p>' % e(cn)) if cn else ""
+        sc = f.get("score")
+        if rated and f.get("market_mode") and sc is not None and f.get("tier") in ("A", "B", "C"):   # v8 equity: distance to the next tier
+            nxt, cut = ("A+", 75) if f["tier"] == "A" else ("A", 65)
+            gap = cut - float(sc)
+            if gap > 0:
+                cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Score %s: %s point%s below %s (%s needs %d).</p>'
+                             % (num(sc, 1), num(gap, 1), "" if round(gap, 1) == 1 else "s", nxt, nxt, cut))
         if rated and f.get("market_mode"):   # v7 equity: which criteria the month was rated on, and the 3-year note
             cap_html += ('<p class="muted" style="font-size:13px;margin-top:6px"><span class="mode %s">%s</span> %s</p>'
                          % (("mode-n", "Normal mode", "Rated on the normal criteria for its category.") if f["market_mode"] == "normal" else

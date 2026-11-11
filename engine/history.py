@@ -171,7 +171,8 @@ def _reason(prev: pd.Series, cur: pd.Series) -> str:
             bits.append(f"its {nm} {'rose' if d > 0 else 'slipped'} within {_band(b)} of the group")
         else:
             bits.append(f"its {nm} moved from {_band(a)} to {_band(b)} of the group")
-    fa = set(filter(None, str(prev.get("flags") or "").split(","))); fb = set(filter(None, str(cur.get("flags") or "").split(",")))
+    fl = lambda v: set(filter(None, v.split(","))) if isinstance(v, str) else set()   # an empty field reads back as NaN
+    fa, fb = fl(prev.get("flags")), fl(cur.get("flags"))
     for f in sorted(fb - fa):
         bits.append(f"a red flag was raised: {FLAG_NAMES.get(f, f.replace('_', ' '))}")
     for f in sorted(fa - fb):

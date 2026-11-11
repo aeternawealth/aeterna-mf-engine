@@ -296,6 +296,10 @@ for c in CATS:
         cands[(k, "market mode")] = np.where(M.fall, (s + reb.fillna(s)) / 2, s)
     for m in ("v3", "v5", "v7", "v8"):
         if f"s_{m}" in M: cands[(f"engine {m}", "as run")] = M[f"s_{m}"]
+    if "s_v8" in M and "s_v3" in M:   # hedge: the momentum model with part of the old quality model, by place in the group
+        r8, r3 = GR(M.s_v8), GR(M.s_v3)
+        for w in (.9, .8, .7, .6, .5):
+            cands[(f"v8 {int(w * 100)} / v3 {int(100 - w * 100)}", "as run")] = (w * r8 + (1 - w) * r3.fillna(r8)).where(M.s_v8.notna())
     if ONLY: cands = {kk: v for kk, v in cands.items() if kk[0] in ONLY}
     for (k, mode), s in cands.items():
         s = pd.Series(s, index=M.index).where(M.cat == c)

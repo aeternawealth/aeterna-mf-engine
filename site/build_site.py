@@ -156,6 +156,58 @@ EQUITY_ACTIVE = {"Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi 
 REVIEW_FLAGS = {"mandate_breach": "its portfolio is outside SEBI's limits for the category"}
 
 
+PC_HTML = """<section class="band"><div class="wrap" style="max-width:860px">
+<p class="eyebrow">Portfolio check</p><h1>How do your funds rate?</h1>
+<p class="lede" style="margin-top:12px">Add the mutual funds you hold. You'll see each one's rating against its category, what our review rule says about it, and where your funds overlap. Nothing you enter leaves your browser.</p>
+<div class="card" style="margin-top:22px;position:relative">
+ <label for="pcq" style="font-weight:600">Add a fund</label>
+ <input id="pcq" type="search" autocomplete="off" placeholder="Type a fund name, e.g. Parag Parikh Flexi" style="width:100%;margin-top:8px;padding:12px 14px;font:inherit;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink)">
+ <div id="pcs" role="listbox" style="display:grid;gap:2px;margin-top:6px"></div>
+</div>
+<div id="pcsum" style="margin-top:22px"></div>
+<div id="pclist" style="display:grid;gap:10px;margin-top:12px"></div>
+<div id="pcnotes" style="margin-top:16px"></div>
+<div class="card" style="margin-top:22px"><b>Want us to go through it with you?</b><p class="muted" style="margin-top:6px">A portfolio review covers costs, overlap, tax on any switch and whether each fund still fits your plan.</p>
+<p style="margin-top:12px"><a class="btn primary" href="/#contact">Book a portfolio review</a> <a class="btn" href="/#method">How ratings work</a></p></div>
+<p class="muted" style="font-size:12.5px;margin-top:18px">Ratings describe each fund's past record against its category, not a forecast, and are not a recommendation to buy or sell. Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889). Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>
+</div></section>
+<script>
+(function(){
+var W={"A+":"Leading","A":"Strong","B":"In line","C":"Lagging","Watch":"Under review","Unrated":"Not yet rated"},
+ CL={"A+":"t-ap","A":"t-a","B":"t-b","C":"t-c"},D=[],sel=[],K="aw_pc";
+function esc(x){return String(x).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function save(){try{localStorage.setItem(K,JSON.stringify(sel))}catch(e){}}
+function rv(t,mb){if(t==="A+")return["In the A+ group","New money in this category goes to A+ funds."];
+ if(t==="A")return["Keep","Rated A: if you hold it, it stays."];
+ if(t==="B"||t==="C")return["Review due after 12 months below A",mb?"Its portfolio has been outside SEBI's limits for its category.":"We look at it once it has been below A for 12 months, when the exit load has ended in almost every equity fund, and weigh the tax first."];
+ if(t==="Watch")return["Under review","Something changed at the fund (for example a manager or a merger)."];
+ return["Not rated yet","Less than 3 years of history."]}
+function draw(){
+ var F=sel.map(function(c){return D.find(function(d){return d[0]===c})}).filter(Boolean),cnt={};
+ F.forEach(function(d){cnt[d[5]]=(cnt[d[5]]||0)+1});
+ document.getElementById("pcsum").innerHTML=F.length?'<h2 style="font-size:24px">Your '+F.length+' fund'+(F.length>1?'s':'')+'</h2><p style="margin-top:6px;font-size:16px">'+["A+","A","B","C","Watch","Unrated"].filter(function(t){return cnt[t]}).map(function(t){return'<b>'+cnt[t]+'</b> '+W[t]}).join(' · ')+'</p>':'<p class="muted">Add funds above to see how they rate.</p>';
+ document.getElementById("pclist").innerHTML=F.map(function(d){var r=rv(d[5],d[9]);
+  return'<div class="card" style="display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start"><span class="tier '+(CL[d[5]]||"t-u")+'">'+esc(d[5]==="Unrated"?"–":d[5])+'</span><div style="min-width:0"><a href="'+esc(d[8])+'" style="font-weight:600">'+esc(d[1])+'</a><div class="muted" style="font-size:13px">'+esc(d[2])+' · '+esc(d[3])+(d[6]?' · '+d[6]+' of '+d[7]+' in its group':'')+'</div><div style="font-size:14px;margin-top:4px"><b>'+esc(W[d[5]]||"")+'.</b> '+esc(r[0])+'. '+esc(r[1])+'</div></div><button type="button" data-rm="'+d[0]+'" aria-label="Remove '+esc(d[1])+'" style="background:none;border:0;color:var(--ink-2);font:13px var(--f-body);text-decoration:underline;cursor:pointer;padding:4px">Remove</button></div>'}).join("");
+ var n=[],byA={},byC={};F.forEach(function(d){(byA[d[4]]=byA[d[4]]||[]).push(d);if(d[3]!=="Index Fund")(byC[d[3]]=byC[d[3]]||[]).push(d)});
+ Object.keys(byA).forEach(function(a){if(byA[a].length>=3)n.push(byA[a].length+" funds from "+esc(a.replace(/ Mutual Fund$/,""))+": one investment team often holds many of the same stocks across its funds, so these may overlap more than their number suggests.")});
+ Object.keys(byC).forEach(function(c){if(byC[c].length>=2)n.push(byC[c].length+" funds in "+esc(c)+": funds in one category follow the same index and SEBI rules, so they tend to move together.")});
+ if(F.some(function(d){return d[2]==="Regular"}))n.push("Regular plans include distributor commission; Direct plans of the same funds cost less. Each fund page shows both.");
+ document.getElementById("pcnotes").innerHTML=n.length?'<div class="card"><b>Worth knowing</b><ul style="margin:8px 0 0;padding-left:20px;display:grid;gap:6px">'+n.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div>':"";
+ [].forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){sel=sel.filter(function(c){return c!==+b.dataset.rm});save();draw()}})}
+var q=document.getElementById("pcq"),box=document.getElementById("pcs");
+q.addEventListener("input",function(){var t=q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);if(!t.length||!D.length){box.innerHTML="";return}
+ var ph=t.filter(function(w){return["regular","direct"].indexOf(w)<0}).join(" ");
+ var m=D.filter(function(d){var s=(d[1]+" "+d[2]).toLowerCase();return t.every(function(w){return s.indexOf(w)>=0})})
+  .map(function(d){var n=d[1].toLowerCase().replace(/&/g,"and");return[(n.indexOf(ph.replace(/&/g,"and"))>=0?0:1),n.length,d]})
+  .sort(function(a,b){return a[0]-b[0]||a[1]-b[1]}).map(function(x){return x[2]}).slice(0,8);
+ box.innerHTML=m.map(function(d){return'<button type="button" class="btn" style="justify-content:space-between;text-align:left;width:100%" data-add="'+d[0]+'"><span>'+esc(d[1])+' <span class="muted" style="font-size:12.5px">'+esc(d[2])+'</span></span><span class="tier '+(CL[d[5]]||"t-u")+'">'+esc(d[5]==="Unrated"?"–":d[5])+'</span></button>'}).join("")||'<p class="muted" style="font-size:13.5px">No fund matches.</p>';
+ [].forEach.call(box.querySelectorAll("[data-add]"),function(b){b.onclick=function(){var c=+b.dataset.add;if(sel.indexOf(c)<0)sel.push(c);save();q.value="";box.innerHTML="";draw();q.focus()}})});
+try{sel=JSON.parse(localStorage.getItem(K)||"[]")||[]}catch(e){sel=[]}
+fetch("/data/check.json").then(function(r){return r.json()}).then(function(x){D=x;draw()}).catch(function(){document.getElementById("pcsum").innerHTML='<p class="muted">The fund list did not load. Refresh the page to try again.</p>'});
+draw()})();
+</script>"""
+
+
 def review_status(f, hist):
     """Where an active equity fund stands under the review rule (Method page, 'How we use the ratings')."""
     if f.get("category") not in EQUITY_ACTIVE:
@@ -479,6 +531,10 @@ def main():
     if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
         shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
     (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
+    # portfolio check: a light list of every fund for the /portfolio-check/ page
+    chk = [[f["code"], f["name"], f.get("plan_type") or "", f.get("category") or "", f.get("amc") or "", f.get("tier") or "Unrated",
+             f.get("peer_rank"), f.get("peer_count"), f["_url"], 1 if "mandate_breach" in str(f.get("flags") or "") else 0] for f in funds]
+    (DIST / "data" / "check.json").write_text(json.dumps(chk, separators=(",", ":")), encoding="utf-8")
     # rank by return over the index in each period, within the peer group and plan: what the fund page's returns
     # table shows (the ratings page's period view ranks a blend of return, falls, consistency and cost instead)
     RET_RANK.clear()
@@ -505,7 +561,7 @@ def main():
              "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund",
              "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Balanced Hybrid", "Equity Savings", "Conservative Hybrid", "Arbitrage"]
     cats = [c for c in order if c in by_cat] + sorted(set(by_cat) - set(order))
-    urls = [("/", "daily", "1.0"), ("/mutual-funds/", "daily", "0.9")]
+    urls = [("/", "daily", "1.0"), ("/mutual-funds/", "daily", "0.9"), ("/portfolio-check/", "weekly", "0.8"), ("/ratings-update/", "monthly", "0.5")]
 
     # ---- extra page sets (calculators, fund houses, index/theme groups, comparisons, insights, legal)
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
@@ -631,6 +687,12 @@ def main():
                             ("mode-f", "After-a-fall mode", "Its category's index was below its 200-day average on the rating day, so half the score comes from the after-a-fall criteria.")))
             if f.get("behind_index_3y"):
                 cap_html += '<p class="muted" style="font-size:13px;margin-top:4px">Behind its index over 3 years, after costs. Shown for information; it does not cap the rating.</p>'
+            if (f.get("tier") in ("B", "C") and (f.get("roll3y_hit_rate") or 0) >= .8 and (f.get("excess_5Y") if f.get("excess_5Y") is not None else -1) > .01
+                    and (f.get("info_ratio_3y") if f.get("info_ratio_3y") is not None else -1) > .3):
+                # the rating leans on the last 1-12 months; a long, steady record against the index is shown beside it
+                cap_html += ('<p style="font-size:13.5px;margin-top:6px"><span class="mode mode-n">Strong long record</span> Ahead of its index in %s of rolling '
+                             '3-year periods, and %s a year over 5 years. The rating leans on recent months; this record is shown for balance.</p>'
+                             % (pct(f["roll3y_hit_rate"], 0), spct(f["excess_5Y"])))
             if f.get("one_month_lead"):
                 cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Most of its lead over the index in the last 6 months came from one month (%s, %s). '
                              'One large gain can fade; the rating does not adjust for it.</p>' % (e(f["one_month_lead"]), spct(f.get("one_month_gain"))))
@@ -876,6 +938,11 @@ def main():
     full.append(f"## Disclosures\nMutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} "
                 f"earns commission from asset management companies on Regular plans; Direct plans cost less and pay no commission.\n")
     (DIST / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
+
+    # ---- portfolio check: the visitor's funds, their ratings and what the review rule says
+    write("/portfolio-check/", page("Check your mutual fund portfolio | Aeterna Wealth",
+        "Add the funds you hold and see each one's rating in its category, what our review rule says, and where your funds overlap.", "/portfolio-check/",
+        PC_HTML))
 
     # ---- client note on the November 2026 ratings change
     write("/ratings-update/", page("Our fund ratings changed in November 2026 | Aeterna Wealth",

@@ -1,51 +1,57 @@
-amc,status,info,file,run 2026-11-05 11:30
-360-ONE-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Abakkus-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Aditya-Birla-Sun-Life-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Angel-One-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Axis-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Bajaj-Finserv-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Bandhan-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Bank-of-India-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Baroda-BNP-Paribas-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Canara-Robeco-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Capitalmind-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Choice-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-DSP-Mutual-Fund,NOT_YET,adapter found no files for this month,
-Edelweiss-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Franklin-Templeton-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Groww-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Helios-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-HSBC-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-ICICI-Prudential-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Invesco-Mutual-Fund,NOT_YET,adapter found no files for this month,
-ITI-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Jio-BlackRock-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-JM-Financial-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Kotak-Mahindra-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-LIC-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Mahindra-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Mirae-Asset-Mutual-Fund,NOT_YET,adapter found no files for this month,
-Motilal-Oswal-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Navi-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Nippon-India-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-NJ-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Old-Bridge-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-PGIM-India-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-PPFAS-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Quant-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Quantum-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Samco-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-SBI-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Shriram-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Sundaram-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Tata-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Taurus-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-The-Wealth-Company-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Trust-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Unifi-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Union-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-UTI-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
+amc,status,info,file,run 2026-11-11 10:41
+360-ONE-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.360.one/asset/mutual-funds/downloads/: no 2026-10 file found on https://www.360.one/asset/mutual-funds/downloads/,
+Abakkus-Mutual-Fund,FAILED,"downloaded 2 files but none is an equity portfolio (Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx, Investor_Complaints_October_2026_d2ba961098.xlsx)",/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Abakkus-Mutual-Fund/Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx
+Aditya-Birla-Sun-Life-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio: no 2026-10 file found on https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio,
+Angel-One-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.angelonemf.com/downloads: no 2026-10 file found on https://www.angelonemf.com/downloads,
+Axis-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.axismf.com/statutory-disclosures: no 2026-10 file found on https://www.axismf.com/statutory-disclosures,
+Bajaj-Finserv-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.bajajamc.com/downloads?statutory-disclosures=: no 2026-10 file found on https://www.bajajamc.com/downloads?statutory-disclosures=,
+Bandhan-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://bandhanmutual.com/downloads/disclosures: no 2026-10 file found on https://bandhanmutual.com/downloads/disclosures,
+Bank-of-India-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.boimf.in/investor-corner#t2: no 2026-10 file found on https://www.boimf.in/investor-corner,
+Baroda-BNP-Paribas-Mutual-Fund,OK,1 files from https://www.barodabnpparibasmf.in/downloads/monthly-portfolio-scheme (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Baroda-BNP-Paribas-Mutual-Fund/BOBBNPMF_Monthly_Portfolio_31-10-2026_20825.xls
+Canara-Robeco-Mutual-Fund,OK,18/18 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Canara-Robeco-Mutual-Fund/IN-_-Canara-Robeco-Infrastructure-Fund-_-October-2026.xlsx
+Capitalmind-Mutual-Fund,OK,45 files from https://capitalmindmf.com/statutory-disclosures.html (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Capitalmind-Mutual-Fund/CMARB_Monthly_Portfolio_Disclosure_October_2026_020a9486ac.xlsx
+Choice-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://choicemf.com/disclosures/monthly-portfolio: no 2026-10 file found on https://choicemf.com/disclosures/monthly-portfolio,
+DSP-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/DSP-Mutual-Fund/dsp-monthend-portfolio-as-on-31-october-2026.zip
+Edelweiss-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.edelweissmf.com/statutory#Portfolio-of-Schemes: no 2026-10 file found on https://www.edelweissmf.com/statutory,
+Franklin-Templeton-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.franklintempletonindia.com/investor/reports?firstFilter-12: no 2026-10 file found on https://www.franklintempletonindia.com/investor/reports?firstFilter-12,
+Groww-Mutual-Fund,NOT_YET,adapter found no files for this month,
+HDFC-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio: no 2026-10 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio,
+Helios-Mutual-Fund,OK,7 files from https://www.heliosmf.in/portfolio-disclosure/ (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Helios-Mutual-Fund/helios-arbitrage-fund-monthly-portfolio-as-on-31-october-2026.xlsx
+HSBC-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (investor-complaints-october-2026.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/HSBC-Mutual-Fund/investor-complaints-october-2026.xlsx
+ICICI-Prudential-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures: no 2026-10 file found on https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures,
+Invesco-Mutual-Fund,OK,18/18 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Invesco-Mutual-Fund/elss-tax-saver8da0847a-7639-49e1-8e62-9a19204a3a0a.xlsx
+ITI-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.itiamc.com/statuory-disclosure: no 2026-10 file found on https://www.itiamc.com/statuory-disclosure,
+Jio-BlackRock-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure: no 2026-10 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure,
+JM-Financial-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure: no 2026-10 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure,
+Kotak-Mahindra-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.kotakmf.com/Information/forms-and-downloads: no 2026-10 file found on https://www.kotakmf.com/Information/forms-and-downloads,
+LIC-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.licmf.com/downloads/monthly-portfolio: no 2026-10 file found on https://www.licmf.com/downloads/monthly-portfolio,
+Mahindra-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.mahindramanulife.com/downloads#mandatory-disclosures: no 2026-10 file found on https://www.mahindramanulife.com/downloads,
+Mirae-Asset-Mutual-Fund,OK,15/15 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Mirae-Asset-Mutual-Fund/hybif_oct2026.xlsx
+Motilal-Oswal-Mutual-Fund,OK,1/1 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Motilal-Oswal-Mutual-Fund/Copy_of_Monthly_Portfolio_31-10-2026-Final_rahul.xlsx
+Navi-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://navi.com/mutual-fund/downloads/portfolio: no 2026-10 file found on https://navi.com/mutual-fund/downloads/portfolio,
+Nippon-India-Mutual-Fund,OK,2 files from https://mf.nipponindiaim.com/investor-service/downloads/factsheet-portfolio-and-other-disclosures (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Nippon-India-Mutual-Fund/NIMF-MONTHLY-PORTFOLIO-31-Oct-26.xls
+NJ-Mutual-Fund,OK,7 files from https://downloads.njmutualfund.com/njmf_download.php?nme=127 (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/NJ-Mutual-Fund/NJ-MF-Monthly-Portfolio-NBAF-October-2026-20261109050704.XLS
+Old-Bridge-Mutual-Fund,FAILED,"downloaded 20 files but none is an equity portfolio (IR_Old_Bridge_Mutual_Fund_01102026_14c37f5971.xlsx, IR_Old_Bridge_Mutual_Fund_05102026_114f181e81.xlsx, IR_Old_Bridge_Mutual_Fund_06102026_dfe716f4b6.xlsx, ...)",/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Old-Bridge-Mutual-Fund/IR_Old_Bridge_Mutual_Fund_01102026_14c37f5971.xlsx
+PGIM-India-Mutual-Fund,OK,25/25 files via adapter,/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/PGIM-India-Mutual-Fund/PGIM_INDIA_SMALL_CAP_FUND_Oct_2026.xlsx
+PPFAS-Mutual-Fund,OK,https://amc.ppfas.com/downloads/portfolio-disclosure/2026/PPFAS_Monthly_Portfolio_Report_September_30_2026.xls?07102026 (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/PPFAS-Mutual-Fund/PPFAS_Monthly_Portfolio_Report_September_30_2026.xls
+Quant-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://quantmutual.com/statutory-disclosures: no 2026-10 file found on https://quantmutual.com/statutory-disclosures,
+Quantum-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.quantumamc.com/portfolio/combined/-1/1/0/0: no 2026-10 file found on https://www.quantumamc.com/portfolio/combined/-1/1/0/0,
+Samco-Mutual-Fund,OK,46 files from https://www.samcomf.com/StatutoryDisclosure (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Samco-Mutual-Fund/IN_MF_MONTHLY_PORTFOLIO_October_2026_SamcoDynamicAssetAllocationFund_1794226756.xlsx
+SBI-Mutual-Fund,OK,1 files (rendered) from https://www.sbimf.com/portfolios (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/SBI-Mutual-Fund/All-Schemes-Monthly-Portfolio---as-on-31st-October-2026.xlsx
+Shriram-Mutual-Fund,OK,2 files from https://www.shriramamc.in/investor-statutory-disclosures (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Shriram-Mutual-Fund/Monthly-Portfolio-Shriram-Mutual-Fund-October-2026.xls
+Sundaram-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: no 2026-10 file found on https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios,
+Tata-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Revised_format_Disclosure_of_scheme_category-wise-_AAUM_data__on_quarterly_basis_TATA_JUL_2726-SEP_2726.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Tata-Mutual-Fund/Revised_format_Disclosure_of_scheme_category-wise-_AAUM_data__on_quarterly_basis_TATA_JUL_2726-SEP_2726.xlsx
+Taurus-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://taurusmutualfund.com/monthly-portfolio: no 2026-10 file found on https://taurusmutualfund.com/monthly-portfolio,
+The-Wealth-Company-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/: no 2026-10 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/,
+Trust-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.trustmf.com/disclosures?activeTab=portfolio-disclosures: no 2026-10 file found on https://www.trustmf.com/disclosures?activeTab=portfolio-disclosures,
+Unifi-Mutual-Fund,OK,4 files from https://unifimf.com/statutorydocuments/ (AMFI directory),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Unifi-Mutual-Fund/Empanelment-data-31-Oct-2026.xlsx
+Union-Mutual-Fund,NOT_YET,"no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.unionmf.com/about-us/downloads/monthly-portfolio: Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads/monthly-portfolio
+Call log:
+  - navigating to ""https://www.unionm",
+UTI-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.utimf.com/downloads/consolidate-all-portfolio-disclosure: no 2026-10 file found on https://www.utimf.com/downloads/consolidate-all-portfolio-disclosure,
 WhiteOak-Capital-Mutual-Fund,NOT_YET,adapter found no files for this month,
-Zerodha-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
-Mutual-Fund-Research,NOT_YET,no 'October 2026' entry on advisorkhoj yet,
+Zerodha-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Monthly_AAUM_Disclosure_Report_-_October_2026.xlsx),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Zerodha-Mutual-Fund/Monthly_AAUM_Disclosure_Report_-_October_2026.xlsx
+AlphaGrep-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-10 file found on https://www.alphagrepmf.ai/disclosures,
+ASK-MUTUAL-FUND,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-10 file found on https://www.askmutualfund.com/,
+Carnelian-Mutual-Fund,NOT_YET,no 'October 2026' entry on advisorkhoj yet; AMFI page https://bit.ly/4eN2G08: no 2026-10 file found on https://bit.ly/4eN2G08,
+Monarch-Mutual-Fund,FAILED,downloaded 1 files but none is an equity portfolio (Monthly_Portfolio_Monarch_Overnight_Fund_31_October_2026_fd2ba7cda3.xls),/home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10/Monarch-Mutual-Fund/Monthly_Portfolio_Monarch_Overnight_Fund_31_October_2026_fd2ba7cda3.xls

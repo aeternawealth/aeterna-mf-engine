@@ -1,113 +1,162 @@
-Aeterna MF Engine run 2026-11-05 18:39
+Aeterna MF Engine run 2026-11-11 10:15
 [1/7] Universe (AMFI NAVAll)
-  1687 equity + index schemes (growth, Direct & Regular)
+  2741 equity + index schemes (growth, Direct & Regular)
 [2/7] AMFI extras: TER, AUM, market-cap list
-  TER: 1672/1687 plans matched
-  AUM: no data
+  TER: 2720/2741 plans matched
+  Month-end AUM (30 Oct 2026): 1357/1380 schemes
+  Quarterly average AUM (July - September 2026): 1360 schemes
+  AUM check: bandhan mutual fund|bandhan medium to long term fund month-end 425 vs quarterly avg 3,556 cr
+  AUM check: invesco mutual fund|invesco india pharma and healthcare fund month-end 474 vs quarterly avg 111 cr
+  AUM check: whiteoak capital mutual fund|whiteoak capital dividend yield fund month-end 506 vs quarterly avg 114 cr
+  AUM: 1357 month-end, 9 quarterly-average fallback
 [3/7] Benchmarks (Nifty TRI)
-  TRI: 145 indices, 2013-01-01 -> 2026-11-05
+  TRI: 145 indices, 2013-01-01 -> 2026-11-09
 [4/7] NAV history (mfapi)
-  NAV 100/1687
-  NAV 200/1687
-  NAV 300/1687
-  NAV 400/1687
-  NAV 500/1687
-  NAV 600/1687
-  NAV 700/1687
-  NAV 800/1687
-  NAV 900/1687
-  NAV 1000/1687
-  NAV 1100/1687
-  NAV 1200/1687
-  NAV 1300/1687
-  NAV 1400/1687
-  NAV 1500/1687
-  NAV 1600/1687
-  1687 NAV histories
-[5/7] Holdings for 2026-09
-  holdings inbox: Angel-One-Mutual-Fund from the office PC
-  holdings inbox: HDFC-Mutual-Fund from the office PC
-  holdings inbox: HSBC-Mutual-Fund from the office PC
-  holdings inbox: WhiteOak-Capital-Mutual-Fund from the office PC
-  OK      360-ONE-Mutual-Fund  
-  OK      Abakkus-Mutual-Fund  
-  OK      Aditya-Birla-Sun-Life-Mutual-Fund  
-  OK      Axis-Mutual-Fund  
-  OK      Bajaj-Finserv-Mutual-Fund  
-  FAILED  Bandhan-Mutual-Fund  no 2026-09 file found on https://bandhanmutual.com/downloads/disclosures
-  OK      Bank-of-India-Mutual-Fund  
+  NAV 100/2764
+  NAV 200/2764
+  NAV 300/2764
+  NAV 400/2764
+  NAV 500/2764
+  NAV 600/2764
+  NAV 700/2764
+  NAV 800/2764
+  NAV 900/2764
+  NAV 1000/2764
+  NAV 1100/2764
+  NAV 1200/2764
+  NAV 1300/2764
+  NAV 1400/2764
+  NAV 1500/2764
+  NAV 1600/2764
+  NAV 1700/2764
+  NAV 1800/2764
+  NAV 1900/2764
+  NAV 2000/2764
+  NAV 2100/2764
+  NAV 2200/2764
+  NAV 2300/2764
+  NAV 2400/2764
+  NAV 2500/2764
+  NAV 2600/2764
+  NAV 2700/2764
+  2764 NAV histories (104 of them liquid funds, the arbitrage yardstick)
+  bond-fund yardstick: Direct 3615 days, Regular 5376 days (86 plans)
+  liquid-fund yardstick: Direct 5372 days, Regular 5377 days
+[5/7] Holdings for 2026-10
+  NOT_YET 360-ONE-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.360.one/asset/mutual-funds/downloads/: no 2026-10 file found on https://www.360.one/asset/mutual-funds/downloads/
+  FAILED  Abakkus-Mutual-Fund  downloaded 2 files but none is an equity portfolio (Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx, Investor_Complaints_October_2026_d2ba961098.xlsx)
+  NOT_YET Aditya-Birla-Sun-Life-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio: no 2026-10 file found on https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio
+  NOT_YET Angel-One-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.angelonemf.com/downloads: no 2026-10 file found on https://www.angelonemf.com/downloads
+  NOT_YET Axis-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.axismf.com/statutory-disclosures: no 2026-10 file found on https://www.axismf.com/statutory-disclosures
+  NOT_YET Bajaj-Finserv-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.bajajamc.com/downloads?statutory-disclosures=: no 2026-10 file found on https://www.bajajamc.com/downloads?statutory-disclosures=
+  NOT_YET Bandhan-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bandhanmutual.com/downloads/disclosures: no 2026-10 file found on https://bandhanmutual.com/downloads/disclosures
+  NOT_YET Bank-of-India-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.boimf.in/investor-corner#t2: no 2026-10 file found on https://www.boimf.in/investor-corner
   OK      Baroda-BNP-Paribas-Mutual-Fund  
   OK      Canara-Robeco-Mutual-Fund  
   OK      Capitalmind-Mutual-Fund  
-  FAILED  Choice-Mutual-Fund  no 2026-09 file found on https://choicemf.com/disclosures/monthly-portfolio
+  NOT_YET Choice-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://choicemf.com/disclosures/monthly-portfolio: no 2026-10 file found on https://choicemf.com/disclosures/monthly-portfolio
   OK      DSP-Mutual-Fund  
-  OK      Edelweiss-Mutual-Fund  
-  OK      Franklin-Templeton-Mutual-Fund  
-  OK      Groww-Mutual-Fund  
+  NOT_YET Edelweiss-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.edelweissmf.com/statutory#Portfolio-of-Schemes: no 2026-10 file found on https://www.edelweissmf.com/statutory
+  NOT_YET Franklin-Templeton-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.franklintempletonindia.com/investor/reports?firstFilter-12: no 2026-10 file found on https://www.franklintempletonindia.com/investor/reports?firstFilter-12
+  NOT_YET Groww-Mutual-Fund  adapter found no files for this month
+  NOT_YET HDFC-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio: no 2026-10 file found on https://www.hdfcfund.com/statutory-disclosure/portfolio/monthly-portfolio
   OK      Helios-Mutual-Fund  
-  OK      ICICI-Prudential-Mutual-Fund  
+  FAILED  HSBC-Mutual-Fund  downloaded 1 files but none is an equity portfolio (investor-complaints-october-2026.xlsx)
+  NOT_YET ICICI-Prudential-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures: no 2026-10 file found on https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures
   OK      Invesco-Mutual-Fund  
-  OK      ITI-Mutual-Fund  
-  FAILED  Jio-BlackRock-Mutual-Fund  no 2026-09 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure
-  FAILED  JM-Financial-Mutual-Fund  no 2026-09 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure
-  OK      Kotak-Mahindra-Mutual-Fund  
-  NOT_YET LIC-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.licmf.com/downloads/monthly-portfolio: no 2026-09 file found on https://www.licmf.com/downloads/monthly-portfolio
-  FAILED  Mahindra-Mutual-Fund  no 2026-09 file found on https://www.mahindramanulife.com/downloads?document=Monthly-Portfolio-Disclosure---September%2C-2026#disclosures-portfolio-disclosure; AMFI page https://www.mahindramanulife.com/downloads#mandatory-disclosures: no 2026-09 file found on https://www.mahindramanulife.com/downloads
+  NOT_YET ITI-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.itiamc.com/statuory-disclosure: no 2026-10 file found on https://www.itiamc.com/statuory-disclosure
+  NOT_YET Jio-BlackRock-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure: no 2026-10 file found on https://www.jioblackrockamc.com/statutory-disclosure/disclosures/monthly-portfolio-disclosure
+  NOT_YET JM-Financial-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure: no 2026-10 file found on https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure
+  NOT_YET Kotak-Mahindra-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.kotakmf.com/Information/forms-and-downloads: no 2026-10 file found on https://www.kotakmf.com/Information/forms-and-downloads
+  NOT_YET LIC-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.licmf.com/downloads/monthly-portfolio: no 2026-10 file found on https://www.licmf.com/downloads/monthly-portfolio
+  NOT_YET Mahindra-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.mahindramanulife.com/downloads#mandatory-disclosures: no 2026-10 file found on https://www.mahindramanulife.com/downloads
   OK      Mirae-Asset-Mutual-Fund  
   OK      Motilal-Oswal-Mutual-Fund  
-  FAILED  Navi-Mutual-Fund  no 2026-09 file found on https://navi.com/mutual-fund/downloads/portfolio
+  NOT_YET Navi-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://navi.com/mutual-fund/downloads/portfolio: no 2026-10 file found on https://navi.com/mutual-fund/downloads/portfolio
   OK      Nippon-India-Mutual-Fund  
   OK      NJ-Mutual-Fund  
-  FAILED  Old-Bridge-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_Overlap_September_2026_d5efacca71.xlsx)
+  FAILED  Old-Bridge-Mutual-Fund  downloaded 20 files but none is an equity portfolio (IR_Old_Bridge_Mutual_Fund_01102026_14c37f5971.xlsx, IR_Old_Bridge_Mutual_Fund_05102026_114f181e81.xlsx, IR_Old_Bridge_Mutual_Fund_06102026_dfe716f4b6.xlsx, ...)
   OK      PGIM-India-Mutual-Fund  
   OK      PPFAS-Mutual-Fund  
-  OK      Quant-Mutual-Fund  
-  OK      Quantum-Mutual-Fund  
+  NOT_YET Quant-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://quantmutual.com/statutory-disclosures: no 2026-10 file found on https://quantmutual.com/statutory-disclosures
+  NOT_YET Quantum-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.quantumamc.com/portfolio/combined/-1/1/0/0: no 2026-10 file found on https://www.quantumamc.com/portfolio/combined/-1/1/0/0
   OK      Samco-Mutual-Fund  
   OK      SBI-Mutual-Fund  
   OK      Shriram-Mutual-Fund  
-  NOT_YET Sundaram-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: no 2026-09 file found on https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios
-  OK      Tata-Mutual-Fund  
-  FAILED  Taurus-Mutual-Fund  no 2026-09 file found on https://www.taurusmutualfund.com/index.php/monthly-portfolio; AMFI page https://taurusmutualfund.com/monthly-portfolio: no 2026-09 file found on https://taurusmutualfund.com/monthly-portfolio
-  FAILED  The-Wealth-Company-Mutual-Fund  no 2026-09 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/
-  OK      Trust-Mutual-Fund  
+  NOT_YET Sundaram-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: no 2026-10 file found on https://www.sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios
+  FAILED  Tata-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Revised_format_Disclosure_of_scheme_category-wise-_AAUM_data__on_quarterly_basis_TATA_JUL_2726-SEP_2726.xlsx)
+  NOT_YET Taurus-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://taurusmutualfund.com/monthly-portfolio: no 2026-10 file found on https://taurusmutualfund.com/monthly-portfolio
+  NOT_YET The-Wealth-Company-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/: no 2026-10 file found on https://www.wealthcompanyamc.in/literature-forms/portfolio-documents/monthly/
+  NOT_YET Trust-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.trustmf.com/disclosures?activeTab=portfolio-disclosures: no 2026-10 file found on https://www.trustmf.com/disclosures?activeTab=portfolio-disclosures
   OK      Unifi-Mutual-Fund  
-  FAILED  Union-Mutual-Fund  Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads#!#factsheets
-Call log:
-  - navigating to "https://www.unionmf.com; AMFI page https://www.unionmf.com/about-us/downloads/monthly-portfolio: Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads/monthly-portfolio
+  NOT_YET Union-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.unionmf.com/about-us/downloads/monthly-portfolio: Error: Page.goto: net::ERR_CONNECTION_REFUSED at https://www.unionmf.com/about-us/downloads/monthly-portfolio
 Call log:
   - navigating to "https://www.unionm
-  OK      UTI-Mutual-Fund  
-  FAILED  Zerodha-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_AAUM_Disclosure_Report_-_September_2026.xlsx)
-  NOT_YET AlphaGrep-Mutual-Fund  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-09 file found on https://www.alphagrepmf.ai/disclosures
-  NOT_YET ASK-MUTUAL-FUND  no 'September 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-09 file found on https://www.askmutualfund.com/
-  FAILED  Monarch-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_Portfolio_Monarch_Overnight_Fund_30_September_2026_8d5f63f3c7.xls)
-  holdings download: 37/53 AMCs OK, 4 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-09
-  holdings: 1181 portfolios parsed from 470 files, 671 mapped to schemes
-  holdings validation: 6 portfolios quarantined
+  NOT_YET UTI-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.utimf.com/downloads/consolidate-all-portfolio-disclosure: no 2026-10 file found on https://www.utimf.com/downloads/consolidate-all-portfolio-disclosure
+  NOT_YET WhiteOak-Capital-Mutual-Fund  adapter found no files for this month
+  FAILED  Zerodha-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_AAUM_Disclosure_Report_-_October_2026.xlsx)
+  NOT_YET AlphaGrep-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-10 file found on https://www.alphagrepmf.ai/disclosures
+  NOT_YET ASK-MUTUAL-FUND  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-10 file found on https://www.askmutualfund.com/
+  NOT_YET Carnelian-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bit.ly/4eN2G08: no 2026-10 file found on https://bit.ly/4eN2G08
+  FAILED  Monarch-Mutual-Fund  downloaded 1 files but none is an equity portfolio (Monthly_Portfolio_Monarch_Overnight_Fund_31_October_2026_fd2ba7cda3.xls)
+  holdings download: 16/54 AMCs OK, 32 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
+  holdings: 420 portfolios parsed from 282 files, 283 mapped to schemes
+  holdings validation: 12 portfolios quarantined
+  holdings: 271 portfolios from 2026-10, 428 carried forward from 2026-09 (AMCs not published / not downloaded) -> 699 total
 [6/7] Metrics, protocols, ranking committee
-  metrics 200/1687
-  metrics 400/1687
-  metrics 600/1687
-  metrics 800/1687
-  metrics 1000/1687
-  metrics 1200/1687
-  metrics 1400/1687
-  metrics 1600/1687
+  metrics 200/2741
+  metrics 400/2741
+  metrics 600/2741
+  metrics 800/2741
+  metrics 1000/2741
+  metrics 1200/2741
+  metrics 1400/2741
+  metrics 1600/2741
+  metrics 1800/2741
+  metrics 2000/2741
+  metrics 2200/2741
+  metrics 2400/2741
+  metrics 2600/2741
   flows: 36 quarters of AUM history on disk
+  rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
+  rating history: 1 of 1 months rated in 0.7 min
+  rating history: 36 months, 1151 funds
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/2026-11
-tier                A  A+    B   C  Unrated
-category                                   
-Contra              3   1    2   0        5
-Dividend Yield      4   2    8   4        6
-ELSS               16   8   24  26        2
-Flexi Cap          14   8   30  20       20
-Focused            12   6   20  16        2
-Index Fund         82  47  258  63       90
-Large & Mid Cap    10   6   19  17       20
-Large Cap          14   6   24  16        8
-Mid Cap            12   6   21  17       10
-Multi Cap           8   6   20  12       18
-Sectoral/Thematic  48  35  109  84      225
-Small Cap          10   6   19  15       20
-Value               6   5   15  15        6
+tier                             A  A+    B   C  Unrated
+category                                                
+Aggressive Hybrid               12   6   21  17        2
+Arbitrage                       12   4   22  14       25
+Balanced Advantage              12   8   22  18       16
+Balanced Hybrid                  2   0    2   0        4
+Banking & PSU                    7   4   16  10        3
+Conservative Hybrid              7   4    7  16        0
+Contra                           0   2    4   0        5
+Corporate Bond                   6   5   19  12        0
+Credit Risk                      8   0   10   6        0
+Dividend Yield                   0   2   12   4        6
+Dynamic Term                     9   5   18  12        2
+ELSS                             8   2   42  22        2
+Equity Savings                   8   3   17  10        8
+Flexi Cap                       14   4   34  20       20
+Floating Rate                    6   2    9   7        0
+Focused                          0   8   30  16        2
+Gilt                             5   6   19  12        4
+Gilt 10-Year Constant Maturity   4   0    5   1        0
+Index Fund                      82  45  259  64       90
+Large & Mid Cap                  1   9   28  14       22
+Large Cap                        5   7   30  18        8
+Liquid                          13   8   28  19       17
+Long Term                        1   2    7   4        8
+Medium Term                      8   0   10   6        0
+Medium to Long Term              4   4   10   6        4
+Mid Cap                          4   0   36  16       10
+Money Market                     9   4   21  12        8
+Multi Asset Allocation           4   4   14   8       44
+Multi Cap                        5   4   25  12       18
+Overnight                       12   8   28  18       13
+Sectoral/Thematic               34  21  145  78      223
+Short Term                       9   5   16  11        4
+Small Cap                        8   6   22  14       22
+Ultra Short Term                 9   5   20  12        6
+Ultra Short to Short Term       10   3   17  10       10
+Value                            5   4   19  13        6

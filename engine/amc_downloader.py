@@ -325,6 +325,10 @@ def _check_portfolios(folder: Path, st: str, info: str):
             continue
     names = ", ".join(sorted(p.name for p in files)[:3])
     shutil.rmtree(folder, ignore_errors=True)
+    # only other documents for the month (AUM, investor complaints, daily reports, a debt-only fund): the equity
+    # portfolio is not out yet, so the next run retries; FAILED is kept for a file that claims to be a portfolio
+    if not any(re.search(r"portfolio|portfolios|holding", p.name, re.I) and not re.search(r"overnight|liquid|debt|gilt", p.name, re.I) for p in files):
+        return "NOT_YET", f"only non-portfolio files so far ({names}{', ...' if len(files) > 3 else ''})"
     return "FAILED", f"downloaded {len(files)} files but none is an equity portfolio ({names}{', ...' if len(files) > 3 else ''})"
 
 

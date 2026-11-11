@@ -425,10 +425,13 @@ def cap_note(f):
         if m:
             what = "equities" if m.group(1) == "equity" else m.group(1) + " caps"
             mb.append(f"{m.group(2)}% in {what}; SEBI requires at least {m.group(3)}%")
+    if "mandate_breach" in flags and mb and f.get("tier_before_cap"):
+        return (f"Its score puts it in {f['tier_before_cap']}, but it is rated {f.get('tier')}, one step lower, because its portfolio was outside "
+                "SEBI's limits for its category in two consecutive monthly portfolios: " + ", ".join(mb) + ".")
     if "mandate_breach" in flags and mb:
         return "Capped at B: " + ", ".join(mb) + " in two consecutive monthly portfolios."
     if "mandate_watch" in flags and mb:
-        return "Watch: " + ", ".join(mb) + " in the latest portfolio. Not capped unless this repeats next month."
+        return "Watch: " + ", ".join(mb) + " in the latest portfolio. No effect on the rating unless this repeats in the next monthly portfolio."
     if "chronic_underperformer" in flags:
         return "Capped at C: persistently behind its index and most peers over rolling 3-year periods."
     return ""
@@ -853,7 +856,7 @@ def main():
             "against the total-return version of the category benchmark. Pillars: long-run excess return over the index (25%), risk-adjusted "
             "return: information ratio, capture ratio and Jensen's alpha (35%), consistency (20%), cost (10%) and portfolio: active share, SEBI "
             "mandate fit, cash and turnover (10%). Tiers: A+ = top 10% of a peer group with a score of at least 70; A = top 30% with at least 55; "
-            "then B and C. A fund off its SEBI mandate in two consecutive monthly portfolios is capped at B; persistent underperformers at C. "
+            "then B and C. An equity fund off its SEBI mandate in two consecutive monthly portfolios is rated one step lower; persistent underperformers at C. "
             "A 2019-2025 backtest found the ratings did not predict the next three years' returns, so they are presented as track-record "
             "assessments, not forecasts.\n",
             f"## Data sources and schedule\nNAVs: AMFI (daily). Index data: NSE Indices total-return indices (daily). Expense ratios, AUM and "

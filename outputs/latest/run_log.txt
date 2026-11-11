@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-11 01:44
+Aeterna MF Engine run 2026-11-11 05:48
 [1/7] Universe (AMFI NAVAll)
   2741 equity + index schemes (growth, Direct & Regular)
   Month-end AUM (30 Oct 2026): 1357/1380 schemes
@@ -52,8 +52,8 @@ Aeterna MF Engine run 2026-11-11 01:44
   metrics 2200/2741
   metrics 2400/2741
   metrics 2600/2741
-  rating history: rating 36 past month-ends (2023-11-30 .. 2026-10-30)
-  rating history: 36 of 36 months rated in 11.8 min
+  rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
+  rating history: 1 of 1 months rated in 1.3 min
   rating history: 36 months, 1151 funds
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                             A  A+    B   C  Unrated

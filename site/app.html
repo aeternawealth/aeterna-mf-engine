@@ -1141,7 +1141,7 @@ function drawStrip(cat){
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
   $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/><circle class="ring-dot" cx="44" cy="44" r="36" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
     <div><b><span data-n="${ahead}" data-f="int">${ahead}</span><small> of ${F.length}</small></b><span>${esc(cat)} funds beat the index over 3 years</span></div></div>
-  <dl class="ss-rows"><div><dt>Typical fund</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'level':spct(med)+' a year'}</dd></div>
+  <dl class="ss-rows"><div><dt>Typical fund (median)</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'In line with the index':spct(med)+' a year'}</dd></div>
     <div><dt>Furthest ahead</dt><dd class="pos">${spct(best.excess_3Y)}</dd></div><div><dt>Furthest behind</dt><dd class="neg">${spct(worst.excess_3Y)}</dd></div></dl>
   <a class="btn" href="#ratings" id="stripMore">See the ${esc(cat)} table</a><p class="muted" style="font-size:12px">Past returns against the index, not a forecast.</p>`;
   $('#stripMore').onclick=()=>{S.cat=cat};motion($('#stripSum'));

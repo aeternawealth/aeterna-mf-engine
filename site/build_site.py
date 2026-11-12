@@ -269,11 +269,17 @@ def e(s):
 
 
 def pct(v, d=1):
-    return "–" if v is None else f"{v * 100:.{d}f}%"
+    if v is None:
+        return "–"
+    return f"{0:.{d}f}%" if round(v * 100, d) == 0 else f"{v * 100:.{d}f}%"
 
 
 def spct(v, d=1):
-    return "–" if v is None else f"{'+' if v > 0 else ''}{v * 100:.{d}f}%"
+    if v is None:
+        return "–"
+    if round(v * 100, d) == 0:          # no "-0.0%" or "+0.0%"
+        return f"{0:.{d}f}%"
+    return f"{'+' if v > 0 else ''}{v * 100:.{d}f}%"
 
 
 def num(v, d=2):
@@ -484,6 +490,7 @@ def write(path, text):
     if path.endswith("/"):
         p = p / "index.html"
     p.parent.mkdir(parents=True, exist_ok=True)
+    text = text.replace("expense ratio –%", "expense ratio not yet published").replace("–%", "–")   # a missing value followed by a unit sign
     p.write_text(text, encoding="utf-8")
 
 
@@ -603,6 +610,10 @@ def main():
     urls = [("/", "daily", "1.0"), ("/mutual-funds/", "daily", "0.9"), ("/portfolio-check/", "weekly", "0.8"), ("/ratings-update/", "monthly", "0.5")]
 
     # ---- extra page sets (calculators, fund houses, index/theme groups, comparisons, insights, legal)
+    # monthly shortlists first (site/top_pages.py): comparison pages link to them
+    import top_pages as TP
+    made_top = TP.build(Bm, by_cat, urls, as_of)
+    Bm.MADE_TOP = made_top
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
     made_idx, made_thm = P.group_pages(Bm, funds, urls, as_of)
     P.amc_pages(Bm, funds, urls, as_of)
@@ -836,10 +847,6 @@ def main():
         write(f["_url"], page(title, desc, f["_url"], body,
                               (fund_ld, faq_ld, crumbs([("Mutual funds", "/mutual-funds/"), (f["category"], f"/mutual-funds/{slug(f['category'])}/"), (f["_name"], f["_url"])]))))
         urls.append((f["_url"], "daily", "0.7" if f.get("tier") in ("A+", "A", "B", "C") and asset_class(f["category"]) in ("Equity", "Hybrid") else "0.5"))
-
-    # ---- monthly shortlists: /mutual-funds/<category>/top-rated/ (site/top_pages.py)
-    import top_pages as TP
-    made_top = TP.build(Bm, by_cat, urls, as_of)
 
     # ---- category pages
     cat_cards = []

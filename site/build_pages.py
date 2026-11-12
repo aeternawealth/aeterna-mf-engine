@@ -356,7 +356,10 @@ def amc_pages(B, funds, urls, as_of):
 
 
 # ------------------------------------------------------------------ fund vs fund
-CMP_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra", "Index Fund"]
+CMP_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra", "Index Fund",
+            "Dividend Yield", "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Arbitrage"]
+CMP_TOP = 8          # the largest schemes per category compared pairwise (28 pages a category)
+CMP_INDEX = {"Index: NIFTY 50": 8, "Index: NIFTY NEXT 50": 6}
 
 
 def overlap(h1, h2):
@@ -366,17 +369,61 @@ def overlap(h1, h2):
     return len(common), sum(min(a[k], b[k]) for k in common)
 
 
+def _rk(B, X):
+    if X.get("score") is None or X.get("peer_rank") is None:
+        return "–"
+    return f"{X['score']:.0f} · #{int(X['peer_rank'])} of {int(X['peer_count'])}"
+
+
+def _top10(B, f):
+    v = f.get("top10_pct")
+    return "–" if v is None else B.pct(v, 0) if v <= 1 else f"{v:.0f}%"
+
+
+def _mix(f):
+    v = [f.get(k) for k in ("large_pct", "mid_pct", "small_pct")]
+    return "–" if any(x is None for x in v) else " / ".join(f"{x:.0f}" for x in v) + "%"
+
+
+def _related(B, a, b, rel, path, c):
+    out = []
+    for f in (a, b):
+        L = [(n, p) for n, p in rel.get(f["pair_key"], []) if p != path][:7]
+        if L:
+            out.append(f"<div><b>{B.e(f['_name'])} vs</b><ul style='margin:6px 0 0;padding-left:20px'>" + "".join(f"<li><a href='{p}'>{B.e(n)}</a></li>" for n, p in L) + "</ul></div>")
+    lc = c if c == "ELSS" else c.lower()
+    tp = getattr(B, "MADE_TOP", {}).get(c)
+    top = f"<p style='margin-top:14px'>" + (f"<a href='{tp}'>Top-rated {B.e(lc)} funds this month</a> · " if tp else "") + f"<a href='/mutual-funds/{B.slug(c)}/'>All {B.e(lc)} funds</a></p>"
+    return ("<h2 style='font-size:24px;margin-top:34px'>More comparisons</h2><div class='grid g2' style='margin-top:12px'>" + "".join(out) + "</div>" + top) if out else top
+
+
 def compare_pages(B, funds, hold, urls, as_of):
-    """Pages for the most-asked pairs: the 5 largest schemes in each main category (by Direct-plan AUM)."""
+    """Pages for the most-asked pairs: the CMP_TOP largest schemes in each main category (by Direct-plan AUM), and the
+    largest Nifty 50 / Nifty Next 50 index funds. Each page: both plans' ratings and returns, consistency, falls,
+    company-size mix, cost in rupees, overlap, and links to the other comparisons of both funds."""
     made = {}
     by_pair = {}
     for f in funds:
         by_pair.setdefault(f.get("pair_key"), {})[f["plan_type"]] = f
+    groups = []
     for c in CMP_CATS:
         D = sorted([f for f in funds if f["category"] == c and f["plan_type"] == "Direct" and f.get("aum_cr")], key=lambda f: -f["aum_cr"])
         if c == "Index Fund":
-            D = [f for f in D if str(f.get("peer_group")) == "Index: NIFTY 50"]
-        for a, b in combinations(D[:5], 2):
+            groups += [(c, [f for f in D if str(f.get("peer_group")) == g][:n]) for g, n in CMP_INDEX.items()]
+        else:
+            groups.append((c, D[:CMP_TOP]))
+    pairs = []
+    for c, D in groups:
+        pairs += [(c, a, b) for a, b in combinations(D, 2)]
+    # every page links to the other comparisons of both its funds
+    rel = {}
+    for c, a, b in pairs:
+        a2, b2 = sorted((a, b), key=lambda f: f["_name"])
+        pth = f"/compare/{B.slug(a2['_name'])}-vs-{B.slug(b2['_name'])}/"
+        for x, y in ((a2, b2), (b2, a2)):
+            rel.setdefault(x["pair_key"], []).append((y["_name"], pth))
+    for c, a, b in pairs:
+        if True:
             a, b = sorted((a, b), key=lambda f: f["_name"])
             path = f"/compare/{B.slug(a['_name'])}-vs-{B.slug(b['_name'])}/"
             if path in made.values():
@@ -384,7 +431,8 @@ def compare_pages(B, funds, hold, urls, as_of):
             A, Bp = by_pair.get(a.get("pair_key"), {}), by_pair.get(b.get("pair_key"), {})
             n_common, ov = overlap(hold.get(a.get("pair_key")), hold.get(b.get("pair_key")))
             rows = [("Category", a["category"], b["category"]), ("Fund house", a.get("amc"), b.get("amc")),
-                    ("Benchmark (TRI)", B.iname(a.get("benchmark")), B.iname(b.get("benchmark"))),
+                    ("Benchmark", a.get("bench_label") or (B.iname(a.get("benchmark")) + " TRI" if a.get("benchmark") else "–"),
+                     b.get("bench_label") or (B.iname(b.get("benchmark")) + " TRI" if b.get("benchmark") else "–")),
                     ("Age", f"{B.num(a.get('age_years'), 1)} years", f"{B.num(b.get('age_years'), 1)} years"),
                     (B.aum_label(a) if a.get("aum_asof") == b.get("aum_asof") else "AUM", B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
             for plan, X, Y in (("Direct", a, b), ("Regular", A.get("Regular"), Bp.get("Regular"))):
@@ -394,25 +442,47 @@ def compare_pages(B, funds, hold, urls, as_of):
                          ("Expense ratio", f"{B.num(X.get('ter'), 2)}%", f"{B.num(Y.get('ter'), 2)}%"),
                          ("1Y return", B.pct(X.get("ret_1Y")), B.pct(Y.get("ret_1Y"))), ("3Y return (a year)", B.pct(X.get("ret_3Y")), B.pct(Y.get("ret_3Y"))),
                          ("5Y return (a year)", B.pct(X.get("ret_5Y")), B.pct(Y.get("ret_5Y"))),
-                         ("3Y vs index", B.spct(X.get("excess_3Y")), B.spct(Y.get("excess_3Y")))]
-            rows += [("<b>Risk and portfolio</b>", "", ""), ("Volatility, 3Y", B.pct(a.get("vol_3y")), B.pct(b.get("vol_3y"))),
+                         ("3Y vs index", B.spct(X.get("excess_3Y")), B.spct(Y.get("excess_3Y"))),
+                         ("Rating score, rank", _rk(B, X), _rk(B, Y))]
+            rows += [("<b>Consistency, risk and portfolio</b>", "", ""),
+                     ("Ahead of index, rolling 3Y periods", B.pct(a.get("roll3y_hit_rate"), 0), B.pct(b.get("roll3y_hit_rate"), 0)),
+                     ("Deepest fall, 3Y", B.pct(a.get("max_drawdown_3y")), B.pct(b.get("max_drawdown_3y"))),
+                     ("Volatility, 3Y", B.pct(a.get("vol_3y")), B.pct(b.get("vol_3y"))),
                      ("Max fall, 5Y", B.pct(a.get("max_drawdown_5y")), B.pct(b.get("max_drawdown_5y"))),
                      ("Down capture, 3Y", B.num(a.get("downside_capture_3y"), 0), B.num(b.get("downside_capture_3y"), 0)),
                      ("Stocks held", B.num(a.get("n_stocks"), 0), B.num(b.get("n_stocks"), 0)),
-                     ("Top 10 holdings", B.pct(a.get("top10_pct"), 0) if a.get("top10_pct") is not None and a["top10_pct"] <= 1 else B.num(a.get("top10_pct"), 0) + "%",
-                      B.pct(b.get("top10_pct"), 0) if b.get("top10_pct") is not None and b["top10_pct"] <= 1 else B.num(b.get("top10_pct"), 0) + "%")]
+                     ("Top 10 holdings", _top10(B, a), _top10(B, b)),
+                     ("Large / mid / small caps", _mix(a), _mix(b)),
+                     ("Largest sector", B.e(a.get("top_sector") or "–"), B.e(b.get("top_sector") or "–"))]
             tbl = "".join(f"<tr><td class='l'>{k}</td><td class='num'>{x if x is not None else '–'}</td><td class='num'>{y if y is not None else '–'}</td></tr>" for k, x, y in rows)
             r3a, r3b = a.get("ret_3Y"), b.get("ret_3Y")
             summ = []
             if r3a is not None and r3b is not None:
                 hi, lo = (a, b) if r3a >= r3b else (b, a)
                 summ.append(f"Over the last 3 years, {hi['_name']} returned {B.pct(hi['ret_3Y'])} a year against {B.pct(lo['ret_3Y'])} for {lo['_name']} (Direct plans).")
+            ha, hb = a.get("roll3y_hit_rate"), b.get("roll3y_hit_rate")
+            if ha is not None and hb is not None and abs(ha - hb) >= 0.05:
+                hi, lo = (a, b) if ha > hb else (b, a)
+                summ.append(f"{hi['_name']} was the more consistent: ahead of its index in {B.pct(hi['roll3y_hit_rate'], 0)} of rolling 3-year periods, against {B.pct(lo['roll3y_hit_rate'], 0)}.")
+            da, db = a.get("downside_capture_3y"), b.get("downside_capture_3y")
+            if da is not None and db is not None and abs(da - db) >= 5:
+                lo_, hi_ = (a, b) if da < db else (b, a)
+                summ.append(f"In falling months, {lo_['_name']} fell less: {B.num(lo_['downside_capture_3y'], 0)}% of the index's fall, against {B.num(hi_['downside_capture_3y'], 0)}%.")
+            sa, sb_ = a.get("small_pct"), b.get("small_pct")
+            if sa is not None and sb_ is not None and abs(sa - sb_) >= 10 and c not in ("Small Cap", "Arbitrage"):
+                big, sml = (a, b) if sa > sb_ else (b, a)
+                summ.append(f"{big['_name']} leans more to smaller companies ({big['small_pct']:.0f}% in small caps against {sml['small_pct']:.0f}%), so expect bigger swings both ways.")
             if a.get("ter") is not None and b.get("ter") is not None:
-                ch = a if a["ter"] <= b["ter"] else b
-                summ.append(f"{ch['_name']} costs less ({B.num(ch['ter'], 2)}% a year, Direct).")
+                ch, ex = (a, b) if a["ter"] <= b["ter"] else (b, a)
+                gap = (ex["ter"] - ch["ter"]) * 1000
+                summ.append(f"{ch['_name']} costs less: {B.num(ch['ter'], 2)}% a year against {B.num(ex['ter'], 2)}% (Direct plans)" + (f", about ₹{gap:,.0f} a year less on ₹10 lakh." if gap >= 100 else "."))
             if hold.get(a.get("pair_key")) and hold.get(b.get("pair_key")):
                 summ.append(f"They hold {n_common} stocks in common; the portfolio overlap is {ov:.0f}%.")
-            faq = [(f"{a['_name']} or {b['_name']}: which has done better?", " ".join(summ[:1]) or "See the table for returns over each period."),
+            ta, tb = a.get("tier"), b.get("tier")
+            rate_ans = (f"On our track-record ratings (Direct plans), {a['_name']} is rated {ta} and {b['_name']} is rated {tb}, each against its own category. "
+                        "Ratings describe the record so far and are not a forecast; which suits you depends on your goal and the funds you already hold.") if ta and tb else ""
+            faq = [(f"{a['_name']} or {b['_name']}: which is better?", rate_ans or "Neither is better for everyone; see the table and how each fits your portfolio."),
+                   (f"{a['_name']} or {b['_name']}: which has done better?", " ".join(summ[:1]) or "See the table for returns over each period."),
                    (f"How much do {a['_name']} and {b['_name']} overlap?", summ[-1] if hold.get(a.get("pair_key")) and hold.get(b.get("pair_key")) else "Holdings for one of these schemes are not available yet."),
                    ("Should I hold both?", "Two funds with a high overlap add little diversification. Check how they fit your goal and the rest of your portfolio; we can help.")]
             desc = (f"{a['_name']} vs {b['_name']}: returns, rating, expense ratio, risk and portfolio overlap compared, Direct and Regular plans. " + " ".join(summ))[:300]
@@ -421,8 +491,9 @@ def compare_pages(B, funds, hold, urls, as_of):
 <h1 style="font-size:clamp(28px,4vw,40px);margin-top:14px">{B.e(a['_name'])} vs {B.e(b['_name'])}</h1>
 <p class="lede" style="margin-top:12px">{B.e(' '.join(summ))} Data as of {B.dmy(as_of)}.</p>
 <div class="tablewrap" style="margin-top:20px"><table class="cmp"><thead><tr><th class="l"></th><th><a href="{a['_url']}">{B.e(a['_name'])}</a></th><th><a href="{b['_url']}">{B.e(b['_name'])}</a></th></tr></thead><tbody>{tbl}</tbody></table></div>
-<div class="row" style="margin-top:16px"><a class="btn primary" href="/#compare">Compare any funds interactively</a><a class="btn" href="/#contact">Ask us which fits you</a></div>
+<div class="row" style="margin-top:16px"><a class="btn primary" href="/#compare">Compare any funds interactively</a><a class="btn" href="{B.wa_link(f"Hello Aeterna, I'm comparing {a['_name']} and {b['_name']} and would like help choosing.")}" target="_blank" rel="noopener">Ask us which fits you</a></div>
 {faq_html(B, faq)}
+{_related(B, a, b, rel, path, c)}
 <p class="note" style="margin-top:28px">Past performance does not guarantee future returns. This comparison is not a recommendation to buy or sell either fund.</p></div></section>"""
             B.write(path, B.page(f"{a['_name']} vs {b['_name']}: returns, risk, cost and overlap | Aeterna Wealth", desc, path, body,
                                  (faq_ld(faq), B.crumbs([("Mutual funds", "/mutual-funds/"), (c, f"/mutual-funds/{B.slug(c)}/"), ("Compare", path)]))))

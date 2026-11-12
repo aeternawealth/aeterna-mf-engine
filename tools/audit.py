@@ -126,7 +126,7 @@ PAGE_JS = r"""async () => {
 
 def pick_pages():
     pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/", "/portfolio-check/", "/mutual-funds/dynamic-term/canara-robeco-dynamic-term-fund-direct/",
-             "/mutual-funds/mid-cap/", "/mutual-funds/liquid/", "/mutual-funds/amc/", "/insights/", "/invest/mutual-funds/", "/invest/pms/", "/calculators/sip/",
+             "/mutual-funds/mid-cap/", "/mutual-funds/small-cap/top-rated/", "/mutual-funds/liquid/", "/mutual-funds/amc/", "/insights/", "/invest/mutual-funds/", "/invest/pms/", "/calculators/sip/",
              "/#method", "/#about", "/#ratings", "/#compare", "/#contact"]
     f = json.loads((ROOT / "site" / "data" / "funds.json").read_text()) if (ROOT / "site" / "data" / "funds.json").exists() else []
     urls = json.loads((DIST / "data" / "fund-urls.json").read_text()) if (DIST / "data" / "fund-urls.json").exists() else {}

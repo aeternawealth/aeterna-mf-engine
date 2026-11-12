@@ -156,7 +156,7 @@ EQUITY_ACTIVE = {"Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi 
 REVIEW_FLAGS = {"mandate_breach": "its portfolio is outside SEBI's limits for the category"}
 
 
-PC_HTML = """<section class="band"><div class="wrap" style="max-width:860px">
+PC_HTML = r"""<section class="band"><div class="wrap" style="max-width:860px">
 <p class="eyebrow">Portfolio check</p><h1>How do your funds rate?</h1>
 <p class="lede" style="margin-top:12px">Add the mutual funds you hold. You'll see each one's rating against its category, what our review rule says about it, and where your funds overlap. Nothing you enter leaves your browser.</p>
 <div class="card" style="margin-top:22px;position:relative">

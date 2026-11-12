@@ -168,7 +168,7 @@ PC_HTML = r"""<section class="band"><div class="wrap" style="max-width:860px">
 <div id="pclist" style="display:grid;gap:10px;margin-top:12px"></div>
 <div id="pcnotes" style="margin-top:16px"></div>
 <div class="card" style="margin-top:22px"><b>Want us to go through it with you?</b><p class="muted" style="margin-top:6px">A portfolio review covers costs, overlap, tax on any switch and whether each fund still fits your plan.</p>
-<p style="margin-top:12px"><a class="btn primary" href="/#contact">Book a portfolio review</a> <a class="btn" href="/#method">How ratings work</a></p></div>
+<p style="margin-top:12px"><a class="btn primary" id="pcwa" href="https://wa.me/918595993600" target="_blank" rel="noopener">Send my list for a review on WhatsApp</a> <a class="btn" href="/#method">How ratings work</a></p></div>
 <p class="muted" style="font-size:12.5px;margin-top:18px">Ratings describe each fund's past record against its category, not a forecast, and are not a recommendation to buy or sell. Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889). Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>
 </div></section>
 <script>
@@ -192,6 +192,7 @@ function draw(){
  Object.keys(byA).forEach(function(a){if(byA[a].length>=3)n.push(byA[a].length+" funds from "+esc(a.replace(/ Mutual Fund$/,""))+": one investment team often holds many of the same stocks across its funds, so these may overlap more than their number suggests.")});
  Object.keys(byC).forEach(function(c){if(byC[c].length>=2)n.push(byC[c].length+" funds in "+esc(c)+": funds in one category follow the same index and SEBI rules, so they tend to move together.")});
  if(F.some(function(d){return d[2]==="Regular"}))n.push("Regular plans include distributor commission; Direct plans of the same funds cost less. Each fund page shows both.");
+ var wa=document.getElementById("pcwa");if(wa)wa.href="https://wa.me/918595993600?text="+encodeURIComponent("Hello Aeterna, please review my funds:\n"+(F.length?F.map(function(d){return"- "+d[1]+" ("+d[2]+")"}).join("\n"):"(I'll share them on chat)"));
  document.getElementById("pcnotes").innerHTML=n.length?'<div class="card"><b>Worth knowing</b><ul style="margin:8px 0 0;padding-left:20px;display:grid;gap:6px">'+n.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div>':"";
  [].forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){sel=sel.filter(function(c){return c!==+b.dataset.rm});save();draw()}})}
 var q=document.getElementById("pcq"),box=document.getElementById("pcs");
@@ -431,6 +432,19 @@ MOTION_JS = ("<script>(function(){if(!('IntersectionObserver' in window)||matchM
              "if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.addEventListener('pointermove',function(e){var g=e.target.closest&&e.target.closest('.glow');if(!g)return;var r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true})})();</script>")
 
 
+WA = "918595993600"
+
+
+def wa_link(text):
+    """WhatsApp click-to-chat with the message filled in (the visitor still presses send)"""
+    from urllib.parse import quote
+    return "https://wa.me/" + WA + "?text=" + quote(text)
+
+
+WA_FLOAT = ('<a class="wa-float" href="https://wa.me/' + WA + '?text=' + __import__("urllib.parse").parse.quote("Hello Aeterna, I'd like to talk about my investments.")
+            + '" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4a.5.5 0 0 0 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.6a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>Chat with us</span></a>')
+
+
 def footer():
     def label(u):
         return "LinkedIn" if "linkedin" in u else "Instagram" if "instagram" in u else "X" if "x.com" in u else "YouTube" if "youtube" in u else u
@@ -448,7 +462,7 @@ def page(title, desc, path, body, ld=()):
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
-            f'{HEADER}<main>{body}</main>{footer()}{HEADER_JS}{MOTION_JS}</body></html>\n')
+            f'{HEADER}<main>{body}</main>{footer()}{WA_FLOAT}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
 def write(path, text):
@@ -781,7 +795,7 @@ def main():
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else ('benchmark: ' + e(BL)) if BL else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 {f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) in ('Hybrid', 'Debt') else ''}
 {plan_html}
-<div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="/#contact">Ask about this fund</a></div>
+<div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="{wa_link(f"Hello Aeterna, I'd like to ask about {f['_name']} ({f['plan_type']} plan).")}" target="_blank" rel="noopener">Ask about this fund on WhatsApp</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
@@ -877,7 +891,7 @@ def main():
 <p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
 <p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
-<div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a></div>
+<div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
 {sub}{tabs}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell. Read the scheme documents before investing.</p>
@@ -921,7 +935,7 @@ def main():
     index = ('<!doctype html>\n<html lang="en-IN" data-theme="light"><head>'
              + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
-             + '</head><body>\n' + app_body
+             + '</head><body>\n' + app_body + WA_FLOAT
              + '\n</body></html>\n')
     (DIST / "index.html").write_text(index, encoding="utf-8")
 

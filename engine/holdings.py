@@ -427,17 +427,21 @@ def with_fallback(hold: pd.DataFrame, month: str, log=print, same_month: pd.Data
     `same_month`: what was already parsed for `month` before this run (a re-run keeps those portfolios).
     Returns (holdings, month the site should show as the holdings month).
     """
+    if len(hold):
+        hold = hold.copy()
+        hold["holdings_month"] = month          # newly parsed portfolios are this month's
     if same_month is not None and len(same_month):
         keep = same_month[~same_month.pair_key.isin(hold.pair_key)] if len(hold) else same_month
+        keep = keep.copy()
+        if "holdings_month" not in keep.columns:
+            keep["holdings_month"] = month
+        keep["holdings_month"] = keep["holdings_month"].fillna(month)   # carried-forward rows keep their own month
         if len(keep):
             top = {**same_month.attrs.get("top", {}), **(hold.attrs.get("top", {}) if len(hold) else {})}
             hold = pd.concat([hold, keep], ignore_index=True) if len(hold) else keep.copy()
             hold.attrs["top"] = top
             log(f"  holdings: kept {len(keep)} portfolios already parsed for {month} that this run did not re-download")
     prev_m = latest_cached_month(before=month)
-    if len(hold):
-        hold = hold.copy()
-        hold["holdings_month"] = month
     if not prev_m:
         return hold, month
     prev = load_cached(prev_m)
@@ -458,6 +462,38 @@ def with_fallback(hold: pd.DataFrame, month: str, log=print, same_month: pd.Data
     log(f"  holdings: {len(hold)} portfolios from {month}, {len(carry)} carried forward from {prev_m} "
         f"(AMCs not published / not downloaded) -> {len(out)} total")
     return out, month
+
+
+_FINGERPRINT = ["n_stocks", "top10_pct", "large_pct", "mid_pct", "small_pct", "equity_pct"]
+
+
+def relabel_copies(hold: pd.DataFrame, month: str) -> pd.DataFrame:
+    """Rows labelled `month` that are identical to the fund's portfolio in the previous parsed month are copies carried
+    forward (a Nov 2026 re-run relabelled them): give them back their real month, so the two-month mandate rule does
+    not count one portfolio twice and pages show the right portfolio date."""
+    if not len(hold) or "holdings_month" not in hold.columns:
+        return hold
+    prev_m = latest_cached_month(before=month)
+    if not prev_m:
+        return hold
+    prev = load_cached(prev_m)
+    cols = [c for c in _FINGERPRINT if c in hold.columns and c in prev.columns]
+    if not len(prev) or not cols:
+        return hold
+    pv = prev.drop_duplicates("pair_key").set_index("pair_key")[cols + (["holdings_month"] if "holdings_month" in prev.columns else [])]
+    hold = hold.copy()
+    n = 0
+    for i, r in hold[hold["holdings_month"].fillna(month) == month].iterrows():
+        if r["pair_key"] not in pv.index:
+            continue
+        q = pv.loc[r["pair_key"]]
+        same = all((pd.isna(r[c]) and pd.isna(q[c])) or (pd.notna(r[c]) and pd.notna(q[c]) and abs(float(r[c]) - float(q[c])) < 1e-9) for c in cols)
+        if same:
+            hold.at[i, "holdings_month"] = q["holdings_month"] if "holdings_month" in q and pd.notna(q.get("holdings_month")) else prev_m
+            n += 1
+    if n:
+        hold.attrs["relabelled"] = n
+    return hold
 
 
 _BREACH = re.compile(r"(large|mid|small) (\d+(?:\.\d+)?) \(needs >=(\d+)\)")

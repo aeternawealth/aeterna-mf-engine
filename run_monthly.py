@@ -91,14 +91,14 @@ def main():
     up = assign_peers(u, tri)
     hold = H.load_cached(hmonth) if a.daily else pd.DataFrame()
     if len(hold):   # today's mandate rule, applied to this month and the month before
-        hold = H.add_prev_mandate(H.recheck_mandates(hold), hmonth)
+        hold = H.add_prev_mandate(H.recheck_mandates(H.relabel_copies(hold, hmonth)), hmonth)
     before = H.load_cached(hmonth) if not a.daily else pd.DataFrame()   # a re-run must not lose portfolios already parsed
     if not len(hold):
         hold = H.analyse(hmonth, up, prev_month=(pd.Period(hmonth) - 1).strftime("%Y-%m"), log=log)
     if not a.daily:   # AMCs publish by the 10th and some late: never rate on fewer holdings than last month
         hold, hmonth = H.with_fallback(hold, hmonth, log=log, same_month=before)
         if len(hold):
-            hold = H.add_prev_mandate(H.recheck_mandates(hold), hmonth)   # two-month rule for the mandate cap
+            hold = H.add_prev_mandate(H.recheck_mandates(H.relabel_copies(hold, hmonth)), hmonth)   # two-month rule for the mandate cap
             H.save_cached(hold, hmonth)   # the daily refresh re-uses exactly this set
 
     log("[6/7] Metrics, protocols, ranking committee")

@@ -2,7 +2,7 @@
 name: Tests
 on:
   push:
-    paths: ["rebalance/**", "run_rebalance.py", "site/app.html", "site/planner/**", "tests/**", "tools/planner_swr.mjs", ".github/workflows/tests.yml"]
+    paths: ["rebalance/**", "run_rebalance.py", "engine/holdings.py", "site/app.html", "site/planner/**", "tests/**", "tools/planner_swr.mjs", ".github/workflows/tests.yml"]
   workflow_dispatch: {}
 jobs:
   calculators:
@@ -22,4 +22,4 @@ jobs:
       - uses: actions/setup-python@v6
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements.txt -r rebalance/requirements.txt
-      - run: python -m pytest tests/test_rebalance.py -q
+      - run: python -m pytest tests/test_rebalance.py tests/test_holdings_months.py -q

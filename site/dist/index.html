@@ -505,16 +505,16 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 
 /* review status on fund pages */
 .rv{padding:16px 18px}.rv p{margin-top:6px;font-size:14.5px;color:var(--ink-2);max-width:90ch}
-.rv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rv-h b{font-weight:600}.rv-how{margin-left:auto;font-size:13.5px}
+.rv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rv-h b{font-weight:600}.rv-how{font-size:13.5px}
 .rv-dot{width:10px;height:10px;border-radius:50%;background:var(--t-u)}
 .rv-ap .rv-dot{background:var(--t-ap);box-shadow:0 0 10px rgba(var(--glow),.8)}.rv-a .rv-dot{background:var(--t-a)}.rv-due .rv-dot{background:var(--t-b)}.rv-now .rv-dot{background:var(--bad)}
 .rv-ap{border-color:color-mix(in srgb,var(--t-ap) 45%,var(--rule))}.rv-due{border-color:color-mix(in srgb,var(--t-b) 40%,var(--rule))}.rv-now{border-color:color-mix(in srgb,var(--bad) 50%,var(--rule))}
 .mode{display:inline-block;font:500 12.5px var(--f-mono);padding:3px 9px;border-radius:999px;border:1px solid var(--rule);white-space:nowrap}.mode-n{color:var(--teal);border-color:color-mix(in srgb,var(--teal) 45%,var(--rule))}.mode-f{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,var(--rule))}
 .mt-why{margin-top:14px;display:grid;gap:10px;max-width:90ch}.mt-why p{color:var(--ink-2)}.mt-why b{color:var(--ink)}
 /* reveal on scroll (class added by script only) */
-.rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
-.rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.ring-dot,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.rv,.fl-path,.fl-node{transition:none}.rv{opacity:1;transform:none}.glow:hover{transform:none}}
+.sr{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
+.sr.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.hero-bg i,.hero-top>*,.hero .strip,.hero .facts,.ss-arc,.ring-dot,.live i,.strip .dot,.strip .halo,.strip .idx{animation:none}.strip .halo{display:none}.glow,.tbar,.pf-ring,.pf-line,.pf-area,.gaprow .bar i,.sr,.fl-path,.fl-node{transition:none}.sr{opacity:1;transform:none}.glow:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){[data-view]{animation:none}.btn,.tabs button,a.sol,#insCards .card{transition:none}.btn:active,.tabs button:active{transform:none}a.sol:hover,#insCards .card:hover{transform:none}}
 </style>
 
@@ -525,14 +525,14 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
         <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual fund investing<small>How we choose and manage funds for you</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund ratings</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="/portfolio-check/">Check your portfolio<small>How the funds you hold rate</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <div class="dd" id="ddPlan"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Plan &amp; learn</button>
         <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI, tax</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
       <div class="dd" id="ddAbout"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">About</button>
         <div class="ddmenu"><a href="#about">About Aeterna<small>Who we are and how we work</small></a><a href="#contact">Contact<small>Call, WhatsApp or write to us</small></a><a href="/disclosures/">Disclosures<small>How we are paid, and our registrations</small></a></div></div>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
-    <a class="brand" href="#home" aria-label="Aeterna Wealth home">
+    <a class="brand" href="/" aria-label="Aeterna Wealth home">
       <svg width="32" height="31" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
       <b>Aeterna Wealth</b>
     </a>
@@ -749,12 +749,13 @@ function capNote(f){const fs=(f.flags||'').split(', ').filter(x=>CAPF[x]);if(!fs
   const mb=(f.mandate_breaches||'').split('; ').filter(Boolean).map(x=>{const m=x.match(/^(\w+) (\d+) \(needs >=(\d+)\)/);return m?`${m[2]}% in ${m[1]==='equity'?'equities':m[1]+' caps'}; SEBI requires at least ${m[3]}%`:x}).join(', ');
   const hm=f.holdings_month||S.meta.holdings_month;
   const why=fs.map(x=>x==='mandate_breach'&&mb?mb+(hm?` (${mon(hm)} portfolio)`:''):FL[x]).join('; ');
+  if(f.tier_before_cap&&fs.includes('mandate_breach'))return `Its score puts it in ${f.tier_before_cap}, but it is rated ${f.tier}, one step lower, because its portfolio was outside SEBI's limits for its category in two consecutive monthly portfolios: ${mb||'outside SEBI category limits'}.`;
   const cap=fs.some(x=>x==='chronic_underperformer'||x==='risk_without_reward')?'C':'B';
   return `Capped at ${cap}: ${why}.`}
 function watchNote(f){if(!(f.flags||'').split(', ').includes('mandate_watch'))return'';
   const mb=(f.mandate_breaches||'').split('; ').filter(Boolean).map(x=>{const m=x.match(/^(\w+) (\d+) \(needs >=(\d+)\)/);return m?`${m[2]}% in ${m[1]==='equity'?'equities':m[1]+' caps'}; SEBI requires at least ${m[3]}%`:x}).join(', ');
   const hm=f.holdings_month||S.meta.holdings_month;
-  return `Watch: ${mb||'outside SEBI category limits'}${hm?` (${mon(hm)} portfolio)`:''}. Not capped yet: the rating is capped at B only if this repeats in the next monthly portfolio.`}
+  return `Watch: ${mb||'outside SEBI category limits'}${hm?` (${mon(hm)} portfolio)`:''}. No effect on the rating yet: if this repeats in the next monthly portfolio, the fund is rated one step lower.`}
 const tierT=f=>{const c=capNote(f);return `<span class="tier ${tcls(f.tier)}" title="${esc((f.score!=null?'Score '+num(f.score,1)+' of 100. ':'')+(c||'Track-record rating'))}">${esc(f.tier&&f.tier!=='Unrated'?f.tier:'–')}</span>`};
 const FL={chronic_underperformer:'Persistent underperformer',risk_without_reward:'Falls more than its index without extra return',turnaround_unproven:'Recent turnaround, long record weak',deep_drawdown:'Deeper falls than peers',mandate_breach:'Outside SEBI category limits',mandate_watch:'Outside SEBI category limits this month',closet_indexer:'Close to its index without extra return',recent_underperformance:'Weak last 12 months',trails_liquid_after_tax:'Behind liquid funds after tax (3Y)',credit_event:'Sharp one-day fall vs peers'};
 const flags=f=>(f.flags||'').split(', ').filter(Boolean).map(x=>FL[x]||x);
@@ -1142,7 +1143,7 @@ function drawStrip(cat){
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
   $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/><circle class="ring-dot" cx="44" cy="44" r="36" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
     <div><b><span data-n="${ahead}" data-f="int">${ahead}</span><small> of ${F.length}</small></b><span>${esc(cat)} funds beat the index over 3 years</span></div></div>
-  <dl class="ss-rows"><div><dt>Typical fund</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'level':spct(med)+' a year'}</dd></div>
+  <dl class="ss-rows"><div><dt>Typical fund (median)</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'In line with the index':spct(med)+' a year'}</dd></div>
     <div><dt>Furthest ahead</dt><dd class="pos">${spct(best.excess_3Y)}</dd></div><div><dt>Furthest behind</dt><dd class="neg">${spct(worst.excess_3Y)}</dd></div></dl>
   <a class="btn" href="#ratings" id="stripMore">See the ${esc(cat)} table</a><p class="muted" style="font-size:12px">Past returns against the index, not a forecast.</p>`;
   $('#stripMore').onclick=()=>{S.cat=cat};motion($('#stripSum'));
@@ -1170,7 +1171,7 @@ const seen=typeof IntersectionObserver==='function'&&!RM?new IntersectionObserve
 function motion(root){if(!seen||!root)return;
   $$('[data-n],[data-fig]',root).forEach(el=>{if(!el.dataset.mo){el.dataset.mo=1;seen.observe(el)}});
   $$('#pfVis,#gapRows,#catGrid,#flow,#howCard,.why',root).concat(root.matches&&root.matches('#catGrid')?[root]:[]).forEach(el=>{el.classList.remove('in');el.classList.add('anim');seen.observe(el)});
-  $$('section.band>.wrap',root).forEach(el=>{if(!el.classList.contains('rv')){el.classList.add('rv');seen.observe(el)}})}
+  $$('section.band>.wrap',root).forEach(el=>{if(!el.classList.contains('sr')){el.classList.add('sr');seen.observe(el)}})}
 if(matchMedia('(hover:hover) and (pointer:fine)').matches)document.addEventListener('pointermove',e=>{const g=e.target.closest&&e.target.closest('.glow');if(!g)return;const r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true});
 
 /* the investing flow: you -> one plan -> where the money goes -> yearly review. A drawing on wide screens, steps on a phone. */
@@ -1234,7 +1235,9 @@ async function methodV5(){
   <tr><td class="l"><b>B</b></td><td class="l">The middle of the group</td><td class="l">The middle of the group</td></tr>
   <tr><td class="l"><b>C</b></td><td class="l">The bottom 30% of the group (below 65)</td><td class="l">The bottom 30%, or held back by a serious red flag</td></tr>
   <tr><td class="l"><b>Unrated</b></td><td class="l" colspan="2">Less than 3 years of history (1 year for index, overnight, liquid and money-market funds), or a NAV that has stopped updating</td></tr></tbody></table></div>
-  <p style="margin-top:12px;max-width:90ch">For equity funds, a 3-year record behind the index is shown on the fund page ("behind its index over 3 years, after costs") but no longer holds a fund back: in our test that cap lowered results in every equity category, because the funds it removed were often the ones about to do well. The same goes for the statistical red flags (persistent underperformance, falls more without extra return, deeper falls than peers): they are shown as notes. A portfolio outside SEBI's limits in two consecutive months still caps an equity fund at B, and a qualitative flag (a manager leaving, a merger, SEBI action) turns A and A+ into Watch.</p>`;
+  <p style="margin-top:12px;max-width:90ch">For equity funds, a 3-year record behind the index is shown on the fund page ("behind its index over 3 years, after costs") but no longer holds a fund back: in our test that cap lowered results in every equity category, because the funds it removed were often the ones about to do well. The same goes for the statistical red flags (persistent underperformance, falls more without extra return, deeper falls than peers): they are shown as notes. A portfolio outside SEBI's limits in two consecutive months moves an equity fund one rating lower (A+ to A, A to B, B to C), and the fund page says why; holdings missing from AMFI's market-cap list, such as recent listings, count towards the rule, so a gap in the data does not cause it. A qualitative flag (a manager leaving, a merger, SEBI action) turns A and A+ into Watch.</p>
+  <h3 style="margin-top:22px">When ratings change</h3>
+  <p style="margin-top:8px;max-width:90ch">Ratings are revised on the 11th of each month. By the 10th, fund houses have published the previous month's portfolios, so the review uses each fund's track record up to that day and its latest portfolio. They are revised once more on the 16th, to take in portfolios that fund houses published late. Between those dates the site updates every weekday morning with the latest NAVs, returns and period rankings, but the ratings stay as last set. A fund's rating history shows its rating at each month-end.</p>`;
   const sec=$('#mt-backtest');S.btCat=S.btCat||'Flexi Cap';S.btP=S.btP||'post';
   const draw=()=>{const d=C[S.btCat],P=d[S.btP],mx=Math.max(.8,...['A+','A','B','C'].map(t=>P.tiers[t]||0),P.all_1y)+.05;
     sec.innerHTML=`<h2>Did it work? Tested category by category</h2>
@@ -1259,7 +1262,7 @@ async function methodV5(){
 
 /* motion on the other views: blocks below the fold ease in once, large figures count up */
 function motionView(root){if(!seen||!root)return;
-  $$('.card,.tablewrap,.ab-facts,.ab-sec,.sol-row,.note,figure',root).forEach(el=>{if(el.classList.contains('rv')||el.closest('.rv'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('rv');seen.observe(el)}});
+  $$('.card,.tablewrap,.ab-facts,.ab-sec,.sol-row,.note,figure',root).forEach(el=>{if(el.classList.contains('sr')||el.closest('.sr'))return;if(el.getBoundingClientRect().top>innerHeight*.92){el.classList.add('sr');seen.observe(el)}});
   $$('.big-fig,.ab-facts b',root).forEach(el=>{if(!el.dataset.mo&&/^\D*[\d,]*\.?\d/.test(el.textContent.trim())){el.dataset.mo=1;el.dataset.fig='';seen.observe(el)}});
   $$('a.card,a.sol',root).forEach(el=>el.classList.add('glow'))}
 const benchName=b=>b.replace(/NIFTY ?/g,'Nifty ').replace(/\s+/g,' ').replace(/\b([A-Z]{4,})\b/g,w=>w[0]+w.slice(1).toLowerCase()).replace('Largemidcap','LargeMidcap');
@@ -1438,6 +1441,15 @@ function rangeBlock(f){
   const lo=Math.floor(Math.min(-0.05,v[0])/st)*st,hi=Math.ceil(Math.max(0.25,v[4])/st)*st,W=nar?380:760,H=126,L=nar?14:24,R=nar?14:24,x=e=>L+(e-lo)/(hi-lo)*(W-L-R),y=50,ay=98;
   const lab=(e,t,anchor,yy)=>`<text x="${x(e)}" y="${yy}" text-anchor="${anchor}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-2)">${t}</text>`;
   const ticks=[];for(let t=lo;t<=hi+1e-9;t+=st)ticks.push(+t.toFixed(4));
+  // worst / best labels: under the bar's two ends when there is room; beside the whiskers when the range is narrow;
+  // one combined label as a last resort, so the two never overlap
+  const txt=(X,t,a,yy)=>`<text x="${X}" y="${yy}" text-anchor="${a}" font-size="12" font-family="IBM Plex Mono,monospace" fill="var(--ink-2)">${t}</text>`;
+  const ends=()=>{const tw='worst '+pct(v[0]),tb='best '+pct(v[4]),cw=7.4,w1=tw.length*cw,w2=tb.length*cw,x0=x(v[0]),x4=x(v[4]);
+    if(x0+w1+12<=x4-w2)return txt(Math.max(2,x0),tw,'start',y+32)+txt(Math.min(W-2,x4),tb,'end',y+32);
+    if(x0-8-w1>=2&&x4+8+w2<=W-2)return txt(x0-8,tw,'end',y+4)+txt(x4+8,tb,'start',y+4);
+    if(x0-8-w1>=2)return txt(x0-8,tw,'end',y+4)+txt(Math.min(W-2,x4),tb,'end',y+32);
+    if(x4+8+w2<=W-2)return txt(Math.max(2,x0),tw,'start',y+32)+txt(x4+8,tb,'start',y+4);
+    const t=tw+' · '+tb,w=t.length*cw,c=Math.min(Math.max((x0+x4)/2,w/2+2),W-w/2-2);return txt(c,t,'middle',y+32)};
   return `<h2 style="margin-top:40px;font-size:26px">Range of past outcomes</h2>
   <p class="muted" style="margin-top:8px">Every 3-year holding period since ${dmy(f.hist3y_from)} (${f.hist3y_n} weekly start dates), as a yearly return. History, not a forecast.</p>
   <div class="card range" style="margin-top:14px"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Range of 3-year returns, on a scale from ${pct(lo,0)} to ${pct(hi,0)} a year">
@@ -1447,7 +1459,7 @@ function rangeBlock(f){
    <line x1="${x(v[0])}" x2="${x(v[4])}" y1="${y}" y2="${y}" stroke="var(--teal-soft)" stroke-width="6" stroke-linecap="round"/>
    <rect x="${x(v[1])}" y="${y-12}" width="${x(v[3])-x(v[1])}" height="24" rx="4" fill="var(--teal)" opacity=".85"/>
    <line x1="${x(v[2])}" x2="${x(v[2])}" y1="${y-18}" y2="${y+18}" stroke="var(--brass)" stroke-width="3"/>
-   ${lab(v[0],'worst '+pct(v[0]),'start',y+32)}${lab(v[4],'best '+pct(v[4]),'end',y+32)}${lab(v[2],'typical '+pct(v[2]),'middle',y-24)}
+   ${ends()}${lab(v[2],'typical '+pct(v[2]),'middle',y-24)}
   </svg><div class="row" style="gap:24px;margin-top:6px;font-size:14px"><span>Bad case (worst 10%): <b class="mono">${pct(v[1])}</b></span><span>Good case (best 10%): <b class="mono">${pct(v[3])}</b></span><span>Periods with a gain: <b class="mono">${pct(f.hist3y_pos,0)}</b></span><span>Above 7% a year: <b class="mono">${pct(f.hist3y_gt7,0)}</b></span></div></div>`;
 }
 function portfolioBlock(f,top){
@@ -1542,7 +1554,7 @@ function staticPages(){
 <div class="tablewrap" style="margin-top:14px"><table class="mtab"><thead><tr><th class="l">Red flag</th><th class="l">When</th><th class="l">Effect</th></tr></thead><tbody>
 <tr><td class="l">Persistent underperformer</td><td class="l">Behind its index in most 3-year windows, by 2% or more at the median, and in the bottom 40% of peers</td><td class="l">Capped at C</td></tr>
 <tr><td class="l">Falls more without extra return</td><td class="l">Took more than 110% of the market's falls with a negative information ratio</td><td class="l">Capped at C</td></tr>
-<tr><td class="l">Outside SEBI limits</td><td class="l">Portfolio breaks its category rules in two consecutive months</td><td class="l">Capped at B</td></tr>
+<tr><td class="l">Outside SEBI limits</td><td class="l">Portfolio breaks its category rules in two consecutive months</td><td class="l">One rating lower (equity), with the reason shown</td></tr>
 <tr><td class="l">Close to its index</td><td class="l">Low active share and no 3-year return over the index</td><td class="l">Capped at B</td></tr>
 <tr><td class="l">Deeper falls than peers</td><td class="l">Worst 5-year fall more than 5 points below the peer group's 10th percentile</td><td class="l">Capped at B</td></tr>
 <tr><td class="l">Sharp one-day fall vs peers (debt)</td><td class="l">A day in the last 5 years far below its category median, not explained by interest rates (shown with the date on the fund page)</td><td class="l">Capped at B</td></tr>
@@ -1638,6 +1650,10 @@ function route(){
 }
 $$('.dd').forEach(d=>{const b=d.querySelector('.ddbtn');b.onclick=e=>{$$('.dd').forEach(x=>{if(x!==d){x.classList.remove('open');x.querySelector('.ddbtn').setAttribute('aria-expanded','false')}});const o=d.classList.toggle('open');b.setAttribute('aria-expanded',o)}});
 document.addEventListener('click',e=>{$$('.dd').forEach(d=>{if(!d.contains(e.target)){d.classList.remove('open');d.querySelector('.ddbtn').setAttribute('aria-expanded','false')}})});
+// the logo always lands on the top of the home page, also when already on it
+$('a.brand').addEventListener('click',e=>{if(location.pathname!=='/')return;e.preventDefault();
+  if(location.hash&&location.hash!=='#home'){history.pushState(null,'','/');route()}
+  window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
 load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});

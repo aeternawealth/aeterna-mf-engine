@@ -1,60 +1,58 @@
-Aeterna MF Engine run 2026-11-11 05:48
+Aeterna MF Engine run 2026-11-12 04:04
 [1/7] Universe (AMFI NAVAll)
-  2741 equity + index schemes (growth, Direct & Regular)
-  Month-end AUM (30 Oct 2026): 1357/1380 schemes
-  AUM: 1357 month-end, 5 quarterly-average fallback
+  2743 equity + index schemes (growth, Direct & Regular)
+  Month-end AUM (30 Oct 2026): 1357/1381 schemes
+  AUM: 1357 month-end, 9 quarterly-average fallback
 [3/7] Benchmarks (Nifty TRI)
-  TRI: 145 indices, 2013-01-01 -> 2026-11-09
+  TRI: 145 indices, 2013-01-01 -> 2026-11-11
 [4/7] NAV history (mfapi)
-  NAV 100/2764
-  NAV 200/2764
-  NAV 300/2764
-  NAV 400/2764
-  NAV 500/2764
-  NAV 600/2764
-  NAV 700/2764
-  NAV 800/2764
-  NAV 900/2764
-  NAV 1000/2764
-  NAV 1100/2764
-  NAV 1200/2764
-  NAV 1300/2764
-  NAV 1400/2764
-  NAV 1500/2764
-  NAV 1600/2764
-  NAV 1700/2764
-  NAV 1800/2764
-  NAV 1900/2764
-  NAV 2000/2764
-  NAV 2100/2764
-  NAV 2200/2764
-  NAV 2300/2764
-  NAV 2400/2764
-  NAV 2500/2764
-  NAV 2600/2764
-  NAV 2700/2764
-  2764 NAV histories (104 of them liquid funds, the arbitrage yardstick)
-  bond-fund yardstick: Direct 3615 days, Regular 5376 days (86 plans)
-  liquid-fund yardstick: Direct 5372 days, Regular 5377 days
+  NAV 100/2766
+  NAV 200/2766
+  NAV 300/2766
+  NAV 400/2766
+  NAV 500/2766
+  NAV 600/2766
+  NAV 700/2766
+  NAV 800/2766
+  NAV 900/2766
+  NAV 1000/2766
+  NAV 1100/2766
+  NAV 1200/2766
+  NAV 1300/2766
+  NAV 1400/2766
+  NAV 1500/2766
+  NAV 1600/2766
+  NAV 1700/2766
+  NAV 1800/2766
+  NAV 1900/2766
+  NAV 2000/2766
+  NAV 2100/2766
+  NAV 2200/2766
+  NAV 2300/2766
+  NAV 2400/2766
+  NAV 2500/2766
+  NAV 2600/2766
+  NAV 2700/2766
+  2766 NAV histories (104 of them liquid funds, the arbitrage yardstick)
+  84 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  bond-fund yardstick: Direct 3617 days, Regular 5378 days (86 plans)
+  liquid-fund yardstick: Direct 5373 days, Regular 5378 days
 [5/7] Holdings for 2026-10
-  daily mode: re-using holdings of 2026-09
+  daily mode: re-using holdings of 2026-10
 [6/7] Metrics, protocols, ranking committee
-  metrics 200/2741
-  metrics 400/2741
-  metrics 600/2741
-  metrics 800/2741
-  metrics 1000/2741
-  metrics 1200/2741
-  metrics 1400/2741
-  metrics 1600/2741
-  metrics 1800/2741
-  metrics 2000/2741
-  metrics 2200/2741
-  metrics 2400/2741
-  metrics 2600/2741
-  rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
-  rating history: 1 of 1 months rated in 1.3 min
-  rating history: 36 months, 1151 funds
+  metrics 200/2743
+  metrics 400/2743
+  metrics 600/2743
+  metrics 800/2743
+  metrics 1000/2743
+  metrics 1200/2743
+  metrics 1400/2743
+  metrics 1600/2743
+  metrics 1800/2743
+  metrics 2000/2743
+  metrics 2200/2743
+  metrics 2400/2743
+  metrics 2600/2743
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                             A  A+    B   C  Unrated
 category                                                
@@ -70,7 +68,7 @@ Credit Risk                      8   0   10   6        0
 Dividend Yield                   0   2   12   4        6
 Dynamic Term                     9   5   18  12        2
 ELSS                             8   2   42  22        2
-Equity Savings                   8   3   17  10        8
+Equity Savings                   8   3   17  10       10
 Flexi Cap                       14   4   34  20       20
 Floating Rate                    6   2    9   7        0
 Focused                          0   8   30  16        2
@@ -83,7 +81,7 @@ Liquid                          13   8   28  19       17
 Long Term                        1   2    7   4        8
 Medium Term                      8   0   10   6        0
 Medium to Long Term              4   4   10   6        4
-Mid Cap                          4   2   34  16       10
+Mid Cap                          4   2   32  18       10
 Money Market                     9   4   21  12        8
 Multi Asset Allocation           4   4   14   8       44
 Multi Cap                        5   4   25  12       18

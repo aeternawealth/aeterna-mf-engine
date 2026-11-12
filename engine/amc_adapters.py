@@ -182,24 +182,36 @@ def hsbc(month: str) -> list[str]:
 
 
 def taurus(month: str) -> list[str]:
-    """taurusmutualfund.com/monthly-portfolio: a Drupal view filtered by year and month ids, read from its own dropdowns."""
+    """taurusmutualfund.com/monthly-portfolio: a Drupal view filtered by year and month ids, read from its own dropdowns.
+    File names carry the month, e.g. Taurus_Mid_Cap_Fund_Monthly_Portfolio_Report_Performance_September_2026.xlsx;
+    links can start with a space."""
     p = pd.Period(month)
     page = "https://taurusmutualfund.com/monthly-portfolio"
     r = requests.get(page, headers=UA, timeout=60)
     if not r.ok:
         return []
+    ids = {lab.strip().lower(): v for v, lab in re.findall(r'<option[^>]*value="(\d+)"[^>]*>([^<]+)</option>', r.text)}
+    y, mo = ids.get(str(p.year)), ids.get(p.strftime("%B").lower())
+    html = r.text
+    if y and mo:
+        q = requests.get(page, params={"field_monthly_portfolio_target_id": y, "field_month_target_id": mo}, headers=UA, timeout=60)
+        html = q.text if q.ok else html
+    tag = (p.strftime("%B") + "_" + str(p.year)).lower()
+    out = []
+    for l in re.findall(r'href="\s*([^"]+?\.(?:xlsx?|zip))\s*"', html, re.I):
+        if tag in l.lower():
+            out.append(l if l.startswith("http") else "https://taurusmutualfund.com" + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
 
-    def opt(name, label):
-        sel = re.search(r'<select[^>]*name="' + name + r'"[\s\S]*?</select>', r.text)
-        m = re.search(r'<option value="(\d+)"[^>]*>\s*' + re.escape(label) + r'\s*</option>', sel.group(0), re.I) if sel else None
-        return m.group(1) if m else None
 
-    y, mo = opt("field_monthly_portfolio_target_id", str(p.year)), opt("field_month_target_id", p.strftime("%B"))
-    if not (y and mo):
-        return []
-    q = requests.get(page, params={"field_monthly_portfolio_target_id": y, "field_month_target_id": mo}, headers=UA, timeout=60)
-    links = re.findall(r'href="([^"]+?\.(?:xlsx?|zip))"', q.text, re.I)
-    return [l if l.startswith("http") else "https://taurusmutualfund.com" + l for l in dict.fromkeys(links)]
+def _dbg(amc, label, text):
+    """with AETERNA_ADAPTER_DEBUG set (the probe workflow), keep what each step of an adapter received"""
+    import os
+    d = os.environ.get("AETERNA_ADAPTER_DEBUG")
+    if d:
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, f"adapter_{amc}.txt"), "a", encoding="utf-8") as fh:
+            fh.write(f"=== {label}\n{str(text)[:3000]}\n")
 
 
 def lic(month: str) -> list[str]:
@@ -216,12 +228,14 @@ def lic(month: str) -> list[str]:
     out = []
     for cat in ("Equity", "Hybrid", "ETFs & Index Funds"):
         r = s.post(base + "/downloads/portfolio-filter-options", data={"fund_category": cat, "filter": "category"}, timeout=60)
+        _dbg("lic", f"schemes {cat} {r.status_code}", r.text)
         for code, _name in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', r.text if r.ok else ""):
             if not code.strip():
                 continue
             name = s.post(base + "/downloads/portfolio-funds", data={"scheme_code": code}, timeout=60).text.strip()
             months = s.post(base + "/downloads/portfolio-filter-options",
                             data={"year": p.year, "filter": "year", "type": "monthly_portfolio", "scheme_code": code}, timeout=60).text
+            _dbg("lic", f"name/months {code}", name + " | " + months)
             mv = None
             for v, label in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', months):
                 if label.strip().lower() in (p.strftime("%B").lower(), p.strftime("%b").lower()) or v.strip() in (str(p.month), f"{p.month:02d}"):
@@ -231,6 +245,7 @@ def lic(month: str) -> list[str]:
                 continue
             files = s.post(base + "/downloads/portfolio-files",
                            data={"scheme_code": code, "fund_name": name, "type": "monthly_portfolio", "month": mv, "year": p.year}, timeout=60).text
+            _dbg("lic", f"files {code}", files)
             for l in re.findall(r'href="([^"]+?\.(?:xlsx?|zip))"', files, re.I):
                 out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
     return list(dict.fromkeys(out))
@@ -245,11 +260,13 @@ def sundaram(month: str) -> list[str]:
     s.headers.update(UA)
     page = s.get(base + "/Monthly-Fortnightly-Adhoc-Portfolios", timeout=60).text
     m = re.search(r'(/ajax/Modules_Disclosure_Monthly_Fortnightly_Adhoc_Portfolios,[^"\']+?\.ashx)', page)
+    _dbg("sundaram", "handler", m.group(1) if m else "not found; page bytes %d" % len(page))
     if not m:
         return []
     r = s.post(base + m.group(1) + "?_method=GetCategory&_session=no", data="Category=Monthly",
                headers={"Content-Type": "text/plain; charset=utf-8", "Referer": base + "/Monthly-Fortnightly-Adhoc-Portfolios"}, timeout=60)
     text = r.text.encode().decode("unicode_escape", errors="ignore") if r.ok else ""
+    _dbg("sundaram", f"GetCategory {r.status_code}", r.text)
     toks = (p.strftime("%B").lower(), p.strftime("%b").lower())
     out = []
     for l in re.findall(r'href=\\?["\']([^"\'\\]+?\.(?:xlsx?|zip))', text, re.I):

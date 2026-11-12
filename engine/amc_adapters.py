@@ -229,7 +229,7 @@ def lic(month: str) -> list[str]:
     for cat in ("Equity", "Hybrid", "ETFs & Index Funds"):
         r = s.post(base + "/downloads/portfolio-filter-options", data={"fund_category": cat, "filter": "category"}, timeout=60)
         _dbg("lic", f"schemes {cat} {r.status_code}", r.text)
-        for code, _name in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', r.text if r.ok else ""):
+        for code, _name in re.findall(r"""<option[^>]*value=["']([^"']*)["'][^>]*>([^<]+)</option>""", r.text if r.ok else ""):
             if not code.strip():
                 continue
             name = s.post(base + "/downloads/portfolio-funds", data={"scheme_code": code}, timeout=60).text.strip()
@@ -237,7 +237,7 @@ def lic(month: str) -> list[str]:
                             data={"year": p.year, "filter": "year", "type": "monthly_portfolio", "scheme_code": code}, timeout=60).text
             _dbg("lic", f"name/months {code}", name + " | " + months)
             mv = None
-            for v, label in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', months):
+            for v, label in re.findall(r"""<option[^>]*value=["']([^"']*)["'][^>]*>([^<]+)</option>""", months):
                 if label.strip().lower() in (p.strftime("%B").lower(), p.strftime("%b").lower()) or v.strip() in (str(p.month), f"{p.month:02d}"):
                     mv = v
                     break
@@ -246,7 +246,7 @@ def lic(month: str) -> list[str]:
             files = s.post(base + "/downloads/portfolio-files",
                            data={"scheme_code": code, "fund_name": name, "type": "monthly_portfolio", "month": mv, "year": p.year}, timeout=60).text
             _dbg("lic", f"files {code}", files)
-            for l in re.findall(r'href="([^"]+?\.(?:xlsx?|zip))"', files, re.I):
+            for l in re.findall(r"""href=["']\s*([^"']+?\.(?:xlsx?|zip))\s*["']""", files, re.I):
                 out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
     return list(dict.fromkeys(out))
 
@@ -263,8 +263,18 @@ def sundaram(month: str) -> list[str]:
     _dbg("sundaram", "handler", m.group(1) if m else "not found; page bytes %d" % len(page))
     if not m:
         return []
-    r = s.post(base + m.group(1) + "?_method=GetCategory&_session=no", data="Category=Monthly",
-               headers={"Content-Type": "text/plain; charset=utf-8", "Referer": base + "/Monthly-Fortnightly-Adhoc-Portfolios"}, timeout=60)
+    # the handler serves its own proxy script: read the parameter name GetCategory expects, then call it in the
+    # Ajax.NET wire format (one "name=value" per line), falling back to the AjaxPro JSON format
+    js = s.get(base + m.group(1), timeout=60).text
+    _dbg("sundaram", "proxy", js)
+    pm = re.search(r'GetCategory\s*[:=]\s*function\s*\(\s*([A-Za-z_]\w*)', js) or re.search(r'"GetCategory"\s*,\s*\{\s*"([^"]+)"', js)
+    pname = pm.group(1) if pm else "Category"
+    hdr = {"Referer": base + "/Monthly-Fortnightly-Adhoc-Portfolios"}
+    r = s.post(base + m.group(1) + "?_method=GetCategory&_session=no", data=f"{pname}=Monthly\r\n",
+               headers={**hdr, "Content-Type": "text/plain; charset=utf-8"}, timeout=60)
+    if "ajax_error" in r.text or not r.ok:
+        r = s.post(base + m.group(1), data='{"%s":"Monthly"}' % pname,
+                   headers={**hdr, "Content-Type": "text/plain; charset=utf-8", "X-AjaxPro-Method": "GetCategory"}, timeout=60)
     text = r.text.encode().decode("unicode_escape", errors="ignore") if r.ok else ""
     _dbg("sundaram", f"GetCategory {r.status_code}", r.text)
     toks = (p.strftime("%B").lower(), p.strftime("%b").lower())

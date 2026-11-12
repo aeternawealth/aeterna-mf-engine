@@ -108,6 +108,16 @@ PAGE_JS = r"""async () => {
       if (a.width && c.width && a.left < c.right - 1 && c.left < a.right - 1 && a.top < c.bottom - 1 && c.top < a.bottom - 1) out.overlap.push(t[i][1] + ' / ' + t[j][1]);
     }
   }
+  // P6 ragged right: a block that stops well short of the column its siblings use (left-aligned, not in a grid/flex row)
+  out.short = [];
+  for (const e of document.querySelectorAll('main p, main .card, main .note, main .lede, main .tablewrap, main figure, main .ss')) {
+    const par = e.parentElement; if (!par || e.closest('header,footer,nav,[hidden],.hero-top,.prose,details,.ddmenu')) continue;
+    const ps = getComputedStyle(par); if (/(flex|grid)/.test(ps.display)) continue;
+    const cs = getComputedStyle(e); if (cs.display === 'inline' || cs.position === 'absolute' || cs.textAlign === 'center' || cs.marginLeft !== '0px' && cs.marginLeft === cs.marginRight) continue;
+    const col = par.clientWidth - parseFloat(ps.paddingLeft) - parseFloat(ps.paddingRight), b = e.getBoundingClientRect();
+    if (col < 600 || b.width < 40 || (e.tagName === 'P' && (e.innerText || '').length < 120)) continue;
+    if (b.width < col * 0.85) out.short.push((e.className || e.tagName) + ' ' + Math.round(b.width) + '/' + Math.round(col) + 'px: ' + (e.innerText || '').trim().slice(0, 50).replace(/\s+/g, ' '));
+  }
   const txt = document.querySelector('main') ? document.querySelector('main').innerText : '';
   for (const w of [/\bnan\b/i, /\bundefined\b/, /\[object/, /\bNone\b/]) { const m = txt.match(w); if (m) out.text.push(txt.slice(Math.max(0, m.index - 40), m.index + 30).replace(/\s+/g, ' ')); }
   return out;
@@ -115,7 +125,9 @@ PAGE_JS = r"""async () => {
 
 
 def pick_pages():
-    pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/", "/portfolio-check/", "/mutual-funds/dynamic-term/canara-robeco-dynamic-term-fund-direct/"]
+    pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/", "/portfolio-check/", "/mutual-funds/dynamic-term/canara-robeco-dynamic-term-fund-direct/",
+             "/mutual-funds/mid-cap/", "/mutual-funds/liquid/", "/mutual-funds/amc/", "/insights/", "/invest/mutual-funds/", "/invest/pms/", "/calculators/sip/",
+             "/#method", "/#about", "/#ratings", "/#compare", "/#contact"]
     f = json.loads((ROOT / "site" / "data" / "funds.json").read_text()) if (ROOT / "site" / "data" / "funds.json").exists() else []
     urls = json.loads((DIST / "data" / "fund-urls.json").read_text()) if (DIST / "data" / "fund-urls.json").exists() else {}
     flagged = [x for x in f if x.get("flags") and str(x["code"]) in urls][:3]
@@ -162,6 +174,8 @@ def page_checks():
                         say("FAIL", "P2", f"{tag}: page scrolls sideways")
                     if res["overlap"]:
                         say("FAIL", "P3", f"{tag}: overlapping chart labels: {'; '.join(res['overlap'][:3])}")
+                    if res.get("short") and w >= 1000:
+                        say("FAIL", "P6", f"{tag}: blocks that stop short of the column: {' | '.join(res['short'][:4])}")
                     if res["text"]:
                         say("FAIL", "P4", f"{tag}: suspicious text: {' | '.join(res['text'][:2])}")
                     if errs:

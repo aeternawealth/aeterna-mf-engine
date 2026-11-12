@@ -728,6 +728,10 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 <script>
 (()=>{
 const $=s=>document.querySelector(s), $$=(s,root)=>[...(root||document).querySelectorAll(s)];
+/* enquiries go to the owner's Google Sheet (tools/lead_capture.gs); empty = WhatsApp only */
+const LEAD_URL='';
+function sendLead(d){if(!LEAD_URL)return Promise.resolve(false);d.page=location.pathname+location.hash;d.source=document.referrer||'direct';
+  return fetch(LEAD_URL,{method:'POST',mode:'no-cors',body:new URLSearchParams(d)}).then(()=>true,()=>false)}
 const S={funds:[],byCode:new Map(),meta:{},holdings:null,cat:'Flexi Cap',plan:'Regular',hz:'Overall',q:'',cmp:[]};
 try{const c=JSON.parse(localStorage.getItem('aw_cmp')||'[]');if(Array.isArray(c))S.cmp=c.slice(0,4)}catch(e){}
 const saveCmp=()=>{try{localStorage.setItem('aw_cmp',JSON.stringify(S.cmp))}catch(e){}};
@@ -1599,21 +1603,30 @@ function staticPages(){
   <p class="lede" style="margin-top:12px">Tell us a little about what you're planning. We'll reply within one working day, usually on WhatsApp.</p>
   <div class="grid g2" style="margin-top:28px;align-items:start">
     <form class="card stack cf" id="cform" style="gap:16px">
-      <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Name</span><input id="cn" required autocomplete="name"></label><label class="field"><span>Phone (optional)</span><input id="cp" type="tel" autocomplete="tel" inputmode="tel"></label></div>
+      <label class="field"><span>Name</span><input id="cn" required autocomplete="name"></label>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px"><label class="field"><span>Phone</span><input id="cp" type="tel" autocomplete="tel" inputmode="tel"></label><label class="field"><span>Email</span><input id="ce" type="email" autocomplete="email"></label></div>
+      <label aria-hidden="true" style="position:absolute;left:-9999px"><input id="cw" tabindex="-1" autocomplete="off"></label>
       <label class="field"><span>What are you planning for?</span><select id="cg"><option>Growing my wealth</option><option>Retirement</option><option>Children's education</option><option>Buying a home</option><option>Regular income</option><option>Saving tax</option><option>Reviewing what I already hold</option><option>Something else</option></select></label>
       <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label class="field"><span>Roughly how much?</span><select id="ca"><option>Not sure yet</option><option>Under ₹10 lakh</option><option>₹10–50 lakh</option><option>₹50 lakh–₹1 crore</option><option>₹1–5 crore</option><option>Above ₹5 crore</option><option>A monthly SIP</option></select></label>
         <label class="field"><span>For how long?</span><select id="ch"><option>Not sure yet</option><option>Under 3 years</option><option>3–5 years</option><option>5–10 years</option><option>10 years or more</option></select></label></div>
       <div class="field"><span>Interested in</span><div class="checks" id="ci">${['Mutual funds','PMS','AIFs','Bonds','Unlisted shares','Tax-aware planning','Portfolio review','Insurance'].map(x=>`<label><input type="checkbox" value="${x}">${x}</label>`).join('')}</div></div>
       <label class="field"><span>Anything else? (optional)</span><textarea id="cm" rows="3"></textarea></label>
-      <button class="btn primary" type="submit" style="justify-content:center">Continue on WhatsApp</button>
-      <p class="muted" style="font-size:12.5px">Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site. Prefer email? Write to contact@aeternawealth.com.</p><p id="cout" hidden></p></form>
+      <button class="btn primary" type="submit" style="justify-content:center">${LEAD_URL?'Send':'Continue on WhatsApp'}</button>
+      <p class="muted" style="font-size:12.5px">${LEAD_URL?'Leave a phone number or email so we can reply. We use your details only to reply to you and never share them.':'Opens WhatsApp with your message ready to send to +91 85959 93600. Nothing is stored on this site.'} Prefer email? Write to contact@aeternawealth.com.</p><p id="cout" hidden></p></form>
     <div class="stack">${[['Phone and WhatsApp','+91 85959 93600'],['Email','contact@aeternawealth.com'],['Office','B-5/7, 2nd Floor, Safdarjung Enclave, Africa Avenue Marg, New Delhi 110029']].map(([k,v])=>`<div class="card"><div class="muted" style="font-size:13px">${k}</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">${v}</b><button class="copy" type="button" data-v="${v}">Copy</button></div></div>`).join('')}
       <div class="card"><div class="muted" style="font-size:13px">Already a client?</div><div class="row" style="justify-content:space-between;margin-top:4px"><b style="font-weight:500">See your holdings and statements</b><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div>
       <div class="card"><div class="muted" style="font-size:13px">Follow us</div><div class="row" style="gap:16px;margin-top:6px"><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a><a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a><a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></div></div></div>
   </div>`;
   $('#cform').onsubmit=e=>{e.preventDefault();const ints=$$('#ci input:checked').map(i=>i.value);
     const t=[`Hello Aeterna, I'm ${$('#cn').value.trim()}.`,`Planning for: ${$('#cg').value}.`,`Amount: ${$('#ca').value}. Time frame: ${$('#ch').value}.`,ints.length?`Interested in: ${ints.join(', ')}.`:'',$('#cp').value.trim()?`My number: ${$('#cp').value.trim()}.`:'',$('#cm').value.trim()].filter(Boolean).join('\n');
-    const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;o.innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a> <span class="muted" style="font-size:13px">If WhatsApp doesn't open, message us on +91 85959 93600.</span>`};
+    const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;
+    const wa=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a> <span class="muted" style="font-size:13px">If WhatsApp doesn't open, message us on +91 85959 93600.</span>`;
+    if(!LEAD_URL){o.innerHTML=wa;return}
+    const ph=$('#cp').value.trim(),em=$('#ce').value.trim();
+    if(!ph&&!em){o.innerHTML='<span style="color:var(--neg,#b42318)">Please add a phone number or email so we can reply.</span>';$('#cp').focus();return}
+    const b=$('#cform button[type=submit]');b.disabled=true;b.textContent='Sending…';
+    sendLead({name:$('#cn').value.trim(),phone:ph,email:em,interest:[$('#cg').value,$('#ca').value,$('#ch').value,ints.join(', ')].filter(Boolean).join(' · '),message:$('#cm').value.trim(),website:$('#cw').value})
+     .then(ok=>{b.textContent=ok?'Sent':'Send';b.disabled=ok;o.innerHTML=ok?`<b style="font-weight:500">Thank you. We'll reply within one working day.</b><br><span class="muted" style="font-size:13px">In a hurry? Message us on WhatsApp as well.</span><div style="margin-top:8px">${wa}</div>`:`Sorry, that didn't go through. Please message us on WhatsApp instead.<div style="margin-top:8px">${wa}</div>`})};
   $$('.copy').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.v).then(()=>{b.textContent='Copied'},()=>{b.textContent='Select and copy'})});
   $('#discPage').innerHTML=`<div class="eyebrow">Disclosures</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:10px">Disclosures</h1>
   <h3>Registration</h3><p>Aeterna Wealth Private Limited is registered with the Association of Mutual Funds in India as a mutual fund distributor, ARN-317889. We are not registered with SEBI as an investment adviser or research analyst.</p>

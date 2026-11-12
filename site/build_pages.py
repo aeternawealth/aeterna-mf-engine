@@ -189,11 +189,11 @@ def calculator_pages(B, urls, calc_js):
 <div class="tool" id="calc" style="margin-top:22px"><div class="card stack">{c['inputs']()}</div>
 <div class="stack"><div class="out" id="cOut"></div><div class="card"><p id="cTxt" style="font-size:14.5px"></p></div><div class="card cc" id="cChart"></div><div class="tablewrap" id="cTbl" tabindex="0"></div></div></div>
 <noscript><p class="note">This calculator needs JavaScript; the worked example below shows the method.</p></noscript>
-<h2 style="font-size:26px;margin-top:40px">How it is calculated</h2><p style="margin-top:10px;max-width:75ch">{c['how']}</p>
-<h2 style="font-size:24px;margin-top:28px">Worked example</h2><div style="margin-top:10px;max-width:75ch">{c['example']()}</div>
+<h2 style="font-size:26px;margin-top:40px">How it is calculated</h2><p style="margin-top:10px">{c['how']}</p>
+<h2 style="font-size:24px;margin-top:28px">Worked example</h2><div style="margin-top:10px">{c['example']()}</div>
 {'<p style="margin-top:18px"><a class="btn primary" href="/#tools-sipreal">Test a SIP on real fund NAVs</a></p>' if c['id'] in ('sip', 'lumpsum') else ''}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>' for q, a in c['faq'])}
-<p class="muted" style="font-size:12.5px;margin-top:22px;max-width:90ch">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Talk to us before acting on a tax estimate.</p>
+<p class="muted" style="font-size:12.5px;margin-top:22px">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Talk to us before acting on a tax estimate.</p>
 <p style="margin-top:22px;font-size:14.5px">More calculators: {others}</p>
 </div></section>
 <script>{calc_js}{JS_RT}{c['js']};run();</script>"""

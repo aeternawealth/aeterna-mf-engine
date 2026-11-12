@@ -27,7 +27,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:500;line-height:1.12;letter-sp
 h1{font-size:clamp(36px,5.2vw,62px);letter-spacing:-.022em;line-height:1.04}
 h2{font-size:clamp(28px,3.6vw,42px)}
 h3{font-size:20px}
-p{margin:0}
+p{margin:0;text-wrap:pretty}
 .wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 .mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .eyebrow{font:500 12px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
@@ -196,7 +196,7 @@ input[type=search]{flex:1 1 220px;max-width:340px}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
 .seg button{border:0;background:none;padding:9px 13px;cursor:pointer;font-size:14px;color:var(--ink-2)}
 .seg button[aria-pressed="true"]{background:var(--teal);color:var(--paper)}
-.note{border:1px solid color-mix(in srgb,var(--brass) 45%,var(--rule));background:color-mix(in srgb,var(--brass) 7%,var(--surface));padding:12px 16px;border-radius:var(--r);color:var(--ink-2);font-size:14px;max-width:90ch}
+.note{border:1px solid color-mix(in srgb,var(--brass) 45%,var(--rule));background:color-mix(in srgb,var(--brass) 7%,var(--surface));padding:12px 16px;border-radius:var(--r);color:var(--ink-2);font-size:14px}
 /* fund page */
 .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 28px}
 .kv div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--rule);font-size:14px}
@@ -247,7 +247,7 @@ details.faq{border-bottom:1px solid var(--rule);padding:14px 0}
 details.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
 details.faq summary::after{content:"+";font:500 18px var(--f-mono);color:var(--teal)}
 details.faq[open] summary::after{content:"–"}
-details.faq p{margin-top:8px;color:var(--ink-2);max-width:80ch}
+details.faq p{margin-top:8px;color:var(--ink-2)}
 .checks{display:flex;flex-wrap:wrap;gap:8px}
 .checks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--rule);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px;background:var(--surface)}
 .checks input,.cf .checks input{accent-color:var(--teal);width:auto;padding:0;border:0;margin:0;flex:none}
@@ -498,17 +498,17 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .rh-tip{margin-top:10px;font-size:14px;color:var(--ink-2);min-height:44px}.rh-tip b{color:var(--ink);margin-right:6px}
 .rh-tip .tier-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 6px 0 2px;vertical-align:0}
 .rh-why{display:block;margin-top:4px;color:var(--ink)}
-.rh-list{margin:8px 0 0;padding-left:20px;display:grid;gap:8px;max-width:90ch;color:var(--ink-2);font-size:14.5px}.rh-list b{color:var(--ink);font-weight:500}
+.rh-list{margin:8px 0 0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2);font-size:14.5px}.rh-list b{color:var(--ink);font-weight:500}
 @media (prefers-reduced-motion:reduce){.rh-line,.rh-dot{animation:none}}
 
 /* review status on fund pages */
-.rv{padding:16px 18px}.rv p{margin-top:6px;font-size:14.5px;color:var(--ink-2);max-width:90ch}
+.rv{padding:16px 18px}.rv p{margin-top:6px;font-size:14.5px;color:var(--ink-2)}
 .rv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rv-h b{font-weight:600}.rv-how{font-size:13.5px}
 .rv-dot{width:10px;height:10px;border-radius:50%;background:var(--t-u)}
 .rv-ap .rv-dot{background:var(--t-ap);box-shadow:0 0 10px rgba(var(--glow),.8)}.rv-a .rv-dot{background:var(--t-a)}.rv-due .rv-dot{background:var(--t-b)}.rv-now .rv-dot{background:var(--bad)}
 .rv-ap{border-color:color-mix(in srgb,var(--t-ap) 45%,var(--rule))}.rv-due{border-color:color-mix(in srgb,var(--t-b) 40%,var(--rule))}.rv-now{border-color:color-mix(in srgb,var(--bad) 50%,var(--rule))}
 .mode{display:inline-block;font:500 12.5px var(--f-mono);padding:3px 9px;border-radius:999px;border:1px solid var(--rule);white-space:nowrap}.mode-n{color:var(--teal);border-color:color-mix(in srgb,var(--teal) 45%,var(--rule))}.mode-f{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 55%,var(--rule))}
-.mt-why{margin-top:14px;display:grid;gap:10px;max-width:90ch}.mt-why p{color:var(--ink-2)}.mt-why b{color:var(--ink)}
+.mt-why{margin-top:14px;display:grid;gap:10px}.mt-why p{color:var(--ink-2)}.mt-why b{color:var(--ink)}
 /* reveal on scroll (class added by script only) */
 .sr{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.23,1,.32,1),transform .8s cubic-bezier(.23,1,.32,1)}
 .sr.in{opacity:1;transform:none}
@@ -609,7 +609,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <div><h2>Strongest track records by category</h2></div>
       <a href="#ratings">All categories</a>
     </div>
-    <p class="muted" style="margin-top:10px;max-width:80ch">Top three Regular plans by track-record score. Not a recommendation to buy; past performance does not guarantee future returns.</p>
+    <p class="muted" style="margin-top:10px">Top three Regular plans by track-record score. Not a recommendation to buy; past performance does not guarantee future returns.</p>
     <div class="grid g4" style="margin-top:24px" id="leaders"></div>
   </div></section>
 
@@ -827,7 +827,7 @@ function solutionsPage(){
   </tbody></table></div>
   <p class="muted" style="font-size:12.5px;margin-top:8px">Tax rates as per the Finance (No. 2) Act, 2024; surcharge and cess extra. Try the <a href="/calculators/capital-gains-tax/">capital-gains calculator</a>.</p>
   <div class="stack" style="gap:18px;margin-top:40px">${SOL.map(s=>`<div class="card sol-row" id="sol-${s.id}"><div><div class="row" style="gap:10px"><h2 style="font-size:24px">${s.t}</h2>${s.tag?`<span class="tag">${s.tag}</span>`:''}</div>
-    <p style="margin-top:10px;max-width:70ch">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
+    <p style="margin-top:10px">${s.body}</p><p class="muted" style="margin-top:10px;font-size:14px"><b style="color:var(--ink-2);font-weight:600">Suits:</b> ${s.who}</p></div>
     <div class="row" style="align-self:center;justify-content:flex-end">${SLUG[s.id]?`<a class="btn" href="/invest/${SLUG[s.id]}/">Read more</a>`:''}${s.link?`<a class="btn" href="${s.link[0]}">${s.link[1]}</a>`:''}${s.tag==='Coming soon'?'':`<a class="btn primary" href="#contact" data-topic="${esc(s.t)}">Ask about ${esc(s.t.toLowerCase().replace('pms','PMS').replace('aifs','AIFs'))}</a>`}</div></div>`).join('')}</div>
 
   <h2 style="font-size:26px;margin-top:40px">Common questions</h2>
@@ -912,7 +912,7 @@ function toolsPage(){
   <p class="lede" style="margin-top:12px">Simple calculators for the questions families ask most. The results are illustrations: returns are assumptions, not promises.</p>
   <div class="tabs" role="tablist" style="margin-top:24px">${TOOLS.map(t=>`<button role="tab" data-t="${t.id}" aria-selected="${t.id===cur}">${t.t}</button>`).join('')}</div>
   <div id="toolBody" style="margin-top:22px"></div>
-  <p class="muted" style="font-size:12.5px;margin-top:22px;max-width:90ch">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Tax estimates ignore surcharge, grandfathering, losses set off and special cases; please check with us or your tax adviser before acting.</p>`;
+  <p class="muted" style="font-size:12.5px;margin-top:22px">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Tax estimates ignore surcharge, grandfathering, losses set off and special cases; please check with us or your tax adviser before acting.</p>`;
   $$('#toolsPage [data-t]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.t;toolsPage()});
   const body=$('#toolBody');
   if(cur==='sipreal'){sipRealTool(body);return}
@@ -1233,9 +1233,9 @@ async function methodV5(){
   <tr><td class="l"><b>B</b></td><td class="l">The middle of the group</td><td class="l">The middle of the group</td></tr>
   <tr><td class="l"><b>C</b></td><td class="l">The bottom 30% of the group (below 65)</td><td class="l">The bottom 30%, or held back by a serious red flag</td></tr>
   <tr><td class="l"><b>Unrated</b></td><td class="l" colspan="2">Less than 3 years of history (1 year for index, overnight, liquid and money-market funds), or a NAV that has stopped updating</td></tr></tbody></table></div>
-  <p style="margin-top:12px;max-width:90ch">For equity funds, a 3-year record behind the index is shown on the fund page ("behind its index over 3 years, after costs") but no longer holds a fund back: in our test that cap lowered results in every equity category, because the funds it removed were often the ones about to do well. The same goes for the statistical red flags (persistent underperformance, falls more without extra return, deeper falls than peers): they are shown as notes. A portfolio outside SEBI's limits in two consecutive months moves an equity fund one rating lower (A+ to A, A to B, B to C), and the fund page says why; holdings missing from AMFI's market-cap list, such as recent listings, count towards the rule, so a gap in the data does not cause it. A qualitative flag (a manager leaving, a merger, SEBI action) turns A and A+ into Watch.</p>
+  <p style="margin-top:12px">For equity funds, a 3-year record behind the index is shown on the fund page ("behind its index over 3 years, after costs") but no longer holds a fund back: in our test that cap lowered results in every equity category, because the funds it removed were often the ones about to do well. The same goes for the statistical red flags (persistent underperformance, falls more without extra return, deeper falls than peers): they are shown as notes. A portfolio outside SEBI's limits in two consecutive months moves an equity fund one rating lower (A+ to A, A to B, B to C), and the fund page says why; holdings missing from AMFI's market-cap list, such as recent listings, count towards the rule, so a gap in the data does not cause it. A qualitative flag (a manager leaving, a merger, SEBI action) turns A and A+ into Watch.</p>
   <h3 style="margin-top:22px">When ratings change</h3>
-  <p style="margin-top:8px;max-width:90ch">Ratings are revised on the 11th of each month. By the 10th, fund houses have published the previous month's portfolios, so the review uses each fund's track record up to that day and its latest portfolio. They are revised once more on the 16th, to take in portfolios that fund houses published late. Between those dates the site updates every weekday morning with the latest NAVs, returns and period rankings, but the ratings stay as last set. A fund's rating history shows its rating at each month-end.</p>`;
+  <p style="margin-top:8px">Ratings are revised on the 11th of each month. By the 10th, fund houses have published the previous month's portfolios, so the review uses each fund's track record up to that day and its latest portfolio. They are revised once more on the 16th, to take in portfolios that fund houses published late. Between those dates the site updates every weekday morning with the latest NAVs, returns and period rankings, but the ratings stay as last set. A fund's rating history shows its rating at each month-end.</p>`;
   const sec=$('#mt-backtest');S.btCat=S.btCat||'Flexi Cap';S.btP=S.btP||'post';
   const draw=()=>{const d=C[S.btCat],P=d[S.btP],mx=Math.max(.8,...['A+','A','B','C'].map(t=>P.tiers[t]||0),P.all_1y)+.05;
     sec.innerHTML=`<h2>Did it work? Tested category by category</h2>
@@ -1251,8 +1251,8 @@ async function methodV5(){
     <div class="card" style="margin-top:16px;border-left:3px solid var(--brass)"><b>When this approach is weak.</b><p style="margin-top:6px">The models reward funds that have been ahead recently and that keep up when the market rises. In years when large caps lead and that kind of momentum breaks down, A+ funds did no better than the rest: ratings made in 2018 and 2019 (mid and small caps fell), and ratings made in 2024 (the 2025 reversal). The after-a-fall mode softens this but does not remove it. A blend with our earlier quality-based model did not help: it barely changed those years and lowered the results since 2020. "Before COVID" here means June 2018 to February 2020: earlier years are left out because SEBI's category rules only took effect in 2018, and flexi-cap funds exist only since November 2020. A rating describes the past and is not a forecast. <a href="/ratings-update/">What changed in November 2026, for clients</a>.</p></div>
     <h3 style="margin-top:28px">How we use the ratings: the review rule</h3>
     <ol class="mt-steps"><li><b>New money goes to funds rated A+</b> in the category your plan calls for.</li><li><b>A fund stays while it is rated A or better.</b> A slip from A+ to A changes nothing.</li><li><b>Below A, it comes up for review once you have held it for 12 months</b> (for ELSS, once its 3-year lock-in ends). By then the exit load has ended in almost every equity fund. We weigh the tax on the gain before replacing it; the first ₹1.25 lakh of long-term gains each year is tax-free.</li><li><b>A red flag brings a review at any time:</b> a change of manager, a merger, or a portfolio outside its SEBI limits.</li></ol>
-    <p style="margin-top:10px;max-width:90ch">Every equity fund page shows where the fund stands under this rule: <b>In the A+ group</b>, <b>Keep</b> (rated A), <b>Review due</b> (below A, with since when) or <b>Review now</b> (a red flag, or a scheme that has merged or closed). Ratings are recalculated each month, so a status can change from one month to the next; the rating history on the fund page shows when and why, and which mode the month was rated in.</p>
-    <p style="margin-top:10px;max-width:90ch"><b>Why review after a year and not every month?</b> In our test, a month later 82% to 97% of A+ funds were still A+ or A, but a year later only about a third were still A+. Switching every month would chase noise and pay exit loads and tax; reviewing once the exit load has ended keeps most of the benefit without those costs. How much of your money goes into large, mid and small caps is decided in your plan, not by the ratings: the ratings choose the funds within each category.</p>
+    <p style="margin-top:10px">Every equity fund page shows where the fund stands under this rule: <b>In the A+ group</b>, <b>Keep</b> (rated A), <b>Review due</b> (below A, with since when) or <b>Review now</b> (a red flag, or a scheme that has merged or closed). Ratings are recalculated each month, so a status can change from one month to the next; the rating history on the fund page shows when and why, and which mode the month was rated in.</p>
+    <p style="margin-top:10px"><b>Why review after a year and not every month?</b> In our test, a month later 82% to 97% of A+ funds were still A+ or A, but a year later only about a third were still A+. Switching every month would chase noise and pay exit loads and tax; reviewing once the exit load has ended keeps most of the benefit without those costs. How much of your money goes into large, mid and small caps is decided in your plan, not by the ratings: the ratings choose the funds within each category.</p>
     <h3 style="margin-top:24px">What the test does not show</h3>
     <ul class="mt-steps"><li>These are odds from 14 years of Indian data, not promises. In most categories three to four in ten A+ funds still trailed their index over the following year.</li><li>The candidate models were designed after seeing this history, so their own figures flatter them a little. The robust part is the order: A+ ahead of A, B and C in every category.</li><li>In years when large caps led the market, A+ funds in Value / Contra, ELSS, Flexi Cap and Large Cap mostly trailed their index. Momentum follows whatever has been leading, and the size lean adds to that.</li><li>Ratings describe a fund's record and traits on past data. They are not a forecast or a recommendation to buy or sell.</li></ul>`;
     $$('[data-c]',sec).forEach(b=>b.onclick=()=>{S.btCat=b.dataset.c;draw()});$$('[data-p]',sec).forEach(b=>b.onclick=()=>{S.btP=b.dataset.p;draw()})};
@@ -1532,7 +1532,7 @@ function staticPages(){
 .mt-bars{position:relative;margin-top:18px;padding-bottom:26px}
 .mt-bar{display:grid;grid-template-columns:40px minmax(0,1fr) 62px;gap:8px;align-items:center;margin:8px 0}
 .mt-bl{font:600 14px var(--f-mono)}.mt-bt{height:14px;background:var(--rule);border-radius:7px;overflow:hidden}.mt-bt i{display:block;height:100%;background:var(--teal);border-radius:7px}
-.mt-steps{margin:10px 0 0;padding-left:20px;display:grid;gap:8px;max-width:80ch;color:var(--ink-2)}.mt-steps b{color:var(--ink)}
+.mt-steps{margin:10px 0 0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2)}.mt-steps b{color:var(--ink)}
 .mt-avg{position:absolute;top:0;bottom:0;border-left:2px dashed var(--ink-3)}.mt-avg span{position:absolute;bottom:0;left:6px;font-size:12px;color:var(--ink-3);white-space:nowrap}
 @media (max-width:960px){.mt-grid{grid-template-columns:1fr;gap:0}.mt-toc{display:none}}
 @media (max-width:640px){.mt-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.mt-prs,.mt-cols{grid-template-columns:1fr}.mt-panel{padding:16px}}

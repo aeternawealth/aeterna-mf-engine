@@ -1,0 +1,4 @@
+# extra packages for the rebalance tool (run_rebalance.py); the data pipeline does not need them
+casparser>=1.4
+PyYAML>=6
+pytest>=8

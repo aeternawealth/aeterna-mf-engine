@@ -525,14 +525,14 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
         <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual fund investing<small>How we choose and manage funds for you</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund ratings</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
+        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="/portfolio-check/">Check your portfolio<small>How the funds you hold rate</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="#method">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <div class="dd" id="ddPlan"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Plan &amp; learn</button>
         <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI, tax</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
       <div class="dd" id="ddAbout"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">About</button>
         <div class="ddmenu"><a href="#about">About Aeterna<small>Who we are and how we work</small></a><a href="#contact">Contact<small>Call, WhatsApp or write to us</small></a><a href="/disclosures/">Disclosures<small>How we are paid, and our registrations</small></a></div></div>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="#contact">Talk to us</a></div>
     </nav>
-    <a class="brand" href="#home" aria-label="Aeterna Wealth home">
+    <a class="brand" href="/" aria-label="Aeterna Wealth home">
       <svg width="32" height="31" viewBox="0 0 233 226" aria-hidden="true"><path d="M0 0H137V43H43V137H0Z" fill="var(--logo-ink)"/><path d="M185 0H233V137H145V226H0V185H90V88H185Z" fill="var(--logo-green)"/></svg>
       <b>Aeterna Wealth</b>
     </a>
@@ -1143,7 +1143,7 @@ function drawStrip(cat){
   const srt=[...F].sort((a,b)=>a.excess_3Y-b.excess_3Y),best=srt[srt.length-1],worst=srt[0],C=2*Math.PI*36,len=(C*ahead/F.length).toFixed(1);
   $('#stripSum').innerHTML=`<div class="ss-ring"><svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true"><circle cx="44" cy="44" r="36" fill="none" stroke="var(--rule)" stroke-width="7"/><circle class="ss-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/><circle class="ring-dot" cx="44" cy="44" r="36" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 ${C.toFixed(1)}" style="--len:${len}" transform="rotate(-90 44 44)"/></svg>
     <div><b><span data-n="${ahead}" data-f="int">${ahead}</span><small> of ${F.length}</small></b><span>${esc(cat)} funds beat the index over 3 years</span></div></div>
-  <dl class="ss-rows"><div><dt>Typical fund</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'level':spct(med)+' a year'}</dd></div>
+  <dl class="ss-rows"><div><dt>Typical fund (median)</dt><dd class="${Math.abs(med)<0.0005?'':sg(med)}">${Math.abs(med)<0.0005?'In line with the index':spct(med)+' a year'}</dd></div>
     <div><dt>Furthest ahead</dt><dd class="pos">${spct(best.excess_3Y)}</dd></div><div><dt>Furthest behind</dt><dd class="neg">${spct(worst.excess_3Y)}</dd></div></dl>
   <a class="btn" href="#ratings" id="stripMore">See the ${esc(cat)} table</a><p class="muted" style="font-size:12px">Past returns against the index, not a forecast.</p>`;
   $('#stripMore').onclick=()=>{S.cat=cat};motion($('#stripSum'));
@@ -1650,6 +1650,10 @@ function route(){
 }
 $$('.dd').forEach(d=>{const b=d.querySelector('.ddbtn');b.onclick=e=>{$$('.dd').forEach(x=>{if(x!==d){x.classList.remove('open');x.querySelector('.ddbtn').setAttribute('aria-expanded','false')}});const o=d.classList.toggle('open');b.setAttribute('aria-expanded',o)}});
 document.addEventListener('click',e=>{$$('.dd').forEach(d=>{if(!d.contains(e.target)){d.classList.remove('open');d.querySelector('.ddbtn').setAttribute('aria-expanded','false')}})});
+// the logo always lands on the top of the home page, also when already on it
+$('a.brand').addEventListener('click',e=>{if(location.pathname!=='/')return;e.preventDefault();
+  if(location.hash&&location.hash!=='#home'){history.pushState(null,'','/');route()}
+  window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
 load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});

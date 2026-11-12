@@ -44,6 +44,8 @@ def _cstat(funds, c):
             "large": med(R, "large_pct"), "mid": med(R, "mid_pct"), "small": med(R, "small_pct"),
             "small_hi": max((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
             "small_lo": min((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
+            "lo3": min((x["ret_3Y"] for x in R if x.get("ret_3Y") is not None), default=None),
+            "hi3": max((x["ret_3Y"] for x in R if x.get("ret_3Y") is not None), default=None),
             "dd3": med(R, "max_drawdown_3y"), "down": med(R, "downside_capture_3y"), "vol": med(R, "vol_3y")}
 
 
@@ -70,43 +72,45 @@ def guides(d, f):
     G = []
     G.append(dict(
         slug="regular-vs-direct-mutual-funds",
-        title="Regular vs Direct mutual funds: what the extra cost buys",
-        seo="Regular vs Direct mutual funds: cost difference and which to choose",
-        desc=f"Regular and Direct plans hold the same portfolio; Regular typically costs {P(gap)} a year more. What that costs over 20 years, what it pays for, and how to choose.",
-        answer=f"A Direct plan and a Regular plan of the same fund own exactly the same stocks. The Regular plan costs more, typically {P(gap)} a year across Indian equity funds, because it includes the distributor's commission. On a ₹10,000 monthly SIP for 20 years at an assumed 12%, that difference adds up to about {_L(sip_gap)}. Choose Direct if you will pick, combine and review funds yourself; choose Regular if you want someone to do that work.",
+        title="Regular vs Direct mutual funds: what a Regular plan gives you",
+        seo="Regular vs Direct mutual funds: the difference, and what a Regular plan gives you",
+        desc="Regular and Direct plans of a fund hold the same portfolio. What a Regular plan's distributor service covers, where investors really win or lose returns, and how to choose.",
+        answer=("A Regular plan and a Direct plan of the same fund own exactly the same stocks. A Regular plan comes with a distributor who chooses, combines and reviews your funds and handles tax and paperwork; the fund house pays for that out of the plan's expense ratio. "
+                "A Direct plan has no distributor and no service. What investors end up with depends far more on which funds they hold, and whether they stay invested through falls, than on which plan they chose."),
         sections=[
             ("What is the same, and what is not", ["ul", ["Same fund manager, same portfolio, same risk.",
-                                                          "Different expense ratio: the Regular plan's includes the distributor's commission, so its NAV grows a little slower.",
-                                                          "Different NAV: the two plans start at the same price but drift apart over time because of the cost gap."]]),
-            ("What the cost gap adds up to", [f"The gap compounds. At the typical {P(gap)} a year, a ₹10,000 monthly SIP for 20 years at an assumed 12% a year ends about {_L(sip_gap)} lower in the Regular plan. On a ₹1 crore portfolio, the gap is about ₹{gap * 1e5:,.0f} in the first year alone.",
-                                              "That is the price of advice and service. Whether it is worth paying depends on what you get for it."]),
-            ("What the Regular plan's commission pays for", ["ul", ["Choosing funds, and just as important, not choosing the ones that look good only on recent returns.",
-                                                                     "Combining them so they don't overlap, and rebalancing when markets move.",
-                                                                     "Tax planning: using the ₹1.25 lakh yearly exemption, the order of redemptions, losses.",
-                                                                     "Paperwork: KYC, nominations, transmission after a death, address changes.",
-                                                                     "Keeping you invested in falls, which is where most investors lose more than any expense ratio."]]),
-            ("How to choose", ["ul", ["You know what to buy, will review it every year and won't panic in a fall: Direct.",
-                                      "You want the choice, review and tax planning done for you: Regular, through a distributor you trust and who tells you what they earn.",
-                                      "Switching from Regular to Direct counts as a sale, so check the capital-gains tax and exit load before you switch."]]),
+                                                          "A Regular plan includes a distributor's service, paid by the fund house out of the plan's expense ratio; you pay no separate fee.",
+                                                          "Different NAVs: the two plans start at the same price and drift apart slightly over time."]]),
+            ("Where returns are really won or lost", [f"Fund choice: over the last 3 years, only {f['beat3']} of {f['n3']} diversified funds beat their index after all costs." + (f" Flexi cap funds' 3-year returns ranged from {f['cat']['Flexi Cap']['lo3'] * 100:.1f}% to {f['cat']['Flexi Cap']['hi3'] * 100:.1f}% a year: same category, same market." if f['cat']['Flexi Cap'].get('lo3') is not None else ""),
+                                                      "Behaviour: stopping SIPs or selling in a fall, and buying back after a rise, costs investors more than any plan difference. Someone who keeps you invested through those moments earns their keep."]),
+            ("What a Regular plan's distributor does", ["ul", ["Choosing funds, and just as important, not choosing the ones that look good only on recent returns.",
+                                                               "Combining them so they don't overlap, and rebalancing when markets move.",
+                                                               "Moving on from a fund that falls behind its peers, at the right time for tax.",
+                                                               "Tax planning: using the ₹1.25 lakh yearly exemption, the order of redemptions, losses.",
+                                                               "Paperwork: KYC, nominations, transmission after a death, address changes.",
+                                                               "Keeping you invested in falls."]]),
+            ("How to choose", ["ul", ["You will research, combine and review funds yourself every year, and won't panic in a fall: Direct.",
+                                      "You want the choosing, reviewing and tax planning done for you: Regular, through a distributor you trust and who is open about how they are paid.",
+                                      "Moving between the two counts as a sale, so capital-gains tax and any exit load apply."]]),
         ],
-        faq=[("Is a Direct plan always better?", "It is always cheaper. Whether it ends up better depends on whether you choose and manage funds as well as an adviser or distributor would."),
-             ("Can I switch from Regular to Direct?", "Yes, but it is a redemption and a fresh purchase, so capital-gains tax and any exit load apply."),
+        faq=[("Is a Direct plan always better?", "Its NAV grows slightly faster, because the plan pays no distributor. Whether your money does better depends far more on which funds you hold and whether you stay invested."),
+             ("Can I switch from Regular to Direct, or the other way?", "Yes, but it is a redemption and a fresh purchase, so capital-gains tax and any exit load apply."),
              ("How do I know which plan I hold?", "Your Consolidated Account Statement shows the plan name; Direct plans say 'Direct' in the scheme name.")],
-        links=[("/invest/mutual-funds/", "How we choose mutual funds"), ("/calculators/sip/", "SIP calculator")],
+        links=[("/invest/mutual-funds/", "How we choose mutual funds"), ("/invest/portfolio-review/", "Free portfolio review")],
     ))
     G.append(dict(
         slug="how-to-choose-a-mutual-fund",
         title="How to choose a mutual fund: a six-step check",
         seo="How to choose a mutual fund in India: a 6-step data check",
-        desc="A practical six-step check for choosing an equity mutual fund in India: category, the right index, rolling returns, risk, cost and overlap, with what the data shows.",
+        desc="A practical six-step check for choosing an equity mutual fund in India: category, the right index, rolling returns, risk, returns after costs and overlap, with what the data shows.",
         answer="Pick the category first (it decides most of the risk), then compare funds only within it: against the category's total-return index over rolling 3-year periods, on how they held up in falls, on cost, and on how much they overlap with what you already own. Recent 1-year returns are the weakest guide of all.",
         sections=[
             ("1. Start with the category, not the fund", ["The SEBI category (large cap, mid cap, flexi cap and so on) decides most of a fund's risk and return. Choose it from your time frame: large and flexi cap for money you need in 5 years or more; mid and small cap only for 7 to 10 years or more."]),
             ("2. Compare against the right index", [f"A fund should be measured against its own category's total-return index, which includes dividends. Over the last 3 years, only {f['beat3']} of {f['n3']} diversified Regular plans beat theirs." + (f" In large caps, only {lc['beat3']} of {lc['n3']} did." if lc else "")]),
             ("3. Use rolling returns, not one period", ["A single 3-year return depends heavily on the start and end dates. Look at every 3-year window: how often the fund was ahead of its index, and by how much in the bad periods. Our fund pages show this for every fund."]),
             ("4. Check how it behaves in falls", ["Downside capture shows how much of the index's fall a fund took. A fund that falls less recovers faster and is easier to hold on to."]),
-            ("5. Compare the cost", [f"Expense ratios are a guaranteed drag. A typical large cap Regular plan costs about {P(f['reg_ter'].get('Large Cap', 2))} a year; a Nifty 50 index fund's Direct plan can cost {P(f['n50_min_ter'])}." if f.get("n50_min_ter") is not None else "Expense ratios are a guaranteed drag; compare them within the category."]),
-            ("6. Check overlap with what you own", [f"Among the five largest large cap funds, any two share about {ov['Large Cap']:.0f}% of their portfolios. A second fund that holds the same stocks adds cost, not diversification." if "Large Cap" in ov else "A second fund that holds the same stocks adds cost, not diversification."]),
+            ("5. Judge returns after costs", ["Every return a fund reports, and every figure on our site, is already after the fund's expenses: they come out of the NAV every day. So judge funds on what they deliver, not on what they charge. A fund that costs more but has beaten its index by more, consistently, has been the better fund."]),
+            ("6. Check overlap with what you own", [f"Among the five largest large cap funds, any two share about {ov['Large Cap']:.0f}% of their portfolios. A second fund that holds the same stocks adds little diversification." if "Large Cap" in ov else "A second fund that holds the same stocks adds little diversification."]),
             ("What not to rely on", ["ul", ["Last year's top performer: in our backtest, top-rated funds did not keep beating their index more often than the average fund.",
                                             "Star ratings alone, NFO launches and fund size on its own.",
                                             "A fund's name: check the portfolio and the SEBI category."]]),
@@ -138,20 +142,19 @@ def guides(d, f):
         slug="mutual-fund-portfolio-overlap",
         title="Mutual fund overlap: why owning six funds can mean owning one",
         seo="Mutual fund overlap: how much is too much, and how to check it",
-        desc="Portfolio overlap explained with real data: how much India's largest funds share, why a typical large cap fund looks like a Nifty 50 index fund, and how to check yours.",
-        answer=(f"Overlap is the share of two funds' portfolios invested in the same stocks. Among India's five largest large cap funds, any two share about {ov.get('Large Cap', 50):.0f}% of their holdings, and a typical large cap fund is about {d.get('lc_vs_idx', 55):.0f}% the same as a Nifty 50 index fund. Above about 50%, a second fund adds cost more than diversification."),
+        desc="Portfolio overlap explained with real data: how much India's largest funds share, why owning more funds can add little diversification, and how to check yours.",
+        answer=(f"Overlap is the share of two funds' portfolios invested in the same stocks. Among India's five largest large cap funds, any two share about {ov.get('Large Cap', 50):.0f}% of their holdings. Above about 50%, a second fund adds little diversification: you hold much the same stocks twice."),
         sections=[
             ("What the data shows", ["ul", [f"Five largest large cap funds: typical overlap between any two about {ov.get('Large Cap', 0):.0f}%." if "Large Cap" in ov else "",
                                             f"Five largest flexi cap funds: about {ov.get('Flexi Cap', 0):.0f}%." if "Flexi Cap" in ov else "",
                                             f"Five largest mid cap funds: about {ov.get('Mid Cap', 0):.0f}%." if "Mid Cap" in ov else "",
-                                            (f"A typical large cap fund vs a Nifty 50 index fund: about {d['lc_vs_idx']:.0f}%, at {d['lc_ter']:.2f}% a year for the Regular plan against {d['idx_ter']:.2f}% for the index fund." if d.get("lc_vs_idx") is not None else "")]]),
-            ("Why it matters", ["Overlap hides concentration: five funds can end up with the same ten banks and IT companies at the top. You pay five expense ratios for what is close to one portfolio, and the diversification you think you have is not there in a fall."]),
+                                            ""]]),
+            ("Why it matters", ["Overlap hides concentration: five funds can end up with the same ten banks and IT companies at the top, and the diversification you think you have is not there in a fall."]),
             ("How to check yours", ["ul", ["Put your funds side by side in our Compare tool: it shows the stocks they share and the overlap.",
                                            "Look at each fund's top 10 holdings in its latest monthly portfolio.",
-                                           "Prefer funds from different categories or styles (for example a large cap index fund plus a mid cap and a value fund) over several similar flexi caps."]]),
+                                           "Prefer funds from different categories or styles (for example a large cap fund plus a mid cap and a value fund) over several similar flexi caps."]]),
         ],
-        faq=[("How much overlap is too much?", "If two funds share more than about half their portfolios, the second one adds cost more than diversification."),
-             ("Is overlap bad in index funds?", "Two index funds on the same index overlap almost completely by design; holding both adds nothing."),
+        faq=[("How much overlap is too much?", "If two funds share more than about half their portfolios, the second one adds little diversification."),
              ("How is overlap calculated?", "For each stock both funds hold, take the smaller of the two weights, and add them up.")],
         links=[("/#compare", "Compare funds and overlap"), ("/invest/portfolio-review/", "Portfolio review")],
     ))
@@ -183,7 +186,7 @@ def guides(d, f):
         slug="pms-vs-mutual-funds",
         title="PMS vs mutual funds: costs, tax and who each suits",
         seo="PMS vs mutual funds: costs, tax, minimum and who each suits",
-        desc="PMS vs mutual funds compared: ₹50 lakh minimum, concentration, fees and their compounding cost, how each is taxed, and a simple way to decide.",
+        desc="PMS vs mutual funds compared: ₹50 lakh minimum, concentration, fees, how each is taxed, and a simple way to decide.",
         answer="A PMS holds 15 to 30 stocks in your own demat account with a ₹50 lakh minimum; a mutual fund pools money into a diversified portfolio from ₹100 a month. PMS can suit large portfolios that want a concentrated strategy, but it usually costs more, every trade is taxed in your hands, and results depend heavily on one manager.",
         sections=[
             ("Side by side", ["ul", ["Minimum: PMS ₹50 lakh (SEBI); mutual funds from about ₹100–500 a month.",
@@ -191,7 +194,7 @@ def guides(d, f):
                                      "Concentration: PMS often 15–30 stocks; diversified funds usually 40–80.",
                                      "Tax: PMS trades are taxed in your hands as they happen; a fund's internal trades are not taxed until you sell units.",
                                      "Fees: PMS fixed fees often 1.5–2.5% a year, or a profit share above a hurdle; equity fund expense ratios are capped by SEBI."]]),
-            ("The cost question", [f"Fees compound. On ₹50 lakh over 10 years at an assumed 13% before fees, a 2.5% yearly fee leaves about {_L(5e6 * 1.12 ** 10 - 5e6 * 1.105 ** 10)} less than a 1% fee. A PMS has to earn that back to be worth it."]),
+            ("Judge both after fees", ["Compare a PMS and a mutual fund on returns after all fees, against the same benchmark, across good and bad years. A higher fee is worth paying when the manager has delivered more after it."]),
             ("How to decide", ["ul", ["Under ₹50 lakh to invest: mutual funds.",
                                       "Large portfolio with a diversified core already: a PMS can add a concentrated strategy alongside.",
                                       "Compare a PMS on its reported returns against a standard benchmark, its worst periods and its fees after tax, not on its best year."]]),
@@ -203,21 +206,23 @@ def guides(d, f):
     ))
     G.append(dict(
         slug="index-funds-vs-active-funds",
-        title="Index funds vs active funds in India: who wins?",
-        seo="Index funds vs active mutual funds in India: what the data shows",
-        desc=f"How many Indian active equity funds beat their index: {f['beat3']} of {f['n3']} over 3 years. Where active funds earn their fee, where index funds win, and what it costs.",
-        answer=(f"Over the last 3 years, {f['beat3']} of {f['n3']} diversified active Regular plans beat their category's total-return index, and {f['beat5']} of {f['n5']} over 5 years." + (f" In large caps: {lc['beat3']} of {lc['n3']}." if lc else "") + " Index funds win on cost and certainty; active funds have a better case in mid caps, small caps and flexible mandates, if you pick well."),
+        title="Active funds vs index funds in India: when active funds earn their place",
+        seo="Active vs index funds in India: how many active funds beat their index",
+        desc=f"{f['beat3']} of {f['n3']} Indian active equity funds beat their index over 3 years, after all costs. Where active funds have added the most, and why choosing the right one matters.",
+        answer=(f"Over the last 3 years, {f['beat3']} of {f['n3']} diversified active Regular plans beat their category's total-return index after all their costs, and {f['beat5']} of {f['n5']} over 5 years. "
+                "An index fund can only ever deliver the index, less its own costs; a well-chosen active fund can deliver more. The gap between the best and worst active funds in a category is wide, which is why choosing, and reviewing, matters."),
         sections=[
             ("By category", ["ul", [f"{r['category']}: {r['beat3']} of {r['n3']} beat the index over 3 years" + (f", {r['beat5']} of {r['n5']} over 5." if r.get('n5') else ".") for r in f["sb"]]]),
-            ("The cost gap", [f"A Nifty 50 index fund's Direct plan can cost as little as {P(f['n50_min_ter'])} a year (median {P(f['n50_med_ter'])}); a typical large cap Regular plan costs about {P(f['reg_ter'].get('Large Cap', 2))}. That gap is a head start the active fund has to make up every year." if f.get("n50_min_ter") is not None else ""]),
-            ("A sensible mix", ["ul", ["Large caps: a low-cost index fund as the core is hard to beat.",
-                                       "Mid and small caps, flexi caps: active funds with a consistent record against their index can add value.",
-                                       "Between index funds on the same index, choose on cost and tracking error."]]),
+            ("Where active funds have done best", ["ul", [f"{r['category']}: {r['beat3']} of {r['n3']} ahead of the index over 3 years ({r['beat3'] / r['n3']:.0%})." for r in sorted([r for r in f["sb"] if r.get("n3")], key=lambda r: -r["beat3"] / r["n3"])[:4]]]),
+            ("How to pick an active fund that earns its place", ["ul", ["Consistency: ahead of its index in most rolling 3-year periods, not one lucky stretch.",
+                                                                          "Behaviour in falls: how much of the index's falls it took.",
+                                                                          "A genuinely active portfolio that follows its category's rules.",
+                                                                          "A yearly review, and moving on when a fund falls behind its peers for long."]]),
         ],
-        faq=[("Do index funds beat active funds in India?", "In large caps, most active funds have not beaten their index over 3 and 5 years. In other categories the record is more mixed."),
-             ("Which index fund is best?", "Index funds on the same index hold the same stocks; compare them on expense ratio and tracking error."),
-             ("Are index funds safe?", "They carry the full risk of the market they track; they remove the risk of a fund manager underperforming.")],
-        links=[("/mutual-funds/index-fund/nifty-50/", "Nifty 50 index funds compared"), ("/insights/scoreboard/", "Active funds vs their index")],
+        faq=[("Do active funds beat index funds in India?", f"Many do: {f['beat3']} of {f['n3']} diversified active funds beat their index over 3 years after all costs. The share varies by category, and the best funds have beaten it by a wide margin."),
+             ("Why not just buy an index fund?", "An index fund delivers the index's return less its costs, never more. Funds with a consistent record of beating their index after costs can deliver more; finding them, and reviewing them every year, is the work."),
+             ("Do returns already include the fund's costs?", "Yes. Expenses come out of the NAV every day, so every return a fund reports is after its costs.")],
+        links=[("/insights/scoreboard/", "Active funds vs their index"), ("/mutual-funds/flexi-cap/top-rated/", "Top-rated flexi cap funds")],
     ))
     sw = _swr()
     if sw:
@@ -283,25 +288,25 @@ def explainers(d, f):
     G = []
     G.append(dict(
         slug="what-is-expense-ratio",
-        title="Expense ratio: what a mutual fund costs you every year",
-        seo="What is expense ratio in mutual funds? Typical costs and what they add up to",
-        desc=f"The expense ratio is the yearly cost of a mutual fund, taken from its NAV. Typical costs today: large cap Regular plans {P(lc['ter_r'])}, Direct {P(lc['ter_d'])}; what that adds up to over 20 years.",
-        answer=(f"The expense ratio (TER) is what a fund charges each year to run your money, as a percentage of what you hold. It is taken out of the fund's NAV every day, so you never see a bill: the return you see is already after it. "
-                f"Today the median large cap fund costs {P(lc['ter_r'])} a year in its Regular plan and {P(lc['ter_d'])} in its Direct plan; small cap funds {P(sc['ter_r'])} and {P(sc['ter_d'])}."),
+        title="Expense ratio: what it is, and why returns after it are what count",
+        seo="What is expense ratio in mutual funds? Meaning, limits and what matters more",
+        desc=f"The expense ratio is a fund's yearly running charge, taken out of its NAV, so every return a fund reports is already after it. What it includes, SEBI's limits, and what matters more.",
+        answer=("The expense ratio (TER) is a fund's yearly running charge, as a percentage of what you hold. It is taken out of the fund's NAV every day, so you never see a bill, and every return the fund reports, including every figure on our site, is already after it. "
+                "That is why a fund is best judged on its returns after costs: a fund with a higher expense ratio that has beaten its index by more has done more for its investors."),
         sections=[
             ("What it includes", ["ul", ["The fund house's management fee, and the costs of running the scheme (registrar, custodian, audit).",
                                          "In Regular plans, the distributor's commission. That is the whole gap between Regular and Direct.",
                                          "GST on the management fee. Brokerage on the fund's own trades is added within limits."]]),
-            ("What it adds up to", [f"On ₹10 lakh, every 1% of expense ratio is ₹10,000 a year, and the gap compounds: over 20 years at an assumed 12% before costs, a fund costing 1% a year more ends about 16% lower. That is why cost is one of the inputs to our ratings."]),
-            ("The limits", ["SEBI caps the expense ratio by the scheme's size: smaller equity funds may charge up to about 2.25% a year, the largest about 1%, plus taxes. Index funds and ETFs usually cost far less."]),
-            ("How to use it", ["ul", ["Compare costs only within a category: a small cap fund will cost more than an index fund.",
-                                      "A higher cost has to be earned back in returns every year; check the fund's record against its index after costs.",
-                                      "Check whether you hold the Regular or the Direct plan: the name on your statement tells you."]]),
+            ("Why returns after costs matter more", ["A fund manager who beats the index by 6% a year after a 1% expense ratio has delivered 6% more than the index, in your hands. Looking at the expense ratio on its own would miss that. Judge funds on what they deliver after costs, over many periods, and on how they behave in falls."]),
+            ("The limits", ["SEBI caps the expense ratio by the scheme's size: smaller equity funds may charge up to about 2.25% a year, the largest about 1%, plus taxes."]),
+            ("How to use it", ["ul", ["Look at returns against the index after costs, over rolling periods: that already accounts for the expense ratio.",
+                                      "Check consistency and behaviour in falls; they say more about a fund than its charge.",
+                                      "Your statement shows the plan you hold; a Regular plan includes a distributor's service, paid out of its expense ratio."]]),
         ],
         faq=[("Is the expense ratio deducted from my investment?", "Not as a separate charge. It is taken from the fund's assets daily, so the NAV is always after costs."),
              ("Does the expense ratio change?", "Yes. Fund houses can change it within SEBI's limits and must disclose it; it usually falls as a fund grows."),
-             ("What is a good expense ratio?", f"Lower than similar funds. For context, today's medians: large cap {P(lc['ter_r'])} (Regular) and {P(lc['ter_d'])} (Direct); mid cap {P(mc['ter_r'])} and {P(mc['ter_d'])}.")],
-        links=[("/learn/regular-vs-direct-mutual-funds/", "Regular vs Direct"), ("/mutual-funds/", "Compare costs by category")],
+             ("What is a good expense ratio?", "On its own it says little: what matters is what the fund delivers after it. A fund's returns, and our ratings, are already net of its expenses.")],
+        links=[("/learn/regular-vs-direct-mutual-funds/", "Regular vs Direct"), ("/learn/rolling-returns-mutual-funds/", "Rolling returns")],
     ))
     G.append(dict(
         slug="what-is-nav-in-mutual-funds",
@@ -317,7 +322,7 @@ def explainers(d, f):
                                          "Liquid and overnight funds have an earlier cut-off (1:30 pm).",
                                          "After the cut-off, the next business day's NAV applies."]]),
             ("What matters instead", ["ul", ["The return over time, compared with the fund's index and its peers.",
-                                             "The cost (expense ratio), and how consistently the fund has done its job.",
+                                             "How consistently the fund has beaten its index, and how it held up in falls.",
                                              "A new fund (NFO) at ₹10 is not a bargain: it simply hasn't grown yet."]]),
         ],
         faq=[("Is a low NAV fund better to buy?", "No. Returns are in percentages; the NAV level makes no difference to what you earn."),
@@ -440,7 +445,7 @@ def explainers(d, f):
     asl = f.get("as_lc")
     G.append(dict(
         slug="active-share-closet-index-funds",
-        title="Active share: is your fund just an expensive index fund?",
+        title="Active share: is your fund really active?",
         seo="Active share and closet index funds in India, with real numbers",
         desc=(f"Active share measures how different a fund's portfolio is from its index. The median large cap fund's is about {asl[0]:.0f}%; {asl[1]} of {asl[2]} are below 30%." if asl else "Active share measures how different a fund's portfolio is from its index, and how to spot an expensive index-hugger."),
         answer=("Active share is the share of a fund's portfolio that differs from its index: 0% is an index fund, 100% shares nothing with the index. A fund with a low active share charges active fees for a portfolio close to the index, and after costs it almost has to trail it. "
@@ -452,7 +457,7 @@ def explainers(d, f):
             ("What it does not tell you", ["High active share means different, not better. A very different portfolio can do much better or much worse than the index."]),
         ],
         faq=[("What is a good active share?", "Above about 60% for a fund charging active fees is a common guide; large cap funds are naturally lower because their universe is only 100 stocks."),
-             ("Should I replace a low active share fund with an index fund?", "Often worth considering, especially in large caps: the index fund gives a similar portfolio at a fraction of the cost."),
+             ("Should I avoid funds with a low active share?", "Look at the record first. A fund that hugs its index has little room to beat it; we prefer funds that are genuinely different and have used that to beat their index consistently."),
              ("Where can I see a fund's active share?", "On its page on our site, when its monthly portfolio is available.")],
         links=[("/learn/index-funds-vs-active-funds/", "Index funds vs active funds"), ("/learn/mutual-fund-portfolio-overlap/", "Fund overlap")],
     ))
@@ -544,16 +549,15 @@ def more_guides(d, f):
     G.append(dict(
         slug="when-to-sell-a-mutual-fund",
         title="When to sell a mutual fund, and when not to",
-        seo="When to sell a mutual fund: six good reasons and the costs of selling",
-        desc="Six good reasons to sell or switch a mutual fund, the reasons that are not, what selling costs in tax and exit load, and how to do it in the cheapest order.",
+        seo="When to sell a mutual fund: five good reasons, and what selling costs",
+        desc="Five good reasons to sell or switch a mutual fund, the reasons that are not, what selling costs in tax and exit load, and how to do it in the cheapest order.",
         answer=("Sell or switch a fund only for a reason that will still matter in five years: your goal is near, your mix has drifted far from plan, you own too many overlapping funds, the fund has broken (a manager change, a mandate breach, years at the bottom of its category), "
-                "it costs much more than similar funds, or a tax opportunity. One bad year is not a reason. Every sale costs tax and often an exit load, so first redirect new money, and sell last."),
+                "or a tax opportunity. One bad year is not a reason. Every sale costs tax and often an exit load, so first redirect new money, and sell last."),
         sections=[
-            ("Six good reasons", ["ul", ["Your goal is close: money needed within 3 to 5 years should move step by step from equity to debt or arbitrage funds.",
+            ("Five good reasons", ["ul", ["Your goal is close: money needed within 3 to 5 years should move step by step from equity to debt or arbitrage funds.",
                                          "Your mix has drifted: one part of your portfolio is far above its target, say small caps grown from 25% to 40%.",
                                          "Too many funds that hold the same stocks: two funds sharing more than half their portfolios are close to one bet.",
                                          "The fund has broken: a new fund manager with a different style, a merger, a portfolio that breaks its category's rules, or years in the bottom third of its category with no sign of change.",
-                                         "Cost: much higher expense ratio than similar funds for nothing extra.",
                                          "Tax: booking up to ₹1.25 lakh of long-term gains each year tax-free and reinvesting."]]),
             ("Reasons that are not good enough", ["ul", ["One bad year, or a fall in the market.",
                                                          "Another fund did better last year: last year's leaders are often not next year's.",
@@ -605,13 +609,13 @@ def more_guides(d, f):
         answer=("For most people, 4 to 7 equity funds is enough: one or two per role (a large cap or index core, a flexi or multi cap, a mid cap, a small cap if your horizon is long), plus a liquid or arbitrage fund for short-term money. "
                 "Beyond that, extra funds mostly hold the same stocks again: " + (f"India's five largest large cap funds share about {ov['Large Cap']:.0f}% of their portfolios pairwise. " if "Large Cap" in ov else "") + "More funds add paperwork, not diversification."),
         sections=[
-            ("One fund per job", ["ul", ["Core: a large cap or Nifty 50 / Nifty 100 index fund.",
+            ("One fund per job", ["ul", ["Core: a large cap fund with a consistent record against its index.",
                                          "All sizes: a flexi cap or multi cap fund.",
                                          "Growth: a mid cap or large & mid cap fund.",
                                          "Higher growth, higher swings: a small cap fund, only for money you won't need for 7 to 10 years.",
                                          "Short-term money: a liquid or arbitrage fund, not equity."]]),
             ("Why more funds don't help", [("Diversified funds in the same category hold many of the same companies. " + (f"Among the five largest flexi cap funds, any two share about {ov['Flexi Cap']:.0f}% of their portfolios; among mid cap funds about {ov.get('Mid Cap', 0):.0f}%. " if "Flexi Cap" in ov else "")
-                                            + "Ten funds can amount to the same thirty stocks at a higher total cost, with ten statements and ten nominations to keep up.")]),
+                                            + "Ten funds can amount to the same thirty stocks, with ten statements and ten nominations to keep up.")]),
             ("Cutting a long list down", ["ul", ["Group your funds by role (core, all sizes, mid, small, short-term).",
                                                  "Within each group, keep the one or two with the best long-run record against their index and the least overlap with each other.",
                                                  "Point SIPs only at the funds you keep; stop new money into the rest.",
@@ -620,7 +624,7 @@ def more_guides(d, f):
                                                    "Separate goals with different time frames, such as retirement and a child's education.",
                                                    "Very large portfolios, where a second fund in a role caps the risk of one manager."]]),
         ],
-        faq=[("Is it bad to own 10 or more mutual funds?", "Not harmful in itself, but it usually means heavy overlap and more cost and paperwork than needed."),
+        faq=[("Is it bad to own 10 or more mutual funds?", "Not harmful in itself, but it usually means heavy overlap and more paperwork than needed."),
              ("Should I own funds from different fund houses?", "Yes, where you can: a single house's investment style can lag for years."),
              ("How do I check overlap?", "Use our portfolio check or the compare tool: overlap above about half means two funds are close to one bet.")],
         links=[("/portfolio-check/", "Check your portfolio's overlap"), ("/learn/when-to-sell-a-mutual-fund/", "When to sell a fund"), ("/invest/portfolio-review/", "Portfolio review")],
@@ -686,6 +690,6 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
 <p style="margin-top:22px"><a class="btn" href="/insights/">This month's insights</a> <a class="btn" href="/calculators/">Calculators</a></p>
 </div></div></section>"""
     B.write("/learn/", B.page("Investor guides: mutual funds, SIPs, tax, PMS | Aeterna Wealth",
-                              "Straight answers to the questions Indian investors ask most: Regular vs Direct, choosing a fund, SIP vs lump sum, overlap, tax, exit loads, ELSS, when to sell, flexi vs multi cap and PMS.",
+                              "Straight answers to the questions Indian investors ask most: choosing a fund, SIP vs lump sum, Regular vs Direct, overlap, tax, exit loads, ELSS, when to sell, flexi vs multi cap and PMS.",
                               "/learn/", body, (B.crumbs([("Learn", "/learn/")]),)))
     urls.append(("/learn/", "weekly", "0.8"))

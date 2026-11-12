@@ -356,10 +356,11 @@ def amc_pages(B, funds, urls, as_of):
 
 
 # ------------------------------------------------------------------ fund vs fund
-CMP_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra", "Index Fund",
+CMP_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra",
             "Dividend Yield", "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Arbitrage"]
 CMP_TOP = 8          # the largest schemes per category compared pairwise (28 pages a category)
-CMP_INDEX = {"Index: NIFTY 50": 8, "Index: NIFTY NEXT 50": 6}
+CMP_INDEX = {}       # index funds are not compared pairwise (Nov 2026); old pages redirect to /mutual-funds/index-fund/
+CMP_INDEX_REMOVED = {"Index: NIFTY 50": 8, "Index: NIFTY NEXT 50": 6}
 
 
 def overlap(h1, h2):
@@ -395,6 +396,17 @@ def _related(B, a, b, rel, path, c):
     tp = getattr(B, "MADE_TOP", {}).get(c)
     top = f"<p style='margin-top:14px'>" + (f"<a href='{tp}'>Top-rated {B.e(lc)} funds this month</a> · " if tp else "") + f"<a href='/mutual-funds/{B.slug(c)}/'>All {B.e(lc)} funds</a></p>"
     return ("<h2 style='font-size:24px;margin-top:34px'>More comparisons</h2><div class='grid g2' style='margin-top:12px'>" + "".join(out) + "</div>" + top) if out else top
+
+
+def removed_index_compare_paths(B, funds):
+    """the index-fund comparison pages published until Nov 2026, so they can redirect"""
+    out = []
+    D = sorted([f for f in funds if f["category"] == "Index Fund" and f["plan_type"] == "Direct" and f.get("aum_cr")], key=lambda f: -f["aum_cr"])
+    for g, n in CMP_INDEX_REMOVED.items():
+        for a, b in combinations([f for f in D if str(f.get("peer_group")) == g][:n], 2):
+            a, b = sorted((a, b), key=lambda f: f["_name"])
+            out.append(f"/compare/{B.slug(a['_name'])}-vs-{B.slug(b['_name'])}/")
+    return out
 
 
 def compare_pages(B, funds, hold, urls, as_of):
@@ -472,10 +484,6 @@ def compare_pages(B, funds, hold, urls, as_of):
             if sa is not None and sb_ is not None and abs(sa - sb_) >= 10 and c not in ("Small Cap", "Arbitrage"):
                 big, sml = (a, b) if sa > sb_ else (b, a)
                 summ.append(f"{big['_name']} leans more to smaller companies ({big['small_pct']:.0f}% in small caps against {sml['small_pct']:.0f}%), so expect bigger swings both ways.")
-            if a.get("ter") is not None and b.get("ter") is not None:
-                ch, ex = (a, b) if a["ter"] <= b["ter"] else (b, a)
-                gap = (ex["ter"] - ch["ter"]) * 1000
-                summ.append(f"{ch['_name']} costs less: {B.num(ch['ter'], 2)}% a year against {B.num(ex['ter'], 2)}% (Direct plans)" + (f", about ₹{gap:,.0f} a year less on ₹10 lakh." if gap >= 100 else "."))
             if hold.get(a.get("pair_key")) and hold.get(b.get("pair_key")):
                 summ.append(f"They hold {n_common} stocks in common; the portfolio overlap is {ov:.0f}%.")
             ta, tb = a.get("tier"), b.get("tier")

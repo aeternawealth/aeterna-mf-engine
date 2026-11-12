@@ -634,7 +634,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
     <div class="stack" style="min-width:0">
       <div class="eyebrow">Why families choose Aeterna</div>
       <div class="why">
-        <div><b>Everything in one view</b><p>Mutual funds, PMS, AIFs, bonds and unlisted shares, reviewed together for overlap, cost and risk, wherever they are held.</p></div>
+        <div><b>Everything in one view</b><p>Mutual funds, PMS, AIFs, bonds and unlisted shares, reviewed together for track record, overlap and risk, wherever they are held.</p></div>
         <div><b>Tax planned in, not after</b><p>Chartered accountants and advocates on the team plan what to sell and when, so gains use the ₹1.25 lakh yearly exemption and losses are not wasted.</p></div>
         <div><b>Numbers before stories</b><p>Every fund is measured against its total-return index and its peers. When one you hold falls behind, it comes up in your review.</p></div>
         <div><b>Clear about what we earn</b><p>Commission on Regular plans, fees on PMS and AIFs. We tell you what we earn on a product before you invest.</p></div>
@@ -643,7 +643,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
         <div class="eyebrow">How we work</div>
         <ol>
           <li><b>A first conversation</b><span>Your goals, what you already hold and your tax position. No forms to fill first.</span></li>
-          <li><b>A review of everything you own</b><span>Overlap, cost, tax and gaps across funds, bonds and other holdings, wherever they are held.</span></li>
+          <li><b>A review of everything you own</b><span>Track record, overlap, tax and gaps across funds, bonds and other holdings, wherever they are held.</span></li>
           <li><b>A plan you can follow</b><span>What to keep, change or add, and why. Reviewed with you every year, or sooner when something changes.</span></li>
         </ol>
         <a class="btn primary" href="#contact" style="align-self:flex-start">Talk to us</a>
@@ -802,7 +802,7 @@ const cats=()=>{const order=['Large Cap','Mid Cap','Small Cap','Large & Mid Cap'
 /* ---------- solutions (home cards + Solutions page) ---------- */
 const SOL=[
  {id:'mf',t:'Mutual funds',tag:'Our largest practice',short:'Equity, hybrid and debt funds across fund houses, chosen with our own fund data and reviewed regularly.',
-  body:'We work across fund houses, using the fund data on this site: track record against the right index, cost, portfolio overlap and the range of outcomes a fund has delivered. We help you build a portfolio that fits your goals and review it as markets and your life change.',
+  body:'We work across fund houses, using the fund data on this site: track record against the right index, portfolio overlap and the range of outcomes a fund has delivered. We help you build a portfolio that fits your goals and review it as markets and your life change.',
   who:'Anyone investing for a goal, from a first SIP to a large lump sum.',link:['#ratings','Explore fund ratings']},
  {id:'pms',t:'PMS',short:'Portfolio management services, with manager due diligence and side-by-side comparison.',
   body:'Portfolio managers run a concentrated portfolio held in your own name. We compare strategies on track record, risk, fees and style, and help you understand how a PMS fits with what you already own.',
@@ -847,9 +847,9 @@ function solutionsPage(){
   <h2 style="font-size:26px;margin-top:40px">Common questions</h2>
   <div style="margin-top:8px">${[
    ['Do you give stock tips or manage a stock portfolio directly?','No. Advising on individual listed shares needs a SEBI investment adviser or research analyst licence, which we don’t hold. For direct equity exposure we work through mutual funds and PMS, where a SEBI-registered manager picks the stocks.'],
-   ['How are you paid?','For mutual funds, PMS and AIFs, the product provider pays us a distribution commission, which is part of the product’s costs. For mutual funds, Direct plans don’t pay us and cost less; we explain the difference openly.'],
+   ['How are you paid?','For mutual funds, PMS and AIFs, the product provider pays us a distribution commission, which is part of the product’s costs. We charge no separate fee.'],
    ['Can I start small?','Yes. Most families start with mutual fund SIPs from a few thousand rupees a month. PMS and AIFs have SEBI minimums of ₹50 lakh and ₹1 crore.'],
-   ['What does a portfolio review involve?','You share your statements, such as your mutual fund CAS, demat and bond holdings. We put them in one view and show overlap, costs, tax position and gaps, then talk you through it. There’s no obligation to invest through us.'],
+   ['What does a portfolio review involve?','You share your statements, such as your mutual fund CAS, demat and bond holdings. We put them in one view and show each fund’s record, overlap, tax position and gaps, then talk you through it. There’s no obligation to invest through us.'],
    ['Are unlisted shares safe?','They carry more risk than listed investments: prices are not discovered on an exchange, they can be hard to sell, and lock-in rules apply after a listing. They suit only a small part of a portfolio, for investors who understand that.'],
    ['Where do I log in to see my investments?','Use Client login at the top of the page. It opens your Centricity account, where your holdings and statements are kept.']]
    .map(q=>`<details class="faq"><summary>${q[0]}</summary><p>${q[1]}</p></details>`).join('')}</div>
@@ -1601,7 +1601,7 @@ function staticPages(){
     <div class="card stack" style="gap:4px"><b style="font:500 19px var(--f-display)">Adv. Shantnu Singh Sangwan</b><span class="muted">Co-founder · Advocate</span><a href="https://www.linkedin.com/in/shantnusangwan/" target="_blank" rel="noopener">LinkedIn profile</a></div>
    </div></div></div>
   <div class="ab-sec"><h2>How we work</h2><div class="body"><p>We build the fund data on this site ourselves and use it with clients: which funds have earned their place, how much they overlap, what they cost and what range of outcomes is realistic. We do not sell ULIPs.</p><p><a href="#method">How our ratings work, and how they tested</a></p></div></div>
-  <div class="ab-sec"><h2>How we are paid</h2><div class="body"><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. Direct plans of the same funds cost less and do not pay us. We would rather explain that difference than hide it.</p><p><a href="/disclosures/">Our disclosures</a></p></div></div>
+  <div class="ab-sec"><h2>How we are paid</h2><div class="body"><p>As a distributor, we earn commission from fund houses on Regular plans; it is included in the plan's expense ratio and shown on your account statement. You pay us no separate fee.</p><p><a href="/disclosures/">Our disclosures</a></p></div></div>
   <div class="ab-sec"><h2>Follow us</h2><div class="body"><p><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a> · <a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a> · <a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></p></div></div>
   <div class="inv-cta"><div><h2>Start with a conversation</h2><p>Tell us where you are on the journey. We reply within one working day.</p></div><div class="row"><a class="btn" href="#contact">Talk to us</a><a class="btn ghost" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a></div></div>`;
   abJourney();

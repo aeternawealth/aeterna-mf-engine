@@ -162,17 +162,9 @@ def render(plan: Plan, proj: dict | None) -> str:
                    "the costs above use what is left of this year's limit. Where purchase dates are unknown, the range runs from 'all units over a year old' to 'all under a year'.</p></li>")
     out.append("<li><b>Leave the rest alone.</b> Funds marked Hold stay; no new money goes to funds marked 'Hold, no new money'.</li></ol>")
 
-    # Regular plans: say what they cost
-    reg = [(f, a) for f, a, b in p.sip if f["plan_type"] == "Regular"]
-    if reg:
-        extra = 0.0
-        for f, a in reg:
-            o = D.other_plan(f)
-            if o is not None and o.get("ter") == o.get("ter") and f.get("ter") == f.get("ter"):
-                extra += a * 12 * (float(f["ter"]) - float(o["ter"])) / 100
-        out.append(f'<div class="card"><h3 style="margin-top:0">About Regular plans</h3><p>These SIPs are in Regular plans. Aeterna is paid a commission by the fund house, '
-                   f'included in the plan\'s expense ratio. After a year of SIPs that is about {rs(extra)} a year more than the Direct plans of the same funds, and it grows with the balance. '
-                   f'Direct plans have no commission and no distributor service.</p></div>')
+    if any(f["plan_type"] == "Regular" for f, a, b in p.sip):
+        out.append('<div class="card"><p style="margin:0">These SIPs are in Regular plans. Aeterna is paid a commission by the fund house, included in the plan\'s expense ratio; '
+                   'you pay us no separate fee. All returns and ratings in this report are after each fund\'s costs.</p></div>')
 
     # ---------------------------------------------------------------- theses
     if p.theses:

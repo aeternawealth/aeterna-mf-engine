@@ -13,10 +13,10 @@ reasons. Every action in a plan names its reason.
 | R2 | **Glide path**: the goal is getting closer | 4 years to a child's college fees | move equity to debt/arbitrage step by step |
 | R3 | **Redundancy**: too many funds or too much overlap | 16 funds; two mid-cap funds share 60% of their stocks | stop the weaker one, merge into the stronger |
 | R4 | **Broken fund**: the reason we held it no longer holds | mandate breach two months running, manager exit, merger, bottom 30% of peers with no recovery | stop new money now, exit when tax and exit load allow |
-| R5 | **Cost**: the fund costs much more than similar funds | expense ratio 0.8 points above the category median | prefer a cheaper fund for new money |
-| R6 | **Tax**: free gains are available | ₹1.25 lakh of long-term gains is tax-free each financial year | book gains up to the limit and buy back |
+| R5 | **Tax**: free gains are available | ₹1.25 lakh of long-term gains is tax-free each financial year | book gains up to the limit and buy back |
 
-"The fund did badly last year" is not on the list. Neither is "a better fund exists".
+"The fund did badly last year" is not on the list. Neither is "a better fund exists", nor "a cheaper fund exists": every
+return and rating is already after the fund's costs, so cost is judged through what the fund delivers.
 
 ## 2. Every sale has a price
 

@@ -176,8 +176,8 @@ def build(B, by_cat, urls, as_of):
              "Our own backtest found that top ratings did not reliably predict the next three years. Use the shortlist to avoid weak records, then choose for your goal, "
              "the funds you already hold, and how much overlap you can accept."),
             ("Direct plan or Regular plan?",
-             "The same portfolio. A Direct plan has no distributor commission, so its expense ratio is lower and its return slightly higher. A Regular plan pays a "
-             "distributor such as us, through the expense ratio, for advice and service. Plans are rated separately: Regular against Regular, Direct against Direct."),
+             "The same portfolio. A Regular plan comes with a distributor's service (choosing, combining and reviewing funds, tax planning and paperwork), paid by the fund house "
+             "out of the plan's expense ratio. Plans are rated separately: Regular against Regular, Direct against Direct, on returns that are already after costs."),
             ("How often does this list change?",
              "Returns update every weekday, but ratings change twice a month: on the 11th and the 16th, after fund houses publish their monthly portfolios."),
         ]

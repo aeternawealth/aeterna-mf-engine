@@ -183,3 +183,16 @@ and rebalance plan out (`clients/<name>/review_<date>.html`, plus lot-level tax 
   tax and exit loads fall first. Every change of shape gets a thesis.
 - `clients/` is git-ignored: no CAS, password or PAN ever goes into the repository.
 - Tests: `python -m pytest tests/test_rebalance.py` (also in the Tests workflow).
+
+## Site messaging (owner's direction, 13 Nov 2026)
+
+Aeterna is a mutual fund distributor: its work is finding active funds that earn their place. The site argues that.
+
+- Never advocate index funds or Direct plans, and never judge or rank a fund on cost. Every return, excess return and
+  rating input is already after the fund's expenses (NAV is net of them), so cost is judged through what a fund delivers.
+- Keep the factual disclosure wherever it belongs (disclosures page, About, client reports): Aeterna earns commission
+  from fund houses on Regular plans, included in the expense ratio; no separate fee. State it plainly, without
+  comparing it with Direct plans.
+- Plain expense-ratio figures may be shown as data (people search for them); no verdicts ("cheaper", "costs less").
+- Positive framing: what a portfolio can gain, not what investors did wrong.
+- No pages that work against the business (e.g. index-fund-vs-index-fund comparisons, removed Nov 2026 with redirects).

@@ -95,7 +95,7 @@ CAT_GUIDES = {   # investor guides (site/learn_pages.py) linked from each catego
     "Liquid": [("mutual-fund-exit-load", "Exit loads explained")],
 }
 CAT_PITCH = {   # what the category is for, in plain words
-    "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
+    "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, which is exactly why a fund's record against the Nifty 100 matters most: the funds that have beaten it consistently stand out.",
     "Mid Cap": "Companies ranked 101 to 250: more room to grow than large caps, and deeper falls along the way. Suits money you will not need for seven years or more. Funds differ widely here, so the choice of fund matters more than in large caps.",
     "Small Cap": "India's smaller listed companies: the highest long-run return potential and the sharpest falls; drops of 30 to 50% have happened. Best built up slowly, for ten-year money, in a fund that can still buy and sell its stocks easily.",
     "Large & Mid Cap": "At least 35% each in large and mid caps: a middle path between the stability of large companies and the growth of mid-sized ones.",
@@ -205,7 +205,7 @@ function draw(){
  var n=[],byA={},byC={};F.forEach(function(d){(byA[d[4]]=byA[d[4]]||[]).push(d);if(d[3]!=="Index Fund")(byC[d[3]]=byC[d[3]]||[]).push(d)});
  Object.keys(byA).forEach(function(a){if(byA[a].length>=3)n.push(byA[a].length+" funds from "+esc(a.replace(/ Mutual Fund$/,""))+": one investment team often holds many of the same stocks across its funds, so these may overlap more than their number suggests.")});
  Object.keys(byC).forEach(function(c){if(byC[c].length>=2)n.push(byC[c].length+" funds in "+esc(c)+": funds in one category follow the same index and SEBI rules, so they tend to move together.")});
- if(F.some(function(d){return d[2]==="Regular"}))n.push("Regular plans include distributor commission; Direct plans of the same funds cost less. Each fund page shows both.");
+ if(F.some(function(d){return d[2]==="Regular"}))n.push("Regular plans include a distributor's service, paid out of the plan's expense ratio. Each fund page shows both plans.");
  var wa=document.getElementById("pcwa");if(wa)wa.href="https://wa.me/918595993600?text="+encodeURIComponent("Hello Aeterna, please review my funds:\n"+(F.length?F.map(function(d){return"- "+d[1]+" ("+d[2]+")"}).join("\n"):"(I'll share them on chat)"));
  document.getElementById("pcnotes").innerHTML=n.length?'<div class="card"><b>Worth knowing</b><ul style="margin:8px 0 0;padding-left:20px;display:grid;gap:6px">'+n.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div>':"";
  [].forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){sel=sel.filter(function(c){return c!==+b.dataset.rm});save();draw()}})}
@@ -608,7 +608,7 @@ def main():
     by_cat = {}
     for f in funds:
         by_cat.setdefault(f["category"], []).append(f)
-    CMP_KEYS = ("ret_1Y", "ret_3Y", "ret_5Y", "ter", "vol_3y", "max_drawdown_3y")
+    CMP_KEYS = ("ret_1Y", "ret_3Y", "ret_5Y", "vol_3y", "max_drawdown_3y")   # no cost row: returns are already after costs
     cat_med = {}
     for c, lst in by_cat.items():
         for plan in ("Regular", "Direct"):
@@ -821,17 +821,14 @@ def main():
                      + crow + "</tbody></table></div>") if crow else "")
         # what the plan type means, next to the other plan's cost and return
         plan_html = ""
-        if twin and isinstance(f.get("ter"), (int, float)) and isinstance(twin.get("ter"), (int, float)):
-            g3 = (f.get("ret_3Y") - twin.get("ret_3Y")) if isinstance(f.get("ret_3Y"), (int, float)) and isinstance(twin.get("ret_3Y"), (int, float)) else None
+        if twin:
             if f.get("plan_type") == "Direct":
-                plan_html = (f"<p style='margin-top:12px'><b>Direct plan.</b> Bought straight from the fund house, with no distributor commission: expense ratio "
-                             f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Regular plan</a>"
-                             + (f", and {pct(abs(g3), 2)} a year {'more' if g3 > 0 else 'less'} in return over the last 3 years" if g3 is not None else "") + ".</p>")
+                plan_html = (f"<p style='margin-top:12px'><b>Direct plan.</b> Bought straight from the fund house, with no distributor. "
+                             f"The <a href='{twin['_url']}'>Regular plan</a> holds the same portfolio and comes with a distributor's service.</p>")
             else:
-                plan_html = (f"<p style='margin-top:12px'><b>Regular plan.</b> Bought through a distributor, whose commission is part of the expense ratio: "
-                             f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Direct plan</a>"
-                             + (f", a gap of {pct(abs(g3), 2)} a year in return over the last 3 years" if g3 is not None else "")
-                             + ". The commission pays for advice, regular reviews and help with paperwork.</p>")
+                plan_html = (f"<p style='margin-top:12px'><b>Regular plan.</b> Bought through a distributor, who chooses, reviews and services the investment; "
+                             f"the fund house pays the distributor out of the plan's expense ratio, so every return shown here is already after it. "
+                             f"The <a href='{twin['_url']}'>Direct plan</a> holds the same portfolio without a distributor.</p>")
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{slug(f['category'])}/">{e(f['category'])}</a> › {e(f['_name'])}</nav>
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
@@ -1059,7 +1056,7 @@ def main():
     if ins.get("items"):
         full.append("## This month in numbers\n" + "\n".join(f"- {i['title']}: {i['text']}" for i in ins["items"]) + "\n")
     full.append(f"## Disclosures\nMutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} "
-                f"earns commission from asset management companies on Regular plans; Direct plans cost less and pay no commission.\n")
+                f"earns commission from asset management companies on Regular plans, included in each plan's expense ratio; investors pay no separate fee.\n")
     (DIST / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
 
     # ---- portfolio check: the visitor's funds, their ratings and what the review rule says
@@ -1107,11 +1104,14 @@ def main():
            "/taxation-services/": "/invest/tax-planning/", "/the-magic-of-compounding-let-your-money-work-for-you/": "/calculators/sip/",
            "/mitigating-short-term-market-volatility/": "/insights/", "/tax-efficient-strategies-for-long-term-growth/": "/invest/tax-planning/",
            "/category/blog/": "/insights/", "/wp-sitemap.xml": "/sitemap.xml", "/sitemap_index.xml": "/sitemap.xml"}
+    import build_pages as BPG
+    for pth in BPG.removed_index_compare_paths(Bm, funds):
+        old.setdefault(pth, "/mutual-funds/index-fund/")
     (DIST / "_redirects").write_text("".join(f"{a} {b} 301\n{a.rstrip('/')} {b} 301\n" if a.endswith("/") else f"{a} {b} 301\n" for a, b in old.items()), encoding="utf-8")
     csp = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://www.googletagmanager.com; "
            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; "
            "img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://www.google.co.in; "
-           "connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com; "
+           "connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com; "
            "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests")
     (DIST / "_headers").write_text(
         "/*\n"

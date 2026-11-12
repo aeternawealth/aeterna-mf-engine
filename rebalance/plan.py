@@ -204,12 +204,6 @@ def build(port: Portfolio, client: Client, on: date | None = None) -> Plan:
         elif t in C.NEW_MONEY_TIERS:
             v.action = "add"
             v.reasons.append(("hold", f"rated {t} (rank {int(f['peer_rank'])} of {int(f['peer_count'])} in {f['peer_group']})"))
-        if f is not None and f["plan_type"] == "Regular" and client.plan == "Direct" and v.action != "exit":
-            o = D.other_plan(f)
-            if o is not None and _num(f.get("ter")) and _num(o.get("ter")):
-                v.reasons.append(("R5", f"Regular plan costs {f['ter'] - o['ter']:.2f}% a year more than Direct "
-                                        f"(about ₹{h.value * (f['ter'] - o['ter']) / 100:,.0f} a year here)"))
-                v.action = "exit" if v.action != "add" else v.action
         verdicts.append(v)
 
     # redundancy within a bucket: keep the best-rated funds, stop the rest

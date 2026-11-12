@@ -150,7 +150,61 @@ def canara(month: str) -> list[str]:
     return list(dict.fromkeys(out))
 
 
+# HSBC: every scheme's monthly portfolio sits at a fixed address,
+# .../portfolios/document-<DDMMYYYY>/hsbc-<scheme>-<DD>-<mon>-<YYYY>.xlsx (probe of 12 Nov 2026). The scheme list comes
+# from the information library when it loads (it often times out from cloud servers), otherwise from this list.
+HSBC_SCHEMES = ['aggressive-hybrid-active-fof', 'aggressive-hybrid-fund', 'arbitrage-fund', 'asia-pacific-ex-japan-div-yieldfund', 'balanced-advantage-fund', 'banking-and-psu-debt-fund', 'brazil-fund', 'business-cycles-fund', 'conservative-hybrid-fund', 'consumption-fund', 'corporate-bond-fund', 'credit-risk-fund', 'crisil-ibx-gilt-june-2027-index-fund', 'crl-ibx-50-50-sdl-apr-2028-index-fund', 'dynamic-term-fund', 'elss-tax-saver-fund', 'equity-savings-fund', 'financial-services-fund', 'flexi-cap-fund', 'focused-fund', 'gilt-fund', 'global-emerging-markets-fund', 'gold-etf', 'gold-etf-fof', 'income-plus-arbitrage-active-fof', 'india-export-opportunities-fund', 'infrastructure-fund', 'large-cap-fund', 'large-mid-cap-fund', 'liquid-fund', 'medium-term-fund', 'medium-to-long-term-fund', 'midcap-fund', 'money-market-fund', 'multi-asset-active-fof', 'multi-asset-allocation-fund', 'multi-cap-fund', 'nifty-50-index-fund', 'nifty-next-50-index-fund', 'overnight-fund', 'short-term-fund', 'small-cap-fund', 'ultra-short-term-fund', 'ultra-short-to-short-term-fund', 'value-fund']
+
+
+def _month_end_days(month: str) -> list:
+    """the calendar month-end and, when that falls on a weekend, the last business day before it"""
+    end = pd.Period(month).end_time.normalize()
+    days = [end]
+    if end.weekday() >= 5:
+        days.append(end - pd.offsets.BDay(1))
+    return days
+
+
+def hsbc(month: str) -> list[str]:
+    base = "https://www.assetmanagement.hsbc.co.in/-/media/files/attachments/india/mutual-funds/portfolios/"
+    slugs = set(HSBC_SCHEMES)
+    try:
+        r = requests.get("https://www.assetmanagement.hsbc.co.in/en/mutual-funds/investor-resources/information-library", headers=UA, timeout=40)
+        slugs |= set(re.findall(r"portfolios/document-\d{8}/hsbc-([a-z0-9-]+?)-\d{2}-[a-z]{3}-\d{4}\.xlsx", r.text, re.I))
+    except Exception:
+        pass
+    out = []
+    for d in _month_end_days(month):
+        folder = "document-" + d.strftime("%d%m%Y") + "/"
+        stamp = (d.strftime("%d") + "-" + d.strftime("%b") + "-" + d.strftime("%Y")).lower()
+        out += [base + folder + "hsbc-" + s + "-" + stamp + ".xlsx" for s in sorted(slugs) if not _SKIP.search(s.replace("-", " "))]
+    return out
+
+
+def taurus(month: str) -> list[str]:
+    """taurusmutualfund.com/monthly-portfolio: a Drupal view filtered by year and month ids, read from its own dropdowns."""
+    p = pd.Period(month)
+    page = "https://taurusmutualfund.com/monthly-portfolio"
+    r = requests.get(page, headers=UA, timeout=60)
+    if not r.ok:
+        return []
+
+    def opt(name, label):
+        sel = re.search(r'<select[^>]*name="' + name + r'"[\s\S]*?</select>', r.text)
+        m = re.search(r'<option value="(\d+)"[^>]*>\s*' + re.escape(label) + r'\s*</option>', sel.group(0), re.I) if sel else None
+        return m.group(1) if m else None
+
+    y, mo = opt("field_monthly_portfolio_target_id", str(p.year)), opt("field_month_target_id", p.strftime("%B"))
+    if not (y and mo):
+        return []
+    q = requests.get(page, params={"field_monthly_portfolio_target_id": y, "field_month_target_id": mo}, headers=UA, timeout=60)
+    links = re.findall(r'href="([^"]+?\.(?:xlsx?|zip))"', q.text, re.I)
+    return [l if l.startswith("http") else "https://taurusmutualfund.com" + l for l in dict.fromkeys(links)]
+
+
 AMC_ADAPTERS = {
+    "HSBC-Mutual-Fund": hsbc,
+    "Taurus-Mutual-Fund": taurus,
     "Canara-Robeco-Mutual-Fund": canara,
     "Groww-Mutual-Fund": groww,
     "Motilal-Oswal-Mutual-Fund": motilal,

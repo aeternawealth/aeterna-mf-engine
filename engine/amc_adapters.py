@@ -202,7 +202,66 @@ def taurus(month: str) -> list[str]:
     return [l if l.startswith("http") else "https://taurusmutualfund.com" + l for l in dict.fromkeys(links)]
 
 
+def lic(month: str) -> list[str]:
+    """licmf.com/downloads/monthly-portfolio: per scheme, category -> scheme list, scheme -> name, (scheme, year) -> months,
+    then the files (jQuery posts read from the page on 12 Nov 2026)."""
+    p = pd.Period(month)
+    base = "https://www.licmf.com"
+    s = requests.Session()
+    s.headers.update({**UA, "X-Requested-With": "XMLHttpRequest", "Referer": base + "/downloads/monthly-portfolio"})
+    try:
+        s.get(base + "/downloads/monthly-portfolio", timeout=60)
+    except Exception:
+        return []
+    out = []
+    for cat in ("Equity", "Hybrid", "ETFs & Index Funds"):
+        r = s.post(base + "/downloads/portfolio-filter-options", data={"fund_category": cat, "filter": "category"}, timeout=60)
+        for code, _name in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', r.text if r.ok else ""):
+            if not code.strip():
+                continue
+            name = s.post(base + "/downloads/portfolio-funds", data={"scheme_code": code}, timeout=60).text.strip()
+            months = s.post(base + "/downloads/portfolio-filter-options",
+                            data={"year": p.year, "filter": "year", "type": "monthly_portfolio", "scheme_code": code}, timeout=60).text
+            mv = None
+            for v, label in re.findall(r'<option[^>]*value="([^"]+)"[^>]*>([^<]+)</option>', months):
+                if label.strip().lower() in (p.strftime("%B").lower(), p.strftime("%b").lower()) or v.strip() in (str(p.month), f"{p.month:02d}"):
+                    mv = v
+                    break
+            if not mv:
+                continue
+            files = s.post(base + "/downloads/portfolio-files",
+                           data={"scheme_code": code, "fund_name": name, "type": "monthly_portfolio", "month": mv, "year": p.year}, timeout=60).text
+            for l in re.findall(r'href="([^"]+?\.(?:xlsx?|zip))"', files, re.I):
+                out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
+
+
+def sundaram(month: str) -> list[str]:
+    """sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: an Ajax.NET method GetCategory('Monthly') returns the list.
+    The handler's address (App_Web_<hash>.ashx) changes when the site is redeployed, so it is read from the page."""
+    p = pd.Period(month)
+    base = "https://www.sundarammutual.com"
+    s = requests.Session()
+    s.headers.update(UA)
+    page = s.get(base + "/Monthly-Fortnightly-Adhoc-Portfolios", timeout=60).text
+    m = re.search(r'(/ajax/Modules_Disclosure_Monthly_Fortnightly_Adhoc_Portfolios,[^"\']+?\.ashx)', page)
+    if not m:
+        return []
+    r = s.post(base + m.group(1) + "?_method=GetCategory&_session=no", data="Category=Monthly",
+               headers={"Content-Type": "text/plain; charset=utf-8", "Referer": base + "/Monthly-Fortnightly-Adhoc-Portfolios"}, timeout=60)
+    text = r.text.encode().decode("unicode_escape", errors="ignore") if r.ok else ""
+    toks = (p.strftime("%B").lower(), p.strftime("%b").lower())
+    out = []
+    for l in re.findall(r'href=\\?["\']([^"\'\\]+?\.(?:xlsx?|zip))', text, re.I):
+        low = l.lower()
+        if str(p.year) in low and any(t in low for t in toks):
+            out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
+
+
 AMC_ADAPTERS = {
+    "LIC-Mutual-Fund": lic,
+    "Sundaram-Mutual-Fund": sundaram,
     "HSBC-Mutual-Fund": hsbc,
     "Taurus-Mutual-Fund": taurus,
     "Canara-Robeco-Mutual-Fund": canara,

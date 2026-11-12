@@ -193,7 +193,7 @@ def build(B, by_cat, urls, as_of):
 {change}
 {ov_html}
 <div class="card row" style="margin-top:28px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:500 18px var(--f-display)">Which of these suits you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">That depends on your goal, your other funds and how much overlap you hold. Tell us what you have and we'll look at it with you.</p></div><a class="btn primary" href="{B.wa_link(f"Hello Aeterna, I'm looking at top-rated {c} funds and would like help choosing.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
-<p style="margin-top:20px"><a href="{cat_path}">All {len(L)} {B.e(lc)} plans, with every rating</a> · <a href="/mutual-funds/">Other categories</a></p>
+<p style="margin-top:20px"><a href="{cat_path}">All {len(L)} {B.e(lc)} plans, with every rating</a> · <a href="/mutual-funds/">Other categories</a> · <a href="/learn/how-to-choose-a-mutual-fund/">How to choose a fund</a> · <a href="/learn/when-to-sell-a-mutual-fund/">When to sell one</a></p>
 <h2 style="font-size:24px;margin-top:34px">Common questions</h2>{''.join(f'<details class="faq"><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell, or a forecast. Mutual fund investments are subject to market risks; read the scheme documents before investing.</p>
 </div></section>"""

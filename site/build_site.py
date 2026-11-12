@@ -80,6 +80,20 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Floating Rate": "invest mostly in bonds whose interest rate resets with market rates",
     "Debt Sectoral": "lend mainly to one sector, such as financial services (a category new in 2026)",
 }
+CAT_GUIDES = {   # investor guides (site/learn_pages.py) linked from each category page
+    "ELSS": [("elss-tax-saving-mutual-funds", "ELSS: the tax saving and the lock-in"), ("capital-gains-tax-on-mutual-funds", "Tax on fund gains")],
+    "Flexi Cap": [("flexi-cap-vs-multi-cap", "Flexi cap vs multi cap"), ("how-many-mutual-funds-should-i-own", "How many funds to own")],
+    "Multi Cap": [("flexi-cap-vs-multi-cap", "Flexi cap vs multi cap"), ("how-many-mutual-funds-should-i-own", "How many funds to own")],
+    "Large Cap": [("index-funds-vs-active-funds", "Index funds vs active funds"), ("mutual-fund-portfolio-overlap", "Fund overlap")],
+    "Index Fund": [("index-funds-vs-active-funds", "Index funds vs active funds")],
+    "Mid Cap": [("how-to-choose-a-mutual-fund", "How to choose a fund"), ("when-to-sell-a-mutual-fund", "When to sell a fund")],
+    "Small Cap": [("how-to-choose-a-mutual-fund", "How to choose a fund"), ("when-to-sell-a-mutual-fund", "When to sell a fund")],
+    "Large & Mid Cap": [("how-to-choose-a-mutual-fund", "How to choose a fund"), ("mutual-fund-portfolio-overlap", "Fund overlap")],
+    "Focused": [("how-many-mutual-funds-should-i-own", "How many funds to own")],
+    "Value / Contra": [("how-to-choose-a-mutual-fund", "How to choose a fund")],
+    "Arbitrage": [("mutual-fund-exit-load", "Exit loads explained"), ("capital-gains-tax-on-mutual-funds", "Tax on fund gains")],
+    "Liquid": [("mutual-fund-exit-load", "Exit loads explained")],
+}
 CAT_PITCH = {   # what the category is for, in plain words
     "Large Cap": "The steadiest part of an equity portfolio: India's 100 largest companies. Beating the index here is hard, so cost and a fund's record against the Nifty 100 matter most, and for many investors a low-cost index fund does the job.",
     "Mid Cap": "Companies ranked 101 to 250: more room to grow than large caps, and deeper falls along the way. Suits money you will not need for seven years or more. Funds differ widely here, so the choice of fund matters more than in large caps.",
@@ -897,6 +911,7 @@ def main():
 {gap_html}
 <div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
 {sub}{tabs}
+{(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="/learn/{g}/">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell. Read the scheme documents before investing.</p>
 </div></section>"""

@@ -23,7 +23,13 @@ def _figs(funds, ins):
     reg = [x for x in funds if x["plan_type"] == "Regular" and x.get("ter") is not None]
     f["reg_ter"] = {c: st.median([x["ter"] for x in reg if x["category"] == c]) for c in ("Large Cap", "Flexi Cap", "Mid Cap", "Small Cap")
                     if any(x["category"] == c for x in reg)}
-    f["cat"] = {c: _cstat(funds, c) for c in ("ELSS", "Flexi Cap", "Multi Cap", "Small Cap", "Large Cap")}
+    f["cat"] = {c: _cstat(funds, c) for c in ("ELSS", "Flexi Cap", "Multi Cap", "Small Cap", "Large Cap", "Mid Cap")}
+    # an example fund for the explainers: the largest A+ flexi cap Regular plan with a rolling record
+    ex = sorted([x for x in funds if x["category"] == "Flexi Cap" and x["plan_type"] == "Regular" and x.get("tier") in ("A+", "A")
+                 and x.get("roll3y_hit_rate") is not None and x.get("aum_cr")], key=lambda x: -x["aum_cr"])
+    f["ex"] = ex[0] if ex else None
+    lc = [x for x in funds if x["category"] == "Large Cap" and x["plan_type"] == "Regular" and x.get("active_share") is not None]
+    f["as_lc"] = (st.median([x["active_share"] for x in lc]), sum(1 for x in lc if x["active_share"] < 30), len(lc)) if lc else None
     return f
 
 
@@ -38,7 +44,7 @@ def _cstat(funds, c):
             "large": med(R, "large_pct"), "mid": med(R, "mid_pct"), "small": med(R, "small_pct"),
             "small_hi": max((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
             "small_lo": min((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
-            "dd3": med(R, "max_drawdown_3y"), "down": med(R, "downside_capture_3y")}
+            "dd3": med(R, "max_drawdown_3y"), "down": med(R, "downside_capture_3y"), "vol": med(R, "vol_3y")}
 
 
 def _fv_sip(monthly, years, r):
@@ -263,6 +269,213 @@ def guides(d, f):
             links=[("/plan/", "Work out your own freedom number"), ("/calculators/", "Calculators")],
         ))
     G += more_guides(d, f)
+    G += explainers(d, f)
+    return G
+
+
+def explainers(d, f):
+    """plain-English explainers of the terms on our fund pages, each with a live example (added Nov 2026)"""
+    P = lambda v, n=2: "–" if v is None else f"{v:.{n}f}%"
+    pc = lambda v, n=1: "–" if v is None else f"{v * 100:.{n}f}%"
+    C, ex = f["cat"], f.get("ex")
+    lc, mc, sc = C["Large Cap"], C["Mid Cap"], C["Small Cap"]
+    exn = ex["name"] if ex else "a large flexi cap fund"
+    G = []
+    G.append(dict(
+        slug="what-is-expense-ratio",
+        title="Expense ratio: what a mutual fund costs you every year",
+        seo="What is expense ratio in mutual funds? Typical costs and what they add up to",
+        desc=f"The expense ratio is the yearly cost of a mutual fund, taken from its NAV. Typical costs today: large cap Regular plans {P(lc['ter_r'])}, Direct {P(lc['ter_d'])}; what that adds up to over 20 years.",
+        answer=(f"The expense ratio (TER) is what a fund charges each year to run your money, as a percentage of what you hold. It is taken out of the fund's NAV every day, so you never see a bill: the return you see is already after it. "
+                f"Today the median large cap fund costs {P(lc['ter_r'])} a year in its Regular plan and {P(lc['ter_d'])} in its Direct plan; small cap funds {P(sc['ter_r'])} and {P(sc['ter_d'])}."),
+        sections=[
+            ("What it includes", ["ul", ["The fund house's management fee, and the costs of running the scheme (registrar, custodian, audit).",
+                                         "In Regular plans, the distributor's commission. That is the whole gap between Regular and Direct.",
+                                         "GST on the management fee. Brokerage on the fund's own trades is added within limits."]]),
+            ("What it adds up to", [f"On ₹10 lakh, every 1% of expense ratio is ₹10,000 a year, and the gap compounds: over 20 years at an assumed 12% before costs, a fund costing 1% a year more ends about 16% lower. That is why cost is one of the inputs to our ratings."]),
+            ("The limits", ["SEBI caps the expense ratio by the scheme's size: smaller equity funds may charge up to about 2.25% a year, the largest about 1%, plus taxes. Index funds and ETFs usually cost far less."]),
+            ("How to use it", ["ul", ["Compare costs only within a category: a small cap fund will cost more than an index fund.",
+                                      "A higher cost has to be earned back in returns every year; check the fund's record against its index after costs.",
+                                      "Check whether you hold the Regular or the Direct plan: the name on your statement tells you."]]),
+        ],
+        faq=[("Is the expense ratio deducted from my investment?", "Not as a separate charge. It is taken from the fund's assets daily, so the NAV is always after costs."),
+             ("Does the expense ratio change?", "Yes. Fund houses can change it within SEBI's limits and must disclose it; it usually falls as a fund grows."),
+             ("What is a good expense ratio?", f"Lower than similar funds. For context, today's medians: large cap {P(lc['ter_r'])} (Regular) and {P(lc['ter_d'])} (Direct); mid cap {P(mc['ter_r'])} and {P(mc['ter_d'])}.")],
+        links=[("/learn/regular-vs-direct-mutual-funds/", "Regular vs Direct"), ("/mutual-funds/", "Compare costs by category")],
+    ))
+    G.append(dict(
+        slug="what-is-nav-in-mutual-funds",
+        title="NAV in mutual funds: why a ₹10 fund is not cheaper than a ₹500 fund",
+        seo="What is NAV in mutual funds? Why a low NAV is not cheaper",
+        desc="NAV is the value of one unit of a mutual fund, worked out every business day. Why a low NAV doesn't mean a fund is cheap, and what actually matters.",
+        answer="NAV (net asset value) is the value of one unit of a fund: everything the fund owns, minus its costs, divided by the number of units. It is worked out at the end of every business day. A ₹10 NAV is not cheaper than a ₹500 NAV: ₹10,000 buys 1,000 units of one and 20 of the other, and both grow by the same percentage if their portfolios do.",
+        sections=[
+            ("How it is worked out", ["ul", ["Add up the market value of everything the fund holds, plus cash.",
+                                             "Subtract the fund's liabilities and the day's expenses.",
+                                             "Divide by the number of units in issue."]]),
+            ("Which NAV you get", ["ul", ["Equity funds: buy or sell before the 3 pm cut-off on a business day and you get that day's NAV, provided the money reaches the fund in time.",
+                                         "Liquid and overnight funds have an earlier cut-off (1:30 pm).",
+                                         "After the cut-off, the next business day's NAV applies."]]),
+            ("What matters instead", ["ul", ["The return over time, compared with the fund's index and its peers.",
+                                             "The cost (expense ratio), and how consistently the fund has done its job.",
+                                             "A new fund (NFO) at ₹10 is not a bargain: it simply hasn't grown yet."]]),
+        ],
+        faq=[("Is a low NAV fund better to buy?", "No. Returns are in percentages; the NAV level makes no difference to what you earn."),
+             ("Why do Regular and Direct plans have different NAVs?", "They start at the same NAV, but the Direct plan's lower cost makes it grow slightly faster, so the NAVs drift apart."),
+             ("Where can I see a fund's NAV?", "On AMFI's website, the fund house's site, and every fund page on our site, updated each business day.")],
+        links=[("/mutual-funds/", "Every fund's NAV and record"), ("/learn/how-to-choose-a-mutual-fund/", "How to choose a fund")],
+    ))
+    G.append(dict(
+        slug="rolling-returns-mutual-funds",
+        title="Rolling returns: the fairest way to judge a mutual fund",
+        seo="Rolling returns in mutual funds explained, with a real example",
+        desc="Rolling returns measure a fund over every 3-year period instead of one, so a lucky start or end date can't flatter it. How to read them, with a live example.",
+        answer=("A single 3-year return depends on the day you start and stop counting. Rolling returns look at every 3-year period: starting each day over the last few years, how often was the fund ahead of its index, and by how much in the bad periods? "
+                + (f"For example, {exn} was ahead of its index in {pc(ex['roll3y_hit_rate'], 0)} of rolling 3-year periods." if ex else "")),
+        sections=[
+            ("Why one period misleads", ["A fund measured from a market low looks brilliant; from a market high, poor. Two funds can swap places just by moving the end date a few months. Rolling returns remove that luck by using every start date."]),
+            ("What we show for every fund", ["ul", ["How often the fund was ahead of its index over rolling 3-year periods (the 'hit rate').",
+                                                   "The median margin over the index across those periods.",
+                                                   "The worst 10% of periods: how far behind it fell when it was behind.",
+                                                   "The same for rolling 1-year periods, for consistency over shorter spans."]]),
+            ("How to read them", ["ul", ["A high hit rate with a positive median margin: the fund has added value fairly consistently.",
+                                         "A high median but a low hit rate: a few great periods did the work; expect long dry spells.",
+                                         "Compare funds only within the same category and against the same index."]]),
+        ],
+        faq=[("What is a good rolling return?", "One that beat the fund's own index in most periods. Many funds don't: in several categories the median fund was behind its index in most rolling 3-year periods."),
+             ("Are rolling returns a forecast?", "No. They describe how consistent the record has been, which is more informative than one period, but not a prediction."),
+             ("Where can I see them?", "On every fund page on our site, under consistency.")],
+        links=[("/#method", "How our ratings use rolling returns"), ("/mutual-funds/flexi-cap/top-rated/", "Top-rated flexi cap funds")],
+    ))
+    G.append(dict(
+        slug="what-is-tri-total-return-index",
+        title="TRI: why funds must be compared with the total return index",
+        seo="What is TRI (total return index)? Why fund returns are compared with it",
+        desc="The total return index adds dividends to an index's price moves. Why SEBI requires funds to compare themselves with it, and how much difference it makes.",
+        answer="A price index (like the Nifty 50 you see on the news) tracks share prices only. A total return index (TRI) also adds back the dividends those companies pay, as if reinvested. A fund collects those dividends too, so comparing it with the price index flatters it by roughly 1 to 1.5% a year. Since 2018 SEBI has required funds to show their returns against the TRI.",
+        sections=[
+            ("Why it matters", ["Over 10 years, 1.2% a year of dividends adds up to about 13% more wealth. A fund that 'beat the Nifty' by 1% a year against the price index may have fallen behind the TRI."]),
+            ("What we use", ["ul", ["Every active fund is measured against its category's TRI: Nifty 100 for large caps, Nifty Midcap 150 for mid caps, Nifty Smallcap 250 for small caps, Nifty 500 for flexi caps, and so on.",
+                                    "Index funds are measured against the TRI of the index they track.",
+                                    "Hybrid funds against a blend of the Nifty 50 TRI and a bond yardstick."]]),
+        ],
+        faq=[("Is TRI the same as the Nifty?", "No. The Nifty 50 you see quoted is a price index; the Nifty 50 TRI adds reinvested dividends and is always higher over time."),
+             ("Do index funds beat the TRI?", "Almost never: they track it minus their costs. The gap is their tracking difference."),
+             ("Where can I see a fund against its TRI?", "On every fund page on our site, for 6 months, 1, 3 and 5 years.")],
+        links=[("/learn/index-funds-vs-active-funds/", "Index funds vs active funds"), ("/insights/scoreboard/", "Funds vs their index")],
+    ))
+    G.append(dict(
+        slug="cagr-vs-xirr",
+        title="CAGR vs XIRR vs absolute return: which number to use",
+        seo="CAGR vs XIRR vs absolute return in mutual funds, explained simply",
+        desc="Absolute return, CAGR and XIRR explained with examples: which one to use for a lump sum, which for a SIP, and why your SIP's 'return' looks different from the fund's.",
+        answer="Absolute return is the total gain as a percentage, ignoring time. CAGR is the steady yearly rate that turns your starting amount into the ending amount: use it for a single lump sum. XIRR does the same for money that went in (or out) on different dates, like a SIP: it is the right measure for your own portfolio.",
+        sections=[
+            ("A worked example", ["ul", ["₹1 lakh invested once, worth ₹2 lakh after 6 years: absolute return 100%; CAGR about 12.2% a year.",
+                                         "₹10,000 a month for 3 years (₹3.6 lakh in), worth ₹4.4 lakh: absolute return 22%, but the average rupee was invested for only about 18 months, so the XIRR is about 13.5% a year."]]),
+            ("Which to use", ["ul", ["A fund's 3-year or 5-year return: CAGR (as on every fund page).",
+                                     "Your SIP or a portfolio with many purchases and withdrawals: XIRR.",
+                                     "Under a year: absolute return, since annualising a few months exaggerates."]]),
+        ],
+        faq=[("Why is my SIP return different from the fund's return?", "The fund's return is a CAGR from one date; your SIP's XIRR depends on when each instalment went in and what the market did afterwards."),
+             ("Is a higher XIRR always better?", "It is the true rate on your money, but compare it with what the same cash flows would have earned in the fund's index."),
+             ("How do I calculate XIRR?", "Spreadsheet XIRR function with each investment as a negative amount and today's value as a positive one, with their dates; or use our SIP calculator.")],
+        links=[("/calculators/sip/", "SIP calculator"), ("/calculators/lumpsum/", "Lump sum calculator")],
+    ))
+    G.append(dict(
+        slug="volatility-and-sharpe-ratio",
+        title="Volatility and the Sharpe ratio: how bumpy, and was it worth it?",
+        seo="Standard deviation and Sharpe ratio in mutual funds, explained",
+        desc=f"Volatility (standard deviation) measures how much a fund's returns swing; the Sharpe ratio asks whether the extra return paid for it. Typical volatility today: large caps {pc(lc.get('vol'))}, small caps {pc(sc.get('vol'))} a year.",
+        answer=(f"Volatility, measured as the standard deviation of returns, shows how widely a fund's returns swing around their average: the median large cap fund's was about {pc(lc.get('vol'))} a year over the last 3 years, the median small cap fund's {pc(sc.get('vol'))}. "
+                "The Sharpe ratio divides the return above a risk-free rate by that volatility: how much extra return each unit of swing earned."),
+        sections=[
+            ("Reading volatility", ["As a rough guide, in about two years out of three a fund's yearly return lands within one standard deviation of its average. Higher volatility means bigger swings both ways, and a harder ride to sit through."]),
+            ("Reading the Sharpe ratio", ["ul", ["Higher is better, but only compare funds in the same category over the same period.",
+                                                 "It treats rises and falls alike; downside capture and maximum drawdown say more about the falls.",
+                                                 "Three years is a short sample; a Sharpe ratio can change a lot after one good or bad year."]]),
+        ],
+        faq=[("Is a low-volatility fund always safer?", "Usually smoother, but a fund can be low-volatility and still fall hard in a crash. Check its maximum drawdown too."),
+             ("Do your ratings use the Sharpe ratio?", "Not directly; we use the information ratio (return over the index per unit of tracking error), downside behaviour and consistency, which suit comparing funds within a category better."),
+             ("Where can I see these numbers?", "On every fund page and comparison page on our site.")],
+        links=[("/learn/maximum-drawdown/", "Maximum drawdown"), ("/learn/downside-capture-ratio/", "Downside capture")],
+    ))
+    G.append(dict(
+        slug="downside-capture-ratio",
+        title="Downside capture: how much of the market's fall a fund takes",
+        seo="Downside capture ratio in mutual funds, explained with real numbers",
+        desc=f"Downside capture shows how much of the index's falls a fund took. The median large cap fund took {P(lc.get('down'), 0)} of its index's falls over 3 years; what that means and how to use it.",
+        answer=(f"Downside capture compares a fund's returns in the months its index fell with the index's own returns in those months. A downside capture of 80% means that when the index fell 10%, the fund fell about 8% on average. "
+                f"Today the median large cap fund's is about {P(lc.get('down'), 0)}, the median small cap fund's {P(sc.get('down'), 0)} (each against its own index). Lower is better, as long as the fund still keeps up when markets rise."),
+        sections=[
+            ("Why it matters", ["Losses hurt more than gains help: a 30% fall needs a 43% rise to recover. A fund that falls less recovers sooner, and is easier to hold on to, which is where most investors lose money."]),
+            ("Read it with upside capture", ["ul", ["Upside capture is the same measure for rising months.",
+                                                   "Up 100%, down 80%: the fund kept pace on the way up and fell less: the ideal.",
+                                                   "Up 80%, down 80%: just a lower-risk fund; it gives up as much in rises as it saves in falls."]]),
+        ],
+        faq=[("What is a good downside capture?", "Below 100% means the fund fell less than its index in falling months; below 85% is notably defensive. Compare within a category."),
+             ("Is it measured monthly?", "Yes, on our site: monthly returns over the last 3 years."),
+             ("Can a fund have low downside capture and still lose money?", "Yes. It falls less than the index, not never.")],
+        links=[("/learn/maximum-drawdown/", "Maximum drawdown"), ("/learn/volatility-and-sharpe-ratio/", "Volatility and Sharpe ratio")],
+    ))
+    G.append(dict(
+        slug="maximum-drawdown",
+        title="Maximum drawdown: the worst fall you would have sat through",
+        seo="Maximum drawdown in mutual funds: what it is and typical falls by category",
+        desc=f"Maximum drawdown is a fund's largest fall from a peak. Typical deepest falls over the last 3 years: large caps {pc(abs(lc['dd3']) if lc.get('dd3') is not None else None)}, small caps {pc(abs(sc['dd3']) if sc.get('dd3') is not None else None)}.",
+        answer=(f"Maximum drawdown is the largest fall in a fund's NAV from a peak to a later low, before it recovered. It answers the question every investor faces: how much could I have been down at the worst moment? "
+                f"Over the last 3 years the median large cap fund's deepest fall was about {pc(abs(lc['dd3']) if lc.get('dd3') is not None else None)}, the median small cap fund's {pc(abs(sc['dd3']) if sc.get('dd3') is not None else None)}. "
+                "Over longer periods that include 2008 or 2020, falls of 35 to 60% have been normal for equity funds."),
+        sections=[
+            ("Why it matters", ["It tells you whether you could have held on. Most investors who lose money in equity funds lose it by selling near the bottom of a fall like this, not because the fund failed."]),
+            ("How to use it", ["ul", ["Compare funds in the same category over the same period.",
+                                      "Ask yourself honestly whether you would hold through that fall with your own money. If not, the category is too risky for you.",
+                                      "Look at how long the fund took to recover, not just how far it fell."]]),
+        ],
+        faq=[("Is a smaller drawdown always better?", "It is easier to live with. But compare with the return: a fund that never falls much may also never rise much."),
+             ("Which period do you use?", "The last 3 and 5 years, shown on every fund page."),
+             ("How much can a small cap fund fall?", "Small cap funds fell 50 to 70% in 2008 and around 40% in early 2020; that is the risk that comes with their higher long-run returns.")],
+        links=[("/learn/downside-capture-ratio/", "Downside capture"), ("/mutual-funds/small-cap/", "Small cap funds compared")],
+    ))
+    asl = f.get("as_lc")
+    G.append(dict(
+        slug="active-share-closet-index-funds",
+        title="Active share: is your fund just an expensive index fund?",
+        seo="Active share and closet index funds in India, with real numbers",
+        desc=(f"Active share measures how different a fund's portfolio is from its index. The median large cap fund's is about {asl[0]:.0f}%; {asl[1]} of {asl[2]} are below 30%." if asl else "Active share measures how different a fund's portfolio is from its index, and how to spot an expensive index-hugger."),
+        answer=("Active share is the share of a fund's portfolio that differs from its index: 0% is an index fund, 100% shares nothing with the index. A fund with a low active share charges active fees for a portfolio close to the index, and after costs it almost has to trail it. "
+                + (f"Among large cap Regular plans, the median active share is about {asl[0]:.0f}%, and {asl[1]} of {asl[2]} are below 30%." if asl else "")),
+        sections=[
+            ("How it is worked out", ["For each stock in the fund or the index, take the difference between its weight in the fund and in the index; add those up and halve the total. We use each fund's latest monthly portfolio, against index funds that track its benchmark."]),
+            ("What we do with it", ["ul", ["A fund with active share below 50% (30% for large caps) and no 3-year return over its index is flagged as a closet indexer on our site, and its rating is capped.",
+                                           "Active share is one input to our ratings for active funds."]]),
+            ("What it does not tell you", ["High active share means different, not better. A very different portfolio can do much better or much worse than the index."]),
+        ],
+        faq=[("What is a good active share?", "Above about 60% for a fund charging active fees is a common guide; large cap funds are naturally lower because their universe is only 100 stocks."),
+             ("Should I replace a low active share fund with an index fund?", "Often worth considering, especially in large caps: the index fund gives a similar portfolio at a fraction of the cost."),
+             ("Where can I see a fund's active share?", "On its page on our site, when its monthly portfolio is available.")],
+        links=[("/learn/index-funds-vs-active-funds/", "Index funds vs active funds"), ("/learn/mutual-fund-portfolio-overlap/", "Fund overlap")],
+    ))
+    G.append(dict(
+        slug="stp-and-swp",
+        title="STP and SWP: moving money in, and taking an income out",
+        seo="STP vs SWP in mutual funds: how they work, tax and when to use each",
+        desc="A systematic transfer plan moves a lump sum into equity gradually; a systematic withdrawal plan pays you a regular income from a fund. How each works, how they are taxed, and when to use them.",
+        answer="A systematic transfer plan (STP) moves a fixed amount every week or month from one fund (usually liquid or arbitrage) into another (usually equity), so a lump sum goes in gradually. A systematic withdrawal plan (SWP) sells a fixed amount every month and pays it to your bank: a regular income from your investments. Each transfer or withdrawal is a redemption, taxed on its gain.",
+        sections=[
+            ("When to use an STP", ["ul", ["A bonus, inheritance or property sale that you want in equity without investing it all on one day.",
+                                           "Typical length: 6 to 12 months, weekly or monthly; longer if a fall right after investing would worry you.",
+                                           "Park the money in a liquid or arbitrage fund first; arbitrage funds are taxed as equity, which helps in higher slabs."]]),
+            ("When to use an SWP", ["ul", ["A regular income in retirement, from a corpus held in hybrid or debt funds (and some equity).",
+                                           "Keep the yearly withdrawal modest relative to the corpus; see our guide to the 4% rule.",
+                                           "Each withdrawal is part capital and part gain, so only the gain is taxed, which often makes an SWP more tax-efficient than interest income."]]),
+            ("Tax and costs", ["Every STP transfer and SWP withdrawal is a sale: units held under 12 months in equity funds pay 20% on their gain, and exit loads apply to units still inside the load period. Start an SWP from units that are over a year old."]),
+        ],
+        faq=[("Is an STP better than a lump sum?", "A lump sum usually ends higher because more money is invested for longer; an STP lowers the regret of investing just before a fall."),
+             ("How much can I withdraw through an SWP?", "Any fixed amount, but if it is more than the corpus earns, the corpus shrinks. See our SWP calculator."),
+             ("Are STP and SWP free?", "The fund houses don't charge for them, but exit loads and tax apply to each transfer or withdrawal.")],
+        links=[("/learn/4-percent-rule-india/", "The 4% rule in India"), ("/learn/sip-vs-lump-sum/", "SIP vs lump sum"), ("/learn/mutual-fund-exit-load/", "Exit loads")],
+    ))
     return G
 
 

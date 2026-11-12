@@ -482,7 +482,23 @@ def page(title, desc, path, body, ld=()):
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
-            f'{HEADER}<main>{body}</main>{footer()}{WA_FLOAT}{HEADER_JS}{MOTION_JS}</body></html>\n')
+            f'{HEADER}<main>{body}{review_cta(path)}</main>{footer()}{WA_FLOAT}{HEADER_JS}{MOTION_JS}</body></html>\n')
+
+
+REVIEW_PATHS = ("/mutual-funds/", "/compare/", "/learn/")
+
+
+def review_cta(path):
+    """the free-review prompt on fund, category, comparison and guide pages (the main funnel into a conversation)"""
+    if not path.startswith(REVIEW_PATHS) or path in ("/mutual-funds/",):
+        return ""
+    wa = wa_link("Hello Aeterna, I'd like a free review of my mutual fund portfolio. I'll send my CAS (Consolidated Account Statement).")
+    return ('<section class="band" style="padding:0 0 36px"><div class="wrap"><div class="card row" style="justify-content:space-between;gap:16px;flex-wrap:wrap;border-left:4px solid var(--teal)">'
+            '<div style="flex:1;min-width:240px"><b style="font:500 19px var(--f-display)">Free portfolio review</b>'
+            '<p class="muted" style="margin:4px 0 0;font-size:14px">Send us your CAS and get a written report: which of your funds to keep, which to exit and when, '
+            'where new SIPs should go, and what each change costs in tax.</p></div>'
+            f'<div class="row" style="gap:8px"><a class="btn primary" href="{wa}" target="_blank" rel="noopener">Get it on WhatsApp</a>'
+            '<a class="btn" href="/invest/portfolio-review/sample/">See a sample</a></div></div></div></section>')
 
 
 def write(path, text):
@@ -626,6 +642,9 @@ def main():
     PL.planner_pages(Bm, urls)
     import learn_pages as LP
     LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
+    if (S / "sample_review.html").exists():      # tools/make_sample_review.py: a made-up portfolio's report
+        write("/invest/portfolio-review/sample/", (S / "sample_review.html").read_text(encoding="utf-8"))
+        urls.append(("/invest/portfolio-review/sample/", "monthly", "0.6"))
     cmp_by = {}
     for (ka, kb), pth in cmp_map.items():
         cmp_by.setdefault(ka, []).append((kb, pth))

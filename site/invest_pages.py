@@ -390,7 +390,7 @@ def _content(B, d):
                     (f"A typical large cap fund's portfolio is {d['lc_vs_idx']:.0f}% the same as a Nifty 50 index fund, at a cost of {d['lc_ter']:.2f}% a year for the Regular plan against {d['idx_ter']:.2f}% for the index fund. Paying active fees for an index-like portfolio is one of the most common costs we find." if d.get("lc_vs_idx") is not None else ""),
                 ]),
                 ("What to bring", ["ul", [
-                    "Your Consolidated Account Statement (CAS) from CAMS, KFintech or MF Central, which lists every mutual fund you hold.",
+                    "Your Consolidated Account Statement (CAS), which lists every mutual fund you hold. On camsonline.com go to Investors, Statements, CAS – CAMS+KFintech; choose 'Detailed' and 'since inception', enter your PAN and email, and set a password. It arrives by email in minutes.",
                     "The CAS from NSDL or CDSL if you hold shares or bonds in a demat account.",
                     "Statements for anything else: PMS, AIFs, deposits, insurance policies.",
                 ]]),
@@ -398,17 +398,24 @@ def _content(B, d):
                     "A clear written summary: what to keep, what to change and why, with the cost and tax of each change. You decide what to act on; we can carry it out for you.",
                 ]),
             ],
-            steps=[("Send your statements", "CAS and anything else you hold."),
-                   ("We analyse", "Overlap, cost, track record, tax and gaps, with our fund data."),
-                   ("We talk it through", "A call to go over the findings."),
-                   ("You decide", "Keep, change or switch, with the tax cost shown first.")],
+            steps=[("Send your statements", "CAS and anything else you hold, on WhatsApp or email."),
+                   ("We analyse", "Overlap, cost, track record, tax lot by lot, and gaps, with our fund data."),
+                   ("You get a written report", "What to keep, exit and start, when, what it costs in tax, and why. See the sample report."),
+                   ("We talk it through, you decide", "Keep, change or switch, with the tax cost shown first.")],
             faq=[("Is the portfolio review free?", "Yes, for a first review. If you then invest through us, we earn commission from the fund houses as described in our disclosures."),
                  ("How do I get my Consolidated Account Statement?", "Request it from the CAMS, KFintech or MF Central websites with your PAN and email; it arrives by email within minutes."),
                  ("How much overlap is too much?", "If two funds share more than about half their portfolios, the second one adds cost more than diversification."),
                  ("Will you tell me to sell everything?", "No. Selling has tax and exit-load costs; we only suggest changes where the benefit is clear after those costs.")],
-            links=[("/#compare", "Compare funds and overlap"), ("/invest/tax-planning/", "Tax planning"), ("/invest/mutual-funds/", "Mutual funds")],
+            links=[("/invest/portfolio-review/sample/", "See a sample report"), ("/portfolio-check/", "Check your overlap now"), ("/#compare", "Compare funds and overlap"),
+                   ("/invest/tax-planning/", "Tax planning"), ("/invest/mutual-funds/", "Mutual funds")],
         ),
     }
+
+
+def REVIEW_BTNS(B):
+    wa = B.wa_link("Hello Aeterna, I'd like a free review of my mutual fund portfolio. I'll send my CAS (Consolidated Account Statement).")
+    return (f'<a class="btn primary" href="{wa}" target="_blank" rel="noopener">Get a free review on WhatsApp</a>'
+            '<a class="btn" href="/invest/portfolio-review/sample/">See a sample report</a>')
 
 
 def invest_pages(B, funds, hold, ins, urls):
@@ -442,7 +449,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
 <h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">{e(c['title'])}</h1>
 <p class="lede" style="margin-top:14px">{e(c['lede'])}</p>
-<div class="row" style="margin-top:20px"><a class="btn primary" href="/#contact">Talk to us</a>{'<a class="btn" href="/mutual-funds/">Browse every fund</a>' if slug == 'mutual-funds' else '<a class="btn" href="/invest/">All solutions</a>'}</div></div>
+<div class="row" style="margin-top:20px">{REVIEW_BTNS(B) if slug == 'portfolio-review' else '<a class="btn primary" href="/#contact">Talk to us</a>' + ('<a class="btn" href="/mutual-funds/">Browse every fund</a>' if slug == 'mutual-funds' else '<a class="btn" href="/invest/">All solutions</a>')}</div></div>
 <div class="inv-facts">{facts}</div></div>
 <div style="margin-top:34px">{secs}
 <div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{steps}</ol></div></div>

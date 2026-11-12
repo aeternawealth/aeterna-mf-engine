@@ -756,7 +756,7 @@ def main():
             crow += f"<tr><td class='l'>{name}</td><td class='num'>{fv}</td><td class='num'>{fm}</td><td class='l'>{word}</td></tr>"
         lc = f["category"].lower()
         cat_html = ((f"<h2 style='margin-top:36px;font-size:26px'>Against other {e(f['category'])} funds</h2>"
-                     + (f"<p style='margin-top:8px;max-width:75ch'>SEBI requires {e(lc)} funds to {e(CAT_INFO[f['category']])}. "
+                     + (f"<p style='margin-top:8px'>SEBI requires {e(lc)} funds to {e(CAT_INFO[f['category']])}. "
                         f"Here is how this fund compares with the typical (median) {e(f.get('plan_type') or '')} plan among {cm.get('ret_1Y_n', 0)} in the category.</p>"
                         if f['category'] in CAT_INFO else "")
                      + "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Measure</th><th>This fund</th><th>Typical fund</th><th class='l'>This fund is</th></tr></thead><tbody>"
@@ -766,11 +766,11 @@ def main():
         if twin and isinstance(f.get("ter"), (int, float)) and isinstance(twin.get("ter"), (int, float)):
             g3 = (f.get("ret_3Y") - twin.get("ret_3Y")) if isinstance(f.get("ret_3Y"), (int, float)) and isinstance(twin.get("ret_3Y"), (int, float)) else None
             if f.get("plan_type") == "Direct":
-                plan_html = (f"<p style='margin-top:12px;max-width:75ch'><b>Direct plan.</b> Bought straight from the fund house, with no distributor commission: expense ratio "
+                plan_html = (f"<p style='margin-top:12px'><b>Direct plan.</b> Bought straight from the fund house, with no distributor commission: expense ratio "
                              f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Regular plan</a>"
                              + (f", and {pct(abs(g3), 2)} a year {'more' if g3 > 0 else 'less'} in return over the last 3 years" if g3 is not None else "") + ".</p>")
             else:
-                plan_html = (f"<p style='margin-top:12px;max-width:75ch'><b>Regular plan.</b> Bought through a distributor, whose commission is part of the expense ratio: "
+                plan_html = (f"<p style='margin-top:12px'><b>Regular plan.</b> Bought through a distributor, whose commission is part of the expense ratio: "
                              f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Direct plan</a>"
                              + (f", a gap of {pct(abs(g3), 2)} a year in return over the last 3 years" if g3 is not None else "")
                              + ". The commission pays for advice, regular reviews and help with paperwork.</p>")
@@ -875,7 +875,7 @@ def main():
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › {e(c)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{e(c)} funds in India</h1>
 <p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
-<p style="margin-top:14px;max-width:72ch">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
+<p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a></div>
 {sub}{tabs}

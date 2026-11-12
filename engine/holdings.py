@@ -47,7 +47,7 @@ def _is_equity_isin(isin: str) -> bool:
 def _find_header(raw: pd.DataFrame):
     for i in range(min(len(raw), 40)):
         vals = [re.sub(r"\s+", " ", str(v)).strip().lower() for v in raw.iloc[i].tolist()]
-        if any("isin" in v for v in vals) and any(re.search(r"nav|net assets|aum", v) for v in vals):
+        if any("isin" in v for v in vals) and any(re.search(r"nav|net assets?\b|aum", v) for v in vals):
             return i, vals
     return None, None
 
@@ -93,7 +93,7 @@ def parse_sheet(raw: pd.DataFrame, sheet_name: str):
     if h is None:
         return None
     ci = _col(vals, r"\bisin\b")
-    cw = _col(vals, r"% ?(to|of) ?(net ?assets|nav|aum)", r"%.*(nav|aum|net assets)", r"net assets")
+    cw = _col(vals, r"% ?(to|of) ?(net ?assets?|nav|aum)", r"%.*(nav|aum|net assets?)", r"net assets")
     cn = _col(vals, r"name of (the )?instrument", r"instrument", r"name of (the )?(security|issuer|company)", r"^name")
     cs = _col(vals, r"industry", r"sector", r"rating")
     if ci is None or cw is None:
@@ -119,7 +119,7 @@ def _header_rows(raw: pd.DataFrame) -> list[int]:
     rows = []
     for i in range(len(raw)):
         vals = [re.sub(r"\s+", " ", str(v)).strip().lower() for v in raw.iloc[i].tolist()]
-        if any(re.fullmatch(r"isin( (no|number|code)\.?)?", v) for v in vals) and any(re.search(r"nav|net assets|aum", v) for v in vals):
+        if any(re.fullmatch(r"isin( (no|number|code)\.?)?", v) for v in vals) and any(re.search(r"nav|net assets?\b|aum", v) for v in vals):
             rows.append(i)
     return rows
 

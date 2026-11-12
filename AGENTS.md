@@ -171,3 +171,15 @@ Do this without being asked.
 - **When ratings change:** on the 11th (after fund houses publish portfolios by the 10th) and the 16th (late portfolios). Daily runs update NAVs and returns only.
 - **Publishing (owner's standing approval, 11 Nov 2026):** the owner has approved publishing without asking each time. Work on `staging`, run the audit, and publish to `main` when nothing is marked FAIL. Keep the live site's data when merging (take `outputs/`, `site/data/`, `site/dist/`, `data/` from `main`). Then tell the owner what went live. Changes to the rating method still get a test and a written explanation first.
 - **Keep staging in step with live:** after every publish to `main`, merge `main` back into `staging` (live data included), so staging always holds everything that is live plus the work in progress. Before starting new work, run `git log origin/staging..origin/main`: it should list nothing but the daily data refreshes. Never commit a code change directly to `main`. If a publish holds back a file that is still in testing on staging, merge `main` back with that file kept from staging (`git checkout staging -- <file>` before committing the merge), or the merge undoes the work in progress.
+
+## Rebalance tool (November 2026)
+
+`run_rebalance.py` + `rebalance/`: a client's CAS (or a broker holdings sheet) and a short client file in, a review
+and rebalance plan out (`clients/<name>/review_<date>.html`, plus lot-level tax workings). Rules are in
+`docs/rebalance_principles.md`, numbers in `rebalance/config.py` (tax rules carry the date they were last checked).
+
+- It only reads the engine's data (`site/data/funds.json`, `data/holdings/`, `data/nav/`, `site/data/series/`).
+- New money goes to A/A+ funds only, one per fund house; B funds are held; C funds or hard flags are exits, timed so
+  tax and exit loads fall first. Every change of shape gets a thesis.
+- `clients/` is git-ignored: no CAS, password or PAN ever goes into the repository.
+- Tests: `python -m pytest tests/test_rebalance.py` (also in the Tests workflow).

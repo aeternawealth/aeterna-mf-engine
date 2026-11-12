@@ -56,3 +56,6 @@ audit/bt_metrics_long.csv
 .claude/skills/design-taste-frontend/
 .claude/skills/impeccable/scripts/bin/
 site/preview_home/.taste-skill/
+
+# client CAS files and parsed data never go in the repository
+clients/

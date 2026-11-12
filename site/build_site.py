@@ -385,8 +385,8 @@ def fit_desc(d, n=158):
     return cut[:cut.rfind(" ")].rstrip(",;:") + "…"
 
 
-THEME_JS = ('<meta name="theme-color" content="#06100d"><script>try{var t=localStorage.getItem("aw-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);'
-            'if(t==="light")document.querySelector(\'meta[name="theme-color"]\').content="#f6f8f7"}}catch(e){}</script>')
+THEME_JS = ('<meta name="theme-color" content="#f6f8f7"><script>try{var t=localStorage.getItem("aw-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);'
+            'if(t==="dark")document.querySelector(\'meta[name="theme-color"]\').content="#06100d"}}catch(e){}</script>')   # light by default; the switch in the header remembers a choice
 
 
 def head(title, desc, path, extra_ld=(), og_type="website"):
@@ -444,7 +444,7 @@ def footer():
 
 
 def page(title, desc, path, body, ld=()):
-    return (f'<!doctype html>\n<html lang="en-IN" data-theme="dark"><head>{head(title, desc, path, ld)}'
+    return (f'<!doctype html>\n<html lang="en-IN" data-theme="light"><head>{head(title, desc, path, ld)}'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
@@ -557,6 +557,17 @@ def main():
     by_cat = {}
     for f in funds:
         by_cat.setdefault(f["category"], []).append(f)
+    CMP_KEYS = ("ret_1Y", "ret_3Y", "ret_5Y", "ter", "vol_3y", "max_drawdown_3y")
+    cat_med = {}
+    for c, lst in by_cat.items():
+        for plan in ("Regular", "Direct"):
+            sub = [x for x in lst if x.get("plan_type") == plan]
+            m = {}
+            for k in CMP_KEYS:
+                v = sorted(x[k] for x in sub if isinstance(x.get(k), (int, float)))
+                m[k] = (v[len(v) // 2] if len(v) % 2 else (v[len(v) // 2 - 1] + v[len(v) // 2]) / 2) if len(v) >= 5 else None
+                m[k + "_n"] = len(v)
+            cat_med[(c, plan)] = m
     order = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused",
              "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund",
              "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Balanced Hybrid", "Equity Savings", "Conservative Hybrid", "Arbitrage"]
@@ -725,12 +736,51 @@ def main():
             rd["hist3y_from"] = dmy(f.get("hist3y_from"))
             range_html = ('<div id="rangeBox"></div><script>(function(){const pct=(v,d=1)=>v==null?"–":(v*100).toFixed(d)+"%",dmy=x=>x;' + RANGE_JS
                           + 'document.getElementById("rangeBox").innerHTML=rangeBlock(' + json.dumps(rd) + ')})();</script>')
+        # how the fund compares with the typical (median) fund of its category and plan
+        cm, crow = cat_med.get((f["category"], f.get("plan_type")), {}), ""
+        lab = {"ret_1Y": ("Return, 1 year", "ret"), "ret_3Y": ("Return, 3 years (a year)", "ret"), "ret_5Y": ("Return, 5 years (a year)", "ret"),
+               "ter": ("Expense ratio", "ter"), "vol_3y": ("Volatility, 3 years", "risk"), "max_drawdown_3y": ("Worst fall, 3 years", "dd")}
+        for k, (name, kind) in lab.items():
+            v, mv = f.get(k), cm.get(k)
+            if not isinstance(v, (int, float)) or mv is None:
+                continue
+            if kind == "ter":
+                word = "cheaper" if v < mv - .005 else "costlier" if v > mv + .005 else "about the same"
+                fv, fm = num(v, 2) + "%", num(mv, 2) + "%"
+            else:
+                d = v - mv
+                same = abs(d) < (.001 if kind == "ret" else .002)
+                word = ("about the same" if same else ("ahead" if d > 0 else "behind") if kind == "ret" else
+                        ("steadier" if d < 0 else "more volatile") if kind == "risk" else ("a smaller fall" if d > 0 else "a deeper fall"))
+                fv, fm = pct(v, 2), pct(mv, 2)
+            crow += f"<tr><td class='l'>{name}</td><td class='num'>{fv}</td><td class='num'>{fm}</td><td class='l'>{word}</td></tr>"
+        lc = f["category"].lower()
+        cat_html = ((f"<h2 style='margin-top:36px;font-size:26px'>Against other {e(f['category'])} funds</h2>"
+                     + (f"<p style='margin-top:8px;max-width:75ch'>SEBI requires {e(lc)} funds to {e(CAT_INFO[f['category']])}. "
+                        f"Here is how this fund compares with the typical (median) {e(f.get('plan_type') or '')} plan among {cm.get('ret_1Y_n', 0)} in the category.</p>"
+                        if f['category'] in CAT_INFO else "")
+                     + "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Measure</th><th>This fund</th><th>Typical fund</th><th class='l'>This fund is</th></tr></thead><tbody>"
+                     + crow + "</tbody></table></div>") if crow else "")
+        # what the plan type means, next to the other plan's cost and return
+        plan_html = ""
+        if twin and isinstance(f.get("ter"), (int, float)) and isinstance(twin.get("ter"), (int, float)):
+            g3 = (f.get("ret_3Y") - twin.get("ret_3Y")) if isinstance(f.get("ret_3Y"), (int, float)) and isinstance(twin.get("ret_3Y"), (int, float)) else None
+            if f.get("plan_type") == "Direct":
+                plan_html = (f"<p style='margin-top:12px;max-width:75ch'><b>Direct plan.</b> Bought straight from the fund house, with no distributor commission: expense ratio "
+                             f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Regular plan</a>"
+                             + (f", and {pct(abs(g3), 2)} a year {'more' if g3 > 0 else 'less'} in return over the last 3 years" if g3 is not None else "") + ".</p>")
+            else:
+                plan_html = (f"<p style='margin-top:12px;max-width:75ch'><b>Regular plan.</b> Bought through a distributor, whose commission is part of the expense ratio: "
+                             f"{num(f['ter'], 2)}% a year against {num(twin['ter'], 2)}% for the <a href='{twin['_url']}'>Direct plan</a>"
+                             + (f", a gap of {pct(abs(g3), 2)} a year in return over the last 3 years" if g3 is not None else "")
+                             + ". The commission pays for advice, regular reviews and help with paperwork.</p>")
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{slug(f['category'])}/">{e(f['category'])}</a> › {e(f['_name'])}</nav>
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">{e(f['_name'])} ({e(f['plan_type'])})</h1>
 <p class="muted" style="margin-top:8px"><a href="/mutual-funds/amc/{slug(f.get('amc') or 'Other')}/">{e(f.get('amc', ''))}</a> · {'benchmark: the median arbitrage fund' if arb and not f.get('benchmark') else ('benchmark: ' + e(BL)) if BL else 'benchmark ' + e(bench) + ' TRI'} · {num(f.get('age_years'), 1)} years old · AMFI code {f['code']}</p>
 {f"<p class='note' style='margin-top:12px'><b>Tax:</b> {e(TAX_TEXT.get(f.get('tax'), ''))}</p>" if f.get('tax') and asset_class(f['category']) in ('Hybrid', 'Debt') else ''}
+{plan_html}
 <div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="/#contact">Ask about this fund</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
@@ -741,6 +791,7 @@ def main():
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>
+{cat_html}
 {liq_html}
 {range_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>
@@ -756,7 +807,7 @@ def main():
                    "description": desc}
         write(f["_url"], page(title, desc, f["_url"], body,
                               (fund_ld, faq_ld, crumbs([("Mutual funds", "/mutual-funds/"), (f["category"], f"/mutual-funds/{slug(f['category'])}/"), (f["_name"], f["_url"])]))))
-        urls.append((f["_url"], "daily", "0.6"))
+        urls.append((f["_url"], "daily", "0.7" if f.get("tier") in ("A+", "A", "B", "C") and asset_class(f["category"]) in ("Equity", "Hybrid") else "0.5"))
 
     # ---- category pages
     cat_cards = []
@@ -867,7 +918,7 @@ def main():
                                    "query-input": "required name=search_term_string"}}
     app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
-    index = ('<!doctype html>\n<html lang="en-IN" data-theme="dark"><head>'
+    index = ('<!doctype html>\n<html lang="en-IN" data-theme="light"><head>'
              + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body

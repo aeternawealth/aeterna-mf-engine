@@ -544,7 +544,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">Menu</button>
     </div>
   </div>
-<script>(function(){var r=document.documentElement,B=[].slice.call(document.querySelectorAll('[data-theme-set]'));function mark(){B.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-theme-set')===(r.getAttribute('data-theme')||'dark'))})}B.forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-theme-set');r.setAttribute('data-theme',t);try{localStorage.setItem('aw-theme',t)}catch(e){}var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f6f8f7':'#06100d';mark();var d=document.getElementById('ddTheme');if(d)d.classList.remove('open')})});mark()})();</script>
+<script>(function(){var r=document.documentElement,B=[].slice.call(document.querySelectorAll('[data-theme-set]'));function mark(){B.forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-theme-set')===(r.getAttribute('data-theme')||'light'))})}B.forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-theme-set');r.setAttribute('data-theme',t);try{localStorage.setItem('aw-theme',t)}catch(e){}var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==='light'?'#f6f8f7':'#06100d';mark();var d=document.getElementById('ddTheme');if(d)d.classList.remove('open')})});mark()})();</script>
 <!-- HEADER-END -->
 </header>
 

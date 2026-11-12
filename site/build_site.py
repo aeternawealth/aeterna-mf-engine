@@ -502,6 +502,35 @@ def review_cta(path):
             '<a class="btn" href="/invest/portfolio-review/sample/">See a sample</a></div></div></div></section>')
 
 
+FC_VER, SERIES_FILE, BENCH_KEYS = "", {}, set()
+FC_CSS = ("<style>.fchart{position:relative;margin-top:14px}.fc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;min-height:34px}"
+          ".fc-key{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}.fc-key i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}"
+          ".fc-key i.dash{background:repeating-linear-gradient(90deg,var(--ink-3) 0 5px,transparent 5px 9px)}.fc-tabs{display:flex;gap:4px;flex-wrap:wrap}"
+          ".fc-tabs button{font:500 12.5px var(--f-mono);padding:5px 11px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);border-radius:999px;cursor:pointer;min-height:32px}"
+          ".fc-tabs button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:var(--on-teal,#fff)}"
+          ".fc-plot{height:250px;margin-top:10px;touch-action:pan-y}.fc-plot svg{display:block;overflow:visible}"
+          ".fc-wrap{position:relative}.fc-tip{position:absolute;top:2px;pointer-events:none;background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;font-size:12.5px;"
+          "box-shadow:0 6px 18px rgba(0,0,0,.14);display:grid;gap:3px;white-space:nowrap;z-index:2}.fc-tip span i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}"
+          ".fc-tip em{font-style:normal;color:var(--ink-3);margin-left:6px}.fc-sum{margin:8px 0 0;font-size:14px;min-height:42px}</style>")
+
+
+def fund_chart(f):
+    """the growth-of-₹10,000 chart (site/fundchart.js), drawn from the published month-end series"""
+    file = SERIES_FILE.get(int(f["code"]))
+    if not file:
+        return ""
+    bk = f.get("benchmark") if f.get("benchmark") in BENCH_KEYS else ""
+    bname = (iname(bk) + " TRI") if bk else ""
+    return (FC_CSS + '<h2 style="margin-top:36px;font-size:26px">Growth of ₹10,000</h2>'
+            f'<div class="card fchart" data-code="{f["code"]}" data-file="{e(file)}" data-bench="{e(bk)}" data-bname="{e(bname)}" data-name="{e(f["_name"])}">'
+            '<div class="fc-head"><div class="fc-key"></div><div class="fc-tabs" role="group" aria-label="Period"></div></div>'
+            '<div class="fc-wrap"><div class="fc-plot"></div><div class="fc-tip" hidden></div></div><p class="fc-sum muted"></p></div>'
+            '<p class="muted" style="font-size:12.5px;margin-top:8px">Month-end values; the last point is the latest NAV. '
+            + ("The index is its total-return version (dividends reinvested). " if bk else "")
+            + 'Returns are after the fund\'s costs. Past performance does not guarantee future returns.</p>'
+            f'<script src="/assets/fundchart.js?v={FC_VER}" defer></script>')
+
+
 def write(path, text):
     p = DIST / path.lstrip("/")
     if path.endswith("/"):
@@ -566,6 +595,18 @@ def main():
     import hashlib
     CSS_VER = hashlib.sha1(css.encode("utf-8")).hexdigest()[:10]   # a new address whenever the styles change, so no browser keeps an old copy
     (DIST / "assets" / "site.css").write_text(css, encoding="utf-8")
+    global FC_VER, SERIES_FILE, BENCH_KEYS
+    fc = (S / "fundchart.js").read_text(encoding="utf-8")
+    FC_VER = hashlib.sha1(fc.encode("utf-8")).hexdigest()[:10]
+    (DIST / "assets" / "fundchart.js").write_text(fc, encoding="utf-8")
+    SERIES_FILE, BENCH_KEYS = {}, set()      # fund code -> the /data/series file holding its month-end NAVs
+    for sp in sorted((S / "data" / "series").glob("*.json")):
+        if sp.stem in ("bench", "last"):
+            if sp.stem == "bench":
+                BENCH_KEYS = set(json.loads(sp.read_text(encoding="utf-8")).get("tri", {}))
+            continue
+        for c in json.loads(sp.read_text(encoding="utf-8")).get("nav", {}):
+            SERIES_FILE.setdefault(int(c), sp.stem)
     for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
         if (S / icon).exists():
             shutil.copy(S / icon, DIST / icon)
@@ -844,6 +885,7 @@ def main():
 </div>
 {review_status(f, RH.get(str(f["code"])))}
 {rh_html}
+{fund_chart(f)}
 <h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>

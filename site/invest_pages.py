@@ -472,7 +472,7 @@ def invest_pages(B, funds, hold, ins, urls):
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a_}} for q, a_ in qa]}
     body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <div class="eyebrow">What we offer</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Everything you invest in, with one team</h1>
-<p class="lede" style="margin-top:12px;max-width:70ch">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in PMS, AIFs, bonds and unlisted shares where they fit, with tax planned in and the whole portfolio reviewed together.</p>
+<p class="lede" style="margin-top:12px">Mutual funds are our largest practice and where most families start. As wealth grows, we bring in PMS, AIFs, bonds and unlisted shares where they fit, with tax planned in and the whole portfolio reviewed together.</p>
 <div class="grid g3" style="margin-top:26px">{cards}</div>
 {table}
 <h2 style="font-size:26px;margin-top:40px">Common questions</h2><div style="margin-top:8px">{faq_html}</div>

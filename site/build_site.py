@@ -826,7 +826,7 @@ def main():
         if len(r3) >= 8 and c not in ("Index Fund", "Sectoral/Thematic", "Arbitrage"):
             lo, hi = r3[0], r3[-1]
             gap = 1e6 * ((1 + hi["ret_3Y"]) ** 3 - (1 + lo["ret_3Y"]) ** 3)
-            gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>₹{gap / 1e5:.1f} lakh</div>"
+            gap_html = (f"<div class='card' style='margin-top:18px'><div class='big-fig'>₹{gap / 1e5:.1f} lakh</div>"
                         f"<p style='margin-top:6px'>The difference, on ₹10 lakh invested three years ago, between the strongest {e(lc if c != 'ELSS' else c)} fund "
                         f"({pct(hi['ret_3Y'])} a year) and the weakest ({pct(lo['ret_3Y'])} a year). Same category, same SEBI rules, same market. "
                         + (f"<b>{beat} of {len(e3)}</b> funds beat {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else 'their index'} over the same period." if e3 else "")
@@ -840,7 +840,7 @@ def main():
             lq = [f for f in reg if f.get("excess_vs_liquid_post_tax_3y") is not None]
             beat_l = sum(1 for f in lq if f["excess_vs_liquid_post_tax_3y"] > 0)
             if lq:
-                gap_html = (f"<div class='card' style='margin-top:18px;max-width:780px'><div class='big-fig'>{beat_l} of {len(lq)}</div>"
+                gap_html = (f"<div class='card' style='margin-top:18px'><div class='big-fig'>{beat_l} of {len(lq)}</div>"
                             f"<p style='margin-top:6px'>arbitrage funds (Regular plans with 3 years of history) beat the median liquid fund over 3 years <b>after tax</b> for an investor in the 30% slab. "
                             f"Before tax, {sum(1 for f in lq if (f.get('excess_vs_liquid_3y') or 0) > 0)} did.</p>"
                             "<p class='muted' style='font-size:12.5px;margin-top:6px'>Liquid-fund gains taxed at 31.2%, arbitrage gains at 13% (held over a year). Past returns, not a forecast.</p></div>")

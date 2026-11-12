@@ -1,0 +1,6 @@
+2110775 data/holdings/2026-10/_top.json
+66864 data/holdings/2026-10/_mapping_report.csv
+120 data/holdings/2026-10/_download_log.csv
+82431 data/holdings/2026-10/holdings_metrics.csv
+183822 data/holdings/2026-10/holdings_valid.csv
+1653932 data/holdings/2026-10/_weights.csv

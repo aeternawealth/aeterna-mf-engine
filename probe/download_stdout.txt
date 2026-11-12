@@ -1,0 +1,2 @@
+  NOT_YET WhiteOak-Capital-Mutual-Fund  adapter found no files for this month
+  holdings download: 0/1 AMCs OK, 1 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10

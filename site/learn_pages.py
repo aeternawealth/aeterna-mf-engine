@@ -23,7 +23,22 @@ def _figs(funds, ins):
     reg = [x for x in funds if x["plan_type"] == "Regular" and x.get("ter") is not None]
     f["reg_ter"] = {c: st.median([x["ter"] for x in reg if x["category"] == c]) for c in ("Large Cap", "Flexi Cap", "Mid Cap", "Small Cap")
                     if any(x["category"] == c for x in reg)}
+    f["cat"] = {c: _cstat(funds, c) for c in ("ELSS", "Flexi Cap", "Multi Cap", "Small Cap", "Large Cap")}
     return f
+
+
+def _cstat(funds, c):
+    """category figures for the guides: Regular plans unless stated"""
+    R = [x for x in funds if x["category"] == c and x["plan_type"] == "Regular"]
+    D = [x for x in funds if x["category"] == c and x["plan_type"] == "Direct"]
+    med = lambda L, k: st.median([x[k] for x in L if x.get(k) is not None]) if any(x.get(k) is not None for x in L) else None
+    e3 = [x for x in R if x.get("excess_3Y") is not None]
+    return {"n": len({x.get("pair_key") for x in R}), "ter_r": med(R, "ter"), "ter_d": med(D, "ter"),
+            "beat3": sum(1 for x in e3 if x["excess_3Y"] > 0), "n3": len(e3), "ret3": med(R, "ret_3Y"),
+            "large": med(R, "large_pct"), "mid": med(R, "mid_pct"), "small": med(R, "small_pct"),
+            "small_hi": max((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
+            "small_lo": min((x["small_pct"] for x in R if x.get("small_pct") is not None), default=None),
+            "dd3": med(R, "max_drawdown_3y"), "down": med(R, "downside_capture_3y")}
 
 
 def _fv_sip(monthly, years, r):
@@ -247,6 +262,156 @@ def guides(d, f):
                  ("Does the 4% rule include tax?", "No. Withdrawals from equity and debt funds are taxed when you redeem; allow for that in the spending figure, or keep the rate a little lower.")],
             links=[("/plan/", "Work out your own freedom number"), ("/calculators/", "Calculators")],
         ))
+    G += more_guides(d, f)
+    return G
+
+
+def more_guides(d, f):
+    """ELSS, exit loads, when to sell, flexi vs multi cap, how many funds (added Nov 2026)"""
+    P = lambda v, n=2: "–" if v is None else f"{v:.{n}f}%"
+    pc = lambda v: "–" if v is None else f"{v * 100:.1f}%"
+    C = f["cat"]
+    el, fx, mc = C["ELSS"], C["Flexi Cap"], C["Multi Cap"]
+    ov = d.get("overlap", {})
+    tax80 = 150000 * 0.312
+    G = []
+    G.append(dict(
+        slug="elss-tax-saving-mutual-funds",
+        title="ELSS funds: the tax saving, the 3-year lock-in, and who they still suit",
+        seo="ELSS tax saving mutual funds: 80C, lock-in, old vs new regime",
+        desc=f"ELSS explained: up to ₹1.5 lakh deduction under 80C in the old tax regime (worth up to ₹{tax80:,.0f}), a 3-year lock-in per instalment, how {el['n']} ELSS funds compare, and when ELSS still makes sense.",
+        answer=(f"An ELSS fund is a diversified equity fund with a 3-year lock-in. Under the old tax regime, up to ₹1.5 lakh a year invested in it is deductible under Section 80C, which saves up to ₹{tax80:,.0f} for someone in the 30% slab (with cess). "
+                "Under the new regime, which is the default, there is no 80C deduction, so ELSS is just an equity fund with a lock-in. Choose it for the tax saving only if you file under the old regime."),
+        sections=[
+            ("How it works", ["ul", ["At least 80% in equity, across company sizes; most ELSS funds look like flexi cap funds.",
+                                     "Each purchase is locked for 3 years from its own date. A monthly SIP means each instalment unlocks 3 years after it was made.",
+                                     "The shortest lock-in of the Section 80C options (PPF: 15 years; tax-saving FDs: 5 years).",
+                                     "After the lock-in, gains are taxed like any equity fund: 12.5% on long-term gains above ₹1.25 lakh a year."]]),
+            ("Old regime or new?", [f"The deduction exists only in the old tax regime. If your other deductions (home-loan interest, HRA, 80D) don't make the old regime cheaper for you, ELSS saves no tax; then an ordinary flexi cap fund does the same job without the lock-in. Check which regime you file under before buying ELSS for tax."]),
+            ("The numbers today", ["ul", [f"{el['n']} ELSS schemes; median expense ratio {P(el['ter_r'])} for Regular plans and {P(el['ter_d'])} for Direct.",
+                                          f"{el['beat3']} of {el['n3']} Regular plans beat their index (Nifty 500 total return) over the last 3 years." if el["n3"] else "",
+                                          f"Median 3-year return: {pc(el['ret3'])} a year (Regular plans, past returns, not a forecast)." if el["ret3"] is not None else ""]]),
+            ("Using it well", ["ul", ["Invest through the year by SIP rather than in a rush in March: you avoid putting the whole year's amount in at one price.",
+                                      "Don't redeem the moment the lock-in ends just because you can; treat it as part of your equity allocation.",
+                                      "One ELSS fund is enough. It counts towards your flexi-cap-style holdings, so check overlap with them."]]),
+        ],
+        faq=[("Can I withdraw ELSS before 3 years?", "No. Each investment is locked for 3 years from its own date, even in an emergency."),
+             ("Is ELSS worth it under the new tax regime?", "Not for tax. Without the 80C deduction it is an ordinary equity fund with a 3-year lock-in."),
+             ("How much can I claim?", "Up to ₹1.5 lakh a year under Section 80C, shared with PPF, EPF, life insurance premiums, home-loan principal and other 80C items.")],
+        links=[("/mutual-funds/elss/", "Every ELSS fund compared"), ("/mutual-funds/elss/top-rated/", "Top-rated ELSS funds this month"), ("/learn/capital-gains-tax-on-mutual-funds/", "Tax on fund gains")],
+    ))
+    G.append(dict(
+        slug="mutual-fund-exit-load",
+        title="Exit loads on mutual funds: what they are and how to avoid paying them",
+        seo="Mutual fund exit load explained: equity, liquid, arbitrage, SIP and STP",
+        desc="What a mutual fund exit load is, the usual charges for equity, liquid, arbitrage and index funds, how it applies to SIPs, switches and STPs, and how to avoid paying it.",
+        answer=("An exit load is a charge for redeeming units within a set period after buying them, deducted from the money you receive. Most equity funds charge about 1% on units sold within 12 months; ELSS has a lock-in instead; liquid funds have a tiny graded charge for the first 6 days; "
+                "arbitrage funds often charge about 0.25% within a month. Each SIP instalment has its own clock, so time your redemptions by the age of each instalment."),
+        sections=[
+            ("Typical exit loads", ["ul", ["Equity funds (large, mid, small, flexi cap and similar): usually 1% within 12 months; some use 6 months or a graded scale.",
+                                           "ELSS: no exit load, but a 3-year lock-in.",
+                                           "Liquid funds: a small graded load (a few thousandths of a percent) for redemptions within 6 days, then nil.",
+                                           "Arbitrage funds: commonly about 0.25% within 15 to 30 days.",
+                                           "Index funds: often nil or a small load for a few days or weeks.",
+                                           "Debt funds: often nil; some charge for short periods. The scheme document has the exact terms."]]),
+            ("Where it catches people out", ["ul", ["SIPs: each instalment is a separate purchase. Redeeming everything after 13 months of SIP still charges the load on the last 12 instalments.",
+                                                   "Switches between funds, and Regular to Direct, count as a redemption, so the load applies.",
+                                                   "STPs and SWPs are a series of redemptions; transfers out of units still inside the load period are charged.",
+                                                   "Units go out first in, first out: the oldest units are sold first."]]),
+            ("How it works with tax", ["The load is deducted from the redemption value, so your capital gain is worked out on what you actually receive. It is a cost on top of any tax. The load goes back into the scheme for the remaining investors, not to the fund house's profit."]),
+            ("How to avoid it", ["ul", ["Check the load period before redeeming; waiting a few weeks often removes it, and after 12 months the gain also becomes long-term.",
+                                        "Redeem the older units: if you need part of the money, the oldest units leave first and are usually out of the load period.",
+                                        "For money you may need soon, use liquid or arbitrage funds rather than equity funds."]]),
+        ],
+        faq=[("Is exit load charged on gains or on the whole amount?", "On the redemption value of the units sold within the load period, whether or not they made a gain."),
+             ("Does exit load apply to SIP?", "Yes, to each instalment separately, counted from that instalment's date."),
+             ("Where do I find a fund's exit load?", "In the scheme information document and on the fund's factsheet; it can change, and the terms when you invested apply to those units.")],
+        links=[("/learn/capital-gains-tax-on-mutual-funds/", "Tax on fund gains"), ("/calculators/capital-gains-tax/", "Capital gains tax calculator")],
+    ))
+    G.append(dict(
+        slug="when-to-sell-a-mutual-fund",
+        title="When to sell a mutual fund, and when not to",
+        seo="When to sell a mutual fund: six good reasons and the costs of selling",
+        desc="Six good reasons to sell or switch a mutual fund, the reasons that are not, what selling costs in tax and exit load, and how to do it in the cheapest order.",
+        answer=("Sell or switch a fund only for a reason that will still matter in five years: your goal is near, your mix has drifted far from plan, you own too many overlapping funds, the fund has broken (a manager change, a mandate breach, years at the bottom of its category), "
+                "it costs much more than similar funds, or a tax opportunity. One bad year is not a reason. Every sale costs tax and often an exit load, so first redirect new money, and sell last."),
+        sections=[
+            ("Six good reasons", ["ul", ["Your goal is close: money needed within 3 to 5 years should move step by step from equity to debt or arbitrage funds.",
+                                         "Your mix has drifted: one part of your portfolio is far above its target, say small caps grown from 25% to 40%.",
+                                         "Too many funds that hold the same stocks: two funds sharing more than half their portfolios are close to one bet.",
+                                         "The fund has broken: a new fund manager with a different style, a merger, a portfolio that breaks its category's rules, or years in the bottom third of its category with no sign of change.",
+                                         "Cost: much higher expense ratio than similar funds for nothing extra.",
+                                         "Tax: booking up to ₹1.25 lakh of long-term gains each year tax-free and reinvesting."]]),
+            ("Reasons that are not good enough", ["ul", ["One bad year, or a fall in the market.",
+                                                         "Another fund did better last year: last year's leaders are often not next year's.",
+                                                         "A rating moved one step: ratings describe the record so far; a fund that slips from A to B is usually worth holding."]]),
+            ("What selling costs", [f"Equity units held 12 months or less: 20% tax on the gain plus usually a 1% exit load. Over 12 months: 12.5% on gains above ₹1.25 lakh a year, often no load. Waiting a few weeks can turn a 20% tax into zero within the exemption. See our guides on tax and exit loads."]),
+            ("The cheapest order", ["ul", ["Stop new money into the fund, and point SIPs at the funds you want more of. This costs nothing.",
+                                           "Move money parked in liquid or arbitrage funds with a weekly transfer.",
+                                           "Sell the oldest units first: they are usually long-term and out of any exit load.",
+                                           "Sell the rest as each lot turns 12 months old, using the ₹1.25 lakh exemption each financial year.",
+                                           "Write down why you sold, and what would make you buy back."]]),
+        ],
+        faq=[("Should I sell a fund that is down?", "Not for that reason alone. Check whether the fund has fallen with its category and index, or behind them for years."),
+             ("How often should I review my funds?", "Once a year, and after any large market move or change in your goals. Monthly checking leads to too much trading."),
+             ("Is switching from Regular to Direct a sale?", "Yes: tax and exit load apply as for any redemption.")],
+        links=[("/invest/portfolio-review/", "Portfolio review"), ("/portfolio-check/", "Check your portfolio's overlap"), ("/learn/mutual-fund-exit-load/", "Exit loads explained")],
+    ))
+    G.append(dict(
+        slug="flexi-cap-vs-multi-cap",
+        title="Flexi cap vs multi cap funds: the difference that matters",
+        seo="Flexi cap vs multi cap funds: SEBI rules, small-cap exposure, which to choose",
+        desc=(f"Flexi cap funds can hold any mix of company sizes; multi cap funds must hold at least 25% each in large, mid and small caps. What that means for risk, with figures from {fx['n']} flexi cap and {mc['n']} multi cap funds."),
+        answer=(f"A multi cap fund must keep at least 25% each in large, mid and small companies, so it always has a sizeable small-cap share: the median multi cap fund holds about {P(mc['small'], 0)} in small caps. "
+                f"A flexi cap fund can hold any mix and usually leans to large companies: the median holds about {P(fx['small'], 0)} in small caps. "
+                "Choose multi cap for a fixed spread across sizes and more small-cap risk; flexi cap for a manager who can move between sizes, usually with less risk."),
+        sections=[
+            ("The SEBI rules", ["ul", ["Multi cap: at least 75% in equity, with at least 25% each in large caps (top 100), mid caps (101 to 250) and small caps (beyond 250).",
+                                       "Flexi cap: at least 65% in equity, in any proportion of large, mid and small caps."]]),
+            ("What they actually hold", ["ul", [f"Median flexi cap fund: about {P(fx['large'], 0)} large, {P(fx['mid'], 0)} mid, {P(fx['small'], 0)} small caps (ranging from {P(fx['small_lo'], 0)} to {P(fx['small_hi'], 0)} in small caps)." if fx["large"] is not None else "",
+                                                f"Median multi cap fund: about {P(mc['large'], 0)} large, {P(mc['mid'], 0)} mid, {P(mc['small'], 0)} small caps." if mc["large"] is not None else "",
+                                                "Our figures use each fund's latest monthly portfolio and AMFI's list of company sizes; the remainder is cash, foreign shares or companies not on the list."]]),
+            ("How they have behaved", ["ul", [f"Flexi cap: {fx['beat3']} of {fx['n3']} Regular plans beat the Nifty 500 total-return index over 3 years; median deepest fall in that time {pc(abs(fx['dd3']) if fx['dd3'] is not None else None)}." if fx["n3"] else "",
+                                              f"Multi cap: {mc['beat3']} of {mc['n3']} beat the Nifty 500 Multicap 50:25:25 index; median deepest fall {pc(abs(mc['dd3']) if mc['dd3'] is not None else None)}." if mc["n3"] else "",
+                                              "Each is measured against its own index, so compare funds within a category rather than across the two."]]),
+            ("Which to choose", ["ul", ["You want one fund to cover all company sizes, with steady small-cap exposure: multi cap.",
+                                        "You want the manager to decide, and usually a gentler ride: flexi cap.",
+                                        "If you already own a small cap fund, a multi cap adds more of the same small-cap risk; a flexi cap overlaps less.",
+                                        "Holding both is reasonable only if their portfolios overlap less than about half."]]),
+        ],
+        faq=[("Is multi cap riskier than flexi cap?", "Usually, because it must hold at least 25% in small caps, which fall harder in bad markets."),
+             ("Can a flexi cap fund hold only large caps?", "Yes; SEBI sets no minimum for any company size, only for equity as a whole."),
+             ("Which index are they compared with?", "Flexi cap with the Nifty 500 total-return index; multi cap with the Nifty 500 Multicap 50:25:25 index, which keeps the same 25% small-cap floor.")],
+        links=[("/mutual-funds/flexi-cap/top-rated/", "Top-rated flexi cap funds"), ("/mutual-funds/multi-cap/top-rated/", "Top-rated multi cap funds"), ("/#compare", "Compare two funds")],
+    ))
+    G.append(dict(
+        slug="how-many-mutual-funds-should-i-own",
+        title="How many mutual funds should you own?",
+        seo="How many mutual funds should I own? Why 4 to 7 is usually enough",
+        desc="How many mutual funds is enough: why 4 to 7 equity funds usually cover everything, how overlap makes extra funds pointless, and how to cut a long list down.",
+        answer=("For most people, 4 to 7 equity funds is enough: one or two per role (a large cap or index core, a flexi or multi cap, a mid cap, a small cap if your horizon is long), plus a liquid or arbitrage fund for short-term money. "
+                "Beyond that, extra funds mostly hold the same stocks again: " + (f"India's five largest large cap funds share about {ov['Large Cap']:.0f}% of their portfolios pairwise. " if "Large Cap" in ov else "") + "More funds add paperwork, not diversification."),
+        sections=[
+            ("One fund per job", ["ul", ["Core: a large cap or Nifty 50 / Nifty 100 index fund.",
+                                         "All sizes: a flexi cap or multi cap fund.",
+                                         "Growth: a mid cap or large & mid cap fund.",
+                                         "Higher growth, higher swings: a small cap fund, only for money you won't need for 7 to 10 years.",
+                                         "Short-term money: a liquid or arbitrage fund, not equity."]]),
+            ("Why more funds don't help", [("Diversified funds in the same category hold many of the same companies. " + (f"Among the five largest flexi cap funds, any two share about {ov['Flexi Cap']:.0f}% of their portfolios; among mid cap funds about {ov.get('Mid Cap', 0):.0f}%. " if "Flexi Cap" in ov else "")
+                                            + "Ten funds can amount to the same thirty stocks at a higher total cost, with ten statements and ten nominations to keep up.")]),
+            ("Cutting a long list down", ["ul", ["Group your funds by role (core, all sizes, mid, small, short-term).",
+                                                 "Within each group, keep the one or two with the best long-run record against their index and the least overlap with each other.",
+                                                 "Point SIPs only at the funds you keep; stop new money into the rest.",
+                                                 "Sell the others in a tax-sensible order: oldest units first, within the yearly ₹1.25 lakh exemption where you can (see our guide on when to sell)."]]),
+            ("When more funds make sense", ["ul", ["Different fund houses for the same role, so one house's style doesn't dominate.",
+                                                   "Separate goals with different time frames, such as retirement and a child's education.",
+                                                   "Very large portfolios, where a second fund in a role caps the risk of one manager."]]),
+        ],
+        faq=[("Is it bad to own 10 or more mutual funds?", "Not harmful in itself, but it usually means heavy overlap and more cost and paperwork than needed."),
+             ("Should I own funds from different fund houses?", "Yes, where you can: a single house's investment style can lag for years."),
+             ("How do I check overlap?", "Use our portfolio check or the compare tool: overlap above about half means two funds are close to one bet.")],
+        links=[("/portfolio-check/", "Check your portfolio's overlap"), ("/learn/when-to-sell-a-mutual-fund/", "When to sell a fund"), ("/invest/portfolio-review/", "Portfolio review")],
+    ))
     return G
 
 
@@ -308,6 +473,6 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
 <p style="margin-top:22px"><a class="btn" href="/insights/">This month's insights</a> <a class="btn" href="/calculators/">Calculators</a></p>
 </div></div></section>"""
     B.write("/learn/", B.page("Investor guides: mutual funds, SIPs, tax, PMS | Aeterna Wealth",
-                              "Straight answers to the questions Indian investors ask most: Regular vs Direct, choosing a fund, SIP vs lump sum, overlap, capital-gains tax, PMS and index funds.",
+                              "Straight answers to the questions Indian investors ask most: Regular vs Direct, choosing a fund, SIP vs lump sum, overlap, tax, exit loads, ELSS, when to sell, flexi vs multi cap and PMS.",
                               "/learn/", body, (B.crumbs([("Learn", "/learn/")]),)))
     urls.append(("/learn/", "weekly", "0.8"))

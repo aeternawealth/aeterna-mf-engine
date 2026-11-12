@@ -150,7 +150,149 @@ def canara(month: str) -> list[str]:
     return list(dict.fromkeys(out))
 
 
+# HSBC: every scheme's monthly portfolio sits at a fixed address,
+# .../portfolios/document-<DDMMYYYY>/hsbc-<scheme>-<DD>-<mon>-<YYYY>.xlsx (probe of 12 Nov 2026). The scheme list comes
+# from the information library when it loads (it often times out from cloud servers), otherwise from this list.
+HSBC_SCHEMES = ['aggressive-hybrid-active-fof', 'aggressive-hybrid-fund', 'arbitrage-fund', 'asia-pacific-ex-japan-div-yieldfund', 'balanced-advantage-fund', 'banking-and-psu-debt-fund', 'brazil-fund', 'business-cycles-fund', 'conservative-hybrid-fund', 'consumption-fund', 'corporate-bond-fund', 'credit-risk-fund', 'crisil-ibx-gilt-june-2027-index-fund', 'crl-ibx-50-50-sdl-apr-2028-index-fund', 'dynamic-term-fund', 'elss-tax-saver-fund', 'equity-savings-fund', 'financial-services-fund', 'flexi-cap-fund', 'focused-fund', 'gilt-fund', 'global-emerging-markets-fund', 'gold-etf', 'gold-etf-fof', 'income-plus-arbitrage-active-fof', 'india-export-opportunities-fund', 'infrastructure-fund', 'large-cap-fund', 'large-mid-cap-fund', 'liquid-fund', 'medium-term-fund', 'medium-to-long-term-fund', 'midcap-fund', 'money-market-fund', 'multi-asset-active-fof', 'multi-asset-allocation-fund', 'multi-cap-fund', 'nifty-50-index-fund', 'nifty-next-50-index-fund', 'overnight-fund', 'short-term-fund', 'small-cap-fund', 'ultra-short-term-fund', 'ultra-short-to-short-term-fund', 'value-fund']
+
+
+def _month_end_days(month: str) -> list:
+    """the calendar month-end and, when that falls on a weekend, the last business day before it"""
+    end = pd.Period(month).end_time.normalize()
+    days = [end]
+    if end.weekday() >= 5:
+        days.append(end - pd.offsets.BDay(1))
+    return days
+
+
+def hsbc(month: str) -> list[str]:
+    base = "https://www.assetmanagement.hsbc.co.in/-/media/files/attachments/india/mutual-funds/portfolios/"
+    slugs = set(HSBC_SCHEMES)
+    try:
+        r = requests.get("https://www.assetmanagement.hsbc.co.in/en/mutual-funds/investor-resources/information-library", headers=UA, timeout=40)
+        slugs |= set(re.findall(r"portfolios/document-\d{8}/hsbc-([a-z0-9-]+?)-\d{2}-[a-z]{3}-\d{4}\.xlsx", r.text, re.I))
+    except Exception:
+        pass
+    out = []
+    for d in _month_end_days(month):
+        folder = "document-" + d.strftime("%d%m%Y") + "/"
+        stamp = (d.strftime("%d") + "-" + d.strftime("%b") + "-" + d.strftime("%Y")).lower()
+        out += [base + folder + "hsbc-" + s + "-" + stamp + ".xlsx" for s in sorted(slugs) if not _SKIP.search(s.replace("-", " "))]
+    return out
+
+
+def taurus(month: str) -> list[str]:
+    """taurusmutualfund.com/monthly-portfolio: a Drupal view filtered by year and month ids, read from its own dropdowns.
+    File names carry the month, e.g. Taurus_Mid_Cap_Fund_Monthly_Portfolio_Report_Performance_September_2026.xlsx;
+    links can start with a space."""
+    p = pd.Period(month)
+    page = "https://taurusmutualfund.com/monthly-portfolio"
+    r = requests.get(page, headers=UA, timeout=60)
+    if not r.ok:
+        return []
+    ids = {lab.strip().lower(): v for v, lab in re.findall(r'<option[^>]*value="(\d+)"[^>]*>([^<]+)</option>', r.text)}
+    y, mo = ids.get(str(p.year)), ids.get(p.strftime("%B").lower())
+    html = r.text
+    if y and mo:
+        q = requests.get(page, params={"field_monthly_portfolio_target_id": y, "field_month_target_id": mo}, headers=UA, timeout=60)
+        html = q.text if q.ok else html
+    tag = (p.strftime("%B") + "_" + str(p.year)).lower()
+    out = []
+    for l in re.findall(r'href="\s*([^"]+?\.(?:xlsx?|zip))\s*"', html, re.I):
+        if tag in l.lower():
+            out.append(l if l.startswith("http") else "https://taurusmutualfund.com" + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
+
+
+def _dbg(amc, label, text):
+    """with AETERNA_ADAPTER_DEBUG set (the probe workflow), keep what each step of an adapter received"""
+    import os
+    d = os.environ.get("AETERNA_ADAPTER_DEBUG")
+    if d:
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, f"adapter_{amc}.txt"), "a", encoding="utf-8") as fh:
+            fh.write(f"=== {label}\n{str(text)[:20000]}\n")
+
+
+def lic(month: str) -> list[str]:
+    """licmf.com/downloads/monthly-portfolio: per scheme, category -> scheme list, scheme -> name, (scheme, year) -> months,
+    then the files (jQuery posts read from the page on 12 Nov 2026)."""
+    p = pd.Period(month)
+    base = "https://www.licmf.com"
+    s = requests.Session()
+    s.headers.update({**UA, "X-Requested-With": "XMLHttpRequest", "Referer": base + "/downloads/monthly-portfolio"})
+    try:
+        s.get(base + "/downloads/monthly-portfolio", timeout=60)
+    except Exception:
+        return []
+    out = []
+    for cat in ("Equity", "Hybrid", "ETFs & Index Funds"):
+        r = s.post(base + "/downloads/portfolio-filter-options", data={"fund_category": cat, "filter": "category"}, timeout=60)
+        _dbg("lic", f"schemes {cat} {r.status_code}", r.text)
+        for code, _name in re.findall(r"""<option[^>]*value=["']([^"']*)["'][^>]*>([^<]+)</option>""", r.text if r.ok else ""):
+            if not code.strip():
+                continue
+            name = s.post(base + "/downloads/portfolio-funds", data={"scheme_code": code}, timeout=60).text.strip()
+            months = s.post(base + "/downloads/portfolio-filter-options",
+                            data={"year": p.year, "filter": "year", "type": "monthly_portfolio", "scheme_code": code}, timeout=60).text
+            _dbg("lic", f"name/months {code}", name + " | " + months)
+            mv = None
+            for v, label in re.findall(r"""<option[^>]*value=["']([^"']*)["'][^>]*>([^<]+)</option>""", months):
+                if label.strip().lower() in (p.strftime("%B").lower(), p.strftime("%b").lower()) or v.strip() in (str(p.month), f"{p.month:02d}"):
+                    mv = v
+                    break
+            if not mv:
+                continue
+            files = s.post(base + "/downloads/portfolio-files",
+                           data={"scheme_code": code, "fund_name": name, "type": "monthly_portfolio", "month": mv, "year": p.year}, timeout=60).text
+            _dbg("lic", f"files {code}", files)
+            for l in re.findall(r"""href=["']\s*([^"']+?\.(?:xlsx?|zip))\s*["']""", files, re.I):
+                out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
+
+
+def sundaram(month: str) -> list[str]:
+    """sundarammutual.com/Monthly-Fortnightly-Adhoc-Portfolios: an Ajax.NET method GetCategory('Monthly') returns the list.
+    The handler's address (App_Web_<hash>.ashx) changes when the site is redeployed, so it is read from the page."""
+    p = pd.Period(month)
+    base = "https://www.sundarammutual.com"
+    s = requests.Session()
+    s.headers.update(UA)
+    page = s.get(base + "/Monthly-Fortnightly-Adhoc-Portfolios", timeout=60).text
+    m = re.search(r'(/ajax/Modules_Disclosure_Monthly_Fortnightly_Adhoc_Portfolios,[^"\']+?\.ashx)', page)
+    _dbg("sundaram", "handler", m.group(1) if m else "not found; page bytes %d" % len(page))
+    if not m:
+        return []
+    # the handler serves its own proxy script: read the parameter name GetCategory expects, then call it in the
+    # Ajax.NET wire format (one "name=value" per line), falling back to the AjaxPro JSON format
+    js = s.get(base + m.group(1), timeout=60).text
+    _dbg("sundaram", "proxy", js)
+    pm = re.search(r'GetCategory\s*[:=]\s*function\s*\(\s*([A-Za-z_]\w*)', js) or re.search(r'"GetCategory"\s*,\s*\{\s*"([^"]+)"', js)
+    pname = pm.group(1) if pm else "Category"
+    hdr = {"Referer": base + "/Monthly-Fortnightly-Adhoc-Portfolios"}
+    r = s.post(base + m.group(1) + "?_method=GetCategory&_session=no", data=f"{pname}=Monthly\r\n",
+               headers={**hdr, "Content-Type": "text/plain; charset=utf-8"}, timeout=60)
+    if "ajax_error" in r.text or not r.ok:
+        r = s.post(base + m.group(1), data='{"%s":"Monthly"}' % pname,
+                   headers={**hdr, "Content-Type": "text/plain; charset=utf-8", "X-AjaxPro-Method": "GetCategory"}, timeout=60)
+    text = r.text.encode().decode("unicode_escape", errors="ignore") if r.ok else ""
+    _dbg("sundaram", f"GetCategory {r.status_code}", r.text)
+    toks = (p.strftime("%B").lower(), p.strftime("%b").lower())
+    out = []
+    # the month is in the link text ("Monthly Portfolio Disclosure Equity & Fund of Funds - Oct 2026"), not the file name
+    text = text.replace("\\'", "'").replace('\\"', '"')
+    for l, label in re.findall(r"""<a[^>]*href=["']([^"']+?\.(?:xlsx?|zip))["'][^>]*>(.*?)</a>""", text, re.I | re.S):
+        low = re.sub(r"<[^>]+>", " ", label).lower() + " " + l.lower()
+        if str(p.year) in low and any(re.search(r"\b" + t + r"\b", low) for t in toks) and not re.search(r"\bdebt\b", low):
+            out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
+    return list(dict.fromkeys(out))
+
+
 AMC_ADAPTERS = {
+    "LIC-Mutual-Fund": lic,
+    "Sundaram-Mutual-Fund": sundaram,
+    "HSBC-Mutual-Fund": hsbc,
+    "Taurus-Mutual-Fund": taurus,
     "Canara-Robeco-Mutual-Fund": canara,
     "Groww-Mutual-Fund": groww,
     "Motilal-Oswal-Mutual-Fund": motilal,

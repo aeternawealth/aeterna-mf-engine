@@ -30,7 +30,7 @@ jobs:
           if [ -n "$URLS" ]; then python tools/probe_amc.py /tmp/probe $URLS; fi
       - name: Downloader test
         if: ${{ inputs.download != '' }}
-        env: { DL: "${{ inputs.download }}" }
+        env: { DL: "${{ inputs.download }}", AETERNA_ADAPTER_DEBUG: /tmp/probe }
         run: |
           set -- $DL
           python -m engine.amc_downloader --month "$1" --only "$2" | tee /tmp/probe/download_stdout.txt || true

@@ -324,6 +324,10 @@ def _check_portfolios(folder: Path, st: str, info: str):
         except Exception:
             continue
     names = ", ".join(sorted(p.name for p in files)[:3])
+    dbg = os.environ.get("AETERNA_ADAPTER_DEBUG")
+    if dbg:  # probe runs: keep the rejected files so the parser can be taught their layout
+        for p in files[:4]:
+            shutil.copy(p, Path(dbg) / ("rejected_" + folder.name + "_" + p.name))
     shutil.rmtree(folder, ignore_errors=True)
     # only other documents for the month (AUM, investor complaints, daily reports, a debt-only fund): the equity
     # portfolio is not out yet, so the next run retries; FAILED is kept for a file that claims to be a portfolio

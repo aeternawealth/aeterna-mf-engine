@@ -9,10 +9,17 @@ ACR = {"SBI", "ICICI", "HDFC", "UTI", "DSP", "LIC", "HSBC", "PGIM", "ITI", "JM",
        "NFO", "GDP", "TATA", "ONE", "AI"}
 
 
+NICE_WORD = {"TRUSTMF": "TrustMF", "BANDHAN": "Bandhan", "NAVI": "Navi", "QUANT": "Quant", "SAMCO": "Samco", "GROWW": "Groww"}
+
+
 def nice(name):
-    """'SBI CONTRA FUND' -> 'SBI Contra Fund'; names already in mixed case are left alone."""
-    if not name or not name.isupper():
+    """'SBI CONTRA FUND' -> 'SBI Contra Fund'; 'BANDHAN Small Cap Fund' -> 'Bandhan Small Cap Fund' (shouting words in
+    mixed-case names are fixed too; real acronyms stay)."""
+    if not name:
         return name
+    if not name.isupper():
+        return " ".join(NICE_WORD.get(w, w.capitalize() if (w.isalpha() and w.isupper() and len(w) >= 5 and w not in ACR) else w)
+                        for w in name.split(" "))
     out = []
     for w in name.split():
         core = re.sub(r"[^A-Z]", "", w)
@@ -20,6 +27,8 @@ def nice(name):
             out.append(w)
         elif w.upper() == "NIFTY":
             out.append("Nifty")
+        elif w in NICE_WORD:
+            out.append(NICE_WORD[w])
         else:
             out.append(w.capitalize() if w.isalpha() else w.title())
     return " ".join(out)

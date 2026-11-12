@@ -386,7 +386,8 @@ def fit_title(t, n=65):
     t2 = t.replace(" | Aeterna Wealth insights", "").replace(" | Aeterna Wealth", "")
     if len(t2) <= n:
         return t2
-    for long, short in ((": NAV, returns, rating, holdings", ": NAV, returns, rating"), (": returns, risk, cost and overlap", ": returns, cost, overlap"),
+    for long, short in ((": NAV, returns, rating & review", ": NAV, returns, rating"), (": NAV, returns, rating", ": NAV, returns"),
+                        (" Direct Growth:", " Direct:"), (" Regular Growth:", " Regular:"), (": NAV, returns, rating, holdings", ": NAV, returns, rating"), (": returns, risk, cost and overlap", ": returns, cost, overlap"),
                         (": ratings, returns and costs", ": ratings and returns"), (" compared: tracking error, expense ratio", " compared")):
         if long in t2:
             t2 = t2.replace(long, short)
@@ -662,16 +663,16 @@ def main():
         rated = f.get("tier") not in (None, "", "Unrated")
         r3, e3 = f.get("ret_3Y"), f.get("excess_3Y")
         arb = f["category"] == "Arbitrage"
-        desc_bits = [f"{f['_name']} ({f['plan_type']}, Growth), {f['category'].lower()} fund from {f.get('amc', '')}."]
+        desc_bits = [f"{f['_name']} {f['plan_type']} Growth: {f['category'].lower()} fund from {f.get('amc', '')}."]
+        if rated:
+            desc_bits.append(f"Rated {f['tier']} on its track record (#{int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans).")
         if arb and r3 is not None and f.get("liq_cagr_3y") is not None:
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(f['liq_cagr_3y'])} for the median liquid fund (before tax).")
         elif r3 is not None and e3 is not None:
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(r3 - e3)} for {bp}.")
-        if rated:
-            desc_bits.append(f"Track-record rating {f['tier']} ({int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)}).")
-        desc_bits.append(f"NAV {inr2(f.get('nav_latest'))} on {dmy(f.get('nav_date'))}; expense ratio {num(f.get('ter'), 2)}%.")
+        desc_bits.append(f"NAV {inr2(f.get('nav_latest'))} on {dmy(f.get('nav_date'))}, holdings and review.")
         desc = " ".join(desc_bits)[:300]
-        title = f"{f['_name']} ({f['plan_type']}): NAV, returns, rating, holdings | Aeterna Wealth"
+        title = f"{f['_name']} {f['plan_type']} Growth: NAV, returns, rating & review | Aeterna Wealth"
         rows = ""
         for h, lab in (("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)

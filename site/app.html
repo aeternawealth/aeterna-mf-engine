@@ -449,6 +449,12 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 .hero .facts div{text-align:center;padding:6px 12px}.hero .facts div+div{border-left:1px solid var(--rule)}
 .hero .facts div b{font-size:26px}
 @media (max-width:900px){.strip{grid-template-columns:1fr}.strip-side{border-left:0;border-top:1px solid var(--rule);padding:20px}.strip-main{padding:18px 16px 10px}}
+/* hold the hero chart's final size while the fund data loads, so the text around it doesn't jump (layout shift) */
+#stripTabs{min-height:35px}#stripTitle{min-height:26px}
+@media (min-width:901px){#stripSum{min-height:451px}}@media (min-width:901px) and (max-width:1099px){#stripSum{min-height:491px}}@media (min-width:940px) and (max-width:1099px){#stripSum{min-height:518px}}
+@media (max-width:679px){#stripTitle{min-height:23px}}@media (max-width:539px){#stripTabs{min-height:76px}}
+@media (max-width:900px){#stripSum{min-height:360px}}@media (max-width:539px){#stripTabs{flex-basis:100%}}
+@media (max-width:370px){#stripTitle{min-height:45px}}@media (max-width:340px){#stripTabs{min-height:116px}}
 @media (max-width:640px){.hero{padding-block:44px 48px}.hero-top{text-align:left;margin-bottom:32px}.hero-top .lede{margin-left:0}.hero .actions{justify-content:flex-start}.hero .actions .btn{padding:12px 16px;font-size:15px}
  .hero .facts{grid-template-columns:1fr 1fr;row-gap:18px}.hero .facts div{text-align:left;padding:0 0 0 14px;border-left:1px solid var(--rule)}.hero .facts div b{font-size:21px}.strip-title{font-size:18px}.ss-ring svg{width:68px;height:68px}.ss-ring b{font-size:28px}}
 /* Money Plan card */
@@ -1618,7 +1624,7 @@ function staticPages(){
       <div class="card"><div class="muted" style="font-size:13px">Follow us</div><div class="row" style="gap:16px;margin-top:6px"><a href="https://www.linkedin.com/company/aeterna-wealth" target="_blank" rel="noopener me">LinkedIn</a><a href="https://www.instagram.com/aeternawealth/" target="_blank" rel="noopener me">Instagram</a><a href="https://x.com/AeternaWealth" target="_blank" rel="noopener me">X</a></div></div></div>
   </div>`;
   $('#cform').onsubmit=e=>{e.preventDefault();const ints=$$('#ci input:checked').map(i=>i.value);
-    const t=[`Hello Aeterna, I'm ${$('#cn').value.trim()}.`,`Planning for: ${$('#cg').value}.`,`Amount: ${$('#ca').value}. Time frame: ${$('#ch').value}.`,ints.length?`Interested in: ${ints.join(', ')}.`:'',$('#cp').value.trim()?`My number: ${$('#cp').value.trim()}.`:'',$('#cm').value.trim()].filter(Boolean).join('\n');
+    const t=[`Hello Aeterna, I'm ${$('#cn').value.trim()}.`,`Planning for: ${$('#cg').value}.`,`Amount: ${$('#ca').value}. Time frame: ${$('#ch').value}.`,ints.length?`Interested in: ${ints.join(', ')}.`:'',$('#cp').value.trim()?`My number: ${$('#cp').value.trim()}.`:'',$('#ce').value.trim()?`My email: ${$('#ce').value.trim()}.`:'',$('#cm').value.trim()].filter(Boolean).join('\n');
     const u='https://wa.me/918595993600?text='+encodeURIComponent(t);const o=$('#cout');o.hidden=false;
     const wa=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open WhatsApp</a> <span class="muted" style="font-size:13px">If WhatsApp doesn't open, message us on +91 85959 93600.</span>`;
     if(!LEAD_URL){o.innerHTML=wa;return}
@@ -1670,7 +1676,10 @@ $('a.brand').addEventListener('click',e=>{if(location.pathname!=='/')return;e.pr
   if(location.hash&&location.hash!=='#home'){history.pushState(null,'','/');route()}
   window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})});
 $('#menuBtn').onclick=()=>{const o=$('#nav').classList.toggle('open');$('#menuBtn').setAttribute('aria-expanded',o)};
-load().then(()=>{home();toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
+/* reserve the hero chart's height before the data arrives: the same sizing rule drawStrip uses (svg = width x H/W, plus its legend) */
+(()=>{const st=$('#strip');if(!st)return;const cw=st.clientWidth||600,narrow=cw<480,wide=cw>=700,W=wide?920:600,H=narrow?250:wide?270:300;
+  st.style.minHeight=Math.round(cw*H/W+(cw<300?88:cw<400?54:20)+6)+'px'})();
+load().then(()=>{home();if($('#strip'))$('#strip').style.minHeight='';toolCards();insightsBand();ratingsInit();compareInit();staticPages();solutionsPage();searchInit();$('#footAsOf').textContent=`Data as of ${dmy(S.meta.as_of)}; holdings as of ${mon(S.meta.holdings_month)}.`;route();addEventListener('hashchange',route)})
  .catch(e=>{$('#app').innerHTML='<div class="wrap" style="padding:60px 0"><h2>Data could not be loaded</h2><p class="muted">Please refresh the page. If this keeps happening, the data files may be updating.</p></div>'});
 })();
 </script>

@@ -944,6 +944,17 @@ def main():
         dst = DIST / "data" / fp.relative_to(S / "data")
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(fp, dst)
+    # the browser copy of funds.json: drop fields the app never reads and trim float noise (about 13% less to download).
+    # The fund pages, the audit and build_series read site/data/funds.json, which keeps everything.
+    unused = {"behind_index_3y", "cash_other_pct", "excess_vs_liquid_1y", "excess_vs_liquid_post_tax_1y", "nav_prev_date",
+              "one_month_gain", "one_month_lead", "protocol", "roll3y_excess_median", "worst_day_3y"}
+
+    def _slim(k, v):
+        if isinstance(v, float):
+            return round(v) if k.startswith("aum") else round(v, 2) if k == "age_years" else round(v, 4)
+        return v
+    (DIST / "data" / "funds.json").write_text(json.dumps([{k: _slim(k, v) for k, v in f.items() if k not in unused} for f in json.loads((S / "data" / "funds.json").read_text())],
+                                                         separators=(",", ":")), encoding="utf-8")
     cols = ["code", "name", "amc", "category", "plan_type", "benchmark", "tier", "score", "peer_rank", "peer_count", "nav_latest", "nav_date",
             "ter", "aum_cr", "ret_6M", "ret_1Y", "ret_3Y", "ret_5Y", "excess_1Y", "excess_3Y", "excess_5Y", "max_drawdown_5y",
             "upside_capture_3y", "downside_capture_3y", "info_ratio_3y", "alpha_3y"]

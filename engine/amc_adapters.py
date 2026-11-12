@@ -52,6 +52,9 @@ def whiteoak(month: str) -> list[str]:
         r = requests.get("https://cms.whiteoakamc.com/api/scheme-portfolios",
                          params={"pagination[page]": page, "pagination[pageSize]": 100, "sort[0]": "published_date:desc", "populate": "*"},
                          headers={**UA, "Origin": "https://mf.whiteoakamc.com", "Referer": "https://mf.whiteoakamc.com/"}, timeout=60)
+        if r.status_code in (401, 403, 429):
+            # a firewall refusing our server is not "not published yet": report it, so the office PC route is used
+            raise PermissionError(f"WhiteOak's site blocked our server (HTTP {r.status_code})")
         data = r.json().get("data", []) if r.ok else []
         if page == 1:
             _dbg("whiteoak", f"page 1 status {r.status_code}", "\n".join(f"{(d.get('attributes') or {}).get('published_date')} | {(d.get('attributes') or {}).get('period')} | "

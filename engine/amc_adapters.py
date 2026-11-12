@@ -53,6 +53,9 @@ def whiteoak(month: str) -> list[str]:
                          params={"pagination[page]": page, "pagination[pageSize]": 100, "sort[0]": "published_date:desc", "populate": "*"},
                          headers={**UA, "Origin": "https://mf.whiteoakamc.com", "Referer": "https://mf.whiteoakamc.com/"}, timeout=60)
         data = r.json().get("data", []) if r.ok else []
+        if page == 1:
+            _dbg("whiteoak", f"page 1 status {r.status_code}", "\n".join(f"{(d.get('attributes') or {}).get('published_date')} | {(d.get('attributes') or {}).get('period')} | "
+                                                                       f"{(d.get('attributes') or {}).get('doc_name')}" for d in data[:40]) or r.text[:500])
         for d in data:
             a = d.get("attributes", {})
             name = (a.get("doc_name") or "").lower()

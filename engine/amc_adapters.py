@@ -211,7 +211,7 @@ def _dbg(amc, label, text):
     if d:
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, f"adapter_{amc}.txt"), "a", encoding="utf-8") as fh:
-            fh.write(f"=== {label}\n{str(text)[:3000]}\n")
+            fh.write(f"=== {label}\n{str(text)[:20000]}\n")
 
 
 def lic(month: str) -> list[str]:
@@ -279,9 +279,11 @@ def sundaram(month: str) -> list[str]:
     _dbg("sundaram", f"GetCategory {r.status_code}", r.text)
     toks = (p.strftime("%B").lower(), p.strftime("%b").lower())
     out = []
-    for l in re.findall(r'href=\\?["\']([^"\'\\]+?\.(?:xlsx?|zip))', text, re.I):
-        low = l.lower()
-        if str(p.year) in low and any(t in low for t in toks):
+    # the month is in the link text ("Monthly Portfolio Disclosure Equity & Fund of Funds - Oct 2026"), not the file name
+    text = text.replace("\\'", "'").replace('\\"', '"')
+    for l, label in re.findall(r"""<a[^>]*href=["']([^"']+?\.(?:xlsx?|zip))["'][^>]*>(.*?)</a>""", text, re.I | re.S):
+        low = re.sub(r"<[^>]+>", " ", label).lower() + " " + l.lower()
+        if str(p.year) in low and any(re.search(r"\b" + t + r"\b", low) for t in toks) and not re.search(r"\bdebt\b", low):
             out.append(l if l.startswith("http") else base + ("" if l.startswith("/") else "/") + l)
     return list(dict.fromkeys(out))
 

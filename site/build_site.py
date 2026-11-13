@@ -514,6 +514,154 @@ def review_cta(path):
             '<a class="btn" href="/invest/portfolio-review/sample/">See a sample</a></div></div></div></section>')
 
 
+PEER_MED = {}
+
+
+def _group(items, key):
+    out = {}
+    for x in items:
+        out.setdefault(key(x), []).append(x)
+    return out
+
+
+def _ord(n):
+    n = int(n)
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+
+def _num_ok(*v):
+    return all(isinstance(x, (int, float)) and x == x for x in v)
+
+
+def leaders_story(c, L):
+    """'What separates the leaders': medians of A/A+ funds against C funds in one category (Regular and Direct pooled)."""
+    if c in ("Index Fund",):
+        return ""
+    top = [f for f in L if f.get("tier") in ("A+", "A")]
+    low = [f for f in L if f.get("tier") == "C"]
+    if len(top) < 3 or len(low) < 3:
+        return ""
+    def med(G, k):
+        v = sorted(x[k] for x in G if _num_ok(x.get(k)))
+        return v[len(v) // 2] if len(v) >= 3 else None
+    lc = c if c == "ELSS" else c.lower()
+    fam = asset_class(c).lower()
+    rows, said = [], []
+    def add(label, k, fmt, line):
+        a, b = med(top, k), med(low, k)
+        if a is None or b is None:
+            return
+        rows.append(f"<tr><td class='l'>{label}</td><td class='num'>{fmt(a)}</td><td class='num'>{fmt(b)}</td></tr>")
+        t = line(a, b)
+        if t:
+            said.append(t)
+    P0 = lambda v: pct(v, 0)
+    add("3-year return vs " + ("benchmark" if fam != "debt" else "category median"), "excess_3Y", spct,
+        lambda a, b: f"Over three years the typical A or A+ {lc} fund was {spct(a)} a year against its yardstick; the typical C fund {spct(b)}.")
+    add("Share of rolling 3-year periods ahead", "roll3y_hit_rate", P0,
+        lambda a, b: f"The leaders were ahead in {pct(a, 0)} of rolling three-year periods, against {pct(b, 0)} for the C funds: the gap is in how often, not just how much." if a - b > 0.1 else None)
+    if fam in ("equity", "hybrid"):
+        add("Loss in falling months (downside capture)", "downside_capture_3y", lambda v: f"{v:.0f}%",
+            lambda a, b: (f"They also held up better when markets fell, losing {a:.0f}% of the index's falls against {b:.0f}%." if a < b - 3
+                          else f"They did not fall less: downside capture was {a:.0f}% against {b:.0f}%, so the gap came from the rising months." if a > b + 3 else None))
+        add("Gain in rising months (upside capture)", "upside_capture_3y", lambda v: f"{v:.0f}%", lambda a, b: None)
+        add("Deepest fall, 5 years", "max_drawdown_5y", lambda v: pct(abs(v)), lambda a, b: None)
+    if fam == "equity":
+        add("Active share", "active_share", lambda v: f"{v:.0f}%",
+            lambda a, b: f"Their portfolios differed more from the index (active share {a:.0f}% against {b:.0f}%)." if a > b + 5 else
+                         f"Leaders did not need to stray further from the index (active share {a:.0f}% against {b:.0f}%)." if a < b - 5 else None)
+        add("Stocks held", "n_stocks", lambda v: f"{v:.0f}", lambda a, b: None)
+    if len(rows) < 2:
+        return ""
+    return (f"<h2 style='font-size:24px;margin-top:34px'>What separates the leaders</h2>"
+            f"<p style='margin-top:10px'>{len(top)} {e(lc)} plans are rated A or A+ today and {len(low)} are rated C. {e(' '.join(said))} "
+            "Since every return here is after costs, these differences are what investors actually received.</p>"
+            "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Typical fund (median)</th><th>A+ and A</th><th>C</th></tr></thead><tbody>"
+            + "".join(rows) + "</tbody></table></div>"
+            "<p class='muted' style='font-size:12.5px;margin-top:8px'>Regular and Direct plans together. Past record, not a forecast: a fund's rating can change as its record does.</p>")
+
+
+def nice_index(s):
+    return iname(s) if s and s.upper() == s else s
+
+
+def fund_story(f):
+    """'The record in brief': a plain-English reading of the fund's own numbers against its peers (no forecast, no advice)"""
+    name, c, plan = f["_name"], f["category"], f["plan_type"]
+    cl = {"ELSS": "ELSS", "Index Fund": "index"}.get(c, c.lower())
+    amc = f.get("amc") or "its fund house"
+    P = PEER_MED.get((f.get("peer_group") or c, plan), {})
+    fam = "index" if c == "Index Fund" else asset_class(c).lower()
+    bench = iname(f.get("benchmark"))
+    yard = (f.get("bench_label") or (f"the {bench} TRI" if bench else "its benchmark"))
+    if yard.startswith("COMPOSITE") or yard.startswith("Composite"):
+        yard = "its benchmark"
+    p1, p2 = [], []
+    age, aum = f.get("age_years"), f.get("aum_cr")
+    art = "an" if cl[:1].lower() in "aeiou" else "a"
+    p1.append(f"{name} is {art} {cl} fund from {amc}"
+              + (f", running for {age:.0f} year{'s' if round(age) != 1 else ''}" if _num_ok(age) and age >= 1 else ", launched less than a year ago")
+              + (f", with {cr(aum)} under management" if _num_ok(aum) else "") + f". This is the {plan} plan.")
+    r3, e3, r5, e5 = f.get("ret_3Y"), f.get("excess_3Y"), f.get("ret_5Y"), f.get("excess_5Y")
+    if fam == "index":
+        td, te = f.get("tracking_diff_1y"), f.get("tracking_err_1y")
+        idx = bench or nice_index(str(f.get("peer_group") or "").replace("Index:", "").strip())
+        if idx and amc and idx.split()[0].lower() == amc.split()[0].lower():
+            idx = idx.split(" ", 1)[1] if " " in idx else ""
+        ref = "the index" if bench else "the typical fund tracking the same index"
+        if _num_ok(td, te) and idx:
+            p1.append(f"It aims to match the {idx} index. Over the last year it {'trailed' if td < 0 else 'was ahead of'} {ref} by {abs(td):.2f}% "
+                      f"(tracking difference), and its daily returns deviated by {te:.2f}% a year (tracking error).")
+    elif _num_ok(r3, e3):
+        rel = "ahead of" if e3 > 0.0005 else "behind" if e3 < -0.0005 else "in line with"
+        rk = f.get("rank_3Y"), f.get("peers_3Y")
+        p1.append(f"Over the last three years it returned {pct(r3)} a year, {rel} {yard}"
+                  + (f" by {pct(abs(e3))} a year" if rel != "in line with" else "")
+                  + (f", {_ord(rk[0])} of {int(rk[1])} {plan} plans in its group on that measure." if _num_ok(*rk) else "."))
+        if _num_ok(r5, e5):
+            p1.append(f"Over five years: {pct(r5)} a year, {spct(e5)} a year against the same yardstick.")
+    elif _num_ok(f.get("ret_1Y")):
+        p1.append(f"Over the last year it returned {pct(f['ret_1Y'])}. It is too young for a three-year record.")
+    hit, mh = f.get("roll3y_hit_rate"), P.get("roll3y_hit_rate")
+    if fam != "index" and _num_ok(hit):
+        tone = (" That is a consistent record." if hit >= 0.7 else " It has lagged more often than it has led." if hit < 0.35 else "")
+        p1.append(f"Taking every rolling three-year period, it was ahead of {yard} {pct(hit, 0)} of the time"
+                  + (f", against {pct(mh, 0)} for the typical fund in its group." if _num_ok(mh) else ".") + tone)
+    dc, uc, md = f.get("downside_capture_3y"), f.get("upside_capture_3y"), P.get("downside_capture_3y")
+    if fam in ("equity", "hybrid") and _num_ok(dc, uc):
+        p2.append(f"In months when the index fell, it lost {dc:.0f}% as much as the index; in rising months it gained {uc:.0f}% as much"
+                  + (f" (the typical fund in its group: {md:.0f}% in falls)." if _num_ok(md) else ".")
+                  + (" It has protected better than most in falls." if _num_ok(md) and dc < md - 7 else " It has lost more than most in falling months." if _num_ok(md) and dc > md + 7 else ""))
+    dd, mdd = f.get("max_drawdown_5y"), P.get("max_drawdown_5y")
+    if fam in ("equity", "hybrid", "index") and _num_ok(dd) and dd < -0.02:
+        p2.append(f"Its deepest fall over the last five years was {pct(abs(dd))}" + (f", against {pct(abs(mdd))} for the typical fund in its group." if _num_ok(mdd) else "."))
+    if fam == "debt" and _num_ok(f.get("worst_day_3y")):
+        p2.append(f"Its worst single day in the last three years was {pct(f['worst_day_3y'], 2)}; steadiness matters more than return in a debt fund.")
+    hn, hw, hb, hm, hp = (f.get(k) for k in ("hist3y_n", "hist3y_worst", "hist3y_best", "hist3y_median", "hist3y_pos"))
+    if _num_ok(hn, hw, hb, hm, hp) and hn >= 50 and f.get("hist3y_from"):
+        p2.append(f"For anyone who held it for any three years since {mon(str(f['hist3y_from'])[:7])}, returns ranged from {pct(hw)} to {pct(hb)} a year, "
+                  f"with a middle of {pct(hm)}; {pct(hp, 0)} of those periods made money.")
+    n, t10, sec, sp = f.get("n_stocks"), f.get("top10_pct"), f.get("top_sector"), f.get("top_sector_pct")
+    if fam == "equity" and _num_ok(n, t10):
+        L, M, S = (f.get(k) for k in ("large_pct", "mid_pct", "small_pct"))
+        tilt = ""
+        if _num_ok(L, M, S):
+            big = max((L, "large"), (M, "mid-sized"), (S, "small"))
+            tilt = f", leaning towards {big[1]} companies ({L:.0f}% large, {M:.0f}% mid, {S:.0f}% small)"
+        p2.append(f"Its latest portfolio holds {int(n)} stocks, {t10:.0f}% in the top ten{tilt}"
+                  + (f"; its largest sector is {sec} at {sp:.0f}%." if sec and _num_ok(sp) else "."))
+        if _num_ok(f.get("active_share")):
+            p2.append(f"{f['active_share']:.0f}% of the portfolio differs from its index (active share).")
+    t = f.get("tier")
+    if t in ("A+", "A", "B", "C") and _num_ok(f.get("peer_rank"), f.get("peer_count")) and f["peer_count"] >= 3:
+        p2.append(f"On our track-record rating it is {t} ({TIER_LABEL.get(t, t).lower()}), {_ord(f['peer_rank'])} of {int(f['peer_count'])} {plan} plans in its group.")
+    elif t in (None, "", "Unrated"):
+        p2.append("It is not rated yet: a rating needs three years of history (one year for index funds).")
+    p2.append("All returns are after the fund's costs. They describe the record so far, not what comes next.")
+    return ('<h2 style="margin-top:36px;font-size:26px">The record in brief</h2>'
+            + "".join(f'<p style="margin-top:12px;font-size:16px;line-height:1.65">{e(" ".join(x))}</p>' for x in (p1, p2) if x))
+
+
 FC_VER, SERIES_FILE, BENCH_KEYS = "", {}, set()
 FC_CSS = ("<style>.fchart{position:relative;margin-top:14px}.fc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;min-height:34px}"
           ".fc-key{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}.fc-key i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}"
@@ -673,6 +821,14 @@ def main():
                 m[k] = (v[len(v) // 2] if len(v) % 2 else (v[len(v) // 2 - 1] + v[len(v) // 2]) / 2) if len(v) >= 5 else None
                 m[k + "_n"] = len(v)
             cat_med[(c, plan)] = m
+    global PEER_MED
+    PEER_MED = {}
+    for (pg, plan), lst in _group(funds, lambda x: (x.get("peer_group") or x["category"], x["plan_type"])).items():
+        m = {}
+        for k in ("roll3y_hit_rate", "downside_capture_3y", "upside_capture_3y", "max_drawdown_5y", "excess_3Y"):
+            v = sorted(x[k] for x in lst if isinstance(x.get(k), (int, float)))
+            m[k] = v[len(v) // 2] if len(v) >= 5 else None
+        PEER_MED[(pg, plan)] = m
     order = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused",
              "Value / Contra", "Dividend Yield", "ELSS", "Sectoral/Thematic", "Index Fund",
              "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Balanced Hybrid", "Equity Savings", "Conservative Hybrid", "Arbitrage"]
@@ -895,6 +1051,7 @@ def main():
  <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
+{fund_story(f)}
 {review_status(f, RH.get(str(f["code"])))}
 {rh_html}
 {fund_chart(f)}
@@ -987,6 +1144,7 @@ def main():
 <p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
 <p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
+{leaders_story(c, L)}
 <div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
 {sub}{tabs}
 {(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="/learn/{g}/">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}

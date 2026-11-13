@@ -263,6 +263,61 @@ def xirr_inputs():
             "<label class='field'><span>Valued on</span><span class='in'><input type='date' id='vd' value='2026-11-13' aria-label='Valued on'></span></label>")
 
 
+USE = {   # "Using it well": practical reading of each calculator's result, written for Indian investors
+    "sip": [
+        "Pick the return you assume from the kind of fund, not from last year. Equity funds have had long stretches near 12–15% a year and three-year stretches below zero; a debt fund is closer to 6–8%. Running the calculator at two or three rates shows a range, which is more honest than a single number.",
+        "The step-up field matters more than most people expect. Raising a ₹10,000 SIP by 10% a year roughly doubles the final value over 20 years compared with keeping it flat, because the later, larger instalments still get years to compound. Linking the step-up to your annual increment makes it painless.",
+        "Time does the heavy lifting. In the year-by-year table, most of the gain arrives in the last third of the period. That is why stopping a SIP during a market fall, when units are cheapest, tends to cost more than it saves.",
+        "The fund you choose decides how close you get to the assumed return. Two funds in the same category can end a decade lakhs apart on the same SIP, which is what our fund ratings measure: how consistently each fund has delivered against its index, after its costs.",
+    ],
+    "lumpsum": [
+        "A lump sum is fully exposed to the market from day one, so the starting point matters more than for a SIP. If the amount is large and you are anxious about timing, a systematic transfer plan (parking it in a liquid or arbitrage fund and moving it into equity over 6–12 months) spreads the entry.",
+        "Use the rule of 72 as a check: at 12% a year money doubles in about 6 years, at 8% in about 9. If the calculator's answer looks too good, the assumed return is usually the reason.",
+        "Compare the result with what the same money would need to buy at the end. The inflation calculator shows what today's costs become, so the lump sum's target is in tomorrow's rupees.",
+    ],
+    "goal": [
+        "Start from the goal's cost today and the year you need it, and let the planner add inflation. Education and healthcare costs in India have risen faster than general inflation, so a higher rate for those goals is prudent.",
+        "Match the fund to the time left. Money needed within three years is usually kept away from equity, because a fall close to the deadline leaves no time to recover; goals ten or more years away can take more equity.",
+        "Review once a year. If the market has done well, the SIP needed falls; if it has done badly, a small step-up keeps the goal on track without a large catch-up later.",
+    ],
+    "swp": [
+        "The withdrawal rate decides how long the money lasts far more than the return does. Withdrawing 4–5% of the starting corpus a year, rising with inflation, has historically held up for long periods; at 7–8% the corpus usually shrinks quickly once inflation is included.",
+        "Only the gain inside each withdrawal is taxed, not the whole amount. In the early years most of each instalment is your own capital coming back, so an SWP from a mutual fund is often more tax-efficient than interest income of the same size.",
+        "Keep one to two years of withdrawals in a debt or arbitrage fund and the rest in a balanced mix. In a bad year you draw from the stable part and give the equity part time to recover.",
+    ],
+    "emi": [
+        "Look at the total interest line, not just the EMI. On a 20-year loan at 9%, interest is roughly equal to the loan itself; a longer tenure lowers the EMI but raises the total paid.",
+        "Most home loans in India are floating-rate and linked to the RBI repo rate. When rates rise, banks often extend the tenure rather than raise the EMI, so check your loan statement after a rate change.",
+        "Floating-rate loans to individuals carry no prepayment charge under RBI rules. Whether to prepay or invest the surplus depends on the loan rate after tax benefits; the prepay-or-invest calculator works that out.",
+    ],
+    "inflation": [
+        "Use the result to set goals in future rupees. At 6% a year, prices roughly double every 12 years; a ₹1 crore retirement target set today is worth about half that in today's money by the time you retire 12 years from now.",
+        "Different goals inflate at different speeds. Groceries track headline inflation; school fees and medical costs have often risen 8–10% a year.",
+        "The practical answer to inflation is growth assets held for long enough. A savings account at 3–4% loses purchasing power every year that inflation is higher.",
+    ],
+    "capital-gains-tax": [
+        "Plan sales across financial years. Long-term gains on equity funds up to ₹1.25 lakh a year are tax-free, so spreading a large redemption over March and April uses two years' exemption.",
+        "Units are sold first-in, first-out. With a SIP, the oldest instalments go first, so a partial redemption is often mostly long-term even if your latest SIP is recent.",
+        "Check exit loads before selling: many equity funds charge 1% if units are sold within a year. Timing a switch after both the exit-load period and the one-year mark avoids both costs.",
+    ],
+    "home-loan-prepayment": [
+        "The real cost of the loan is its rate after tax benefits. Under the old regime, interest on a self-occupied home is deductible up to ₹2 lakh a year, which lowers the effective rate for those in higher slabs; under the new regime that deduction is not available.",
+        "Prepaying gives a certain return equal to the loan rate. Investing has historically earned more over long periods, but not every year. A middle path many borrowers use: keep the SIP running, and put annual bonuses towards the loan.",
+        "If you prepay, ask the bank to reduce the tenure rather than the EMI: it saves considerably more interest.",
+    ],
+    "cagr": [
+        "CAGR suits a single investment held from one date to another. For a SIP or several top-ups, use XIRR, which accounts for the dates on which money went in.",
+        "A high CAGR over a short period says little. A fund that rose 40% in one year can show a striking one-year CAGR and an ordinary five-year one; compare funds over the same three- or five-year period, against their index.",
+        "Our fund pages show each fund's 3-year and 5-year CAGR next to its index's, and how often it stayed ahead over every rolling three-year period, which is a steadier view than any single period.",
+    ],
+    "xirr": [
+        "XIRR is the number to compare with an FD rate or a loan rate, because it treats your SIP instalments as money that went in on different dates.",
+        "Expect XIRR to swing a lot in the first two or three years of a SIP: a recent fall weighs heavily when most of your money went in recently. It becomes a fair measure only over five years or more.",
+        "Your CAS from CAMS or KFintech shows XIRR for each holding. If one fund's XIRR has trailed others in the same category for several years, that is worth a review; our free portfolio review does this for every fund you hold.",
+    ],
+}
+
+
 def calculator_pages(B, urls, calc_js):
     cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:500 18px var(--f-display)'>Money Plan</b><span class='muted' style='font-size:14px'>How much to invest, and where, for each goal; what to change in what you hold; how long retirement money lasts.</span></a>"]
     for c in CALCS:
@@ -276,6 +331,7 @@ def calculator_pages(B, urls, calc_js):
 <div class="stack"><div class="out" id="cOut"></div><div class="card"><p id="cTxt" style="font-size:14.5px"></p></div><div class="card cc" id="cChart"></div><div class="tablewrap" id="cTbl" tabindex="0"></div></div></div>
 <noscript><p class="note">This calculator needs JavaScript; the worked example below shows the method.</p></noscript>
 <h2 style="font-size:26px;margin-top:40px">How it is calculated</h2><p style="margin-top:10px">{c['how']}</p>
+{('<h2 style="font-size:24px;margin-top:28px">Using the result well</h2>' + ''.join(f'<p style="margin-top:10px">{B.e(t)}</p>' for t in USE[c['id']])) if c['id'] in USE else ''}
 <h2 style="font-size:24px;margin-top:28px">Worked example</h2><div style="margin-top:10px">{c['example']()}</div>
 {'<p style="margin-top:18px"><a class="btn primary" href="/#tools-sipreal">Test a SIP on real fund NAVs</a> <a class="btn" href="/calculators/xirr/">Work out your XIRR</a></p>' if c['id'] in ('sip', 'lumpsum') else ''}
 {'<p style="margin-top:18px"><a class="btn primary" href="/calculators/home-loan-prepayment/">Prepay the loan or invest? Compare</a></p>' if c['id'] == 'emi' else ''}

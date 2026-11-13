@@ -183,7 +183,84 @@ CALCS = [
              ("How are debt mutual funds taxed?", "Units bought from 1 April 2023 are taxed at your income-tax slab rate whatever the holding period; there is no indexation."),
              ("How are unlisted shares taxed?", "Long term after 24 months, at 12.5% without indexation; short-term gains at your slab rate.")],
      "app": "tax"},
+    {"id": "home-loan-prepayment", "name": "Home loan: prepay or invest?", "h1": "Home loan calculator: prepay or invest?",
+     "title": "Home loan prepayment vs SIP calculator: prepay or invest? | Aeterna Wealth",
+     "desc": "Free home loan prepayment calculator for India: put extra money into prepaying your home loan or invest it in a SIP? Interest saved, years cut, wealth at the end after tax, and the break-even return.",
+     "intro": "You have some extra money each month, or a lump sum. Should it go into prepaying the home loan, or into investments while you keep paying the EMI? Enter your loan and the return you assume; the calculator compares where you end up by the loan's original end date.",
+     "inputs": lambda: fld("p", "Loan outstanding (₹)", 5000000, 100000, 200000000, 100000) + fld("r", "Loan interest rate (%)", 8.5, 5, 15, 0.05)
+     + fld("y", "Years left on the loan", 20, 1, 30, 1) + fld("x", "Extra money each month (₹)", 10000, 0, 1000000, 1000) + fld("l", "Lump sum available now (₹)", 0, 0, 50000000, 50000)
+     + fld("i", "Assumed investment return (%)", 12, 0, 20, 0.5)
+     + sel("d", "Claim home-loan interest deduction?", [("0", "No (new tax regime)"), ("1", "Yes, old regime: up to ₹2 lakh a year")], "0")
+     + sel("sl", "Your income-tax slab", [("5", "5%"), ("10", "10%"), ("15", "15%"), ("20", "20%"), ("30", "30%")], "30"),
+     "js": "function run(){const o={P:val('p'),rate:val('r'),years:Math.max(1,Math.round(val('y'))),extra:val('x'),lump:val('l'),r:val('i'),ded:$('#d').value==='1',slab:+$('#sl').value};"
+           "const x=CALC.prepay(o),A=x.A,B=x.B,n=o.years*12,be=CALC.prepayBreakeven(o),d=B.net-A.net,cut=A.closed==null?0:n-A.closed;"
+           "const ym=m=>`${Math.floor(m/12)} yrs ${m%12} mo`;"
+           "if(!o.extra&&!o.lump){out([['EMI',inr(x.emi)]],'Enter an extra monthly amount or a lump sum to compare the two choices.',null,null,null);return}"
+           "out([['EMI',inr(x.emi)],['Prepaying closes the loan',cut>0?ym(cut)+' earlier':'on time'],['Interest saved by prepaying',inrS(B.interest-A.interest)],[d>=0?'Investing ends ahead by':'Prepaying ends ahead by',inrS(Math.abs(d))],['Break-even return',be==null?'over 30%':be.toFixed(1)+'% a year']],"
+           "`Prepaying with ${inr(o.extra)} a month${o.lump?` and ${inrS(o.lump)} now`:''} closes the loan ${cut>0?ym(cut)+' early':'on time'} and saves ${inrS(B.interest-A.interest)} of interest. Investing the same money at ${o.r}% a year instead would leave you ${inrS(Math.abs(d))} ${d>=0?'better':'worse'} off by the original end date, after tax. Investing comes out ahead only if your investments earn more than about ${be==null?'30':be.toFixed(1)}% a year; prepaying's saving is certain, investment returns are not.`,"
+           "['Year','Loan left (prepay)','Invested (prepay)','Loan left (invest)','Invested (invest)'],A.rows.map((a,k)=>[a.y,inrS(a.bal),inrS(a.pot),inrS(B.rows[k].bal),inrS(B.rows[k].pot)]),"
+           "{title:'Home paid off plus investments',labels:['0',...A.rows.map(a=>a.y+'y')],series:[{n:'Invest the extra',c:'var(--teal)',v:[0,...B.rows.map(b=>b.eq)]},{n:'Prepay the loan',c:'var(--brass)',dash:true,v:[0,...A.rows.map(a=>a.eq)]}]})}",
+     "how": "Both choices use exactly the same money each month: the EMI plus the extra amount. <b>Prepay</b>: the extra goes into the loan; the EMI stays the same, so the loan closes early, and from then on the EMI and the extra are invested. <b>Invest</b>: you keep paying the EMI and invest the extra from day one. Interest is charged monthly on the reducing balance; investments grow monthly at the equivalent of the yearly return you assume. At the loan's original end date, both investment pots pay long-term capital-gains tax (12.5% above ₹1.25 lakh, as one sale). With the old-regime deduction, each year's interest (up to ₹2 lakh) cuts your tax at your slab, and that saving is invested too. The break-even return is the investment return at which both choices end level.",
+     "example": lambda: "<p>A ₹50 lakh loan at 8.5% with 20 years left (EMI ₹43,391) and ₹10,000 a month extra: prepaying closes the loan about 7 years early and saves about ₹21.8 lakh of interest. Investing the ₹10,000 instead at an assumed 12% a year ends about ₹15.4 lakh ahead after tax by the original end date. The break-even return is about 9.5% a year, or about 8.1% if you claim the old-regime interest deduction. (The calculator opens with these numbers.)</p>",
+     "faq": [("Should I prepay my home loan or invest in mutual funds?", "Compare what the loan costs you after any tax benefit with what your investments can reasonably earn after tax. Prepaying gives a certain return equal to the loan rate; equity funds have historically earned more over long periods but with ups and downs. The calculator shows the break-even return: if you expect to earn clearly more than that, and can sit through market falls, investing has tended to come out ahead."),
+             ("Does prepaying reduce my EMI or my tenure?", "Usually banks keep the EMI the same and shorten the tenure, which saves the most interest. You can ask the bank to reduce the EMI instead; the interest saved is then smaller."),
+             ("Are there charges for prepaying a home loan?", "RBI does not allow banks and housing finance companies to charge individuals a prepayment or foreclosure penalty on floating-rate home loans. Fixed-rate loans may carry a charge; check your loan agreement."),
+             ("How does the tax deduction change the answer?", "Under the old tax regime, interest on a self-occupied home loan is deductible up to ₹2 lakh a year (section 24(b)), and principal counts towards section 80C. The deduction lowers the loan's real cost, which favours investing. Under the new regime there is no deduction for a self-occupied home."),
+             ("Is it better to do both?", "Often, yes: many families keep an emergency fund, invest for long-term goals and use bonuses to prepay part of the loan. Prepaying also lowers risk, since a smaller loan is easier to carry through a job loss.")],
+     "app": "prepay"},
+    {"id": "cagr", "name": "CAGR calculator", "h1": "CAGR calculator",
+     "title": "CAGR calculator: compound annual growth rate of an investment | Aeterna Wealth",
+     "desc": "Free CAGR calculator: the steady yearly growth rate between a starting and an ending value, with absolute return and a year-by-year path. Use it for mutual funds, shares, property or any investment.",
+     "intro": "Enter what you started with, what it is worth now and how many years it took.",
+     "inputs": lambda: fld("s", "Starting value (₹)", 100000, 1000, 1000000000, 1000) + fld("e", "Ending value (₹)", 250000, 1000, 1000000000, 1000) + fld("y", "Years", 7, 0.5, 50, 0.5),
+     "js": "function run(){const s=val('s'),e=val('e'),y=val('y'),c=CALC.cagr(s,e,y);if(c==null){out([['CAGR','–']],'Enter a starting value, an ending value and the years.',null,null,null);return}"
+           "const k=Math.max(1,Math.ceil(y));out([['CAGR',c.toFixed(2)+'% a year'],['Absolute return',((e/s-1)*100).toFixed(1)+'%'],['Gain',inrS(e-s)]],"
+           "`${inrS(s)} growing to ${inrS(e)} in ${y} years is a compound annual growth rate of ${c.toFixed(2)}% a year: the steady yearly rate that gets you from one to the other.`,"
+           "['Year','Value at this CAGR'],[...Array(k)].map((_,i)=>[i+1,inrS(s*Math.pow(1+c/100,Math.min(i+1,y)))]),"
+           "{title:'Growth at this CAGR',labels:['0',...[...Array(k)].map((_,i)=>(i+1)+'y')],series:[{n:'Value',c:'var(--teal)',v:[s,...[...Array(k)].map((_,i)=>s*Math.pow(1+c/100,Math.min(i+1,y)))]}]})}",
+     "how": "CAGR = (ending value ÷ starting value)<sup>1 / years</sup> − 1. It is the single yearly rate that, compounded, turns the starting value into the ending value, ignoring the ups and downs in between. It is right for one investment made at one time; for SIPs and investments made on different dates, use the XIRR calculator.",
+     "example": lambda: f"<p>₹1 lakh growing to ₹2.5 lakh in 7 years: (2.5)<sup>1/7</sup> − 1 = {((2.5 ** (1 / 7)) - 1) * 100:.2f}% a year. The absolute return is 150%, but CAGR is what lets you compare it with a fund or an index over the same 7 years.</p>",
+     "faq": [("What is CAGR?", "Compound annual growth rate: the steady yearly return that turns a starting value into an ending value over a period. A fund's 3-year or 5-year return is usually quoted as a CAGR."),
+             ("What is the difference between CAGR and absolute return?", "Absolute return is the total gain as a percentage, ignoring time. CAGR spreads it over the years, so investments held for different lengths of time can be compared."),
+             ("CAGR or XIRR?", "CAGR for a single investment made once. XIRR when money went in or came out on different dates, such as a SIP; it gives each rupee credit only for the time it was invested."),
+             ("How should I judge a fund's CAGR?", "Against its own index and its peers over the same period: our fund pages show each fund's CAGR next to its index's total-return CAGR.")],
+     "app": "cagr"},
+    {"id": "xirr", "name": "XIRR calculator", "h1": "XIRR calculator: your real return on SIPs and investments",
+     "title": "XIRR calculator: return on SIPs and multiple investments | Aeterna Wealth",
+     "desc": "Free XIRR calculator for India: the true yearly return on investments made on different dates, such as SIPs, top-ups and withdrawals, from the dates and amounts.",
+     "intro": "Enter each investment (and any withdrawal) with its date, then what the holding is worth today. Blank rows are ignored.",
+     "inputs": lambda: xirr_inputs(),
+     "js": "function run(){if(!$('#vd').value)$('#vd').value=new Date().toISOString().slice(0,10);const fl=[];let inv=0,got=0;const rows=[];"
+           "for(let k=0;k<8;k++){const d=$('#d'+k).value,a=val('i'+k),w=val('w'+k);if(!d)continue;if(a>0){fl.push({d,a:-a});inv+=a;rows.push([d,inr(a),''])}if(w>0){fl.push({d,a:w});got+=w;rows.push([d,'',inr(w)])}}"
+           "const cv=val('cv');if(cv>0){fl.push({d:$('#vd').value,a:cv});got+=cv;rows.push([$('#vd').value+' (value)','',inr(cv)])}"
+           "const x=CALC.xirr(fl);if(x==null){out([['XIRR','–']],'Enter at least one investment with a date, and a current value or a withdrawal.',null,null,null);return}"
+           "out([['XIRR',x.toFixed(2)+'% a year'],['Total invested',inrS(inv)],['Value and withdrawals',inrS(got)],['Gain',inrS(got-inv)]],"
+           "`Your money earned ${x.toFixed(2)}% a year, allowing for when each rupee went in and came out. Compare it with what the same cash flows would have earned in the fund's index.`,"
+           "['Date','Invested','Received'],rows,{split:[['Invested',inv,'var(--ink-3)'],[got>=inv?'Gain':'Loss',Math.abs(got-inv),'var(--teal)']]})}",
+     "how": "XIRR is the yearly rate r at which the investments and withdrawals, each discounted by (1 + r)<sup>days / 365</sup> from its own date, add up to zero. In other words, the return that a bank account would need to pay to turn exactly your cash flows into exactly your result. It is solved numerically; the calculator does it for you.",
+     "example": lambda: "<p>₹50,000 invested each January from 2022 to 2025 (₹2 lakh in all), worth ₹2.8 lakh in November 2026: the XIRR is about 10.4% a year. The absolute gain is 40%, but most of the money was invested for far less than five years, which XIRR takes into account. (The calculator opens with these numbers.)</p>",
+     "faq": [("What is XIRR in mutual funds?", "Extended internal rate of return: the yearly return on money that went in (and out) on different dates, like SIP instalments. Fund houses and your CAS show it for your own holdings."),
+             ("Why is my SIP's XIRR different from the fund's return?", "The fund's 3-year or 5-year return is a CAGR from one date. Your XIRR depends on when each of your instalments went in and what the market did after each one."),
+             ("Can XIRR be negative?", "Yes, when the current value plus withdrawals is less than what you put in."),
+             ("How do I calculate XIRR in Excel or Google Sheets?", "List each investment as a negative amount and the current value as a positive amount, each with its date, then use =XIRR(amounts, dates). This calculator does the same.")],
+     "app": "xirr"},
 ]
+
+
+def xirr_inputs():
+    """dated cash-flow rows for the XIRR calculator (blank rows are ignored); fits a phone without sideways scrolling"""
+    d0 = ["2022-01-10", "2023-01-10", "2024-01-10", "2025-01-10"]
+    st = "width:100%;min-width:0;box-sizing:border-box;padding:7px 6px;font-size:14px"
+    td = "padding:4px 3px"
+    rows = "".join(f"<tr><td style='{td}'><input type='date' id='d{k}' value='{d0[k] if k < 4 else ''}' aria-label='Date {k + 1}' style='{st}'></td>"
+                   f"<td style='{td}'><input type='number' id='i{k}' min='0' step='500' inputmode='decimal' value='{50000 if k < 4 else ''}' aria-label='Invested {k + 1}' style='{st}'></td>"
+                   f"<td style='{td}'><input type='number' id='w{k}' min='0' step='500' inputmode='decimal' value='' aria-label='Taken out {k + 1}' style='{st}'></td></tr>" for k in range(8))
+    th = "padding:6px 3px;white-space:normal"
+    return ("<table style='width:100%;table-layout:fixed;border-collapse:collapse'><colgroup><col style='width:42%'><col style='width:29%'><col style='width:29%'></colgroup>"
+            f"<thead><tr><th class='l' style='{th}'>Date</th><th style='{th}'>Invested (₹)</th><th style='{th}'>Taken out (₹)</th></tr></thead>"
+            f"<tbody>{rows}</tbody></table>"
+            "<label class='field'><span>Value today (₹)</span><span class='in'><input type='number' id='cv' min='0' step='1000' inputmode='decimal' value='280000' aria-label='Value today'></span></label>"
+            "<label class='field'><span>Valued on</span><span class='in'><input type='date' id='vd' value='2026-11-13' aria-label='Valued on'></span></label>")
 
 
 def calculator_pages(B, urls, calc_js):
@@ -200,7 +277,9 @@ def calculator_pages(B, urls, calc_js):
 <noscript><p class="note">This calculator needs JavaScript; the worked example below shows the method.</p></noscript>
 <h2 style="font-size:26px;margin-top:40px">How it is calculated</h2><p style="margin-top:10px">{c['how']}</p>
 <h2 style="font-size:24px;margin-top:28px">Worked example</h2><div style="margin-top:10px">{c['example']()}</div>
-{'<p style="margin-top:18px"><a class="btn primary" href="/#tools-sipreal">Test a SIP on real fund NAVs</a></p>' if c['id'] in ('sip', 'lumpsum') else ''}
+{'<p style="margin-top:18px"><a class="btn primary" href="/#tools-sipreal">Test a SIP on real fund NAVs</a> <a class="btn" href="/calculators/xirr/">Work out your XIRR</a></p>' if c['id'] in ('sip', 'lumpsum') else ''}
+{'<p style="margin-top:18px"><a class="btn primary" href="/calculators/home-loan-prepayment/">Prepay the loan or invest? Compare</a></p>' if c['id'] == 'emi' else ''}
+{'<p style="margin-top:18px"><a class="btn" href="/learn/cagr-vs-xirr/">CAGR vs XIRR explained</a></p>' if c['id'] in ('cagr', 'xirr') else ''}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>' for q, a in c['faq'])}
 <p class="muted" style="font-size:12.5px;margin-top:22px">Illustrations only, not investment or tax advice. Mutual fund returns are not guaranteed and can be negative; the assumed return is yours to choose. Talk to us before acting on a tax estimate.</p>
 <p style="margin-top:22px;font-size:14.5px">More calculators: {others}</p>
@@ -216,10 +295,10 @@ def calculator_pages(B, urls, calc_js):
         cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{c['name']}</b><span class='muted' style='font-size:14px'>{B.e(c['desc'].split(': ', 1)[-1][:120])}</span></a>")
     cards.append("<a class='card stack sol' href='/#tools-sipreal' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>SIP backtest on real NAVs</b><span class='muted' style='font-size:14px'>What a SIP in actual funds of a category would be worth today, from any start month.</span></a>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Financial calculators</h1>
-<p class="lede" style="margin-top:12px">Free calculators for the questions families ask most: SIPs, goals, retirement income, loans, inflation and capital-gains tax. Each one shows how it is calculated.</p>
+<p class="lede" style="margin-top:12px">Free calculators for the questions families ask most: SIPs, goals, retirement income, home loans, returns (CAGR and XIRR), inflation and capital-gains tax. Each one shows how it is calculated.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""
-    B.write("/calculators/", B.page("Financial calculators: SIP, lump sum, goal, SWP, EMI, inflation, tax | Aeterna Wealth",
-                                    "Free financial calculators for India: SIP with step-up, lump sum, goal planner, SWP retirement income, loan EMI, inflation and capital-gains tax, each with its method explained.",
+    B.write("/calculators/", B.page("Financial calculators: SIP, home loan prepayment, CAGR, XIRR, SWP, EMI, tax | Aeterna Wealth",
+                                    "Free financial calculators for India: SIP with step-up, lump sum, goal planner, home loan prepay-or-invest, CAGR, XIRR, SWP retirement income, loan EMI, inflation and capital-gains tax, each with its method explained.",
                                     "/calculators/", body, (B.crumbs([("Calculators", "/calculators/")]),)))
     urls.append(("/calculators/", "monthly", "0.8"))
 

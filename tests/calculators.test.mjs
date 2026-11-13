@@ -75,5 +75,30 @@ near('Listed bond 6 months: slab', T({ asset: 'lbond', months: 6, gain: 300000, 
 near('Unlisted shares 30 months: 12.5%', T({ asset: 'unl', months: 30, gain: 300000 }).tax, 39000);
 near('Unlisted shares 20 months: slab', T({ asset: 'unl', months: 20, gain: 300000 }).tax, 93600);
 
+// ---- CAGR
+near('CAGR 1 lakh -> 2 lakh in 6 years', CALC.cagr(100000, 200000, 6), (Math.pow(2, 1 / 6) - 1) * 100, 1e-9);
+near('CAGR inverse of lump sum', CALC.cagr(100000, CALC.lump(100000, 10, 12), 10), 12, 1e-9);
+is('CAGR with a zero start is not defined', CALC.cagr(0, 100, 5), null);
+
+// ---- XIRR: one investment held exactly 2 years (730 days) -> CAGR; and a cash-flow set checked by its own NPV
+near('XIRR single flow = CAGR', CALC.xirr([{ d: '2023-01-01', a: -100000 }, { d: '2025-01-01', a: 121000 }]),
+  (Math.pow(1.21, 365 / 731) - 1) * 100, 1e-6);
+{ const fl = [{ d: '2022-01-10', a: -50000 }, { d: '2023-01-10', a: -50000 }, { d: '2024-01-10', a: -50000 }, { d: '2025-01-10', a: -50000 }, { d: '2026-11-13', a: 280000 }];
+  const r = CALC.xirr(fl) / 100, t0 = Date.parse('2022-01-10');
+  near('XIRR makes NPV zero', fl.reduce((s, x) => s + x.a / Math.pow(1 + r, (Date.parse(x.d) - t0) / 864e5 / 365), 0), 0, 0.01); }
+is('XIRR needs money in and out', CALC.xirr([{ d: '2024-01-01', a: -100 }, { d: '2025-01-01', a: -100 }]), null);
+
+// ---- home loan prepay vs invest
+{ const base = { P: 5000000, rate: 8.5, years: 20, extra: 10000, r: 12, slab: 30 };
+  const x = CALC.prepay(base);
+  near('Prepay: EMI equals the EMI calculator', x.emi, CALC.emi(5000000, 8.5, 20).emi, 1e-9);
+  is('Prepay: invest scenario closes the loan in the full tenure', x.B.closed, 240);
+  is('Prepay: prepaying closes the loan earlier', x.A.closed < 240, true);
+  near('Prepay: no extra money -> both scenarios identical', (() => { const y = CALC.prepay({ ...base, extra: 0 }); return y.A.net - y.B.net; })(), 0, 1e-6);
+  near('Prepay: both scenarios use the same money', x.A.put + x.A.interest - (x.B.put + x.B.interest), 0, 1);
+  { const y = CALC.prepay({ ...base, r: 0 }); is('Prepay at 0% investment return: prepaying wins', y.A.net > y.B.net, true); }
+  { const be = CALC.prepayBreakeven(base), y = CALC.prepay({ ...base, r: be });
+    near('Prepay break-even return levels the two', y.B.net - y.A.net, 0, 50); } }
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

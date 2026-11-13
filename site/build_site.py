@@ -376,11 +376,23 @@ FAVICON = ('<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" hr
            '<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
 
 
+def search_name(name):
+    """'ICICI Prudential Large Cap Fund (erstwhile Bluechip Fund)' -> 'ICICI Prudential Large Cap Fund (formerly Bluechip)':
+    people still search old fund names, so the old name stays in the title in a short form"""
+    m = re.match(r"\s*(.+?)\s*\(\s*(?:erstwhile|formerly(?:\s+know[n]?\s+as)?)\s+(.+?)\)?\s*$", name, re.I)   # AMFI names: 'Know as', unclosed brackets
+    if not m:
+        return name
+    new, old = m.group(1), m.group(2).strip()
+    if old.count("(") > old.count(")"):
+        old += ")"
+    brand = new.split()[0].lower()
+    old = re.sub(r"\b(fund|scheme)\b", "", old, flags=re.I)
+    old = " ".join(w for w in old.split() if w.lower() != brand)
+    return f"{new} (formerly {old.strip()})"
+
+
 def fit_title(t, n=65):
     """Search results show about 60-65 characters: drop the brand suffix first, then trim long fund names."""
-    if len(t) <= n:
-        return t
-    t = re.sub(r"\s*[\(\-]?\s*\(?(formerly|erstwhile)\b[^:)|]*\)?", "", t, flags=re.I)
     if len(t) <= n:
         return t
     t2 = t.replace(" | Aeterna Wealth insights", "").replace(" | Aeterna Wealth", "")
@@ -393,7 +405,7 @@ def fit_title(t, n=65):
             t2 = t2.replace(long, short)
             if len(t2) <= n:
                 return t2
-    return t2
+    return t2      # an old fund name always stays: Google matches the full title even where it shortens the display
 
 
 def fit_desc(d, n=158):
@@ -713,7 +725,7 @@ def main():
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(r3 - e3)} for {bp}.")
         desc_bits.append(f"NAV {inr2(f.get('nav_latest'))} on {dmy(f.get('nav_date'))}, holdings and review.")
         desc = " ".join(desc_bits)[:300]
-        title = f"{f['_name']} {f['plan_type']} Growth: NAV, returns, rating & review | Aeterna Wealth"
+        title = f"{search_name(f['_name'])} {f['plan_type']} Growth: NAV, returns, rating & review | Aeterna Wealth"
         rows = ""
         for h, lab in (("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)

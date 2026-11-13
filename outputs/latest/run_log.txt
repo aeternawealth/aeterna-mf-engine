@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-12 21:42
+Aeterna MF Engine run 2026-11-13 04:03
 [1/7] Universe (AMFI NAVAll)
   2745 equity + index schemes (growth, Direct & Regular)
   Month-end AUM (30 Oct 2026): 1357/1382 schemes
@@ -33,9 +33,8 @@ Aeterna MF Engine run 2026-11-12 21:42
   NAV 2500/2768
   NAV 2600/2768
   NAV 2700/2768
-  NAV fetch failed for 2 schemes: [154838, 154839]
-  2766 NAV histories (104 of them liquid funds, the arbitrage yardstick)
-  1755 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  2768 NAV histories (104 of them liquid funds, the arbitrage yardstick)
+  76 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
   bond-fund yardstick: Direct 3618 days, Regular 5379 days (86 plans)
   liquid-fund yardstick: Direct 5374 days, Regular 5379 days
 [5/7] Holdings for 2026-10
@@ -75,7 +74,7 @@ Floating Rate                    6   2    9   7        0
 Focused                          0   8   30  16        2
 Gilt                             5   6   19  12        4
 Gilt 10-Year Constant Maturity   4   0    5   1        0
-Index Fund                      82  45  259  64       90
+Index Fund                      82  45  259  64       92
 Large & Mid Cap                  1   9   28  14       22
 Large Cap                        5   7   30  18        8
 Liquid                          13   8   28  19       17

@@ -1186,8 +1186,8 @@ def main():
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))
 
     # ---- the app (home page) with full head
-    home_desc = ("Ratings for every Indian mutual fund, judged on its record against its index and peers. "
-                 "Free portfolio review from an AMFI-registered distributor.")
+    home_desc = ("Track-record ratings for every Indian mutual fund, a free portfolio review, "
+                 "and PMS, AIFs and bonds for families across India.")
     site_ld = {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#website", "name": "Aeterna Wealth", "url": SITE + "/",
                "publisher": {"@id": SITE + "/#org"},
                "potentialAction": {"@type": "SearchAction", "target": {"@type": "EntryPoint", "urlTemplate": SITE + "/?q={search_term_string}"},
@@ -1195,7 +1195,7 @@ def main():
     app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
     index = ('<!doctype html>\n<html lang="en-IN" data-theme="light"><head>'
-             + head("Aeterna Wealth: mutual fund ratings and free portfolio review", home_desc, "/", (ORG_LD, site_ld))
+             + head("Aeterna Wealth: Mutual funds, rated and chosen for you", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body + WA_FLOAT
              + '\n</body></html>\n')

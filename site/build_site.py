@@ -347,6 +347,8 @@ ORG_LD = {
     "address": {"@type": "PostalAddress", "streetAddress": ORG["street"], "addressLocality": ORG["city"],
                 "postalCode": ORG["pin"], "addressRegion": "Delhi", "addressCountry": "IN"},
     "areaServed": {"@type": "Country", "name": "India"},
+    "founder": [{"@type": "Person", "name": "Harshit Aggarwal", "honorificPrefix": "CA", "jobTitle": "Chartered Accountant", "sameAs": ["https://www.linkedin.com/in/harshit-aggarwal/"]},
+                {"@type": "Person", "name": "Shantnu Singh Sangwan", "honorificPrefix": "Adv.", "jobTitle": "Advocate", "sameAs": ["https://www.linkedin.com/in/shantnusangwan/"]}],
     "sameAs": SOCIAL,
     "founder": [dict({"@type": "Person", "name": t["name"], "sameAs": [t["linkedin"]]}, **({"jobTitle": t["role"]} if t.get("role") else {}))
                 for t in CFG.get("team", [])],
@@ -870,6 +872,8 @@ def main():
     PL.planner_pages(Bm, urls)
     import learn_pages as LP
     LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
+    import trust_pages as TR      # /about/, /method/, /contact/ as real pages
+    TR.trust_pages(Bm, funds, urls)
     if (S / "sample_review.html").exists():      # tools/make_sample_review.py: a made-up portfolio's report
         write("/invest/portfolio-review/sample/", (S / "sample_review.html").read_text(encoding="utf-8"))
         urls.append(("/invest/portfolio-review/sample/", "monthly", "0.6"))

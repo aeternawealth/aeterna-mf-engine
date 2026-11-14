@@ -381,7 +381,9 @@ def analytics_head():
     return out
 
 
-FAVICON = ('<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">'
+FAVICON = ('<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">'   # Google: square PNG, a multiple of 48px
+           '<link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48"><link rel="icon" href="/favicon-144.png" type="image/png" sizes="144x144">'
+           '<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml">'
            '<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">'
            '<link rel="apple-touch-icon" href="/apple-touch-icon.png">')
 
@@ -783,7 +785,7 @@ def main():
             continue
         for c in json.loads(sp.read_text(encoding="utf-8")).get("nav", {}):
             SERIES_FILE.setdefault(int(c), sp.stem)
-    for icon in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
+    for icon in ("favicon.ico", "favicon.svg", "favicon-48.png", "favicon-96.png", "favicon-144.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
         if (S / icon).exists():
             shutil.copy(S / icon, DIST / icon)
     if (S / "og.png").exists():

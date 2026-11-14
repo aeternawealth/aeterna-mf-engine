@@ -366,7 +366,18 @@ def analytics_head():
         out += ("<script>(function(){if(!/(^|\\.)aeternawealth\\.com$/.test(location.hostname))return;"
                 f"var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+{gid};document.head.appendChild(s);"
                 "window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};"
-                f"gtag('js',new Date());gtag('config',{gid})}})();</script>")
+                f"gtag('js',new Date());gtag('config',{gid});"
+                # the actions that matter for the business, sent as events (mark them as key events in GA)
+                "var K=function(n,p){try{gtag('event',n,p||{})}catch(e){}};"
+                "document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href')||'';"
+                "if(/wa\\.me|whatsapp/i.test(h))K('whatsapp_click',{page:location.pathname});"
+                "else if(/^tel:/i.test(h))K('phone_click',{page:location.pathname});"
+                "else if(/^mailto:/i.test(h))K('email_click',{page:location.pathname});"
+                "else if(/\\/invest\\/portfolio-review\\//.test(h))K('review_click',{page:location.pathname});"
+                "else if(/\\/portfolio-check\\//.test(h))K('portfolio_check_click',{page:location.pathname});"
+                "else if(/centricity/i.test(h))K('client_login_click',{});},true);"
+                "document.addEventListener('submit',function(ev){K('generate_lead',{form:(ev.target&&ev.target.id)||'form',page:location.pathname})},true)"
+                "})();</script>")
     return out
 
 

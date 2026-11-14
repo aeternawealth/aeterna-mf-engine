@@ -342,9 +342,8 @@ ORG_LD = {
     "@context": "https://schema.org", "@type": "FinancialService", "@id": SITE + "/#org",
     "name": ORG["brand"], "legalName": ORG["name"], "url": SITE + "/", "logo": SITE + "/icon-512.png", "image": SITE + "/og.png",
     "telephone": ORG["phone"], "email": ORG["email"],
-    "description": "Wealth management for families across India: mutual funds, PMS, AIFs, bonds, unlisted shares and "
-                   "tax-aware planning. AMFI-registered mutual fund distributor (ARN-317889). Its website compares every Indian equity and "
-                   "index mutual fund, with returns against the right index and track-record ratings.",
+    "description": "AMFI-registered mutual fund distributor (ARN-317889) in Delhi. Rates every Indian mutual fund on its track record "
+                   "against its own index and peers, and offers a free portfolio review. Also arranges PMS, AIFs and bonds for families across India.",
     "address": {"@type": "PostalAddress", "streetAddress": ORG["street"], "addressLocality": ORG["city"],
                 "postalCode": ORG["pin"], "addressRegion": "Delhi", "addressCountry": "IN"},
     "areaServed": {"@type": "Country", "name": "India"},
@@ -1181,8 +1180,8 @@ def main():
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))
 
     # ---- the app (home page) with full head
-    home_desc = ("Wealth management for families across India: mutual funds, PMS, AIFs, bonds, unlisted shares and tax-aware "
-                 "planning. Open fund data and track-record ratings for every Indian equity fund. AMFI-registered MFD, ARN-317889.")
+    home_desc = ("Ratings for every Indian mutual fund, judged on its record against its index and peers. "
+                 "Free portfolio review from an AMFI-registered distributor.")
     site_ld = {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#website", "name": "Aeterna Wealth", "url": SITE + "/",
                "publisher": {"@id": SITE + "/#org"},
                "potentialAction": {"@type": "SearchAction", "target": {"@type": "EntryPoint", "urlTemplate": SITE + "/?q={search_term_string}"},
@@ -1190,7 +1189,7 @@ def main():
     app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
     index = ('<!doctype html>\n<html lang="en-IN" data-theme="light"><head>'
-             + head("Aeterna Wealth: mutual funds, PMS, AIFs, bonds, unlisted shares", home_desc, "/", (ORG_LD, site_ld))
+             + head("Aeterna Wealth: mutual fund ratings and free portfolio review", home_desc, "/", (ORG_LD, site_ld))
              + '<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}[hidden]{display:none!important}img{max-width:100%}</style>'
              + '</head><body>\n' + app_body + WA_FLOAT
              + '\n</body></html>\n')
@@ -1337,7 +1336,9 @@ def main():
         "  Cross-Origin-Opener-Policy: same-origin\n"
         "/assets/*\n  Cache-Control: public, max-age=3600\n"
         "/data/*\n  Cache-Control: public, max-age=300\n"
-        "/og.png\n  Cache-Control: public, max-age=86400\n", encoding="utf-8")
+        "/og.png\n  Cache-Control: public, max-age=86400\n"
+        # the production *.pages.dev alias serves the same site: keep it out of search so Google indexes one copy
+        "https://aeterna-wealth.pages.dev/*\n  X-Robots-Tag: noindex\n", encoding="utf-8")
     print(f"built {DIST}: {len(funds)} fund pages, {len(cats)} categories, {len(urls)} URLs in sitemap, launched={LAUNCHED}")
 
 

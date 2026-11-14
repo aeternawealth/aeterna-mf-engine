@@ -1680,7 +1680,7 @@ function route(){
   let solAt=null;
   if(!['home','ratings','fund','compare','method','insights','solutions','tools','about','contact','disclosures'].includes(view))view='home';
   $$('[data-view]').forEach(v=>v.hidden=v.dataset.view!==view);
-  {const T={home:'Aeterna Wealth: mutual fund ratings and free portfolio review',ratings:'Mutual fund ratings by category',compare:'Compare mutual funds and portfolio overlap',method:'How our fund ratings work',insights:'Mutual fund insights',solutions:'Our solutions',tools:'Financial calculators',about:'About Aeterna Wealth',contact:'Contact Aeterna Wealth',disclosures:'Disclosures'};
+  {const T={home:'Aeterna Wealth: Mutual funds, rated and chosen for you',ratings:'Mutual fund ratings by category',compare:'Compare mutual funds and portfolio overlap',method:'How our fund ratings work',insights:'Mutual fund insights',solutions:'Our solutions',tools:'Financial calculators',about:'About Aeterna Wealth',contact:'Contact Aeterna Wealth',disclosures:'Disclosures'};
    const f=view==='fund'&&S.byCode.get(code);document.title=f?`${f.name} (${f.plan_type}) | Aeterna Wealth`:(view==='home'?T.home:(T[view]||'Aeterna Wealth')+' | Aeterna Wealth')}
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});

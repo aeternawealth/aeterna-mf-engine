@@ -422,10 +422,16 @@ THEME_JS = ('<meta name="theme-color" content="#f6f8f7"><script>try{var t=localS
             'if(t==="dark")document.querySelector(\'meta[name="theme-color"]\').content="#06100d"}}catch(e){}</script>')   # light by default; the switch in the header remembers a choice
 
 
+# legal pages stay linked from every footer but out of search, so Google's sitelinks for the brand show the useful pages
+NOINDEX_PATHS = {"/privacy/", "/terms/", "/grievances/", "/disclosures/"}
+
+
 def head(title, desc, path, extra_ld=(), og_type="website"):
     title, desc = fit_title(title), fit_desc(desc)
     url = SITE + path
-    robots = '<meta name="robots" content="noindex,nofollow">' if not LAUNCHED else '<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">'
+    robots = ('<meta name="robots" content="noindex,nofollow">' if not LAUNCHED else
+              '<meta name="robots" content="noindex,follow">' if path in NOINDEX_PATHS else
+              '<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">')
     return (f'<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
             f'<title>{e(title)}</title><meta name="description" content="{e(desc)}"><link rel="canonical" href="{url}">{robots}'
             f'<meta property="og:type" content="{og_type}"><meta property="og:site_name" content="Aeterna Wealth">'
@@ -486,7 +492,7 @@ def footer():
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
- </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans. Direct plans of the same schemes are available at a lower expense ratio. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
+ </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans, included in the expense ratio; it charges no separate fee. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
 def page(title, desc, path, body, ld=()):
@@ -1223,7 +1229,7 @@ def main():
     # ---- sitemap, robots, llms
     today = str(date.today())
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-                                      + "".join(f"<url><loc>{SITE}{u}</loc><lastmod>{as_of or today}</lastmod><changefreq>{cf}</changefreq><priority>{pr}</priority></url>\n" for u, cf, pr in urls)
+                                      + "".join(f"<url><loc>{SITE}{u}</loc><lastmod>{as_of or today}</lastmod><changefreq>{cf}</changefreq><priority>{pr}</priority></url>\n" for u, cf, pr in urls if u not in NOINDEX_PATHS)
                                       + "</urlset>\n", encoding="utf-8")
     (DIST / "robots.txt").write_text(
         "User-agent: *\nDisallow: /\n" if not LAUNCHED else

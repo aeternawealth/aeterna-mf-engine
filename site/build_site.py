@@ -594,7 +594,7 @@ def leaders_story(c, L):
     return (f"<h2 style='font-size:24px;margin-top:34px'>What separates the leaders</h2>"
             f"<p style='margin-top:10px'>{len(top)} {e(lc)} plans are rated A or A+ today and {len(low)} are rated C. {e(' '.join(said))} "
             "Since every return here is after costs, these differences are what investors actually received.</p>"
-            "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Typical fund (median)</th><th>A+ and A</th><th>C</th></tr></thead><tbody>"
+            "<div class='tablewrap' style='margin-top:12px'><table class='cmp' style='width:100%;table-layout:fixed'><thead><tr><th class='l' style='width:56%'>Typical fund (median)</th><th>A+ and A</th><th>C</th></tr></thead><tbody>"
             + "".join(rows) + "</tbody></table></div>"
             "<p class='muted' style='font-size:12.5px;margin-top:8px'>Regular and Direct plans together. Past record, not a forecast: a fund's rating can change as its record does.</p>")
 

@@ -1186,7 +1186,7 @@ def main():
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))
 
     # ---- the app (home page) with full head
-    home_desc = ("Track-record ratings for every Indian mutual fund, a free portfolio review, "
+    home_desc = ("Every Indian mutual fund rated on how it has actually performed. A free portfolio review, "
                  "and PMS, AIFs and bonds for families across India.")
     site_ld = {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#website", "name": "Aeterna Wealth", "url": SITE + "/",
                "publisher": {"@id": SITE + "/#org"},

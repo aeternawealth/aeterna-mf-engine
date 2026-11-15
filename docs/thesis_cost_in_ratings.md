@@ -65,3 +65,12 @@ little). A fuller test would use month-end expense ratios from AMFI's history.
 
 **Decision for the owner:** keep as is (recommended), or remove cost from hybrid only (the smallest change, 16 plans;
 but hybrid is where cost predicted best).
+
+## Update, Nov 2026: period rankings
+
+The 6-month, 1-year, 3-year and 5-year rankings shown on fund pages still gave the expense ratio 10% for equity and
+hybrid funds. Same reasoning as above: those returns come from the NAV, already net of expenses, so cost was counted
+twice. With the owner's approval it was removed and its 10 points moved to return over the benchmark (6M: 60, 1Y: 50,
+3Y/5Y: 35). Effect on current data: 52–67% of equity plans move in their period rank, mostly by a place or two; 17–31
+per period move in or out of a top-3 place. Track-record ratings (A+/A/B/C) are unaffected. Index, arbitrage and debt
+period views keep cost, as their ratings do. Test: `tests/test_period_ranks.py`.

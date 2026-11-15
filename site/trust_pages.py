@@ -39,7 +39,8 @@ def about(B, funds, urls):
         + (f"<p style='font-size:15px'>{B.e(d)}</p>" if d else "") + f"<a href='{u}' target='_blank' rel='noopener'>LinkedIn profile</a></div>" for n, r, u, d in FOUNDERS)
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">{CSS}
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/">Home</a> › About</nav>
-<h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:14px">A wealth partner that shows its working</h1>
+<h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:14px">About Aeterna Wealth</h1>
+<p style="font:400 clamp(20px,2.4vw,26px)/1.3 var(--f-display);margin-top:8px;color:var(--teal)">A wealth partner that shows its working</p>
 <p class="lede" style="margin-top:14px">{B.e(O['name'])} is an AMFI-registered mutual fund distributor ({O['arn']}) in New Delhi, working with families
 across India. We help them invest through mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds and
 unlisted shares, with tax planned in from the start.</p>

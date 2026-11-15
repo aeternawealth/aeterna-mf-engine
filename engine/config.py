@@ -429,8 +429,11 @@ def horizon_protocol(h: str, category: str) -> dict:
         return {f"excess_{h}": ("Return", 60, True), f"hit_{h}": ("Consistency", 15, True), "ter_base": ("Cost", 25, False)}
     if category in DEBT_CATEGORIES:
         return {f"excess_{h}": ("Return", 55, True), f"hit_{h}": ("Consistency", 20, True), "ter": ("Cost", 25, False)}
-    w = {"6M": (50, 0, 10, 10, 20), "1Y": (40, 10, 10, 10, 20), "3Y": (25, 15, 15, 10, 25), "5Y": (25, 15, 15, 10, 25)}[h]
+    # equity and hybrid (Nov 2026, owner's approval): no cost input. Every return here is taken from the NAV, which is
+    # already net of the fund's expenses, so the expense ratio would count the same cost twice; its 10 went to return
+    # over the benchmark. Index, arbitrage and debt period views keep cost (see docs/thesis_cost_in_ratings.md).
+    w = {"6M": (60, 0, 10, 10, 20), "1Y": (50, 10, 10, 10, 20), "3Y": (35, 15, 15, 10, 25), "5Y": (35, 15, 15, 10, 25)}[h]
     p = {f"excess_{h}": ("Return", w[0], True), f"ir_{h}": ("Return", w[1], True),
          f"dcap_{h}": ("Risk", w[2], False), f"mdd_{h}": ("Risk", w[3], True),
-         f"hit_{h}": ("Consistency", w[4], True), "ter": ("Cost", 10, False)}
+         f"hit_{h}": ("Consistency", w[4], True)}
     return {k: v for k, v in p.items() if v[1] > 0}

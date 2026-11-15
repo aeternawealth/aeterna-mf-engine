@@ -188,7 +188,7 @@ def build(B, by_cat, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="{cat_path}">{B.e(c)}</a> › Top-rated</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Top-rated {B.e(lc)} funds: {B.e(mname)}</h1>
 <p class="lede" style="margin-top:12px">The {len(top)} {B.e(lc)} schemes rated A+ or A on their track record this month, out of {n_rated} rated Regular plans: why each one rates well, what changed since last month, and how much they overlap. Data as of {B.dmy(as_of)}.</p>
-<p style="margin-top:12px">Each fund is compared only with other {B.e(lc)} funds of the same plan type: return over {B.e(yard)}, how consistently it was earned, risk, cost and portfolio. <a href="/#method">How the ratings work</a>.</p>
+<p style="margin-top:12px">Each fund is compared only with other {B.e(lc)} funds of the same plan type: return over {B.e(yard)}, how consistently it was earned, risk, cost and portfolio. <a href="/method/">How the ratings work</a>.</p>
 {''.join(cards)}
 {change}
 {ov_html}

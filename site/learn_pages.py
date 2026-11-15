@@ -118,7 +118,7 @@ def guides(d, f):
         faq=[("How many mutual funds should I own?", "Usually 4 to 6 equity funds across categories are enough; more often means more overlap."),
              ("Are past returns useful at all?", "Consistency against the index over many rolling periods is more useful than any single return figure, but none of it predicts the future."),
              ("Should I choose by fund size?", "Size alone says little. Very large small cap funds can find it harder to buy and sell stocks, which can hold returns back.")],
-        links=[("/mutual-funds/", "Every fund, by category"), ("/#compare", "Compare funds and overlap"), ("/#method", "How our ratings work")],
+        links=[("/mutual-funds/", "Every fund, by category"), ("/#compare", "Compare funds and overlap"), ("/method/", "How our ratings work")],
     ))
     G.append(dict(
         slug="sip-vs-lump-sum",
@@ -350,7 +350,7 @@ def explainers(d, f):
         faq=[("What is a good rolling return?", "One that beat the fund's own index in most periods. Many funds don't: in several categories the median fund was behind its index in most rolling 3-year periods."),
              ("Are rolling returns a forecast?", "No. They describe how consistent the record has been, which is more informative than one period, but not a prediction."),
              ("Where can I see them?", "On every fund page on our site, under consistency.")],
-        links=[("/#method", "How our ratings use rolling returns"), ("/mutual-funds/flexi-cap/top-rated/", "Top-rated flexi cap funds")],
+        links=[("/method/", "How our ratings use rolling returns"), ("/mutual-funds/flexi-cap/top-rated/", "Top-rated flexi cap funds")],
     ))
     G.append(dict(
         slug="what-is-tri-total-return-index",
@@ -667,7 +667,7 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
 <p class="muted" style="margin-top:10px;font-size:13.5px">Aeterna Wealth · figures from our fund data, updated {B.dmy(as_of)}</p>
 <div class="card" style="margin-top:22px;border-left:4px solid var(--teal)"><div class="eyebrow">The short answer</div><p style="margin-top:8px;font-size:16.5px;line-height:1.6">{e(g['answer'])}</p></div>
 <div style="margin-top:26px">{secs}<div class='inv-sec'><h2>Common questions</h2><div class='body'>{faq}</div></div></div>
-<div class="inv-cta"><div><h2>Want this worked out for your money?</h2><p>A first conversation is free. We reply within one working day.</p></div><a class="btn" href="/#contact">Talk to us</a></div>
+<div class="inv-cta"><div><h2>Want this worked out for your money?</h2><p>A first conversation is free. We reply within one working day.</p></div><a class="btn" href="/contact/">Talk to us</a></div>
 <div class="inv-more">{more}</div>
 <div class='inv-sec' style="margin-top:26px"><h2>More guides</h2><div class='body'><ul>{others}</ul></div></div>
 <p class="note" style="margin-top:20px">General information, not investment or tax advice for your situation. Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Past performance does not guarantee future returns.</p>

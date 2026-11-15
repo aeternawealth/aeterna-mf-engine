@@ -504,7 +504,7 @@ def footer():
     soc = " · ".join('<a href="%s" target="_blank" rel="noopener me">%s</a>' % (e(u), label(u)) for u in SOCIAL)
     return f"""<footer class="site"><div class="wrap"><div class="cols">
  <div class="stack" style="gap:8px"><b style="font:500 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/method/">Method and backtest</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/mutual-funds/holding/">Funds holding a stock</a><a href="/learn/">Investor guides</a><a href="/method/">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
  </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans, included in the expense ratio; it charges no separate fee. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
@@ -874,6 +874,11 @@ def main():
     LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
     import trust_pages as TR      # /about/, /method/, /contact/ as real pages
     TR.trust_pages(Bm, funds, urls)
+    import stock_pages as SP      # "mutual funds holding <stock>": the top 100 stocks (a test, Nov 2026)
+    stock_url = SP.build(Bm, funds, hold, urls, as_of)
+
+    def hold_name(t):   # a holding on a fund page links to its "funds holding this stock" page when there is one
+        return f'<a href="{stock_url[t[0]]}">{e(t[1])}</a>' if t[0] in stock_url else e(t[1])
     if (S / "sample_review.html").exists():      # tools/make_sample_review.py: a made-up portfolio's report
         write("/invest/portfolio-review/sample/", (S / "sample_review.html").read_text(encoding="utf-8"))
         urls.append(("/invest/portfolio-review/sample/", "monthly", "0.6"))
@@ -924,7 +929,7 @@ def main():
                     ("Max fall, 3Y", pct(f.get("max_drawdown_3y"), 2)), ("Rolling 1-year return vs index, median", spct(f.get("roll1y_excess_median"), 2)),
                     ("Rolling 1-year periods ahead of the index", pct(f.get("roll1y_hit_rate"), 0))]
         risk = "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in risk if v not in ("–", "–%"))
-        hold_html = ("<div class='kv' style='grid-template-columns:1fr'>" + "".join(f"<div><span>{e(t[1])}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
+        hold_html = ("<div class='kv' style='grid-template-columns:1fr'>" + "".join(f"<div><span>{hold_name(t)}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
                      f"<p class='muted' style='font-size:12.5px;margin-top:8px'>Top 10 holdings, {mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio.</p>") if top else \
             "<p class='muted'>Holdings for this scheme are not available yet; its rating uses the track record only.</p>"
         if arb:

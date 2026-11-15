@@ -182,7 +182,7 @@ PC_HTML = r"""<section class="band"><div class="wrap" style="max-width:860px">
 <div id="pclist" style="display:grid;gap:10px;margin-top:12px"></div>
 <div id="pcnotes" style="margin-top:16px"></div>
 <div class="card" style="margin-top:22px"><b>Want us to go through it with you?</b><p class="muted" style="margin-top:6px">A portfolio review covers costs, overlap, tax on any switch and whether each fund still fits your plan.</p>
-<p style="margin-top:12px"><a class="btn primary" id="pcwa" href="https://wa.me/918595993600" target="_blank" rel="noopener">Send my list for a review on WhatsApp</a> <a class="btn" href="/#method">How ratings work</a></p></div>
+<p style="margin-top:12px"><a class="btn primary" id="pcwa" href="https://wa.me/918595993600" target="_blank" rel="noopener">Send my list for a review on WhatsApp</a> <a class="btn" href="/method/">How ratings work</a></p></div>
 <p class="muted" style="font-size:12.5px;margin-top:18px">Ratings describe each fund's past record against its category, not a forecast, and are not a recommendation to buy or sell. Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889). Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>
 </div></section>
 <script>
@@ -254,7 +254,7 @@ def review_status(f, hist):
         state, cls, txt = "Not rated yet", "rv-new", "Too little history for a rating (3 years), so there is no review signal yet."
     return (f'<div class="card rv {cls}" style="margin-top:16px"><div class="rv-h"><span class="rv-dot"></span><b>Review status: {state}</b></div>'
             f'<p>{txt}</p><p class="muted" style="font-size:12.5px;margin-top:6px">How we use our ratings in client reviews; not a recommendation to buy or sell. Exit loads and tax depend on when you bought, so talk to us before you switch.</p>'
-            f'<p style="margin-top:10px"><a href="/#method" class="rv-how">How the review rule works</a></p></div>')
+            f'<p style="margin-top:10px"><a href="/method/" class="rv-how">How the review rule works</a></p></div>')
 
 
 TIER_WORD = {"A+": "A+ (a score of 75 or more)", "A": "A (65 or more)", "B": "B (middle of the peer group)", "C": "C (bottom 30%)"}
@@ -504,9 +504,9 @@ def footer():
     soc = " · ".join('<a href="%s" target="_blank" rel="noopener me">%s</a>' % (e(u), label(u)) for u in SOCIAL)
     return f"""<footer class="site"><div class="wrap"><div class="cols">
  <div class="stack" style="gap:8px"><b style="font:500 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/#method">Method and backtest</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/learn/">Investor guides</a><a href="/method/">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/#about">About</a><a href="/#contact">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
  </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans, included in the expense ratio; it charges no separate fee. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
 
@@ -997,7 +997,7 @@ def main():
             if f.get("one_month_lead"):
                 cap_html += ('<p class="muted" style="font-size:13px;margin-top:4px">Most of its lead over the index in the last 6 months came from one month (%s, %s). '
                              'One large gain can fade; the rating does not adjust for it.</p>' % (e(f["one_month_lead"]), spct(f.get("one_month_gain"))))
-        cap_html += (' <a href="/#method" style="font-size:13px">How ratings work</a> · <a href="/ratings-update/" style="font-size:13px">What changed in November 2026</a>'
+        cap_html += (' <a href="/method/" style="font-size:13px">How ratings work</a> · <a href="/ratings-update/" style="font-size:13px">What changed in November 2026</a>'
                      if rated and f.get("market_mode") else "")
         d1 = f.get("nav_chg_1d")
         day_html = (f'<div><div class="muted" style="font-size:13px">1-day change</div><div class="mono {"pos" if d1 > 0 else "neg" if d1 < 0 else ""}" style="font-size:20px">{spct(d1, 2)}</div></div>') if d1 is not None else ""
@@ -1196,7 +1196,7 @@ def main():
 <h2 style="font-size:24px;margin-top:34px">Top-rated this month</h2><p class="muted" style="margin-top:6px">The funds rated A+ or A in each category, with why, what changed and how much they overlap.</p>
 <div class="row" style="margin-top:12px;gap:8px;flex-wrap:wrap">{''.join(f"<a class='btn' href='{pth}'>{e(cc)}</a>" for cc, pth in made_top.items())}</div>
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
-<p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/#method">how the ratings work</a>.</p>
+<p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/method/">how the ratings work</a>.</p>
 </div></section>"""
     write("/mutual-funds/", page("Every mutual fund in India compared: ratings, returns and costs | Aeterna Wealth",
                                  f"Compare {len(funds):,} Indian mutual fund plans, equity, index and arbitrage funds: track-record ratings, returns vs the right yardstick, risk, expense ratios and holdings. Updated every weekday.",
@@ -1266,7 +1266,7 @@ def main():
             + f"\n## Fund data\n- [All categories]({SITE}/mutual-funds/)\n{links}\n\n## Downloadable data\n- [All funds, latest metrics (CSV)]({SITE}/data/funds.csv)\n"
             f"- [All funds (JSON)]({SITE}/data/funds.json)\n- [Data dates and sources (JSON)]({SITE}/data/meta.json)\n- [This month's insights (JSON)]({SITE}/data/insights.json)\n\n"
             f"## Tools and guides\n- [Calculators: SIP, lump sum, goal, SWP, EMI, inflation, capital-gains tax]({SITE}/calculators/)\n- [Fund houses]({SITE}/mutual-funds/amc/)\n- [Insights]({SITE}/insights/)\n\n"
-            f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/#method)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")
+            f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/method/)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")
     (DIST / "llms.txt").write_text(llms, encoding="utf-8")
     full = [f"# Aeterna Wealth: full reference\n\n{about}\n",
             "## How the ratings work\nFunds are compared only within their SEBI category and plan type (Regular with Regular, Direct with Direct), "
@@ -1318,8 +1318,8 @@ def main():
         "<h2>New investments</h2><p>Under the same rule, new money in a category goes to the funds rated A+ in that category at the time.</p>"
         "<h2>What the ratings cannot do</h2><p>Ratings describe the past and are not a forecast. In years when large companies lead the market, "
         "funds rated on recent strength have done no better than the rest. We publish these limits, and the full test results, on the "
-        "<a href='/#method'>Method page</a>.</p>"
-        "<p style='margin-top:20px'><a class='btn' href='/#contact'>Talk to us about your funds</a></p>"
+        "<a href='/method/'>Method page</a>.</p>"
+        "<p style='margin-top:20px'><a class='btn' href='/contact/'>Talk to us about your funds</a></p>"
         "<p class='muted' style='font-size:12.5px;margin-top:24px'>Aeterna Wealth is an AMFI-registered mutual fund distributor (ARN-317889), not an investment adviser. "
         "We earn commission from fund houses on Regular plans. Mutual fund investments are subject to market risks; read all scheme-related documents carefully.</p>"
         "</div></section>"))
@@ -1332,8 +1332,8 @@ def main():
     (DIST / f"{INDEXNOW_KEY}.txt").write_text(INDEXNOW_KEY, encoding="utf-8")
     # 301s from the old WordPress site's genuine pages, so any ranking they earned carries over
     # (its ~1,760 injected spam pages are deliberately left to 404 so search engines drop them)
-    old = {"/about-us/": "/#about", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",
-           "/contact-us/": "/#contact", "/thankyou-page/": "/", "/sip/": "/calculators/sip/", "/lumpsum/": "/calculators/lumpsum/",
+    old = {"/about-us/": "/about/", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",
+           "/contact-us/": "/contact/", "/thankyou-page/": "/", "/sip/": "/calculators/sip/", "/lumpsum/": "/calculators/lumpsum/",
            "/terms-conditions/": "/terms/", "/privacy-policy-2/": "/privacy/", "/pms/": "/invest/pms/", "/aif/": "/invest/aif/",
            "/debt-products/": "/invest/bonds/", "/loan-against-mf/": "/invest/mutual-funds/", "/succession-planning/": "/invest/",
            "/taxation-services/": "/invest/tax-planning/", "/the-magic-of-compounding-let-your-money-work-for-you/": "/calculators/sip/",

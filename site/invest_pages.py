@@ -448,15 +448,15 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
 <h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">{e(c['title'])}</h1>
 <p class="lede" style="margin-top:14px">{e(c['lede'])}</p>
-<div class="row" style="margin-top:20px">{REVIEW_BTNS(B) if slug == 'portfolio-review' else '<a class="btn primary" href="/#contact">Talk to us</a>' + ('<a class="btn" href="/mutual-funds/">Browse every fund</a>' if slug == 'mutual-funds' else '<a class="btn" href="/invest/">All solutions</a>')}</div></div>
+<div class="row" style="margin-top:20px">{REVIEW_BTNS(B) if slug == 'portfolio-review' else '<a class="btn primary" href="/contact/">Talk to us</a>' + ('<a class="btn" href="/mutual-funds/">Browse every fund</a>' if slug == 'mutual-funds' else '<a class="btn" href="/invest/">All solutions</a>')}</div></div>
 <div class="inv-facts">{facts}</div></div>
 <div style="margin-top:34px">{secs}
 <div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{steps}</ol></div></div>
 <div class='inv-sec'><h2>Common questions</h2><div class='body'>{faq}</div></div></div>
-<div class="inv-cta"><div><h2>Talk to us about {e(NAMES[slug].lower() if slug not in ('pms', 'aif') else NAMES[slug])}</h2><p>A first conversation is free. We reply within one working day.</p></div><a class="btn" href="/#contact">Talk to us</a></div>
+<div class="inv-cta"><div><h2>Talk to us about {e(NAMES[slug].lower() if slug not in ('pms', 'aif') else NAMES[slug])}</h2><p>A first conversation is free. We reply within one working day.</p></div><a class="btn" href="/contact/">Talk to us</a></div>
 <div class="inv-more">{more}</div>
 <p class="note" style="margin-top:26px">Investments are subject to market risks; returns are not guaranteed. Read the offer documents before investing. Tax rules described are those in force for 2025-26 and can change; they are general information, not tax advice for your situation. See our <a href="/disclosures/">disclosures</a>.</p>
-<p style="margin-top:16px;font-size:14.5px">Also: {others} · <a href="/invest/">All solutions</a> · <a href="/#contact">Contact</a></p>
+<p style="margin-top:16px;font-size:14.5px">Also: {others} · <a href="/invest/">All solutions</a> · <a href="/contact/">Contact</a></p>
 </div></div></section>"""
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in c["faq"]]}
@@ -482,7 +482,7 @@ def invest_pages(B, funds, hold, ins, urls):
 <div class="grid g3" style="margin-top:26px">{cards}</div>
 {table}
 <h2 style="font-size:26px;margin-top:40px">Common questions</h2><div style="margin-top:8px">{faq_html}</div>
-<div class="inv-cta"><div><h2>Not sure where to start?</h2><p>Most families start with mutual funds. Tell us what you are planning and we'll suggest the right mix.</p></div><a class="btn" href="/#contact">Talk to us</a></div>
+<div class="inv-cta"><div><h2>Not sure where to start?</h2><p>Most families start with mutual funds. Tell us what you are planning and we'll suggest the right mix.</p></div><a class="btn" href="/contact/">Talk to us</a></div>
 </div></div></section>"""
     B.write("/invest/", B.page("Invest: mutual funds, PMS, AIFs, bonds, unlisted shares | Aeterna Wealth",
                                "Mutual funds, PMS, AIFs, bonds, unlisted shares, tax planning and portfolio reviews from Aeterna Wealth, AMFI-registered mutual fund distributor (ARN-317889).",

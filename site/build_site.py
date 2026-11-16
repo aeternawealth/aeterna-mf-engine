@@ -617,7 +617,25 @@ def ret_tiles(f):
         f"<div><div class='muted' style='font-size:13px'>{lab[h]}</div><div class='mono' style='font-size:20px'>{pct(r)}</div>"
         + (f"<div class='{'pos' if x > 0 else 'neg' if x < 0 else 'muted'}' style='font-size:12.5px'>{spct(x)} vs {yard}</div>" if _num_ok(x) else "")
         + "</div>" for h, r, x in T)
-    return f"<div style='border-top:1px solid var(--rule);padding-top:18px;display:grid;grid-template-columns:repeat({len(T)},minmax(0,1fr));gap:12px'>{cells}</div>"
+    row = f"<div style='border-top:1px solid var(--rule);padding-top:18px;display:grid;grid-template-columns:repeat({len(T)},minmax(0,1fr));gap:12px'>{cells}</div>"
+    # a third row of record figures (what a long rating card next to it would otherwise leave as blank space)
+    X = []
+    if _num_ok(f.get("rank_3Y"), f.get("peers_3Y")):
+        X.append(("3Y rank", f"{int(f['rank_3Y'])}/{int(f['peers_3Y'])}"))
+    if f["category"] == "Index Fund":
+        if _num_ok(f.get("tracking_diff_1y")):
+            X.append(("Tracking difference, 1Y", f"{f['tracking_diff_1y']:+.2f}%"))
+        if _num_ok(f.get("tracking_err_1y")):
+            X.append(("Tracking error, 1Y", f"{f['tracking_err_1y']:.2f}%"))
+    else:
+        if _num_ok(f.get("roll3y_hit_rate")):
+            X.append(("3Y periods ahead", pct(f["roll3y_hit_rate"], 0)))
+        if _num_ok(f.get("max_drawdown_5y")) and asset_class(f["category"]) in ("Equity", "Hybrid"):
+            X.append(("Deepest fall, 5Y", pct(abs(f["max_drawdown_5y"]))))
+    if X:
+        row += (f"<div style='border-top:1px solid var(--rule);padding-top:18px;display:grid;grid-template-columns:repeat({len(X)},minmax(0,1fr));gap:12px'>"
+                + "".join(f"<div><div class='muted' style='font-size:13px'>{k}</div><div class='mono' style='font-size:18px;white-space:nowrap'>{v}</div></div>" for k, v in X) + "</div>")
+    return row
 
 
 def fund_story(f):

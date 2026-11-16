@@ -31,7 +31,7 @@ def clean_name(n):
     n = re.sub(r"(?i)[\s,]+(limited|ltd\.?)$", "", n).strip()
     n = re.sub(r"(?i)\s*\((?:formerly|erstwhile)[^)]*\)?$", "", n).strip()
     if n.isupper():                       # shouting names from some fund houses' files
-        n = " ".join(w.capitalize() for w in n.split())
+        n = " ".join(w.capitalize() if i == 0 or w.lower() not in ("of", "and", "the", "for", "in") else w.lower() for i, w in enumerate(n.split()))
     for a in ACRONYMS:                    # then put the known acronyms back
         n = re.sub(r"(?<![A-Za-z])" + re.escape(a) + r"(?![A-Za-z])", a, n, flags=re.I)
     return n

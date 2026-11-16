@@ -877,8 +877,9 @@ def main():
     import stock_pages as SP      # "mutual funds holding <stock>": the top 100 stocks (a test, Nov 2026)
     stock_url = SP.build(Bm, funds, hold, urls, as_of)
 
-    def hold_name(t):   # a holding on a fund page links to its "funds holding this stock" page when there is one
-        return f'<a href="{stock_url[t[0]]}">{e(t[1])}</a>' if t[0] in stock_url else e(t[1])
+    def hold_name(t):   # a holding on a fund page, tidied, linked to its "funds holding this stock" page when there is one
+        nm = SP.clean_name(re.sub(r"(?i)^\s*(eq|equity)\s*[-:]\s*", "", str(t[1])))
+        return f'<a href="{stock_url[t[0]]}">{e(nm)}</a>' if t[0] in stock_url else e(nm)
     if (S / "sample_review.html").exists():      # tools/make_sample_review.py: a made-up portfolio's report
         write("/invest/portfolio-review/sample/", (S / "sample_review.html").read_text(encoding="utf-8"))
         urls.append(("/invest/portfolio-review/sample/", "monthly", "0.6"))
@@ -890,9 +891,17 @@ def main():
 
     # ---- fund pages
     tord = {"A+": 0, "A": 1, "B": 2, "C": 3}
+    idx_proxy = {}   # index -> the largest fund tracking it whose portfolio we have (all funds on one index hold the same stocks)
+    for x in sorted(funds, key=lambda x: -(x.get("aum_cr") or 0)):
+        if x["category"] == "Index Fund" and hold.get(x.get("pair_key")) and x.get("peer_group") not in idx_proxy:
+            idx_proxy[x.get("peer_group")] = x
     for f in funds:
         twin = next((x for x in funds if x.get("pair_key") == f.get("pair_key") and x["code"] != f["code"]), None)
         top = (hold.get(f.get("pair_key")) or [])[:10]
+        proxy = None
+        if not top and f["category"] == "Index Fund" and idx_proxy.get(f.get("peer_group")):
+            proxy = idx_proxy[f.get("peer_group")]
+            top = (hold.get(proxy.get("pair_key")) or [])[:10]
         bench = iname(f.get("benchmark")) or "peer median"
         BL = f.get("bench_label")
         bp = BL if BL and BL.startswith("the median") else f"its composite benchmark ({BL})" if BL else f"the {bench} TRI"
@@ -930,7 +939,9 @@ def main():
                     ("Rolling 1-year periods ahead of the index", pct(f.get("roll1y_hit_rate"), 0))]
         risk = "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in risk if v not in ("–", "–%"))
         hold_html = ("<div class='kv' style='grid-template-columns:1fr'>" + "".join(f"<div><span>{hold_name(t)}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
-                     f"<p class='muted' style='font-size:12.5px;margin-top:8px'>Top 10 holdings, {mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio.</p>") if top else \
+                     + (f"<p class='muted' style='font-size:12.5px;margin-top:8px'>Top 10 holdings, {mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio.</p>" if not proxy else
+                      f"<p class='muted' style='font-size:12.5px;margin-top:8px'>This fund's own portfolio file is not in our data yet. Every fund tracking the {e(iname(f.get('benchmark')) or 'same index')} holds the same stocks in nearly the same weights, "
+                      f"so these are the top 10 holdings of <a href='{proxy['_url']}'>{e(proxy['_name'])}</a> ({mon(proxy.get('holdings_month') or meta.get('holdings_month'))} portfolio).</p>")) if top else \
             "<p class='muted'>Holdings for this scheme are not available yet; its rating uses the track record only.</p>"
         if arb:
             hold_html = ("<p class='muted'>An arbitrage fund buys shares and sells the same shares in the futures market, so its stock list "
@@ -1088,8 +1099,8 @@ def main():
 {cat_html}
 {liq_html}
 {range_html}
-<div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div></div>
-<div><h2 style="font-size:26px">Portfolio</h2><div style="margin-top:12px">{hold_html}</div>{flow_html}</div></div>
+<div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div>{flow_html if risk.count("<div>") <= 4 else ""}</div>
+<div><h2 style="font-size:26px">Portfolio</h2><div style="margin-top:12px">{hold_html}</div>{flow_html if risk.count("<div>") > 4 else ""}</div></div>
 {more}
 <p class="note" style="margin-top:32px">Data as of {dmy(as_of)}: NAVs from AMFI, index data from NSE Indices, portfolios from {e(f.get('amc', 'the fund house'))}'s monthly disclosure. Updated every weekday. Read the scheme documents before investing.</p>
 </div></section>"""

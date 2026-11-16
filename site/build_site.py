@@ -605,6 +605,21 @@ def nice_index(s):
     return iname(s) if s and s.upper() == s else s
 
 
+def ret_tiles(f):
+    """returns over 1, 3 and 5 years against the yardstick, for the top card of a fund page"""
+    T = [(h, f.get("ret_" + h), f.get("excess_" + h)) for h in ("1Y", "3Y", "5Y")]
+    T = [t for t in T if _num_ok(t[1])]
+    if not T:
+        return ""
+    lab = {"1Y": "1Y return", "3Y": "3Y return, yearly", "5Y": "5Y return, yearly"}
+    yard = "index" if f["category"] not in ("Index Fund",) and asset_class(f["category"]) == "Equity" else "yardstick"
+    cells = "".join(
+        f"<div><div class='muted' style='font-size:13px'>{lab[h]}</div><div class='mono' style='font-size:20px'>{pct(r)}</div>"
+        + (f"<div class='{'pos' if x > 0 else 'neg' if x < 0 else 'muted'}' style='font-size:12.5px'>{spct(x)} vs {yard}</div>" if _num_ok(x) else "")
+        + "</div>" for h, r, x in T)
+    return f"<div style='border-top:1px solid var(--rule);padding-top:18px;display:grid;grid-template-columns:repeat({len(T)},minmax(0,1fr));gap:12px'>{cells}</div>"
+
+
 def fund_story(f):
     """'The record in brief': a plain-English reading of the fund's own numbers against its peers (no forecast, no advice)"""
     name, c, plan = f["_name"], f["category"], f["plan_type"]
@@ -938,7 +953,7 @@ def main():
                     ("Max fall, 3Y", pct(f.get("max_drawdown_3y"), 2)), ("Rolling 1-year return vs index, median", spct(f.get("roll1y_excess_median"), 2)),
                     ("Rolling 1-year periods ahead of the index", pct(f.get("roll1y_hit_rate"), 0))]
         risk = "".join(f"<div><span>{k}</span><b>{v}</b></div>" for k, v in risk if v not in ("–", "–%"))
-        hold_html = ("<div class='kv' style='grid-template-columns:1fr'>" + "".join(f"<div><span>{hold_name(t)}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
+        hold_html = ("<div class='kv'>" + "".join(f"<div><span>{hold_name(t)}</span><b>{num(t[2], 1)}%</b></div>" for t in top) + "</div>"
                      + (f"<p class='muted' style='font-size:12.5px;margin-top:8px'>Top 10 holdings, {mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio.</p>" if not proxy else
                       f"<p class='muted' style='font-size:12.5px;margin-top:8px'>This fund's own portfolio file is not in our data yet. Every fund tracking the {e(iname(f.get('benchmark')) or 'same index')} holds the same stocks in nearly the same weights, "
                       f"so these are the top 10 holdings of <a href='{proxy['_url']}'>{e(proxy['_name'])}</a> ({mon(proxy.get('holdings_month') or meta.get('holdings_month'))} portfolio).</p>")) if top else \
@@ -980,9 +995,14 @@ def main():
         if rated:
             faq.append((f"How is {f['_name']} rated?", f"{f['tier']}: {int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans in {f.get('peer_group')}, on its track record. This describes the past and is not a recommendation."))
         cmp_links = "".join(f"<li><a href='{pth}'>{e(f['_name'])} vs {e(name_by_pair.get(k, ''))}</a></li>" for k, pth in cmp_by.get(f.get("pair_key"), []))
-        more = (("<div class='grid g2' style='margin-top:36px;align-items:start'><div><h2 style='font-size:24px'>Similar funds</h2><ul style='margin-top:10px;line-height:1.9'>"
-                 + "".join(f"<li><a href='{x['_url']}'>{e(x['_name'])}</a> <span class='muted'>{e(x.get('tier') or '')}</span></li>" for x in peers) + "</ul></div>"
-                 + (f"<div><h2 style='font-size:24px'>Compared</h2><ul style='margin-top:10px;line-height:1.9'>{cmp_links}</ul></div>" if cmp_links else "") + "</div>")
+        sim = "".join(
+            f"<a class='card' href='{x['_url']}' style='display:grid;gap:6px;text-decoration:none;color:inherit;padding:14px 16px'>"
+            f"<b style='font-weight:500;color:var(--teal)'>{e(x['_name'])}</b>"
+            f"<span class='muted' style='font-size:13.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap'>{tier_badge(x.get('tier'))}"
+            + (f"3Y {pct(x.get('ret_3Y'))} a year · {spct(x.get('excess_3Y'))} vs index" if x.get('ret_3Y') is not None else e(x.get('amc') or ''))
+            + "</span></a>" for x in peers)
+        more = ((f"<h2 style='font-size:24px;margin-top:36px'>Similar funds</h2><div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:12px'>{sim}</div>" if sim else "")
+                + (f"<h2 style='font-size:24px;margin-top:32px'>Compared</h2><ul style='margin-top:10px;line-height:1.9;columns:2 300px;column-gap:32px'>{cmp_links}</ul>" if cmp_links else "")
                 + "<h2 style='font-size:24px;margin-top:36px'>Common questions</h2>"
                 + "".join(f"<details class='faq'><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in faq))
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
@@ -1086,7 +1106,7 @@ def main():
 {plan_html}
 <div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="{wa_link(f"Hello Aeterna, I'd like to ask about {f['_name']} ({f['plan_type']} plan).")}" target="_blank" rel="noopener">Ask about this fund on WhatsApp</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
- <div class="card navbox"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>
+ <div class="card" style="display:grid;gap:22px;align-content:start"><div class="navbox" style="align-items:flex-start"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>{ret_tiles(f)}</div>
  <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 {fund_story(f)}

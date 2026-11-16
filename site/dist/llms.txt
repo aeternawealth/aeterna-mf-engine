@@ -56,6 +56,6 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 
 ## More
 - [Full text for language models](https://aeternawealth.com/llms-full.txt)
-- [Method and backtest](https://aeternawealth.com/#method)
+- [Method and backtest](https://aeternawealth.com/method/)
 - [Disclosures](https://aeternawealth.com/disclosures/)
 - [Privacy](https://aeternawealth.com/privacy/)

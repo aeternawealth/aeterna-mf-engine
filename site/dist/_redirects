@@ -1,5 +1,5 @@
-/about-us/ /#about 301
-/about-us /#about 301
+/about-us/ /about/ 301
+/about-us /about/ 301
 /services/ /invest/ 301
 /services /invest/ 301
 /offerings/ /invest/ 301
@@ -8,8 +8,8 @@
 /blogs /insights/ 301
 /resources/ /calculators/ 301
 /resources /calculators/ 301
-/contact-us/ /#contact 301
-/contact-us /#contact 301
+/contact-us/ /contact/ 301
+/contact-us /contact/ 301
 /thankyou-page/ / 301
 /thankyou-page / 301
 /sip/ /calculators/sip/ 301

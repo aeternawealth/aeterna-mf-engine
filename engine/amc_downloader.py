@@ -202,10 +202,15 @@ def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = N
             urls = AMC_ADAPTERS[slug](month)
         except Exception as e:
             return "FAILED", f"adapter error: {type(e).__name__}: {str(e)[:120]}", None
-        if not urls:
-            return "NOT_YET", "adapter found no files for this month", None
-        got = [p for p in (_direct(u, out / slug) for u in urls) if p]
-        return ("OK", f"{len(got)}/{len(urls)} files via adapter", got[0]) if got else ("FAILED", "adapter files did not download", None)
+        got = [p for p in (_direct(u, out / slug) for u in urls) if p] if urls else []
+        if got:
+            return "OK", f"{len(got)}/{len(urls)} files via adapter", got[0]
+        # nothing from the adapter (no file yet, or a guessed name that does not exist): try the generic route too
+        gen = _download_generic(ctx, slug, month, out, override)
+        if gen[0] == "OK":
+            return gen
+        why = "adapter found no files for this month" if not urls else f"adapter's {len(urls)} file(s) did not download"
+        return (gen[0] if gen[0] != "FAILED" else "NOT_YET"), f"{why}; {gen[1]}", None
     return _download_generic(ctx, slug, month, out, override)
 
 

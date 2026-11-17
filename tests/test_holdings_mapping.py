@@ -37,3 +37,22 @@ def test_combined_file_name_is_not_used():
     parsed = [(["HEMIDF"], DF, "hsbc-small-cap-fund-31-oct-2026.xlsx", "HSBC-Mutual-Fund"),
               (["HEMCPF"], DF, "hsbc-small-cap-fund-31-oct-2026.xlsx", "HSBC-Mutual-Fund")]
     assert H.map_to_schemes(parsed, UNI)["pair_key"].isna().all()
+
+
+AMCS = ["Kotak Mahindra Mutual Fund", "Mahindra Manulife Mutual Fund", "Bank of India Mutual Fund", "Baroda BNP Paribas Mutual Fund",
+        "Aditya Birla Sun Life Mutual Fund", "HDFC Mutual Fund", "ICICI Prudential Mutual Fund", "The Wealth Company Mutual Fund",
+        "Zerodha CASE Mutual Fund", "quant Mutual Fund", "Quantum Mutual Fund", "360 ONE Mutual Fund", "JM Financial Mutual Fund"]
+
+
+def test_folder_to_fund_house():
+    f = lambda folder: H._amc_for(folder, AMCS)
+    assert f("Mahindra-Mutual-Fund") == "Mahindra Manulife Mutual Fund"      # not Kotak Mahindra
+    assert f("Kotak-Mahindra-Mutual-Fund") == "Kotak Mahindra Mutual Fund"
+    assert f("Bank-of-India-Mutual-Fund") == "Bank of India Mutual Fund"
+    assert f("Aditya-Birla-Sun-Life-Mutual-Fund") == "Aditya Birla Sun Life Mutual Fund"
+    assert f("Quant-Mutual-Fund") == "quant Mutual Fund"
+    assert f("Quantum-Mutual-Fund") == "Quantum Mutual Fund"
+    assert f("The-Wealth-Company-Mutual-Fund") == "The Wealth Company Mutual Fund"
+    assert f("Zerodha-Mutual-Fund") == "Zerodha CASE Mutual Fund"
+    assert f("360-ONE-Mutual-Fund") == "360 ONE Mutual Fund"
+    assert f("JM-Financial-Mutual-Fund") == "JM Financial Mutual Fund"

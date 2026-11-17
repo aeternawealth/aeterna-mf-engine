@@ -168,8 +168,21 @@ def _amc_for(folder: str, amcs: list[str]):
     for a in amcs:
         if a.lower() == k:
             return a
+    # every word of the folder name must be in the fund house's name, and the first word must lead it:
+    # 'Mahindra-Mutual-Fund' is Mahindra Manulife, never Kotak Mahindra (Nov 2026: a closest-match pick mixed them up)
+    words = [w for w in re.findall(r"[a-z0-9]+", k) if w not in ("mutual", "fund", "the")]
+    if words:
+        fits = [a for a in amcs if set(words) <= set(re.findall(r"[a-z0-9]+", a.lower()))]
+        lead = [a for a in fits if re.findall(r"[a-z0-9]+", a.lower())[0] == words[0]]
+        if len(lead) == 1:
+            return lead[0]
+        if len(fits) == 1:
+            return fits[0]
     m = difflib.get_close_matches(k, [a.lower() for a in amcs], n=1, cutoff=0.6)
-    return next((a for a in amcs if m and a.lower() == m[0]), None)
+    hit = next((a for a in amcs if m and a.lower() == m[0]), None)
+    if hit and words and not re.findall(r"[a-z0-9]+", hit.lower())[0] == words[0]:
+        return None      # a different fund house's leading name: safer unmatched than mismatched
+    return hit
 
 
 def _strip_brand(s: str, amc: str) -> str:

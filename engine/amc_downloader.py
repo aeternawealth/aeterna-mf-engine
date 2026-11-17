@@ -392,6 +392,10 @@ def _download_page(ctx, slug: str, month: str, out: Path, url: str):
         got = _download_all(page.content(), url, month, out / slug)
         if got:
             return "OK", f"{len(got)} files (rendered) from {url}", got[0]
+        if _pick_month(page, month):   # page shows one month at a time (Navi, Union): choose it, then read every page
+            got = _download_all(_all_pages_html(page), url, month, out / slug)
+            if got:
+                return "OK", f"{len(got)} files (month picked) from {url}", got[0]
         from urllib.parse import unquote
         cands = [l for l in _candidate_links(page, month_tokens(month))   # 'September_30_2026.xls?07102026' is not October
                  if _name_fits_month(unquote(l["href"].split("?")[0].rsplit("/", 1)[-1]), month)]
@@ -411,6 +415,73 @@ def _download_page(ctx, slug: str, month: str, out: Path, url: str):
         return "FAILED", f"{type(e).__name__}: {str(e)[:150]}", None
     finally:
         page.close()
+
+
+_SET_SELECT = """([i, label]) => {
+    const s = document.querySelectorAll('select')[i];
+    const o = [...s.options].find(o => o.text.trim().toLowerCase() === label.toLowerCase());
+    if (!o || s.value === o.value) return false;
+    Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, o.value);   // React/Angular see it
+    s.dispatchEvent(new Event('input', {bubbles: true}));
+    s.dispatchEvent(new Event('change', {bubbles: true}));
+    return true;
+}"""
+
+
+def _pick_month(page, month: str) -> bool:
+    """Set the page's own <select> dropdowns to the wanted year (or Indian financial year) and month. Pages such as
+    Navi's and Union's open on the current month and list nothing for the one we want until it is chosen."""
+    p = pd.Period(month)
+    fy = p.year if p.month >= 4 else p.year - 1
+    years = {str(p.year), f"{fy}-{fy + 1}", f"{fy}-{str(fy + 1)[2:]}", f"fy {fy}-{str(fy + 1)[2:]}",
+             f"fy{fy}-{str(fy + 1)[2:]}", f"fy {fy}-{fy + 1}"}
+    names = {p.strftime("%B").lower(), p.strftime("%b").lower()}
+    try:
+        selects = page.eval_on_selector_all("select", "ss => ss.map(s => [...s.options].map(o => o.text.trim()))")
+    except Exception:
+        return False
+    changed = False
+    for i, opts in enumerate(selects):   # DOM order: the year normally comes before the month it filters
+        low = [o.lower() for o in opts]
+        is_month = sum(m in low or m[:3] in low for m in _MONTHS) >= 10
+        want = next((o for o in opts if o.lower() in (names if is_month else years)), None)
+        if not want:
+            continue
+        try:
+            if page.evaluate(_SET_SELECT, [i, want]):
+                changed = True
+                page.wait_for_timeout(2500)
+        except Exception:
+            continue
+    return changed
+
+
+def _all_pages_html(page, limit: int = 15) -> str:
+    """HTML of a paginated list (Union shows 10 files per page): follow 'Next' until it stops changing anything."""
+    parts = [page.content()]
+    for _ in range(limit):
+        nxt = None
+        for el in page.query_selector_all("a, button, li, span"):
+            try:
+                t = (el.inner_text() or "").strip().lower()
+                if t in ("next", "next ›", "next »", "›", "»", ">") and el.is_visible() \
+                        and not re.search(r"disabled", (el.get_attribute("class") or "") + str(el.get_attribute("disabled") or ""), re.I):
+                    nxt = el
+                    break
+            except Exception:
+                continue
+        if nxt is None:
+            break
+        try:
+            nxt.click(timeout=3000)
+            page.wait_for_timeout(2000)
+        except Exception:
+            break
+        html = page.content()
+        if html == parts[-1]:
+            break
+        parts.append(html)
+    return "\n".join(parts)
 
 
 def _check_portfolios(folder: Path, st: str, info: str):

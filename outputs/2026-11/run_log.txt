@@ -1,14 +1,14 @@
-Aeterna MF Engine run 2026-11-17 09:00
+Aeterna MF Engine run 2026-11-17 09:58
 [1/7] Universe (AMFI NAVAll)
   2747 equity + index schemes (growth, Direct & Regular)
 [2/7] AMFI extras: TER, AUM, market-cap list
   TER: 2726/2747 plans matched
-  Month-end AUM (30 Oct 2026): 1323/1383 schemes
+  Month-end AUM (30 Oct 2026): 1357/1383 schemes
   Quarterly average AUM (July - September 2026): 1360 schemes
   AUM check: bandhan mutual fund|bandhan medium to long term fund month-end 425 vs quarterly avg 3,556 cr
   AUM check: invesco mutual fund|invesco india pharma and healthcare fund month-end 474 vs quarterly avg 111 cr
   AUM check: whiteoak capital mutual fund|whiteoak capital dividend yield fund month-end 506 vs quarterly avg 114 cr
-  AUM: 1323 month-end, 43 quarterly-average fallback
+  AUM: 1357 month-end, 9 quarterly-average fallback
 [3/7] Benchmarks (Nifty TRI)
   TRI: 147 indices, 2013-01-01 -> 2026-11-16
 [4/7] NAV history (mfapi)
@@ -40,7 +40,7 @@ Aeterna MF Engine run 2026-11-17 09:00
   NAV 2600/2770
   NAV 2700/2770
   2770 NAV histories (104 of them liquid funds, the arbitrage yardstick)
-  6 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  2 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
   bond-fund yardstick: Direct 3620 days, Regular 5381 days (86 plans)
   liquid-fund yardstick: Direct 5376 days, Regular 5381 days
 [5/7] Holdings for 2026-10
@@ -58,7 +58,7 @@ Aeterna MF Engine run 2026-11-17 09:00
   NOT_YET Abakkus-Mutual-Fund  only non-portfolio files so far (Abakkus_MF_AUM_October_2026_8f5925ea3f.xlsx, Abakkus_Small_Cap_Fund_October_2026_5561131d51.xlsx, Investor_Complaints_October_2026_d2ba961098.xlsx)
   NOT_YET Aditya-Birla-Sun-Life-Mutual-Fund  adapter's 1 file(s) did not download; no 'October 2026' entry on advisorkhoj yet; AMFI page https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio: no 2026-10 file found on https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio
   NOT_YET Axis-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.axismf.com/statutory-disclosures: no 2026-10 file found on https://www.axismf.com/statutory-disclosures
-  NOT_YET Bajaj-Finserv-Mutual-Fund  adapter's 3 file(s) did not download; no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.bajajamc.com/downloads?statutory-disclosures=: no 2026-10 file found on https://www.bajajamc.com/downloads?statutory-disclosures=
+  NOT_YET Bajaj-Finserv-Mutual-Fund  only non-portfolio files so far (IDCW-Plans_Details-Oct-2026_F.xlsx)
   NOT_YET Bandhan-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bandhanmutual.com/downloads/disclosures: no 2026-10 file found on https://bandhanmutual.com/downloads/disclosures
   OK      Baroda-BNP-Paribas-Mutual-Fund  
   OK      Canara-Robeco-Mutual-Fund  
@@ -82,7 +82,7 @@ Aeterna MF Engine run 2026-11-17 09:00
   NOT_YET Old-Bridge-Mutual-Fund  only non-portfolio files so far (IR_Old_Bridge_Mutual_Fund_01102026_14c37f5971.xlsx, IR_Old_Bridge_Mutual_Fund_05102026_114f181e81.xlsx, IR_Old_Bridge_Mutual_Fund_06102026_dfe716f4b6.xlsx, ...)
   OK      PGIM-India-Mutual-Fund  
   OK      PPFAS-Mutual-Fund  
-  NOT_YET Quant-Mutual-Fund  adapter found no files for this month; no 'October 2026' entry on advisorkhoj yet; AMFI page https://quantmutual.com/statutory-disclosures: no 2026-10 file found on https://quantmutual.com/statutory-disclosures
+  OK      Quant-Mutual-Fund  
   NOT_YET Quantum-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.quantumamc.com/portfolio/combined/-1/1/0/0: no 2026-10 file found on https://www.quantumamc.com/portfolio/combined/-1/1/0/0
   OK      Samco-Mutual-Fund  
   OK      SBI-Mutual-Fund  
@@ -96,13 +96,16 @@ Aeterna MF Engine run 2026-11-17 09:00
   NOT_YET Zerodha-Mutual-Fund  only non-portfolio files so far (Monthly_AAUM_Disclosure_Report_-_October_2026.xlsx)
   NOT_YET AlphaGrep-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.alphagrepmf.ai/disclosures: no 2026-10 file found on https://www.alphagrepmf.ai/disclosures
   NOT_YET ASK-MUTUAL-FUND  no 'October 2026' entry on advisorkhoj yet; AMFI page https://www.askmutualfund.com/#/downloads: no 2026-10 file found on https://www.askmutualfund.com/
-  NOT_YET Carnelian-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bit.ly/4eN2G08: no 2026-10 file found on https://bit.ly/4eN2G08
+  NOT_YET Carnelian-Mutual-Fund  no 'October 2026' entry on advisorkhoj yet; AMFI page https://bit.ly/4eN2G08: Error: Page.goto: Download is starting
+Call log:
+  - navigating to "https://bit.ly/4eN2G08", waiting until "domcontentloaded"
+
   NOT_YET Monarch-Mutual-Fund  only non-portfolio files so far (Monthly_Portfolio_Monarch_Overnight_Fund_31_October_2026_fd2ba7cda3.xls)
-  holdings download: 30/54 AMCs OK, 24 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
-  holdings: 761 portfolios parsed from 540 files, 529 mapped to schemes
-  holdings validation: 22 portfolios quarantined
-  holdings: kept 320 portfolios already parsed for 2026-10 that this run did not re-download
-  holdings: 827 portfolios from 2026-10, 0 carried forward from 2026-09 (AMCs not published / not downloaded) -> 827 total
+  holdings download: 31/54 AMCs OK, 23 not published yet -> /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/data/holdings/2026-10
+  holdings: 791 portfolios parsed from 541 files, 569 mapped to schemes
+  holdings validation: 24 portfolios quarantined
+  holdings: kept 293 portfolios already parsed for 2026-10 that this run did not re-download
+  holdings: 838 portfolios from 2026-10, 4 carried forward from 2026-09 (AMCs not published / not downloaded) -> 842 total
 [6/7] Metrics, protocols, ranking committee
   metrics 200/2747
   metrics 400/2747
@@ -119,7 +122,7 @@ Aeterna MF Engine run 2026-11-17 09:00
   metrics 2600/2747
   flows: 36 quarters of AUM history on disk
   rating history: rating 1 past month-ends (2023-11-30 .. 2023-11-30)
-  rating history: 1 of 1 months rated in 1.2 min
+  rating history: 1 of 1 months rated in 0.8 min
   rating history: 36 months, 1151 funds
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/2026-11
 tier                             A  A+    B   C  Unrated

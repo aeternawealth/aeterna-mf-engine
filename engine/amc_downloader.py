@@ -202,7 +202,12 @@ def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = N
             urls = AMC_ADAPTERS[slug](month)
         except Exception as e:
             return "FAILED", f"adapter error: {type(e).__name__}: {str(e)[:120]}", None
-        got = [p for p in (_direct(u, out / slug) for u in urls) if p] if urls else []
+        def safe(u):            # one unreachable or guessed address must not stop the run
+            try:
+                return _direct(u, out / slug)
+            except Exception:
+                return None
+        got = [p for p in (safe(u) for u in urls) if p] if urls else []
         if got:
             return "OK", f"{len(got)}/{len(urls)} files via adapter", got[0]
         # nothing from the adapter (no file yet, or a guessed name that does not exist): try the generic route too
@@ -361,13 +366,21 @@ def run(month: str, only=None, show=False, log=print):
             if (out / slug).exists() and any((out / slug).rglob("*.xls*")):
                 rows.append((slug, "SKIPPED", "already downloaded", ""))
                 continue
-            st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
-            if st == "FAILED" and ctx is None and info.startswith("needs browser"):
-                from playwright.sync_api import sync_playwright
-                pw = sync_playwright().start()
-                b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
-                ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
+            try:
                 st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
+            except Exception as e:          # one fund house's error must not stop the others
+                st, info, path = "FAILED", f"error: {type(e).__name__}: {str(e)[:150]}", None
+            if st == "FAILED" and ctx is None and info.startswith("needs browser") and pw is not False:
+                try:
+                    from playwright.sync_api import sync_playwright
+                    pw = sync_playwright().start()
+                    b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
+                    ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
+                    st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
+                except Exception as e:      # no usable browser here: report it and carry on without one
+                    info = f"{info}; browser unavailable: {type(e).__name__}"
+                    if ctx is None:
+                        pw = False
             if st == "OK":
                 st, info = _check_portfolios(out / slug, st, info)
             rows.append((slug, st, info, str(path or "")))
@@ -376,7 +389,10 @@ def run(month: str, only=None, show=False, log=print):
         if b:
             b.close()
         if pw:
-            pw.stop()
+            try:
+                pw.stop()
+            except Exception:
+                pass
     with open(out / "_download_log.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["amc", "status", "info", "file", f"run {datetime.now():%Y-%m-%d %H:%M}"])

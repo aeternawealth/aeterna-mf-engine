@@ -273,8 +273,69 @@ def _dbg_note(text: str):
             f.write(text + "\n")
 
 
+def _mahindra(ctx, month: str, folder: Path) -> list[Path]:
+    """Mahindra Manulife hides its downloads behind a 'not a US person / resident of Canada' disclaimer that comes back
+    on every page load (Aeterna downloads from India, so it is answered 'not a US person'); the monthly file is a
+    button, not a link."""
+    label = pd.Period(month).strftime("%B, %Y")   # 'October, 2026'
+    # the engine's own user agent gets the page without its document list: use the browser's normal one
+    own = ctx.browser.new_context(accept_downloads=True) if ctx.browser else None
+    page = (own or ctx).new_page()
+    try:
+        doc = "Monthly-Portfolio-Disclosure---" + label.replace(", ", "%2C-")   # opens the Portfolio Disclosure section
+        page.goto(f"https://www.mahindramanulife.com/downloads?document={doc}#disclosures-portfolio-disclosure",
+                  timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(5000)
+        welcome = page.get_by_role("button", name=re.compile(r"^close welcome message$", re.I))   # first-visit splash covers the gate
+        if welcome.count():
+            welcome.first.click(timeout=10000)
+            page.wait_for_timeout(1500)
+        gate = page.get_by_role("button", name=re.compile(r"not a us person", re.I))
+        if gate.count():
+            gate.first.click(timeout=10000)
+            page.wait_for_timeout(4000)
+        tab = page.get_by_role("tab", name=re.compile(r"^monthly portfolio disclosure$", re.I))
+        try:
+            tab.first.wait_for(state="attached", timeout=20000)   # list loads only after the gate is answered
+        except Exception:   # section still collapsed
+            page.get_by_role("button", name=re.compile(r"^toggle portfolio disclosure$", re.I)).first.click(timeout=10000)
+            page.wait_for_timeout(2500)
+        tab.first.click(timeout=15000)
+        page.wait_for_timeout(4000)
+        btn = page.get_by_role("button", name=re.compile(rf"^download monthly portfolio disclosure\s*-\s*{re.escape(label)}$", re.I))
+        if not btn.count():
+            _dbg_note(f"Mahindra: no '{label}' download button")
+            return []
+        try:
+            with page.expect_download(timeout=120000) as d:
+                btn.first.click(timeout=10000)
+            f = _save(d.value, folder)   # served as a blob with a random name
+            named = f.with_name(f"Mahindra_Manulife_Monthly_Portfolio_{pd.Period(month).strftime('%B_%Y')}{f.suffix}")
+            return [f.replace(named)]
+        except Exception:   # some builds open the file in a new tab instead of downloading it
+            with (own or ctx).expect_page(timeout=30000) as pg:
+                btn.first.click(timeout=10000)
+            p = _browser_get(own or ctx, pg.value.url, folder, page.url)
+            pg.value.close()
+            return [p] if p else []
+    except Exception as e:
+        _dbg_note(f"Mahindra: {type(e).__name__}: {str(e)[:150]}")
+        return []
+    finally:
+        page.close()
+        if own:
+            own.close()
+
+
+CLICK_ADAPTERS = {"Mahindra-Mutual-Fund": _mahindra, "Mahindra-Manulife-Mutual-Fund": _mahindra}
+
+
 def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = None):
     from .amc_adapters import AMC_ADAPTERS, BROWSER_ADAPTERS
+    if slug in CLICK_ADAPTERS and ctx is not None:   # files only reachable by clicking through the site
+        got = CLICK_ADAPTERS[slug](ctx, month, out / slug)
+        if got:
+            return "OK", f"{len(got)} file(s) via click-through", got[0]
     if slug in BROWSER_ADAPTERS and ctx is not None:     # file list only reachable from a real page visit
         page_url, extract = BROWSER_ADAPTERS[slug]
         bodies, html = _capture(ctx, page_url)

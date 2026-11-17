@@ -1,0 +1,13 @@
+Aditya-Birla-Sun-Life-Mutual-Fund: page loaded 0 data responses; files picked: []
+Aditya-Birla-Sun-Life-Mutual-Fund: response urls: []
+ICICI-Prudential-Mutual-Fund: page loaded 86 data responses; files picked: ['https://www.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip', 'https://apimf.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip']
+browser get https://www.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip -> Error: APIRequestContext.get: getaddrinfo ENOTFOUND archive.icicipruamc.com
+Call log:
+  - → GET https://www.icicipruamc.com/dow
+browser click-download https://www.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip -> TimeoutError: Page.expect_download: Timeout 180000ms exceeded while waiting for event "download"
+=========================== logs ====
+browser get https://apimf.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip -> Error: APIRequestContext.get: read ECONNRESET
+Call log:
+  - → GET https://apimf.icicipruamc.com/downloads/Files/Monthly%20Portf
+browser click-download https://apimf.icicipruamc.com/downloads/Files/Monthly%20Portfolio%20Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip -> TimeoutError: Page.expect_download: Timeout 180000ms exceeded while waiting for event "download"
+=========================== logs ====

@@ -292,7 +292,9 @@ def _download_page(ctx, slug: str, month: str, out: Path, url: str):
         got = _download_all(page.content(), url, month, out / slug)
         if got:
             return "OK", f"{len(got)} files (rendered) from {url}", got[0]
-        cands = _candidate_links(page, month_tokens(month))
+        from urllib.parse import unquote
+        cands = [l for l in _candidate_links(page, month_tokens(month))   # 'September_30_2026.xls?07102026' is not October
+                 if _name_fits_month(unquote(l["href"].split("?")[0].rsplit("/", 1)[-1]), month)]
         for l in cands[:3]:
             if FILE_RE.search(l["href"]):
                 p = _direct(l["href"], out / slug)

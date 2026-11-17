@@ -179,6 +179,19 @@ def _strip_brand(s: str, amc: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+_MONTHS = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*"
+
+
+def _title_from_file(fname: str) -> str:
+    """'hsbc-small-cap-fund-31-oct-2026.xlsx' -> 'hsbc small cap fund' (for files that hold one portfolio and title
+    their sheet with a code such as 'HEMIDF')"""
+    s = re.sub(r"\.(xlsx?|xlsm|xlsb|csv)$", "", fname, flags=re.I)
+    s = re.sub(r"[_\-.]+", " ", s)
+    s = re.sub(rf"\b\d{{1,2}}\s*{_MONTHS}\s*\d{{2,4}}\b|\b{_MONTHS}\s*(?:\d{{1,2}}\s*)?\d{{4}}\b", " ", s, flags=re.I)
+    s = re.sub(r"(?i)\b(monthly|portfolio|portfolios|report|disclosure|mp|final)\b|\b\d+\b", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
 _GUARD = ["arbitrage", "hybrid", "balanced", "savings", "debt", "liquid", "etf", "overnight", "multi asset",
           "fund of fund", "fof", "gold", "silver", "retirement", "children", "bond", "gilt", "income", "money market"]
 
@@ -195,7 +208,12 @@ def map_to_schemes(parsed, universe: pd.DataFrame, cutoff=0.80) -> pd.DataFrame:
         nm2pk = dict(zip(base["name"].str.lower().str.strip(), base["pair_key"]))
         aliases = {_norm(t): nm2pk.get(str(n).lower().strip()) for t, n in zip(al.sheet_title, al.scheme_name)}
     rows = []
+    per_file = {}
+    for _, _, fname, folder in parsed:
+        per_file[(folder, fname)] = per_file.get((folder, fname), 0) + 1
     for cands, df, fname, folder in parsed:
+        if per_file[(folder, fname)] == 1 and _title_from_file(fname):   # one portfolio per file: its name is a title too
+            cands = list(cands) + [_title_from_file(fname)]
         hit = next((aliases[_norm(t)] for t in cands if aliases.get(_norm(t))), None)
         if hit:
             rows.append({"title": cands[0], "file": fname, "amc": None, "score": 1.0, "pair_key": hit, "holdings": df})

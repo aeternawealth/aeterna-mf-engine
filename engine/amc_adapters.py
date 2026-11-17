@@ -294,7 +294,170 @@ def sundaram(month: str) -> list[str]:
     return list(dict.fromkeys(out))
 
 
+def _month_end(month: str):
+    return pd.Period(month).end_time.date()
+
+
+def absl(month: str) -> list[str]:
+    """Aditya Birla SL: the portfolio page's accordion API lists one zip per month ('31102026_abslmf_monthlydisclosure.zip')."""
+    full, abbr, y = _month(month)
+    r = requests.get("https://mutualfund.adityabirlacapital.com/postlogin/CustomApi/Resources/FactsheetAccordionById",
+                     params={"id": "3ccab227-9de5-4494-b78d-2b4f7c0c054a",
+                             "ctype": "/sitecore/content/Root/BSL/Library/Lists/FAQ/Customer Types/Individual", "month": " ", "year": 0},
+                     headers={**UA, "X-Requested-With": "XMLHttpRequest"}, timeout=60)
+    out = []
+    for a in (r.json().get("AccordionList") or []) if r.ok else []:
+        t, u = (a.get("ResourceLink") or "").lower(), a.get("pdfUrl") or ""
+        if "monthly portfolio" in t and full in t and str(y) in t and u:
+            out.append(u)
+    if not out:    # the file name is the month-end date: try it directly
+        d = _month_end(month)
+        out.append(f"https://abcscprod.azureedge.net/-/media/bsl/files/resources/monthly-portfolio/{y}/{d:%d%m%Y}_abslmf_monthlydisclosure.zip")
+    return out
+
+
+def quant(month: str) -> list[str]:
+    """quant: the statutory-disclosures page loads its file lists from a page method; the monthly portfolio entry is
+    labelled 'October 2026' and named by date ('Monthly_Portfolio_30102026.xlsx')."""
+    full, abbr, y = _month(month)
+    r = requests.post("https://quantmutual.com/statutorydisclosures.aspx/displaydisclouser", data="{id:'2019',cat:'Expense Ratio'}",
+                      headers={**UA, "Content-Type": "application/json; charset=utf-8", "X-Requested-With": "XMLHttpRequest"}, timeout=90)
+    html = (r.json().get("d") or "") if r.ok else ""
+    out = []
+    for href, label in re.findall(r"href=['\"]([^'\"]+?\.xlsx?)['\"][^>]*>([^<]+)<", html, re.I):
+        lab = label.lower()
+        if "portfolio" in href.lower() and full in lab and str(y) in lab and "fortnight" not in href.lower():
+            out.append("https://quantmutual.com" + href if href.startswith("/") else href)
+    return out
+
+
+def icici(month: str) -> list[str]:
+    """ICICI Prudential: the downloads API (category 'Monthly Portfolio Disclosures') lists one zip per month."""
+    from urllib.parse import quote
+    full, abbr, y = _month(month)
+    r = requests.post("https://apimf.icicipruamc.com/nms/v1/downloads/files",
+                      json={"categoryId": "26a073d7-08d2-4a95-95fa-f83a4ee51e40", "schemeCategory": "", "userType": "Investor",
+                            "fileType": "All", "page": "1", "size": "20", "filter": [], "categoryName": "OTHERS"},
+                      headers={**UA, "Origin": "https://www.icicipruamc.com", "Referer": "https://www.icicipruamc.com/"}, timeout=60)
+    files = (((r.json().get("success") or {}).get("data") or {}).get("files") or []) if r.ok else []
+    out = []
+    for f in files:
+        t, u = ((f.get("title") or {}).get("text") or "").lower(), f.get("url") or ""
+        if full in t and str(y) in t and u:
+            path = quote(u if u.startswith("/") else "/" + u)
+            out += ["https://www.icicipruamc.com" + path, "https://apimf.icicipruamc.com" + path]   # the API gives a relative path
+    return out
+
+
+def franklin(month: str) -> list[str]:
+    """Franklin Templeton: the reports page's literature API lists 'Monthly-Portfolio-ISIN-30-Oct-2026.xls' with its path."""
+    full, abbr, y = _month(month)
+    r = requests.get("https://www.franklintempletonindia.com/api/literature/v1/responseLitJson", params={"type": "report"},
+                     headers=UA, timeout=90)
+    hrefs = re.findall(r'"literatureHref"\s*:\s*"([^"]*monthly-portfolio-dsclr[^"]*)"', r.text if r.ok else "")
+    out = []
+    for h in dict.fromkeys(hrefs):
+        name = h.rsplit("/", 1)[-1].lower()
+        if str(y) in name and re.search(rf"(?<![a-z])({full}|{abbr})(?![a-z])", name):
+            out.append("https://www.franklintempletonindia.com/download" + (h if h.startswith("/") else "/" + h))
+    return out
+
+
+def ppfas(month: str) -> list[str]:
+    """PPFAS: one workbook a month, 'PPFAS_Monthly_Portfolio_Report_October_31_2026.xls', listed on the disclosure page."""
+    full, abbr, y = _month(month)
+    base = "https://amc.ppfas.com/downloads/portfolio-disclosure/"
+    r = requests.get(base, headers=UA, timeout=60)
+    out = []
+    for l in re.findall(r'href=["\']([^"\']+?\.xlsx?)(?:\?[^"\']*)?["\']', r.text if r.ok else "", re.I):
+        n = l.rsplit("/", 1)[-1].lower()
+        if "portfolio" in n and full in n and str(y) in n:
+            out.append(l if l.startswith("http") else "https://amc.ppfas.com" + ("" if l.startswith("/") else "/") + l)
+    if not out:
+        d = _month_end(month)
+        out.append(f"{base}{y}/PPFAS_Monthly_Portfolio_Report_{full.capitalize()}_{d.day}_{y}.xls")
+    return list(dict.fromkeys(out))
+
+
+def _ordinal(d: int) -> str:
+    return f"{d}{'th' if 10 <= d % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(d % 10, 'th')}"
+
+
+def _next(month: str):
+    return pd.Period(month) + 1
+
+
+# Fund houses whose monthly file names follow a fixed pattern (seen in the files that worked for September 2026).
+# These return candidate addresses; ones that do not exist simply fail to download and the generic route runs.
+def kotak(month: str) -> list[str]:
+    full, abbr, y = _month(month)
+    d, F = _month_end(month), full.capitalize()
+    return [f"https://vatseelabs-s3.kotakmf.com/FormsDownloads/Portfolios/Consolidated-Portfolio-as-on-{F}-{d.day},-{y}/"
+            f"ConsolidatedSEBIPortfolio{F}{y}.xlsx"]
+
+
+def tata(month: str) -> list[str]:
+    full, abbr, y = _month(month)
+    d, F, nx = _month_end(month), full.capitalize(), _next(month)
+    name = f"Monthly%20Portfolio%20as%20on%20{_ordinal(d.day)}%20{F}%20{y}.xlsx"
+    return [f"https://betacms.tatamutualfund.com/system/files/{p.year}-{p.month:02d}/{name}" for p in (nx, pd.Period(month))]
+
+
+def sbi(month: str) -> list[str]:
+    full, abbr, y = _month(month)
+    d = _month_end(month)
+    return [f"https://www.sbimf.com/docs/default-source/scheme-portfolios/all-schemes-monthly-portfolio---as-on-{_ordinal(d.day)}-{full}-{y}.xlsx"]
+
+
+def boi(month: str) -> list[str]:
+    full, abbr, y = _month(month)
+    d = _month_end(month)
+    base = "https://www.boimf.in/docs/default-source/investorcorner/monthly-portfolio/monthly-portfolio---"
+    return [f"{base}{d.day}-{full}-{y}.xlsx", f"{base}{d.day}-{abbr}-{y}.xlsx"]   # both spellings have been used
+
+
+def uti(month: str) -> list[str]:
+    d, nx = _month_end(month), _next(month)
+    folder = f"{nx.strftime('%b')}-{nx.strftime('%y')}"
+    stamp = f"{d:%d.%m.%Y}"
+    return [f"https://d3ce1o48hc5oli.cloudfront.net/static/generic-zip/{folder}/{pre}UTI_MF_SCHEME_PORTFOLIOS_-_{stamp}_.zip"
+            for pre in ("FW__", "")]
+
+
+def bajaj(month: str) -> list[str]:
+    full, abbr, y = _month(month)
+    d, nx = _month_end(month), _next(month)
+    stem = f"https://media.bajajamc.com/wp-content/uploads/{nx.year}/{nx.month:02d}/Bajaj-Finserv-Mutual-Fund_Monthly-Portfolio-as-on-{d.day}-{abbr.capitalize()}{y}"
+    return [stem + ".xls", stem + "-1.xls", stem + ".xlsx"]
+
+
+def trust(month: str) -> list[str]:
+    """Trust MF: the disclosures page's data API lists 'TRUSTMF Monthly Portfolio Report as on 31.10.2026' with its file."""
+    d = _month_end(month)
+    r = requests.post("https://www.trustmf.com/api/api/Trust/GetData",
+                      json={"systemQueryFileName": "disclosuresweb.xml", "tagName": "GetDisclosureByType", "searchField": "",
+                            "searchValue": "", "sortField": "uploaddate", "sortDirection": "DESC", "replaceField": "_slug_",
+                            "replaceValue": "portfolio-monthly-disclosure"},
+                      headers={**UA, "Origin": "https://www.trustmf.com", "Referer": "https://www.trustmf.com/disclosures"}, timeout=60)
+    rows = (r.json().get("resultSetArray") or []) if r.ok else []
+    want = f"{d:%d.%m.%Y}"
+    return [x["fileurl"].replace(" ", "%20") for x in rows
+            if "monthly portfolio" in (x.get("title") or "").lower() and want in (x.get("title") or "") and x.get("fileurl")]
+
+
 AMC_ADAPTERS = {
+    "Trust-Mutual-Fund": trust,
+    "Kotak-Mahindra-Mutual-Fund": kotak,
+    "Tata-Mutual-Fund": tata,
+    "SBI-Mutual-Fund": sbi,
+    "Bank-of-India-Mutual-Fund": boi,
+    "UTI-Mutual-Fund": uti,
+    "Bajaj-Finserv-Mutual-Fund": bajaj,
+    "Aditya-Birla-Sun-Life-Mutual-Fund": absl,
+    "Quant-Mutual-Fund": quant,
+    "ICICI-Prudential-Mutual-Fund": icici,
+    "Franklin-Templeton-Mutual-Fund": franklin,
+    "PPFAS-Mutual-Fund": ppfas,
     "LIC-Mutual-Fund": lic,
     "Sundaram-Mutual-Fund": sundaram,
     "HSBC-Mutual-Fund": hsbc,
@@ -307,4 +470,48 @@ AMC_ADAPTERS = {
     "Mirae-Asset-Mutual-Fund": mirae,
     "WhiteOak-Capital-Mutual-Fund": whiteoak,
     "DSP-Mutual-Fund": dsp,
+}
+
+
+# ------------------------------------------------------------- adapters that need a real page visit
+# These sites answer their file-list requests only inside a browser session (plain requests get nothing back).
+# Each entry: the page to open, and a function that picks the month's files out of what the page loaded.
+def _blob(bodies, html):
+    return "\n".join(t for _, t in bodies) + "\n" + (html or "")
+
+
+def _absl_pick(month, bodies, html):
+    full, abbr, y = _month(month)
+    d = _month_end(month)
+    text = _blob(bodies, html).replace("\\/", "/")
+    hits = re.findall(r"https?://[^\"'\s<>]+?/monthly-portfolio/\d{4}/[^\"'\s<>]+?\.zip", text, re.I)
+    want = f"{d:%d%m%Y}"
+    return list(dict.fromkeys(h for h in hits if want in h))
+
+
+def _icici_pick(month, bodies, html):
+    from urllib.parse import quote
+    full, abbr, y = _month(month)
+    text = _blob(bodies, html).replace("\\/", "/")
+    out = []
+    for path in re.findall(r'"url"\s*:\s*"(/downloads/Files/Monthly Portfolio Disclosures/[^"]+?\.zip)"', text):
+        if str(y) in path and re.search(rf"(?<![a-z])({full}|{abbr})(?![a-z])", path.lower()):
+            out += ["https://www.icicipruamc.com" + quote(path), "https://apimf.icicipruamc.com" + quote(path)]
+    return list(dict.fromkeys(out))
+
+
+def _quant_pick(month, bodies, html):
+    full, abbr, y = _month(month)
+    text = _blob(bodies, html).encode().decode("unicode_escape", errors="ignore")
+    out = []
+    for href, label in re.findall(r"href=['\"]([^'\"]+?\.xlsx?)['\"][^>]*>([^<]+)<", text, re.I):
+        if "portfolio" in href.lower() and "fortnight" not in href.lower() and full in label.lower() and str(y) in label:
+            out.append("https://quantmutual.com" + href if href.startswith("/") else href)
+    return list(dict.fromkeys(out))
+
+
+BROWSER_ADAPTERS = {
+    "Aditya-Birla-Sun-Life-Mutual-Fund": ("https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio", _absl_pick),
+    "ICICI-Prudential-Mutual-Fund": ("https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures", _icici_pick),
+    "Quant-Mutual-Fund": ("https://quantmutual.com/statutory-disclosures", _quant_pick),
 }

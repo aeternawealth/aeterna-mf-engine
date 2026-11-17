@@ -124,25 +124,32 @@ def find_link(slug: str, month: str):
 
 def _direct(url: str, folder: Path) -> Path | None:
     r = _get(url, allow_redirects=True)
-    if r.status_code != 200 or len(r.content) < 2000 or r.content[:15].lstrip().lower().startswith((b"<!doctype", b"<html")):
+    if r.status_code != 200:
+        return None
+    return _store(r.content, url, r.headers.get("Content-Disposition", ""), folder)
+
+
+def _store(content: bytes, url: str, disposition: str, folder: Path) -> Path | None:
+    """Save a downloaded spreadsheet or zip (unzipping its workbooks); None for web pages and tiny error files."""
+    if len(content) < 2000 or content[:15].lstrip().lower().startswith((b"<!doctype", b"<html")):
         return None
     name = re.sub(r"[?#].*$", "", url.rstrip("/").split("/")[-1]) or "portfolio.xlsx"
-    cd = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)', r.headers.get("Content-Disposition", ""), re.I)
+    cd = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)', disposition or "", re.I)
     if cd:
         name = cd.group(1).strip()
     if not re.search(r"\.(xlsx|xls|xlsm|xlsb|zip)$", name, re.I):   # e.g. viewfile.php (NJ): name it by its content
-        head = r.content[:8]
+        head = content[:8]
         if head.startswith(b"\xd0\xcf\x11\xe0"):
             ext = ".xls"
         elif head.startswith(b"PK"):
-            z = r.content[:4000]
+            z = content[:4000]
             ext = ".xlsb" if b"xl/workbook.bin" in z else ".xlsx" if b"xl/" in z or b"[Content_Types]" in z else ".zip"
         else:
             return None
         name = re.sub(r"\.[A-Za-z0-9]{1,5}$", "", name) + "_" + re.sub(r"\W", "", url[-24:]) + ext
     folder.mkdir(parents=True, exist_ok=True)
     p = folder / re.sub(r"%20|[^A-Za-z0-9._-]", "_", name)
-    p.write_bytes(r.content)
+    p.write_bytes(content)
     if p.suffix.lower() == ".zip":
         with zipfile.ZipFile(p) as z:
             for n in z.namelist():
@@ -195,17 +202,110 @@ def _download_all(html: str, base: str, month: str, folder: Path) -> list[Path]:
     return got
 
 
+def _capture(ctx, url: str):
+    """Open a page the way a visitor would and keep every data response it loads (the file lists of script-driven
+    sites such as ICICI, quant and Aditya Birla only arrive this way). Returns [(response url, text)] and the page HTML."""
+    page, bodies = ctx.new_page(), []
+
+    def on_resp(resp):
+        try:
+            if resp.request.resource_type in ("xhr", "fetch"):
+                bodies.append((resp.url, resp.text()))
+        except Exception:
+            pass
+    page.on("response", on_resp)
+    try:
+        page.goto(url, timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_load_state("networkidle", timeout=30000)
+    except Exception:
+        pass
+    page.wait_for_timeout(4000)
+    clicked = 0
+    for el in page.query_selector_all("a[href^='#'], button, [role=tab], li[data-tab], div[data-toggle], span[onclick]")[:300]:
+        try:
+            t = (el.inner_text() or "").strip()
+            if re.search(r"monthly portfolio|month end portfolio|portfolio disclosure|^portfolios?$", t, re.I) and el.is_visible():
+                el.click(timeout=3000)
+                page.wait_for_timeout(3500)
+                clicked += 1
+        except Exception:
+            continue
+        if clicked >= 4:
+            break
+    try:
+        html = page.content()
+    except Exception:
+        html = ""
+    page.close()
+    return bodies, html
+
+
+def _browser_get(ctx, url: str, folder: Path, referer: str = "") -> Path | None:
+    """Fetch a file inside the browser session (cookies and referrer of the page that listed it); if the site
+    refuses that, let the browser download it the way a click would."""
+    try:
+        r = ctx.request.get(url, timeout=180000, headers={"Referer": referer} if referer else None)
+        if r.ok:
+            p = _store(r.body(), url, r.headers.get("content-disposition", ""), folder)
+            if p:
+                return p
+        _dbg_note(f"browser get {url} -> {r.status}")
+    except Exception as e:
+        _dbg_note(f"browser get {url} -> {type(e).__name__}: {str(e)[:120]}")
+    page = ctx.new_page()
+    try:
+        if referer:
+            page.goto(referer, timeout=90000, wait_until="domcontentloaded")
+        with page.expect_download(timeout=180000) as d:
+            page.evaluate("u => { const a=document.createElement('a'); a.href=u; a.download=''; document.body.appendChild(a); a.click(); }", url)
+        return _save(d.value, folder)
+    except Exception as e:
+        _dbg_note(f"browser click-download {url} -> {type(e).__name__}: {str(e)[:120]}")
+        return None
+    finally:
+        page.close()
+
+
+def _dbg_note(text: str):
+    d = os.environ.get("AETERNA_ADAPTER_DEBUG")
+    if d:
+        with open(Path(d) / "adapter_notes.txt", "a", encoding="utf-8") as f:
+            f.write(text + "\n")
+
+
 def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = None):
-    from .amc_adapters import AMC_ADAPTERS
+    from .amc_adapters import AMC_ADAPTERS, BROWSER_ADAPTERS
+    if slug in BROWSER_ADAPTERS and ctx is not None:     # file list only reachable from a real page visit
+        page_url, extract = BROWSER_ADAPTERS[slug]
+        bodies, html = _capture(ctx, page_url)
+        urls = extract(month, bodies, html)
+        _dbg_note(f"{slug}: page loaded {len(bodies)} data responses; files picked: {urls}")
+        if not urls:
+            _dbg_note(f"{slug}: response urls: {[u for u, _ in bodies][:40]}")
+        got = [p for p in (_browser_get(ctx, u, out / slug, page_url) for u in urls) if p]
+        if got:
+            return "OK", f"{len(got)}/{len(urls)} files via the page's own data (browser)", got[0]
     if slug in AMC_ADAPTERS:                      # dedicated adapter for script/API-driven AMC sites
         try:
             urls = AMC_ADAPTERS[slug](month)
         except Exception as e:
             return "FAILED", f"adapter error: {type(e).__name__}: {str(e)[:120]}", None
-        if not urls:
-            return "NOT_YET", "adapter found no files for this month", None
-        got = [p for p in (_direct(u, out / slug) for u in urls) if p]
-        return ("OK", f"{len(got)}/{len(urls)} files via adapter", got[0]) if got else ("FAILED", "adapter files did not download", None)
+        def safe(u):            # one unreachable or guessed address must not stop the run
+            try:
+                return _direct(u, out / slug)
+            except Exception:
+                return None
+        got = [p for p in (safe(u) for u in urls) if p] if urls else []
+        if got:
+            return "OK", f"{len(got)}/{len(urls)} files via adapter", got[0]
+        if slug in BROWSER_ADAPTERS and ctx is None:
+            return "FAILED", f"needs browser: {BROWSER_ADAPTERS[slug][0]}", None
+        # nothing from the adapter (no file yet, or a guessed name that does not exist): try the generic route too
+        gen = _download_generic(ctx, slug, month, out, override)
+        if gen[0] == "OK":
+            return gen
+        why = "adapter found no files for this month" if not urls else f"adapter's {len(urls)} file(s) did not download"
+        return (gen[0] if gen[0] != "FAILED" else "NOT_YET"), f"{why}; {gen[1]}", None
     return _download_generic(ctx, slug, month, out, override)
 
 
@@ -292,7 +392,9 @@ def _download_page(ctx, slug: str, month: str, out: Path, url: str):
         got = _download_all(page.content(), url, month, out / slug)
         if got:
             return "OK", f"{len(got)} files (rendered) from {url}", got[0]
-        cands = _candidate_links(page, month_tokens(month))
+        from urllib.parse import unquote
+        cands = [l for l in _candidate_links(page, month_tokens(month))   # 'September_30_2026.xls?07102026' is not October
+                 if _name_fits_month(unquote(l["href"].split("?")[0].rsplit("/", 1)[-1]), month)]
         for l in cands[:3]:
             if FILE_RE.search(l["href"]):
                 p = _direct(l["href"], out / slug)
@@ -354,13 +456,21 @@ def run(month: str, only=None, show=False, log=print):
             if (out / slug).exists() and any((out / slug).rglob("*.xls*")):
                 rows.append((slug, "SKIPPED", "already downloaded", ""))
                 continue
-            st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
-            if st == "FAILED" and ctx is None and info.startswith("needs browser"):
-                from playwright.sync_api import sync_playwright
-                pw = sync_playwright().start()
-                b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
-                ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
+            try:
                 st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
+            except Exception as e:          # one fund house's error must not stop the others
+                st, info, path = "FAILED", f"error: {type(e).__name__}: {str(e)[:150]}", None
+            if st == "FAILED" and ctx is None and info.startswith("needs browser") and pw is not False:
+                try:
+                    from playwright.sync_api import sync_playwright
+                    pw = sync_playwright().start()
+                    b = pw.chromium.launch(headless=not show, channel=os.environ.get("PW_CHANNEL") or None)   # PW_CHANNEL=msedge: use the PC's installed Edge
+                    ctx = b.new_context(accept_downloads=True, user_agent=C.HTTP_HEADERS["User-Agent"])
+                    st, info, path = download_amc(ctx, slug, month, out, overrides.get(slug))
+                except Exception as e:      # no usable browser here: report it and carry on without one
+                    info = f"{info}; browser unavailable: {type(e).__name__}"
+                    if ctx is None:
+                        pw = False
             if st == "OK":
                 st, info = _check_portfolios(out / slug, st, info)
             rows.append((slug, st, info, str(path or "")))
@@ -369,7 +479,10 @@ def run(month: str, only=None, show=False, log=print):
         if b:
             b.close()
         if pw:
-            pw.stop()
+            try:
+                pw.stop()
+            except Exception:
+                pass
     with open(out / "_download_log.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["amc", "status", "info", "file", f"run {datetime.now():%Y-%m-%d %H:%M}"])

@@ -1,4 +1,4 @@
-# Audit 2026-11-17 08:04 UTC: 0 to fix, 2 to confirm
+# Audit 2026-11-17 09:45 UTC: 0 to fix, 2 to confirm
 CHECK D2 samco large cap fund: large 70 (needs >=80) (unclassified 9.4%), portfolio 2026-10
 CHECK D4 ELSS: no A+ fund this month (allowed by the score rule; the category table should say so)
 INFO D1 Nippon India Quant Fund (Direct, Sectoral/Thematic) is #1 with score 74.6: A, as A+ needs 75
@@ -32,5 +32,6 @@ INFO D3 tata small cap fund: 5.1% of holdings not in AMFI's market-cap list (202
 INFO D3 taurus large cap fund: 5.4% of holdings not in AMFI's market-cap list (2026-10)
 INFO D3 taurus mid cap fund: 9.8% of holdings not in AMFI's market-cap list (2026-10)
 INFO D3 trustmf small cap fund: 6.5% of holdings not in AMFI's market-cap list (2026-10)
+INFO D3 union small cap fund: 8.4% of holdings not in AMFI's market-cap list (2026-10)
 INFO D4 A+ funds (Regular): Contra 1, Dividend Yield 1, ELSS 0, Flexi Cap 3, Focused 2, Large & Mid Cap 4, Large Cap 4, Mid Cap 3, Multi Cap 2, Sectoral/Thematic 10, Small Cap 3, Value 2
 INFO D5 0% of rated equity funds differ from the saved monthly snapshot

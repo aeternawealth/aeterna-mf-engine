@@ -412,7 +412,8 @@ def sbi(month: str) -> list[str]:
 def boi(month: str) -> list[str]:
     full, abbr, y = _month(month)
     d = _month_end(month)
-    return [f"https://www.boimf.in/docs/default-source/investorcorner/monthly-portfolio/monthly-portfolio---{d.day}-{abbr}-{y}.xlsx"]
+    base = "https://www.boimf.in/docs/default-source/investorcorner/monthly-portfolio/monthly-portfolio---"
+    return [f"{base}{d.day}-{full}-{y}.xlsx", f"{base}{d.day}-{abbr}-{y}.xlsx"]   # both spellings have been used
 
 
 def uti(month: str) -> list[str]:

@@ -1,4 +1,4 @@
-# Audit 2026-11-16 11:32 UTC: 0 to fix, 2 to confirm
+# Audit 2026-11-17 04:21 UTC: 0 to fix, 2 to confirm
 CHECK D2 samco large cap fund: large 70 (needs >=80) (unclassified 9.4%), portfolio 2026-10
 CHECK D2 whiteoak capital mid cap fund: mid 59 (needs >=65) (unclassified 2.0%), portfolio 2026-10
 INFO D1 HDFC Technology Fund (Direct, Sectoral/Thematic) is #1 with score 64.4: A, as A+ needs 75

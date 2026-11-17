@@ -240,14 +240,37 @@ def _capture(ctx, url: str):
     return bodies, html
 
 
-def _browser_get(ctx, url: str, folder: Path) -> Path | None:
+def _browser_get(ctx, url: str, folder: Path, referer: str = "") -> Path | None:
+    """Fetch a file inside the browser session (cookies and referrer of the page that listed it); if the site
+    refuses that, let the browser download it the way a click would."""
     try:
-        r = ctx.request.get(url, timeout=120000)
-        if not r.ok:
-            return None
-        return _store(r.body(), url, r.headers.get("content-disposition", ""), folder)
-    except Exception:
+        r = ctx.request.get(url, timeout=180000, headers={"Referer": referer} if referer else None)
+        if r.ok:
+            p = _store(r.body(), url, r.headers.get("content-disposition", ""), folder)
+            if p:
+                return p
+        _dbg_note(f"browser get {url} -> {r.status}")
+    except Exception as e:
+        _dbg_note(f"browser get {url} -> {type(e).__name__}: {str(e)[:120]}")
+    page = ctx.new_page()
+    try:
+        if referer:
+            page.goto(referer, timeout=90000, wait_until="domcontentloaded")
+        with page.expect_download(timeout=180000) as d:
+            page.evaluate("u => { const a=document.createElement('a'); a.href=u; a.download=''; document.body.appendChild(a); a.click(); }", url)
+        return _save(d.value, folder)
+    except Exception as e:
+        _dbg_note(f"browser click-download {url} -> {type(e).__name__}: {str(e)[:120]}")
         return None
+    finally:
+        page.close()
+
+
+def _dbg_note(text: str):
+    d = os.environ.get("AETERNA_ADAPTER_DEBUG")
+    if d:
+        with open(Path(d) / "adapter_notes.txt", "a", encoding="utf-8") as f:
+            f.write(text + "\n")
 
 
 def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = None):
@@ -256,7 +279,10 @@ def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = N
         page_url, extract = BROWSER_ADAPTERS[slug]
         bodies, html = _capture(ctx, page_url)
         urls = extract(month, bodies, html)
-        got = [p for p in (_browser_get(ctx, u, out / slug) for u in urls) if p]
+        _dbg_note(f"{slug}: page loaded {len(bodies)} data responses; files picked: {urls}")
+        if not urls:
+            _dbg_note(f"{slug}: response urls: {[u for u, _ in bodies][:40]}")
+        got = [p for p in (_browser_get(ctx, u, out / slug, page_url) for u in urls) if p]
         if got:
             return "OK", f"{len(got)}/{len(urls)} files via the page's own data (browser)", got[0]
     if slug in AMC_ADAPTERS:                      # dedicated adapter for script/API-driven AMC sites

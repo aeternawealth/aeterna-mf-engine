@@ -22,7 +22,12 @@ sys.path.insert(0, str(ROOT))
 # Blocked from GitHub's servers (403 / bot check / refused / time-out), or not yet downloadable from there.
 BLOCKED = ["HDFC-Mutual-Fund", "Navi-Mutual-Fund", "Union-Mutual-Fund", "Angel-One-Mutual-Fund", "WhiteOak-Capital-Mutual-Fund",
            "Sundaram-Mutual-Fund", "Mahindra-Mutual-Fund", "Bandhan-Mutual-Fund", "LIC-Mutual-Fund", "HSBC-Mutual-Fund",
-           "JM-Financial-Mutual-Fund"]
+           "JM-Financial-Mutual-Fund",
+           # Nov 2026: file lists or file hosts that answer a normal browser but not GitHub's servers
+           "ICICI-Prudential-Mutual-Fund", "Aditya-Birla-Sun-Life-Mutual-Fund", "Kotak-Mahindra-Mutual-Fund", "Axis-Mutual-Fund",
+           "UTI-Mutual-Fund", "Edelweiss-Mutual-Fund", "Tata-Mutual-Fund", "Bajaj-Finserv-Mutual-Fund", "ITI-Mutual-Fund",
+           "Bank-of-India-Mutual-Fund", "Jio-BlackRock-Mutual-Fund", "The-Wealth-Company-Mutual-Fund", "360-ONE-Mutual-Fund",
+           "Quantum-Mutual-Fund", "Choice-Mutual-Fund", "Abakkus-Mutual-Fund"]
 EXT = (".xlsx", ".xls", ".xlsm", ".xlsb", ".zip")
 
 

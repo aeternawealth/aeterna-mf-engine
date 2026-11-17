@@ -124,25 +124,32 @@ def find_link(slug: str, month: str):
 
 def _direct(url: str, folder: Path) -> Path | None:
     r = _get(url, allow_redirects=True)
-    if r.status_code != 200 or len(r.content) < 2000 or r.content[:15].lstrip().lower().startswith((b"<!doctype", b"<html")):
+    if r.status_code != 200:
+        return None
+    return _store(r.content, url, r.headers.get("Content-Disposition", ""), folder)
+
+
+def _store(content: bytes, url: str, disposition: str, folder: Path) -> Path | None:
+    """Save a downloaded spreadsheet or zip (unzipping its workbooks); None for web pages and tiny error files."""
+    if len(content) < 2000 or content[:15].lstrip().lower().startswith((b"<!doctype", b"<html")):
         return None
     name = re.sub(r"[?#].*$", "", url.rstrip("/").split("/")[-1]) or "portfolio.xlsx"
-    cd = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)', r.headers.get("Content-Disposition", ""), re.I)
+    cd = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)', disposition or "", re.I)
     if cd:
         name = cd.group(1).strip()
     if not re.search(r"\.(xlsx|xls|xlsm|xlsb|zip)$", name, re.I):   # e.g. viewfile.php (NJ): name it by its content
-        head = r.content[:8]
+        head = content[:8]
         if head.startswith(b"\xd0\xcf\x11\xe0"):
             ext = ".xls"
         elif head.startswith(b"PK"):
-            z = r.content[:4000]
+            z = content[:4000]
             ext = ".xlsb" if b"xl/workbook.bin" in z else ".xlsx" if b"xl/" in z or b"[Content_Types]" in z else ".zip"
         else:
             return None
         name = re.sub(r"\.[A-Za-z0-9]{1,5}$", "", name) + "_" + re.sub(r"\W", "", url[-24:]) + ext
     folder.mkdir(parents=True, exist_ok=True)
     p = folder / re.sub(r"%20|[^A-Za-z0-9._-]", "_", name)
-    p.write_bytes(r.content)
+    p.write_bytes(content)
     if p.suffix.lower() == ".zip":
         with zipfile.ZipFile(p) as z:
             for n in z.namelist():
@@ -195,8 +202,63 @@ def _download_all(html: str, base: str, month: str, folder: Path) -> list[Path]:
     return got
 
 
+def _capture(ctx, url: str):
+    """Open a page the way a visitor would and keep every data response it loads (the file lists of script-driven
+    sites such as ICICI, quant and Aditya Birla only arrive this way). Returns [(response url, text)] and the page HTML."""
+    page, bodies = ctx.new_page(), []
+
+    def on_resp(resp):
+        try:
+            if resp.request.resource_type in ("xhr", "fetch"):
+                bodies.append((resp.url, resp.text()))
+        except Exception:
+            pass
+    page.on("response", on_resp)
+    try:
+        page.goto(url, timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_load_state("networkidle", timeout=30000)
+    except Exception:
+        pass
+    page.wait_for_timeout(4000)
+    clicked = 0
+    for el in page.query_selector_all("a[href^='#'], button, [role=tab], li[data-tab], div[data-toggle], span[onclick]")[:300]:
+        try:
+            t = (el.inner_text() or "").strip()
+            if re.search(r"monthly portfolio|month end portfolio|portfolio disclosure|^portfolios?$", t, re.I) and el.is_visible():
+                el.click(timeout=3000)
+                page.wait_for_timeout(3500)
+                clicked += 1
+        except Exception:
+            continue
+        if clicked >= 4:
+            break
+    try:
+        html = page.content()
+    except Exception:
+        html = ""
+    page.close()
+    return bodies, html
+
+
+def _browser_get(ctx, url: str, folder: Path) -> Path | None:
+    try:
+        r = ctx.request.get(url, timeout=120000)
+        if not r.ok:
+            return None
+        return _store(r.body(), url, r.headers.get("content-disposition", ""), folder)
+    except Exception:
+        return None
+
+
 def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = None):
-    from .amc_adapters import AMC_ADAPTERS
+    from .amc_adapters import AMC_ADAPTERS, BROWSER_ADAPTERS
+    if slug in BROWSER_ADAPTERS and ctx is not None:     # file list only reachable from a real page visit
+        page_url, extract = BROWSER_ADAPTERS[slug]
+        bodies, html = _capture(ctx, page_url)
+        urls = extract(month, bodies, html)
+        got = [p for p in (_browser_get(ctx, u, out / slug) for u in urls) if p]
+        if got:
+            return "OK", f"{len(got)}/{len(urls)} files via the page's own data (browser)", got[0]
     if slug in AMC_ADAPTERS:                      # dedicated adapter for script/API-driven AMC sites
         try:
             urls = AMC_ADAPTERS[slug](month)
@@ -210,6 +272,8 @@ def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = N
         got = [p for p in (safe(u) for u in urls) if p] if urls else []
         if got:
             return "OK", f"{len(got)}/{len(urls)} files via adapter", got[0]
+        if slug in BROWSER_ADAPTERS and ctx is None:
+            return "FAILED", f"needs browser: {BROWSER_ADAPTERS[slug][0]}", None
         # nothing from the adapter (no file yet, or a guessed name that does not exist): try the generic route too
         gen = _download_generic(ctx, slug, month, out, override)
         if gen[0] == "OK":

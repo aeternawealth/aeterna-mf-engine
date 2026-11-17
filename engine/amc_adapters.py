@@ -470,3 +470,47 @@ AMC_ADAPTERS = {
     "WhiteOak-Capital-Mutual-Fund": whiteoak,
     "DSP-Mutual-Fund": dsp,
 }
+
+
+# ------------------------------------------------------------- adapters that need a real page visit
+# These sites answer their file-list requests only inside a browser session (plain requests get nothing back).
+# Each entry: the page to open, and a function that picks the month's files out of what the page loaded.
+def _blob(bodies, html):
+    return "\n".join(t for _, t in bodies) + "\n" + (html or "")
+
+
+def _absl_pick(month, bodies, html):
+    full, abbr, y = _month(month)
+    d = _month_end(month)
+    text = _blob(bodies, html).replace("\\/", "/")
+    hits = re.findall(r"https?://[^\"'\s<>]+?/monthly-portfolio/\d{4}/[^\"'\s<>]+?\.zip", text, re.I)
+    want = f"{d:%d%m%Y}"
+    return list(dict.fromkeys(h for h in hits if want in h))
+
+
+def _icici_pick(month, bodies, html):
+    from urllib.parse import quote
+    full, abbr, y = _month(month)
+    text = _blob(bodies, html).replace("\\/", "/")
+    out = []
+    for path in re.findall(r'"url"\s*:\s*"(/downloads/Files/Monthly Portfolio Disclosures/[^"]+?\.zip)"', text):
+        if str(y) in path and re.search(rf"(?<![a-z])({full}|{abbr})(?![a-z])", path.lower()):
+            out += ["https://www.icicipruamc.com" + quote(path), "https://apimf.icicipruamc.com" + quote(path)]
+    return list(dict.fromkeys(out))
+
+
+def _quant_pick(month, bodies, html):
+    full, abbr, y = _month(month)
+    text = _blob(bodies, html).encode().decode("unicode_escape", errors="ignore")
+    out = []
+    for href, label in re.findall(r"href=['\"]([^'\"]+?\.xlsx?)['\"][^>]*>([^<]+)<", text, re.I):
+        if "portfolio" in href.lower() and "fortnight" not in href.lower() and full in label.lower() and str(y) in label:
+            out.append("https://quantmutual.com" + href if href.startswith("/") else href)
+    return list(dict.fromkeys(out))
+
+
+BROWSER_ADAPTERS = {
+    "Aditya-Birla-Sun-Life-Mutual-Fund": ("https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio", _absl_pick),
+    "ICICI-Prudential-Mutual-Fund": ("https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures", _icici_pick),
+    "Quant-Mutual-Fund": ("https://quantmutual.com/statutory-disclosures", _quant_pick),
+}

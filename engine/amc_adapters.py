@@ -430,7 +430,22 @@ def bajaj(month: str) -> list[str]:
     return [stem + ".xls", stem + "-1.xls", stem + ".xlsx"]
 
 
+def trust(month: str) -> list[str]:
+    """Trust MF: the disclosures page's data API lists 'TRUSTMF Monthly Portfolio Report as on 31.10.2026' with its file."""
+    d = _month_end(month)
+    r = requests.post("https://www.trustmf.com/api/api/Trust/GetData",
+                      json={"systemQueryFileName": "disclosuresweb.xml", "tagName": "GetDisclosureByType", "searchField": "",
+                            "searchValue": "", "sortField": "uploaddate", "sortDirection": "DESC", "replaceField": "_slug_",
+                            "replaceValue": "portfolio-monthly-disclosure"},
+                      headers={**UA, "Origin": "https://www.trustmf.com", "Referer": "https://www.trustmf.com/disclosures"}, timeout=60)
+    rows = (r.json().get("resultSetArray") or []) if r.ok else []
+    want = f"{d:%d.%m.%Y}"
+    return [x["fileurl"].replace(" ", "%20") for x in rows
+            if "monthly portfolio" in (x.get("title") or "").lower() and want in (x.get("title") or "") and x.get("fileurl")]
+
+
 AMC_ADAPTERS = {
+    "Trust-Mutual-Fund": trust,
     "Kotak-Mahindra-Mutual-Fund": kotak,
     "Tata-Mutual-Fund": tata,
     "SBI-Mutual-Fund": sbi,

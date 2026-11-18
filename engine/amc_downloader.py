@@ -442,16 +442,23 @@ def _bandhan(ctx, month: str, folder: Path) -> list[Path]:
         def unblock():   # CleverTap's notification prompt covers the page; take it away (same as declining it)
             page.evaluate("() => document.querySelectorAll('#wzrk_wrapper, .wzrk-overlay').forEach(e => e.remove())")
 
-        def close_lists():
+        def close_lists():   # click outside any open list (the heading is not always clickable in a visible window)
             unblock()
-            page.get_by_text("Disclosure of Detailed Scheme Portfolios").first.click(timeout=5000)
+            try:
+                page.keyboard.press("Escape")
+                page.mouse.click(5, 5)
+            except Exception:
+                pass
             page.wait_for_timeout(400)
 
         def pick(i, text):
             if (boxes.nth(i).inner_text() or "").strip() == text:
                 return
             close_lists()
-            boxes.nth(i).click(timeout=10000)
+            try:
+                boxes.nth(i).click(timeout=5000)
+            except Exception:   # something still sits over the box: click it from script
+                boxes.nth(i).evaluate("b => b.click()")
             page.wait_for_timeout(700)
             page.locator("li").filter(has_text=re.compile(rf"^\s*{re.escape(text)}\s*$")).locator("visible=true").first.click(timeout=10000)
             page.wait_for_timeout(3500)
@@ -461,15 +468,18 @@ def _bandhan(ctx, month: str, folder: Path) -> list[Path]:
         boxes.nth(2).click(timeout=10000)
         page.wait_for_timeout(800)
         schemes = [t.strip() for t in page.locator("li").locator("visible=true").all_inner_texts()]
-        page.get_by_text("Disclosure of Detailed Scheme Portfolios").first.click(timeout=10000)   # close the list again
-        page.wait_for_timeout(700)
+        close_lists()   # close the scheme list again
         schemes = [t for t in dict.fromkeys(schemes) if t.lower().startswith("bandhan") and not _NOT_EQUITY.search(t)]
         _dbg_note(f"Bandhan: {len(schemes)} equity schemes: {schemes}")
         page.evaluate(_RECORD_OPENS)
         dated = re.compile(rf"\b\d{{1,2}}\s+{p.strftime('%B')}\s+{p.year}\s*$", re.I)
         for name in schemes:
             try:
-                pick(2, name)
+                try:
+                    pick(2, name)
+                except Exception:   # one retry from a clean state
+                    close_lists()
+                    pick(2, name)
                 rows = page.locator("div.flex.items-center").filter(has_text=dated).locator("visible=true")
                 page.wait_for_timeout(1000)
                 for k in range(rows.count()):   # a JS click: an open list or prompt can sit over the button

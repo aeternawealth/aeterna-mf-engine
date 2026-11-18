@@ -62,8 +62,38 @@ unlisted shares, with tax planned in from the start.</p>
     urls.append(("/about/", "monthly", "0.7"))
 
 
-def method(B, urls):
+def _method_js(B, funds):
+    """The interactive method page (the same code as the app's #method view, between /*MT:BEGIN*/ and /*MT:END*/ in
+    app.html), served as /assets/method.js so /method/ shows the full page: family tabs, category-by-category backtest,
+    review rule. The server-rendered text stays underneath for crawlers and as a fallback if the script fails."""
+    import re
+    app = (B.S / "app.html").read_text(encoding="utf-8")
+    m = re.search(r"/\*MT:BEGIN\*/(.*?)/\*MT:END\*/", app, re.S)
+    h = re.search(r"function holdCov\(\)\{.*?\n.*?\n", app)
+    if not m or not h:
+        return ""
+    cat = lambda c: "Value / Contra" if c in ("Value", "Contra") else c
+    cnt = {}
+    for f in funds:
+        if f.get("market_mode"):
+            k = cnt.setdefault(cat(f.get("category")), [0, 0]); k[0] += 1; k[1] += f["market_mode"] == "after a fall"
+    modes = {c: ("after a fall" if a * 2 > n else "normal") for c, (n, a) in cnt.items()}
+    shim = ("const $=s=>document.querySelector(s),$$=(s,root)=>[...(root||document).querySelectorAll(s)],"
+            "esc=s=>String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));\n"
+            f"const S={{funds:{{length:{len(funds)}}},meta:{{}},mtMode:{json.dumps(modes)}}};\n")
+    boot = ("\nfetch('/data/meta.json').then(r=>r.json()).then(m=>{S.meta=m;const el=$('#methodPage');const keep=el.innerHTML;"
+            "try{methodRender()}catch(e){el.innerHTML=keep}}).catch(()=>{});\n")
+    js = "(()=>{\n" + shim + h.group(0) + m.group(1) + boot + "})();\n"
+    (B.DIST / "assets").mkdir(parents=True, exist_ok=True)
+    (B.DIST / "assets" / "method.js").write_text(js, encoding="utf-8")
+    import hashlib
+    return hashlib.sha1(js.encode("utf-8")).hexdigest()[:10]
+
+
+def method(B, urls, funds=()):
     S = B.S
+    live = _method_js(B, list(funds))
+    SCRIPT = f'<script src="/assets/method.js?v={live}" defer></script>' if live else ""
     p = S / "model_backtest.json"
     bt = json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
     pc = lambda v: "–" if v is None else f"{round(v * 100)}%"
@@ -87,6 +117,7 @@ def method(B, urls):
                 "In years when large caps led the market, A+ funds in several categories trailed their index. These are odds from past data, not promises.</p>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">{CSS}
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/">Home</a> › Method</nav>
+<div id="methodPage">
 <h1 style="font-size:clamp(30px,4.2vw,46px);margin-top:14px">How we rate mutual funds, and how well it has worked</h1>
 <p class="lede" style="margin-top:14px">Every rating on this site is computed from public data with rules we publish here, including where they fall short.
 Equity, hybrid and debt funds do different jobs, so each family is measured on what matters for its job.</p>
@@ -96,8 +127,9 @@ Equity, hybrid and debt funds do different jobs, so each family is measured on w
 {_sec(B, "Did it work?", test or "<p>The category-by-category test is published with each model update.</p>")}
 {_sec(B, "When ratings change", "<p>Ratings are revised on the 11th of each month, once fund houses have published the previous month's portfolios (due by the 10th), and again on the 16th for late portfolios. Between those dates the site updates every weekday morning with the latest NAVs, returns and period rankings, while ratings stay as last set.</p>")}
 {_sec(B, "Data and limits", "<p>Data comes from AMFI (NAVs, expense ratios, AUM, market-cap lists), NSE Indices (total-return indices) and fund houses' monthly portfolio disclosures. Fund manager changes are not yet tracked automatically; debt funds are rated on their NAVs, not yet on the credit quality of the bonds they hold.</p><p>Ratings describe a fund's past record and are not a forecast or a recommendation to buy or sell. <a href='/disclosures/'>Disclosures</a></p>")}
-<div class="row" style="margin-top:22px"><a class="btn primary" href="/mutual-funds/">See the ratings</a><a class="btn" href="/?#method">Interactive version with every category</a><a class="btn" href="/invest/portfolio-review/">Free portfolio review</a></div>
-</div></section>"""
+</div>
+<div class="row" style="margin-top:22px"><a class="btn primary" href="/mutual-funds/">See the ratings</a><a class="btn" href="/invest/portfolio-review/">Free portfolio review</a></div>
+{SCRIPT}</div></section>"""
     B.write("/method/", B.page("How we rate mutual funds: method and backtest | Aeterna Wealth",
                                "How Aeterna Wealth rates every Indian mutual fund: like-with-like peer groups, the right index, returns after costs, a model per category, and a published test of how A+ funds did next.",
                                "/method/", body, (B.crumbs([("Method", "/method/")]),)))
@@ -140,5 +172,5 @@ def contact(B, urls):
 
 def trust_pages(B, funds, urls):
     about(B, funds, urls)
-    method(B, urls)
+    method(B, urls, funds)
     contact(B, urls)

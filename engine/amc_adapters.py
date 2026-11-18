@@ -298,6 +298,9 @@ def _month_end(month: str):
     return pd.Period(month).end_time.date()
 
 
+ABSL_HOST = "https://mutualfund.adityabirlacapital.com"
+
+
 def absl(month: str) -> list[str]:
     """Aditya Birla SL: the portfolio page's accordion API lists one zip per month ('31102026_abslmf_monthlydisclosure.zip')."""
     full, abbr, y = _month(month)
@@ -309,11 +312,14 @@ def absl(month: str) -> list[str]:
     for a in (r.json().get("AccordionList") or []) if r.ok else []:
         t, u = (a.get("ResourceLink") or "").lower(), a.get("pdfUrl") or ""
         if "monthly portfolio" in t and full in t and str(y) in t and u:
-            out.append(u)
+            # the API names its CDN (abcscprod.azureedge.net), which no longer serves the file; the page links the
+            # same path on the site's own host (Nov 2026)
+            path = re.sub(r"^https?://[^/]+", "", u)
+            out += [ABSL_HOST + path, u]
     if not out:    # the file name is the month-end date: try it directly
         d = _month_end(month)
-        out.append(f"https://abcscprod.azureedge.net/-/media/bsl/files/resources/monthly-portfolio/{y}/{d:%d%m%Y}_abslmf_monthlydisclosure.zip")
-    return out
+        out.append(f"{ABSL_HOST}/-/media/bsl/files/resources/monthly-portfolio/{y}/{d:%d%m%Y}_abslmf_monthlydisclosure.zip")
+    return list(dict.fromkeys(out))
 
 
 def quant(month: str) -> list[str]:
@@ -332,21 +338,13 @@ def quant(month: str) -> list[str]:
 
 
 def icici(month: str) -> list[str]:
-    """ICICI Prudential: the downloads API (category 'Monthly Portfolio Disclosures') lists one zip per month."""
+    """ICICI Prudential: the media-center downloads page (Nov 2026) lists 'Monthly Portfolio Disclosure October 2026' with
+    url '/downloads/Files/Monthly Portfolio Disclosures/2026/Oct/Monthly-Portfolio-Disclosure-October-2026.zip', served
+    under /blob. The old nms downloads API now answers 405, so the address is built from that pattern."""
     from urllib.parse import quote
     full, abbr, y = _month(month)
-    r = requests.post("https://apimf.icicipruamc.com/nms/v1/downloads/files",
-                      json={"categoryId": "26a073d7-08d2-4a95-95fa-f83a4ee51e40", "schemeCategory": "", "userType": "Investor",
-                            "fileType": "All", "page": "1", "size": "20", "filter": [], "categoryName": "OTHERS"},
-                      headers={**UA, "Origin": "https://www.icicipruamc.com", "Referer": "https://www.icicipruamc.com/"}, timeout=60)
-    files = (((r.json().get("success") or {}).get("data") or {}).get("files") or []) if r.ok else []
-    out = []
-    for f in files:
-        t, u = ((f.get("title") or {}).get("text") or "").lower(), f.get("url") or ""
-        if full in t and str(y) in t and u:
-            path = quote(u if u.startswith("/") else "/" + u)
-            out += ["https://www.icicipruamc.com" + path, "https://apimf.icicipruamc.com" + path]   # the API gives a relative path
-    return out
+    path = f"/downloads/Files/Monthly Portfolio Disclosures/{y}/{abbr.capitalize()}/Monthly-Portfolio-Disclosure-{full.capitalize()}-{y}.zip"
+    return ["https://www.icicipruamc.com/blob" + quote(path)]
 
 
 def franklin(month: str) -> list[str]:
@@ -397,10 +395,25 @@ def kotak(month: str) -> list[str]:
 
 
 def tata(month: str) -> list[str]:
+    """Tata: /schemes-related/portfolio embeds its document list as JSON ('field_document_title': 'Portfolio as on 31st
+    October, 2026', 'field_media_document': <file>). File names are not regular (October 2026 ends in '....xlsx'), so the
+    fixed name pattern is only a fallback."""
     full, abbr, y = _month(month)
     d, F, nx = _month_end(month), full.capitalize(), _next(month)
+    out = []
+    try:
+        r = requests.get("https://www.tatamutualfund.com/schemes-related/portfolio", headers=UA, timeout=60)
+        text = r.text.replace('\\"', '"').replace("\\/", "/") if r.ok else ""
+        for title, url in re.findall(r'"field_document_title"\s*:\s*"([^"]*)"\s*,\s*"field_media_document"\s*:\s*"([^"]+)"', text):
+            t = title.lower()
+            if t.startswith("portfolio as on") and full in t and str(y) in t and re.search(r"\.(xlsx?|zip)$", url, re.I):
+                out.append(url)
+    except Exception:
+        pass
     name = f"Monthly%20Portfolio%20as%20on%20{_ordinal(d.day)}%20{F}%20{y}.xlsx"
-    return [f"https://betacms.tatamutualfund.com/system/files/{p.year}-{p.month:02d}/{name}" for p in (nx, pd.Period(month))]
+    out += [f"https://www.tatamutualfund.com/system/files/{p.year}-{p.month:02d}/{name}" for p in (nx, pd.Period(month))]
+    out += [f"https://betacms.tatamutualfund.com/system/files/{p.year}-{p.month:02d}/{name}" for p in (nx, pd.Period(month))]
+    return list(dict.fromkeys(out))
 
 
 def sbi(month: str) -> list[str]:
@@ -416,12 +429,53 @@ def boi(month: str) -> list[str]:
     return [f"{base}{d.day}-{full}-{y}.xlsx", f"{base}{d.day}-{abbr}-{y}.xlsx"]   # both spellings have been used
 
 
+UTI_CATEGORIES = ("Equity", "Index Fund", "ETF", "Hybrid", "Solution Oriented")   # not Debt, Liquid or FOF
+
+
 def uti(month: str) -> list[str]:
+    """UTI: downloads/scheme-wise-portfolio-disclosure (Nov 2026). Its API gives the schemes of each category, then each
+    scheme's monthly file (.../utimf-job/portfolio/monthly-schemewise/EQ_October_2026.xlsx). The consolidated zip
+    for October 2026 held only exposure, dividend and risk-o-meter sheets, so it is used only when the scheme-wise
+    route finds nothing."""
+    p = pd.Period(month)
+    hdr = {**UA, "Referer": "https://www.utimf.com/downloads/scheme-wise-portfolio-disclosure"}
+    out = []
+
+    def rows(url, params):   # one slow or failed answer must not drop the other schemes
+        for _ in range(3):
+            try:
+                r = requests.get(url, params=params, headers=hdr, timeout=60)
+                if r.ok:
+                    return r.json().get("rows") or []
+            except Exception:
+                pass
+        _dbg("uti", "failed", f"{url} {params}")
+        return []
+    for cat in UTI_CATEGORIES:
+        for sch in rows("https://www.utimf.com/api/get-schemes-from-cat", {"fund_category": cat}):
+            code = sch.get("field_dofa_schcode")
+            if code:
+                docs = rows("https://www.utimf.com/api/get-scheme-portfolio-disclosure",
+                            {"dofa_scheme_code": code, "year": p.year, "month": p.strftime("%B")})
+                out += [x.get("url") or x.get("doc") for x in docs if x.get("url") or x.get("doc")]
+    if out:
+        return list(dict.fromkeys(out))
+    try:
+        r = requests.get("https://www.utimf.com/api/get-consolidate-portfolio-disclosure",
+                         params={"year": p.year, "month": p.strftime("%B")},
+                         headers={**UA, "Referer": "https://www.utimf.com/downloads/consolidate-all-portfolio-disclosure"}, timeout=60)
+        for row in (r.json().get("rows") or []) if r.ok else []:
+            u = row.get("url") or row.get("doc")
+            if u and str(row.get("year")) == str(p.year) and (row.get("month") or "").lower() == p.strftime("%B").lower():
+                out.append(u)
+    except Exception:
+        pass
     d, nx = _month_end(month), _next(month)
     folder = f"{nx.strftime('%b')}-{nx.strftime('%y')}"
     stamp = f"{d:%d.%m.%Y}"
-    return [f"https://d3ce1o48hc5oli.cloudfront.net/static/generic-zip/{folder}/{pre}UTI_MF_SCHEME_PORTFOLIOS_-_{stamp}_.zip"
+    out += [f"https://d3ce1o48hc5oli.cloudfront.net/static/generic-zip/{folder}/{pre}UTI_MF_SCHEME_PORTFOLIOS_-_{stamp}_.zip"
             for pre in ("FW__", "")]
+    return list(dict.fromkeys(out))
 
 
 def bajaj(month: str) -> list[str]:
@@ -494,9 +548,9 @@ def _icici_pick(month, bodies, html):
     full, abbr, y = _month(month)
     text = _blob(bodies, html).replace("\\/", "/")
     out = []
-    for path in re.findall(r'"url"\s*:\s*"(/downloads/Files/Monthly Portfolio Disclosures/[^"]+?\.zip)"', text):
+    for path in re.findall(r'"url"\s*:\s*"(?:https://www\.icicipruamc\.com/blob)?(/downloads/Files/Monthly Portfolio Disclosures/[^"]+?\.zip)"', text):
         if str(y) in path and re.search(rf"(?<![a-z])({full}|{abbr})(?![a-z])", path.lower()):
-            out += ["https://www.icicipruamc.com" + quote(path), "https://apimf.icicipruamc.com" + quote(path)]
+            out.append("https://www.icicipruamc.com/blob" + quote(path))   # files are served under /blob (Nov 2026)
     return list(dict.fromkeys(out))
 
 
@@ -512,6 +566,6 @@ def _quant_pick(month, bodies, html):
 
 BROWSER_ADAPTERS = {
     "Aditya-Birla-Sun-Life-Mutual-Fund": ("https://mutualfund.adityabirlacapital.com/forms-and-downloads/portfolio", _absl_pick),
-    "ICICI-Prudential-Mutual-Fund": ("https://www.icicipruamc.com/news-and-media/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures", _icici_pick),
+    "ICICI-Prudential-Mutual-Fund": ("https://www.icicipruamc.com/media-center/downloads?currentTabFilter=Disclosures&&subCatTabFilter=MonthlyPortfolioDisclosures", _icici_pick),
     "Quant-Mutual-Fund": ("https://quantmutual.com/statutory-disclosures", _quant_pick),
 }

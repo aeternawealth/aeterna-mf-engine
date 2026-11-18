@@ -52,7 +52,8 @@ def month_tokens(month: str) -> list[str]:
             f"{abbr}{y}", f"{abbr}-{str(y)[2:]}", f"{abbr}'{str(y)[2:]}", f"{abbr} {str(y)[2:]}", f"{abbr}{str(y)[2:]}",
             f"{full}-{str(y)[2:]}", f"{full} {str(y)[2:]}",
             f"{last:02d}.{m:02d}.{y}", f"{last:02d}-{m:02d}-{y}", f"{last:02d}{m:02d}{y}", f"{y}{m:02d}{last:02d}",
-            f"{y}-{m:02d}", f"{m:02d}-{y}", f"{m:02d}{y}", f"{y}{m:02d}", f"{last}{abbr}{y}", f"{last} {abbr} {y}"]
+            f"{y}-{m:02d}", f"{m:02d}-{y}", f"{m:02d}{y}", f"{y}{m:02d}", f"{last}{abbr}{y}", f"{last} {abbr} {y}",
+            f"{abbr} {last}, {y}", f"{full} {last}, {y}", f"{abbr} {last} {y}", f"{full} {last} {y}"]   # 'Oct 31, 2026' (JM)
     return [t.lower() for t in toks]
 
 
@@ -327,7 +328,225 @@ def _mahindra(ctx, month: str, folder: Path) -> list[Path]:
             own.close()
 
 
-CLICK_ADAPTERS = {"Mahindra-Mutual-Fund": _mahindra, "Mahindra-Manulife-Mutual-Fund": _mahindra}
+_RECORD_OPENS = """() => { window.__opened = []; window.open = u => { window.__opened.push(String(u)); return null; };
+    const c = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function () { window.__opened.push(this.href); }; }"""
+
+
+def _choose(page, box: str, option: str):
+    """Pick an option in a custom (non-<select>) dropdown: open the combobox labelled `box`, click the visible option."""
+    cb = page.get_by_role("combobox", name=box).first
+    if (cb.get_attribute("value") or "").strip().lower() == option.lower():
+        return
+    cb.click(timeout=10000)
+    page.wait_for_timeout(800)
+    page.get_by_role("option", name=option, exact=True).locator("visible=true").first.click(timeout=10000)
+    page.wait_for_timeout(3500)
+
+
+def _axis(ctx, month: str, folder: Path) -> list[Path]:
+    """Axis: statutory-disclosures > 8. Portfolios > Monthly Scheme Portfolios, with custom Year / Month / Scheme
+    dropdowns that open on the current month. Its list API answers 403 outside the page, but the file it opens
+    ('Monthly Portfolio 31-10-2026' -> /1/5/.../Monthly_Portfolio_31_10_2026_<hash>.xlsx) downloads directly."""
+    p = pd.Period(month)
+    page = ctx.new_page()
+    try:
+        page.goto("https://www.axismf.com/statutory-disclosures", timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(6000)
+        page.get_by_text("8. Portfolios", exact=True).first.click(timeout=15000)
+        page.wait_for_timeout(3000)
+        _choose(page, "Select a Year", str(p.year))
+        _choose(page, "Select a Month", p.strftime("%B"))
+        _choose(page, "Select a Scheme", "Consolidated")
+        page.evaluate(_RECORD_OPENS)
+        want = re.compile(rf"^monthly portfolio\s+\d{{1,2}}-{p.month:02d}-{p.year}$", re.I)
+        labels = [l for l in page.locator("label").all() if want.match((l.inner_text() or "").strip())]
+        urls = []
+        for l in labels:
+            l.locator("xpath=..").locator("button").first.click(timeout=10000)
+            page.wait_for_timeout(2000)
+        urls = page.evaluate("() => window.__opened || []")
+        _dbg_note(f"Axis: labels {len(labels)}, opened {urls}")
+        got = []
+        for u in dict.fromkeys(urls):
+            try:
+                f = _direct(u, folder) or _browser_get(ctx, u, folder, page.url)
+            except Exception:
+                f = _browser_get(ctx, u, folder, page.url)
+            if f:
+                got.append(f)
+        return got
+    except Exception as e:
+        _dbg_note(f"Axis: {type(e).__name__}: {str(e)[:300]}")
+        return []
+    finally:
+        page.close()
+
+
+def _mat_pick(page, index: int, option: str):
+    """Angular Material dropdown number `index` among the visible ones: open it and click the option text."""
+    sel = page.locator("mat-select").locator("visible=true").nth(index)
+    if (sel.inner_text() or "").strip().lower() == option.lower():
+        return
+    sel.click(timeout=10000)
+    page.wait_for_timeout(800)
+    page.get_by_role("option", name=option, exact=True).first.click(timeout=10000)
+    page.wait_for_timeout(3000)
+
+
+def _edelweiss(ctx, month: str, folder: Path) -> list[Path]:
+    """Edelweiss: statutory/portfolio-of-schemes > 'Monthly Portfolio and Risk-o-Meter' tab, with Material year and
+    month dropdowns (latest month by default). Plain HTTP clients get no answer from the site, so this goes through
+    the browser; the file is e.g. .../Monthly_Portfolio_and_RiskoMeter/EDEL_Portfolio_Monthly_Notes_31Oct2026_....xlsx"""
+    p = pd.Period(month)
+    page = ctx.new_page()
+    try:
+        page.goto("https://www.edelweissmf.com/statutory/portfolio-of-schemes", timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(6000)
+        page.get_by_text(re.compile(r"^\s*monthly portfolio and\s+risk-o-meter\s*$", re.I)).first.click(timeout=15000)
+        page.wait_for_timeout(3000)
+        _mat_pick(page, 0, str(p.year))
+        _mat_pick(page, 1, p.strftime("%b"))
+        toks = month_tokens(month)
+        links = page.eval_on_selector_all("a", "els => els.map(e => [e.href || '', (e.innerText || '').trim()])")
+        urls = [h for h, t in links if FILE_RE.search(h) and "monthly" in h.lower() and _matches_month(h + " " + t, toks)]
+        _dbg_note(f"Edelweiss: {urls}")
+        return [f for f in (_browser_get(ctx, u, folder, page.url) for u in dict.fromkeys(urls)) if f]
+    except Exception as e:
+        _dbg_note(f"Edelweiss: {type(e).__name__}: {str(e)[:300]}")
+        return []
+    finally:
+        page.close()
+
+
+_NOT_EQUITY = re.compile(r"debt|liquid|overnight|money market|gilt|bond|arbitrage|savings|fortnight|fixed term|fmp|\bsdl\b|"
+                         r"\bibx\b|fund of fund|\bfof\b|duration|credit|corporate|banking (and|&) psu|floater|income|"
+                         r"conservative|balanced|multi asset|gold|silver|hybrid|short term|dynamic term|floating|interest rate", re.I)
+
+
+def _bandhan(ctx, month: str, folder: Path) -> list[Path]:
+    """Bandhan: statutory-disclosures/scheme-portfolios/monthly-half-yearly lists ONE scheme at a time (Year / Month /
+    Scheme dropdowns; the list API is encrypted). Each equity scheme is picked in turn; its download button goes
+    through /investor/v1/dashboard/download-doc?filepath=<storage.googleapis.com file>, fetched directly."""
+    from urllib.parse import urlparse, parse_qs
+    p = pd.Period(month)
+    own = ctx.browser.new_context(accept_downloads=True) if ctx.browser else None   # normal user agent, as for Mahindra
+    page = (own or ctx).new_page()
+    got = []
+    try:
+        page.goto("https://bandhanmutual.com/statutory-disclosures/scheme-portfolios/monthly-half-yearly",
+                  timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(7000)
+        boxes = page.locator("div.relative.h-full > button").locator("visible=true")
+
+        def unblock():   # CleverTap's notification prompt covers the page; take it away (same as declining it)
+            page.evaluate("() => document.querySelectorAll('#wzrk_wrapper, .wzrk-overlay').forEach(e => e.remove())")
+
+        def close_lists():
+            unblock()
+            page.get_by_text("Disclosure of Detailed Scheme Portfolios").first.click(timeout=5000)
+            page.wait_for_timeout(400)
+
+        def pick(i, text):
+            if (boxes.nth(i).inner_text() or "").strip() == text:
+                return
+            close_lists()
+            boxes.nth(i).click(timeout=10000)
+            page.wait_for_timeout(700)
+            page.locator("li").filter(has_text=re.compile(rf"^\s*{re.escape(text)}\s*$")).locator("visible=true").first.click(timeout=10000)
+            page.wait_for_timeout(3500)
+        pick(0, str(p.year))
+        pick(1, p.strftime("%B"))
+        unblock()
+        boxes.nth(2).click(timeout=10000)
+        page.wait_for_timeout(800)
+        schemes = [t.strip() for t in page.locator("li").locator("visible=true").all_inner_texts()]
+        page.get_by_text("Disclosure of Detailed Scheme Portfolios").first.click(timeout=10000)   # close the list again
+        page.wait_for_timeout(700)
+        schemes = [t for t in dict.fromkeys(schemes) if t.lower().startswith("bandhan") and not _NOT_EQUITY.search(t)]
+        _dbg_note(f"Bandhan: {len(schemes)} equity schemes: {schemes}")
+        page.evaluate(_RECORD_OPENS)
+        dated = re.compile(rf"\b\d{{1,2}}\s+{p.strftime('%B')}\s+{p.year}\s*$", re.I)
+        for name in schemes:
+            try:
+                pick(2, name)
+                rows = page.locator("div.flex.items-center").filter(has_text=dated).locator("visible=true")
+                page.wait_for_timeout(1000)
+                for k in range(rows.count()):   # a JS click: an open list or prompt can sit over the button
+                    rows.nth(k).locator("button").first.evaluate("b => b.click()")
+                    page.wait_for_timeout(800)
+            except Exception as e:
+                _dbg_note(f"Bandhan {name}: {type(e).__name__}: {str(e)[:120]}")
+        for u in dict.fromkeys(page.evaluate("() => window.__opened || []")):
+            src = (parse_qs(urlparse(u).query).get("filepath") or [u])[0]
+            try:
+                f = _direct(src, folder) or _direct(u, folder)
+            except Exception:
+                f = None
+            if f:
+                got.append(f)
+        return got
+    except Exception as e:
+        _dbg_note(f"Bandhan: {type(e).__name__}: {str(e)[:300]}")
+        return got
+    finally:
+        page.close()
+        if own:
+            own.close()
+
+
+def _jm(ctx, month: str, folder: Path) -> list[Path]:
+    """JM Financial: downloads/Portfolio-Disclosure/Monthly-Portfolio-of-Schemes is filled by script (plain HTTP gets an
+    empty shell) and paged; one file per scheme, e.g. 'Monthly Portfolio - JM Small Cap Fund - Oct 31, 2026.xlsx'."""
+    own = ctx.browser.new_context(accept_downloads=True) if ctx.browser else None   # the engine's user agent gets no list
+    page = (own or ctx).new_page()
+    try:
+        page.goto("https://www.jmfinancialmf.com/downloads/Portfolio-Disclosure", timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(7000)
+        # the monthly list only fills when its sub-category is chosen on the page (a direct link gives an empty list)
+        page.locator("select").filter(has=page.locator("option", has_text="Monthly Portfolio of Schemes")).first             .select_option(label="Monthly Portfolio of Schemes", timeout=15000)
+        page.wait_for_timeout(6000)
+        html = _all_pages_html(page)
+        _dbg_note(f"JM: {len(re.findall(r'Monthly Portfolio', html))} 'Monthly Portfolio' mentions over all pages")
+        # links are relative to the site root ('CMS/downloads/...'), not to the page's address
+        return _download_all(html, "https://www.jmfinancialmf.com/", month, folder)
+    except Exception as e:
+        _dbg_note(f"JM: {type(e).__name__}: {str(e)[:300]}")
+        return []
+    finally:
+        page.close()
+        if own:
+            own.close()
+
+
+def _iti(ctx, month: str, folder: Path) -> list[Path]:
+    """ITI: statuory-disclosure?type=Portfolio Disclosures lists 'Monthly Portfolio - October 2026'; the list API is
+    encrypted and the download icon hands over a blob, so the browser's own download is saved."""
+    p = pd.Period(month)
+    own = ctx.browser.new_context(accept_downloads=True) if ctx.browser else None
+    page = (own or ctx).new_page()
+    try:
+        page.goto("https://www.itiamc.com/statuory-disclosure?type=Portfolio%20Disclosures", timeout=90000, wait_until="domcontentloaded")
+        page.wait_for_timeout(9000)
+        label = page.get_by_text(re.compile(rf"^\s*monthly portfolio\s*-\s*{p.strftime('%B')}\s+{p.year}\s*$", re.I)).first
+        if not label.count():
+            _dbg_note(f"ITI: no 'Monthly Portfolio - {p.strftime('%B %Y')}' entry")
+            return []
+        icon = label.locator("xpath=ancestor::*[.//img[contains(@src,'icon_download')]][1]").locator("img[src*='icon_download']").first
+        with page.expect_download(timeout=120000) as d:
+            icon.click(timeout=15000)
+        return [_save(d.value, folder)]
+    except Exception as e:
+        _dbg_note(f"ITI: {type(e).__name__}: {str(e)[:300]}")
+        return []
+    finally:
+        page.close()
+        if own:
+            own.close()
+
+
+CLICK_ADAPTERS = {"ITI-Mutual-Fund": _iti, "JM-Financial-Mutual-Fund": _jm, "Mahindra-Mutual-Fund": _mahindra, "Mahindra-Manulife-Mutual-Fund": _mahindra,
+                  "Axis-Mutual-Fund": _axis, "Edelweiss-Mutual-Fund": _edelweiss, "Bandhan-Mutual-Fund": _bandhan}
 
 
 def download_amc(ctx, slug: str, month: str, out: Path, override: str | None = None):
@@ -518,30 +737,42 @@ def _pick_month(page, month: str) -> bool:
 
 
 def _all_pages_html(page, limit: int = 15) -> str:
-    """HTML of a paginated list (Union shows 10 files per page): follow 'Next' until it stops changing anything."""
+    """HTML of a paginated list (Union shows 10 files per page): follow 'Next' until it stops changing anything. Where
+    'Next' does nothing (JM Financial), click the page numbers 2, 3, ... instead."""
     parts = [page.content()]
-    for _ in range(limit):
-        nxt = None
-        for el in page.query_selector_all("a, button, li, span"):
+
+    def find(texts, containers="a, button, li, span"):
+        for el in page.query_selector_all(containers):
             try:
                 t = (el.inner_text() or "").strip().lower()
-                if t in ("next", "next ›", "next »", "›", "»", ">") and el.is_visible() \
+                if t in texts and el.is_visible() \
                         and not re.search(r"disabled", (el.get_attribute("class") or "") + str(el.get_attribute("disabled") or ""), re.I):
-                    nxt = el
-                    break
+                    return el
             except Exception:
                 continue
-        if nxt is None:
-            break
+        return None
+
+    def go(el):
         try:
-            nxt.click(timeout=3000)
+            el.click(timeout=3000)
             page.wait_for_timeout(2000)
         except Exception:
-            break
+            return False
         html = page.content()
         if html == parts[-1]:
-            break
+            return False
         parts.append(html)
+        return True
+    number = 2
+    for _ in range(limit):
+        nxt = find(("next", "next ›", "next »", "›", "»", ">"))
+        if nxt is not None and go(nxt):
+            number += 1
+            continue
+        num = find((str(number),), "li a, li button, nav a, nav button, ul a, ul button")
+        if num is None or not go(num):
+            break
+        number += 1
     return "\n".join(parts)
 
 

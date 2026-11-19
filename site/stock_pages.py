@@ -5,6 +5,7 @@ what changed, the previous month's parsed weights (data/holdings/<YYYY-MM>/_weig
 portfolios do (the 11th and 16th), so the daily data commit stays the same size. Standard library only (the site build
 runs without numpy/pandas).
 """
+import json
 import csv
 import re
 from collections import Counter, defaultdict
@@ -12,6 +13,7 @@ from pathlib import Path
 
 TOP_N = 500          # Nov 2026: the 100-stock test brought search clicks ("swiggy mutual fund holding"), so widened
 MIN_FUNDS = 15       # and held by at least this many schemes (fewer makes a thin page)
+FILTER_JS = "<script>(()=>{const q=document.getElementById('stkq'),n=document.getElementById('stkn'),rs=[...document.querySelectorAll('#stkt tbody tr')];\nq.addEventListener('input',()=>{const t=q.value.toLowerCase().trim();let k=0;rs.forEach(r=>{const m=!t||r.cells[0].textContent.toLowerCase().includes(t);r.hidden=!m;k+=m});\nn.hidden=!t;n.textContent=k?k+' of '+rs.length+' stocks':'Not in the '+rs.length+' most widely held stocks. Smaller holdings show on each fund page.'})})()</script>"
 TABLE_ROWS = 40      # holders listed in full on a page, by value; the rest are counted
 BASE = "/mutual-funds/holding/"
 
@@ -184,11 +186,16 @@ def build(B, funds, hold, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › Holdings by stock</nav>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:14px">Which mutual funds hold a stock</h1>
 <p class="lede" style="margin-top:12px">The {len(made)} stocks Indian mutual funds hold the most money in, from their latest monthly portfolios ({B.mon(lead_month) if lead_month else ''}). Open a stock to see every scheme that holds it, how much, and who bought or sold it last month.</p>
-<div class="tablewrap" style="margin-top:18px"><table class="cmp stk"><thead><tr><th class="l">Stock</th><th>Schemes</th><th>Held by funds</th><th>New holders</th><th>Sold out</th></tr></thead><tbody>{rows}</tbody></table></div>
+<input id="stkq" type="search" autocomplete="off" placeholder="Find a stock, e.g. Reliance" aria-label="Find a stock" style="width:100%;max-width:420px;margin-top:18px;padding:12px 14px;font:inherit;border:1px solid var(--rule);border-radius:8px;background:var(--surface);color:var(--ink)">
+<p id="stkn" class="muted" style="font-size:13px;margin-top:8px" hidden></p>
+<div class="tablewrap" style="margin-top:12px"><table class="cmp stk" id="stkt"><thead><tr><th class="l">Stock</th><th>Schemes</th><th>Held by funds</th><th>New holders</th><th>Sold out</th></tr></thead><tbody>{rows}</tbody></table></div>
+{FILTER_JS}
 <p class="note" style="margin-top:24px">Not a view on any stock or a recommendation to buy or sell. Values are approximate.</p>
 </div></section>"""
     B.write(BASE, B.page(f"Which mutual funds hold a stock: top {len(made)} stocks, {B.mon(lead_month) if lead_month else ''}".strip(" ,"),
                          f"See which mutual fund schemes hold India's {len(made)} most widely held stocks, how much each holds, and which funds bought or sold them last month.",
                          BASE, body, (B.crumbs([("Mutual funds", "/mutual-funds/"), ("Holdings by stock", BASE)]),)))
     urls.append((BASE, "monthly", "0.6"))
+    (B.DIST / "data").mkdir(parents=True, exist_ok=True)
+    (B.DIST / "data" / "stocks.json").write_text(json.dumps([[nm, f"{BASE}{s}/", n] for nm, s, _, n, *_ in made], ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return {isin: f"{BASE}{s}/" for _, s, isin, *_ in made}

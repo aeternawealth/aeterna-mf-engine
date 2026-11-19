@@ -1,58 +1,58 @@
-Aeterna MF Engine run 2026-11-18 04:06
+Aeterna MF Engine run 2026-11-19 04:08
 [1/7] Universe (AMFI NAVAll)
-  2747 equity + index schemes (growth, Direct & Regular)
-  Month-end AUM (30 Oct 2026): 1357/1383 schemes
+  2749 equity + index schemes (growth, Direct & Regular)
+  Month-end AUM (30 Oct 2026): 1357/1384 schemes
   AUM: 1357 month-end, 9 quarterly-average fallback
 [3/7] Benchmarks (Nifty TRI)
-  TRI: 147 indices, 2013-01-01 -> 2026-11-17
+  TRI: 147 indices, 2013-01-01 -> 2026-11-18
 [4/7] NAV history (mfapi)
-  NAV 100/2770
-  NAV 200/2770
-  NAV 300/2770
-  NAV 400/2770
-  NAV 500/2770
-  NAV 600/2770
-  NAV 700/2770
-  NAV 800/2770
-  NAV 900/2770
-  NAV 1000/2770
-  NAV 1100/2770
-  NAV 1200/2770
-  NAV 1300/2770
-  NAV 1400/2770
-  NAV 1500/2770
-  NAV 1600/2770
-  NAV 1700/2770
-  NAV 1800/2770
-  NAV 1900/2770
-  NAV 2000/2770
-  NAV 2100/2770
-  NAV 2200/2770
-  NAV 2300/2770
-  NAV 2400/2770
-  NAV 2500/2770
-  NAV 2600/2770
-  NAV 2700/2770
-  2770 NAV histories (104 of them liquid funds, the arbitrage yardstick)
-  78 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
-  bond-fund yardstick: Direct 3621 days, Regular 5382 days (86 plans)
-  liquid-fund yardstick: Direct 5377 days, Regular 5382 days
+  NAV 100/2772
+  NAV 200/2772
+  NAV 300/2772
+  NAV 400/2772
+  NAV 500/2772
+  NAV 600/2772
+  NAV 700/2772
+  NAV 800/2772
+  NAV 900/2772
+  NAV 1000/2772
+  NAV 1100/2772
+  NAV 1200/2772
+  NAV 1300/2772
+  NAV 1400/2772
+  NAV 1500/2772
+  NAV 1600/2772
+  NAV 1700/2772
+  NAV 1800/2772
+  NAV 1900/2772
+  NAV 2000/2772
+  NAV 2100/2772
+  NAV 2200/2772
+  NAV 2300/2772
+  NAV 2400/2772
+  NAV 2500/2772
+  NAV 2600/2772
+  NAV 2700/2772
+  2772 NAV histories (104 of them liquid funds, the arbitrage yardstick)
+  86 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
+  bond-fund yardstick: Direct 3622 days, Regular 5383 days (86 plans)
+  liquid-fund yardstick: Direct 5378 days, Regular 5383 days
 [5/7] Holdings for 2026-10
   daily mode: re-using holdings of 2026-10
 [6/7] Metrics, protocols, ranking committee
-  metrics 200/2747
-  metrics 400/2747
-  metrics 600/2747
-  metrics 800/2747
-  metrics 1000/2747
-  metrics 1200/2747
-  metrics 1400/2747
-  metrics 1600/2747
-  metrics 1800/2747
-  metrics 2000/2747
-  metrics 2200/2747
-  metrics 2400/2747
-  metrics 2600/2747
+  metrics 200/2749
+  metrics 400/2749
+  metrics 600/2749
+  metrics 800/2749
+  metrics 1000/2749
+  metrics 1200/2749
+  metrics 1400/2749
+  metrics 1600/2749
+  metrics 1800/2749
+  metrics 2000/2749
+  metrics 2200/2749
+  metrics 2400/2749
+  metrics 2600/2749
   wrote /home/runner/work/aeterna-mf-engine/aeterna-mf-engine/outputs/latest
 tier                             A  A+    B   C  Unrated
 category                                                
@@ -74,7 +74,7 @@ Floating Rate                    5   2   10   7        0
 Focused                          3   4   31  16        2
 Gilt                             6   6   18  12        4
 Gilt 10-Year Constant Maturity   4   0    5   1        0
-Index Fund                      85  43  259  64       93
+Index Fund                      85  43  259  64       95
 Large & Mid Cap                  3   7   28  14       22
 Large Cap                        0   8   34  18        8
 Liquid                          14   7   28  19       17

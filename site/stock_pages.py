@@ -10,8 +10,8 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-TOP_N = 100          # the test: the 100 stocks held in the most money across funds
-MIN_FUNDS = 20       # and held by at least this many schemes (fewer makes a thin page)
+TOP_N = 500          # Nov 2026: the 100-stock test brought search clicks ("swiggy mutual fund holding"), so widened
+MIN_FUNDS = 15       # and held by at least this many schemes (fewer makes a thin page)
 TABLE_ROWS = 40      # holders listed in full on a page, by value; the rest are counted
 BASE = "/mutual-funds/holding/"
 

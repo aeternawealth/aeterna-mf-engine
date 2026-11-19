@@ -464,13 +464,14 @@ def crumbs(items):
 
 CSS_VER = ""
 RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use one copy
+SEARCH_TAG = ""   # the on-page search script, set in main() with a content version
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
 HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll('.dd')),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
              "function shut(x){x.classList.remove('open');var y=x.querySelector('.ddbtn');if(y)y.setAttribute('aria-expanded','false')}"
              "dd.forEach(function(d){var b=d.querySelector('.ddbtn');if(b)b.onclick=function(e){dd.forEach(function(x){if(x!==d)shut(x)});var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);e.stopPropagation()}});"
              "document.addEventListener('click',function(e){dd.forEach(function(d){if(!d.contains(e.target))shut(d)})});"
              "if(m)m.onclick=function(){var o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};"
-             "var h=(document.querySelector('a.brand')||{}).href||'/',go=function(){location.href=h.split('#')[0]+'?q='};var s=document.getElementById('srchBtn');if(s)s.onclick=go;"
+             "var h=(document.querySelector('a.brand')||{}).href||'/',go=function(){if(window.aeSearch)window.aeSearch();else location.href=h.split('#')[0]+'?q='};var s=document.getElementById('srchBtn');if(s)s.onclick=go;"
              "document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea|select/i.test(document.activeElement.tagName)){e.preventDefault();go()}});"
              "var ac=document.getElementById('addCmp');if(ac)ac.onclick=function(){var c=[];try{c=JSON.parse(localStorage.getItem('aw_cmp')||'[]')}catch(e){}var k=+ac.getAttribute('data-code');if(c.indexOf(k)<0)c.push(k);try{localStorage.setItem('aw_cmp',JSON.stringify(c.slice(-4)))}catch(e){}location.href='/#compare'}})();</script>")
 
@@ -515,7 +516,7 @@ def page(title, desc, path, body, ld=()):
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
-            f'{HEADER}<main>{body}{review_cta(path)}</main>{footer()}{WA_FLOAT}{HEADER_JS}{MOTION_JS}</body></html>\n')
+            f'{HEADER}<main>{body}{review_cta(path)}</main>{footer()}{WA_FLOAT}{SEARCH_TAG}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
 REVIEW_PATHS = ("/mutual-funds/", "/compare/", "/learn/")
@@ -811,6 +812,11 @@ def main():
     global FC_VER, SERIES_FILE, BENCH_KEYS
     fc = (S / "fundchart.js").read_text(encoding="utf-8")
     FC_VER = hashlib.sha1(fc.encode("utf-8")).hexdigest()[:10]
+    global SEARCH_TAG   # on-page search for every static page (the index, search.json, is written after the stock pages)
+    _sj = (S / "search_static.js").read_text(encoding="utf-8")
+    (DIST / "assets").mkdir(parents=True, exist_ok=True)
+    (DIST / "assets" / "search.js").write_text(_sj, encoding="utf-8")
+    SEARCH_TAG = f'<script src="/assets/search.js?v={hashlib.sha1(_sj.encode("utf-8")).hexdigest()[:10]}" defer></script>'
     (DIST / "assets" / "fundchart.js").write_text(fc, encoding="utf-8")
     SERIES_FILE, BENCH_KEYS = {}, set()      # fund code -> the /data/series file holding its month-end NAVs
     for sp in sorted((S / "data" / "series").glob("*.json")):
@@ -909,6 +915,13 @@ def main():
     TR.trust_pages(Bm, funds, urls)
     import stock_pages as SP      # "mutual funds holding <stock>": the top 100 stocks (a test, Nov 2026)
     stock_url = SP.build(Bm, funds, hold, urls, as_of)
+    # on-page search for static pages: funds, stocks and pages in one light file (the app has its own search)
+    pages = json.loads(re.search(r"const PAGES=(\[.*?\]);", app).group(1).replace("'", '"'))
+    pages = [[n, ("/" + h if h.startswith("#") else h), d] for n, h, d in pages]
+    stocks = json.loads((DIST / "data" / "stocks.json").read_text(encoding="utf-8")) if (DIST / "data" / "stocks.json").exists() else []
+    srch = {"f": [[f["name"], f.get("plan_type") or "", f.get("category") or "", f.get("amc") or "", f.get("tier") or "Unrated", f["_url"],
+                   round(f["aum_cr"]) if isinstance(f.get("aum_cr"), (int, float)) else 0] for f in funds], "s": stocks, "p": pages}
+    (DIST / "data" / "search.json").write_text(json.dumps(srch, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     def hold_name(t):   # a holding on a fund page, tidied, linked to its "funds holding this stock" page when there is one
         nm = SP.clean_name(re.sub(r"(?i)^\s*(eq|equity)\s*[-:]\s*", "", str(t[1])))

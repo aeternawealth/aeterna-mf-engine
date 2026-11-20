@@ -502,6 +502,7 @@ def amc_pages(B, funds, urls, as_of):
 # ------------------------------------------------------------------ fund vs fund
 CMP_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra",
             "Dividend Yield", "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation", "Arbitrage"]
+CMP_KEEP = 4         # indexed: pairs among the 4 largest per category (6 a category); the rest stay up but noindex (Nov 2026)
 CMP_TOP = 8          # the largest schemes per category compared pairwise (28 pages a category)
 CMP_INDEX = {}       # index funds are not compared pairwise (Nov 2026); old pages redirect to /mutual-funds/index-fund/
 CMP_INDEX_REMOVED = {"Index: NIFTY 50": 8, "Index: NIFTY NEXT 50": 6}
@@ -568,9 +569,12 @@ def compare_pages(B, funds, hold, urls, as_of):
             groups += [(c, [f for f in D if str(f.get("peer_group")) == g][:n]) for g, n in CMP_INDEX.items()]
         else:
             groups.append((c, D[:CMP_TOP]))
-    pairs = []
+    pairs, keep = [], set()
     for c, D in groups:
         pairs += [(c, a, b) for a, b in combinations(D, 2)]
+        reg = lambda f: (by_pair.get(f.get("pair_key"), {}).get("Regular") or f).get("aum_cr") or 0
+        top = sorted(D, key=lambda f: -reg(f))[:CMP_KEEP]
+        keep |= {(x["pair_key"], y["pair_key"]) for x, y in combinations(top, 2)}
     # every page links to the other comparisons of both its funds
     rel = {}
     for c, a, b in pairs:
@@ -591,7 +595,8 @@ def compare_pages(B, funds, hold, urls, as_of):
                      b.get("bench_label") or (B.iname(b.get("benchmark")) + " TRI" if b.get("benchmark") else "–")),
                     ("Age", f"{B.num(a.get('age_years'), 1)} years", f"{B.num(b.get('age_years'), 1)} years"),
                     (B.aum_label(a) if a.get("aum_asof") == b.get("aum_asof") else "AUM", B.cr(a.get("aum_cr")), B.cr(b.get("aum_cr")))]
-            for plan, X, Y in (("Direct", a, b), ("Regular", A.get("Regular"), Bp.get("Regular"))):
+            ra, rb = A.get("Regular") or a, Bp.get("Regular") or b     # the plans Aeterna distributes lead the page
+            for plan, X, Y in (("Regular", A.get("Regular"), Bp.get("Regular")), ("Direct", a, b)):
                 if not X or not Y:
                     continue
                 rows += [(f"<b>{plan} plan</b>", "", ""), ("Rating", B.tier_badge(X.get("tier")), B.tier_badge(Y.get("tier"))),
@@ -611,11 +616,11 @@ def compare_pages(B, funds, hold, urls, as_of):
                      ("Large / mid / small caps", _mix(a), _mix(b)),
                      ("Largest sector", B.e(a.get("top_sector") or "–"), B.e(b.get("top_sector") or "–"))]
             tbl = "".join(f"<tr><td class='l'>{k}</td><td class='num'>{x if x is not None else '–'}</td><td class='num'>{y if y is not None else '–'}</td></tr>" for k, x, y in rows)
-            r3a, r3b = a.get("ret_3Y"), b.get("ret_3Y")
+            r3a, r3b = ra.get("ret_3Y"), rb.get("ret_3Y")
             summ = []
             if r3a is not None and r3b is not None:
-                hi, lo = (a, b) if r3a >= r3b else (b, a)
-                summ.append(f"Over the last 3 years, {hi['_name']} returned {B.pct(hi['ret_3Y'])} a year against {B.pct(lo['ret_3Y'])} for {lo['_name']} (Direct plans).")
+                hi, lo = (ra, rb) if r3a >= r3b else (rb, ra)
+                summ.append(f"Over the last 3 years, {hi['_name']} returned {B.pct(hi['ret_3Y'])} a year against {B.pct(lo['ret_3Y'])} for {lo['_name']} (Regular plans).")
             ha, hb = a.get("roll3y_hit_rate"), b.get("roll3y_hit_rate")
             if ha is not None and hb is not None and abs(ha - hb) >= 0.05:
                 hi, lo = (a, b) if ha > hb else (b, a)
@@ -630,24 +635,31 @@ def compare_pages(B, funds, hold, urls, as_of):
                 summ.append(f"{big['_name']} leans more to smaller companies ({big['small_pct']:.0f}% in small caps against {sml['small_pct']:.0f}%), so expect bigger swings both ways.")
             if hold.get(a.get("pair_key")) and hold.get(b.get("pair_key")):
                 summ.append(f"They hold {n_common} stocks in common; the portfolio overlap is {ov:.0f}%.")
-            ta, tb = a.get("tier"), b.get("tier")
-            rate_ans = (f"On our track-record ratings (Direct plans), {a['_name']} is rated {ta} and {b['_name']} is rated {tb}, each against its own category. "
+            ta, tb = ra.get("tier"), rb.get("tier")
+            rate_ans = (f"On our track-record ratings (Regular plans), {a['_name']} is rated {ta} and {b['_name']} is rated {tb}, each against its own category. "
                         "Ratings describe the record so far and are not a forecast; which suits you depends on your goal and the funds you already hold.") if ta and tb else ""
             faq = [(f"{a['_name']} or {b['_name']}: which is better?", rate_ans or "Neither is better for everyone; see the table and how each fits your portfolio."),
                    (f"{a['_name']} or {b['_name']}: which has done better?", " ".join(summ[:1]) or "See the table for returns over each period."),
                    (f"How much do {a['_name']} and {b['_name']} overlap?", summ[-1] if hold.get(a.get("pair_key")) and hold.get(b.get("pair_key")) else "Holdings for one of these schemes are not available yet."),
                    ("Should I hold both?", "Two funds with a high overlap add little diversification. Check how they fit your goal and the rest of your portfolio; we can help.")]
-            desc = (f"{a['_name']} vs {b['_name']}: returns, rating, expense ratio, risk and portfolio overlap compared, Direct and Regular plans. " + " ".join(summ))[:300]
+            import compare_extra as CX
+            SU = getattr(B, "STOCK_URL", {}) or {}
+            name_link = lambda nm, isin=None: (f"<a href='{SU[isin]}'>{B.e(nm)}</a>" if isin in SU else B.e(nm))
+            extra, xfacts = CX.sections(B, a, b, ra, rb, hold, name_link)
+            desc = (f"{a['_name']} vs {b['_name']}: year-by-year returns, how each did in market falls, what each owns, risk and rating compared. " + " ".join(summ))[:300]
             body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{B.slug(c)}/">{B.e(c)}</a> › Compare</nav>
 <h1 style="font-size:clamp(28px,4vw,40px);margin-top:14px">{B.e(a['_name'])} vs {B.e(b['_name'])}</h1>
 <p class="lede" style="margin-top:12px">{B.e(' '.join(summ))} Data as of {B.dmy(as_of)}.</p>
 <div class="tablewrap" style="margin-top:20px"><table class="cmp"><thead><tr><th class="l"></th><th><a href="{a['_url']}">{B.e(a['_name'])}</a></th><th><a href="{b['_url']}">{B.e(b['_name'])}</a></th></tr></thead><tbody>{tbl}</tbody></table></div>
 <div class="row" style="margin-top:16px"><a class="btn primary" href="/#compare">Compare any funds interactively</a><a class="btn" href="{B.wa_link(f"Hello Aeterna, I'm comparing {a['_name']} and {b['_name']} and would like help choosing.")}" target="_blank" rel="noopener">Ask us which fits you</a></div>
+{extra}
 {faq_html(B, faq)}
 {_related(B, a, b, rel, path, c)}
 <p class="note" style="margin-top:28px">Past performance does not guarantee future returns. This comparison is not a recommendation to buy or sell either fund.</p></div></section>"""
-            B.write(path, B.page(f"{a['_name']} vs {b['_name']}: returns, risk, cost and overlap | Aeterna Wealth", desc, path, body,
+            if (a["pair_key"], b["pair_key"]) not in keep and (b["pair_key"], a["pair_key"]) not in keep:
+                B.NOINDEX_PATHS.add(path)     # kept for visitors, out of Google: only the most-compared pairs are indexed
+            B.write(path, B.page(f"{a['_name']} vs {b['_name']}: returns, falls, holdings and overlap | Aeterna Wealth", desc, path, body,
                                  (faq_ld(faq), B.crumbs([("Mutual funds", "/mutual-funds/"), (c, f"/mutual-funds/{B.slug(c)}/"), ("Compare", path)]))))
             urls.append((path, "weekly", "0.6"))
             made[(a["pair_key"], b["pair_key"])] = path

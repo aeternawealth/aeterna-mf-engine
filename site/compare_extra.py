@@ -237,3 +237,196 @@ def sections(B, a, b, ra, rb, hold, name_fn, stock_url=None):
                      "Which one fits depends on your goal and what you already hold, which is what our free portfolio review looks at.</p>")
     css = "<style>.cx-h{font-size:24px;margin-top:34px}.cx-ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}.cx-ul li{font-size:14.5px}</style>"
     return (css + "".join(out)) if out else "", facts
+
+
+# ------------------------------------------------------------------ fund pages and category pages (Nov 2026)
+_PEER_YEARS = {}
+
+
+def peer_years(B, funds, category, plan):
+    """{code: {year label: return}} for every plan of this category and plan type with a NAV series (cached)"""
+    k = (category, plan)
+    if k not in _PEER_YEARS:
+        out = {}
+        for g in funds:
+            if g.get("category") == category and g.get("plan_type") == plan:
+                m, v = nav_series(B, g["code"])
+                if m:
+                    out[g["code"]] = calendar_years(m, v)
+        _PEER_YEARS[k] = out
+    return _PEER_YEARS[k]
+
+
+def _median(xs):
+    xs = sorted(x for x in xs if x is not None)
+    if not xs:
+        return None
+    n = len(xs)
+    return xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
+
+
+_FALL = {}
+
+
+def _fall_col(B, funds, category, plan, pk, lo):
+    k = (category, plan, pk, lo)
+    if k not in _FALL:
+        col = []
+        for g in funds:
+            if g.get("category") == category and g.get("plan_type") == plan:
+                gm, gv = nav_series(B, g["code"])
+                x = _ret(gm, gv, pk, lo) if gm else None
+                if x is not None:
+                    col.append(x)
+        _FALL[k] = col
+    return _FALL[k]
+
+
+def fund_sections(B, f, funds):
+    """'Year by year' and 'In the market's falls' for one fund page: the fund, the category median, its rank that
+    year among plans of the same type, and its index."""
+    if B.asset_class(f["category"]) not in ("Equity", "Hybrid") or f["category"] == "Arbitrage":
+        return ""     # debt and arbitrage years differ by fractions of a percent: noise, not information
+    m, v = nav_series(B, f["code"])
+    if not m:
+        return ""
+    e = B.e
+    nm = f["_name"].rstrip(" -")
+    peers = peer_years(B, funds, f.get("category"), f.get("plan_type"))
+    mine = calendar_years(m, v)
+    bm, tri = bench_series(B)
+    bk = f.get("benchmark") if f.get("benchmark") in (tri or {}) else None
+    yi = calendar_years(bm, tri.get(bk)) if bk else {}
+    rows, ahead, n_cmp = [], 0, 0
+    for y, r in mine.items():
+        if r is None:
+            continue
+        col = [p.get(y) for p in peers.values() if p.get(y) is not None]
+        med = _median(col)
+        rank = 1 + sum(1 for x in col if x > r) if col else None
+        if med is not None:
+            n_cmp += 1
+            ahead += r > med
+        rows.append(f"<tr><td class='l'>{y}</td><td class='num'>{_pct(r)}</td><td class='num'>{_pct(med)}</td>"
+                    f"<td class='num'>{(str(rank) + ' of ' + str(len(col))) if rank else '–'}</td>"
+                    + (f"<td class='num muted'>{_pct(yi.get(y))}</td>" if yi else "") + "</tr>")
+    if len(rows) < 2:
+        return ""
+    lc = f["category"] if f["category"] == "ELSS" else f["category"].lower()
+    out = (f"<h2 style='margin-top:36px;font-size:26px'>Year by year</h2>"
+           f"<p style='margin-top:8px'>{e(nm)} beat the median {e(lc)} fund ({e(f.get('plan_type') or '')} plans) in {ahead} of the {n_cmp} calendar years shown. "
+           "Returns from month-end NAVs; the rank counts every plan of the same type in the category that year.</p>"
+           "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Year</th><th>This fund</th><th>Category median</th><th>Rank</th>"
+           + (f"<th>{e(B.iname(bk))} TRI</th>" if yi else "") + f"</tr></thead><tbody>{''.join(rows)}</tbody></table></div>")
+    yp = getattr(B, "MADE_YEARS", {}).get("Value / Contra" if f["category"] in ("Value", "Contra") else f["category"])
+    if yp:
+        out += f"<p style='margin-top:8px'><a href='{yp}'>Every {e(lc)} fund, year by year</a></p>"
+    # market falls: equity and hybrid funds only
+    if B.asset_class(f["category"]) in ("Equity", "Hybrid") and f["category"] != "Arbitrage":
+        frows = []
+        for pk, lo, dd in market_falls(B):
+            r = _ret(m, v, pk, lo)
+            if r is None:
+                continue
+            col = _fall_col(B, funds, f.get("category"), f.get("plan_type"), pk, lo)
+            rank = 1 + sum(1 for x in col if x > r)
+            p12 = _plus12(bm or [], lo)
+            after = _ret(m, v, lo, p12) if p12 else None
+            frows.append(f"<tr><td class='l'>{_mon(pk)} to {_mon(lo)}<small class='muted' style='display:block'>Nifty 500 {_pct(dd, 0)}</small></td>"
+                         f"<td class='num'>{_pct(r)}</td><td class='num'>{rank} of {len(col)}</td><td class='num'>{_pct(after)}</td></tr>")
+        if frows:
+            out += ("<h2 style='margin-top:36px;font-size:26px'>In the market's falls</h2>"
+                    "<p style='margin-top:8px'>Every fall of 10% or more in the Nifty 500 since 2018, from the month-end high to the month-end low: "
+                    "how much this fund lost, where that placed it in its category (1 = lost least), and what it made in the 12 months after the low.</p>"
+                    "<div class='tablewrap' style='margin-top:12px'><table><thead><tr><th class='l'>Market fall</th><th>This fund</th><th>Rank in the fall</th><th>Next 12 months</th></tr></thead>"
+                    f"<tbody>{''.join(frows)}</tbody></table></div>")
+    return out
+
+
+YEAR_CATS = ["Large Cap", "Mid Cap", "Small Cap", "Large & Mid Cap", "Multi Cap", "Flexi Cap", "Focused", "ELSS", "Value / Contra",
+             "Dividend Yield", "Aggressive Hybrid", "Balanced Advantage", "Multi Asset Allocation"]
+
+
+def year_path(B, c):
+    return f"/mutual-funds/{B.slug(c)}/year-by-year/"
+
+
+def category_year_pages(B, funds, urls, as_of):
+    """/mutual-funds/<category>/year-by-year/: every Regular plan's calendar-year returns, the five highest each year,
+    and each fund in the market's falls since 2018. Facts only: the highest return in a year is not advice."""
+    e = B.e
+    made = {}
+    falls = market_falls(B)
+    bm, tri = bench_series(B)
+    for c in YEAR_CATS:
+        cats = ("Value / Contra", "Value", "Contra") if c == "Value / Contra" else (c,)
+        F = [f for f in funds if f.get("category") in cats and f.get("plan_type") == "Regular"]
+        rows = []
+        for f in F:
+            m, v = nav_series(B, f["code"])
+            if not m:
+                continue
+            ys = calendar_years(m, v)
+            fl = [(_ret(m, v, pk, lo), _ret(m, v, lo, _plus12(bm or [], lo)) if _plus12(bm or [], lo) else None) for pk, lo, _ in falls]
+            if sum(1 for x in ys.values() if x is not None) >= 2:
+                rows.append((f, ys, fl))
+        if len(rows) < 6:
+            continue
+        years = list(rows[0][1].keys())
+        full = [y for y in years if "so far" not in y]
+        bk = next((f.get("benchmark") for f, _, _ in rows if f.get("benchmark") in (tri or {})), None)
+        yi = calendar_years(bm, tri.get(bk)) if bk else {}
+        last_full = full[-1] if full else years[-1]
+        rows.sort(key=lambda r: -(r[1].get(last_full) if r[1].get(last_full) is not None else -9))
+        lc = c if c == "ELSS" else c.lower()
+        # the five highest each year
+        tops = []
+        for y in reversed(full[-4:]):
+            col = sorted(((r[1].get(y), r[0]) for r in rows if r[1].get(y) is not None), key=lambda x: -x[0])
+            if len(col) < 5:
+                continue
+            med = _median([x for x, _ in col])
+            tops.append(f"<div class='card'><b>{y}</b><span class='muted' style='font-size:13px;display:block'>{len(col)} funds · median {_pct(med)}"
+                        + (f" · {e(B.iname(bk))} TRI {_pct(yi.get(y))}" if yi.get(y) is not None else "") + "</span><ol class='cx-ul'>"
+                        + "".join(f"<li><a href='{f['_url']}'>{e(f['_name'].rstrip(' -'))}</a> <span class='muted'>{_pct(x)}</span></li>" for x, f in col[:5])
+                        + "</ol></div>")
+        head = "".join(f"<th>{y}</th>" for y in years)
+        body_rows = "".join(f"<tr><td class='l'><a href='{f['_url']}'>{e(f['_name'].rstrip(' -'))}</a> {B.tier_badge(f.get('tier'))}</td>"
+                            + "".join(f"<td class='num'>{_pct(ys.get(y))}</td>" for y in years) + "</tr>" for f, ys, _ in rows)
+        idx_row = (f"<tr><td class='l muted'>{e(B.iname(bk))} TRI (index)</td>" + "".join(f"<td class='num muted'>{_pct(yi.get(y))}</td>" for y in years) + "</tr>") if yi else ""
+        # market falls
+        frows = ""
+        if falls and B.asset_class(c) in ("Equity", "Hybrid"):
+            fr = sorted(rows, key=lambda r: -(r[2][-1][0] if r[2][-1][0] is not None else -9))
+            fh = "".join(f"<th>{_mon(pk)} to {_mon(lo)}<small class='muted' style='display:block;font-weight:400'>Nifty 500 {_pct(dd, 0)}</small></th>" for pk, lo, dd in falls)
+            frows = ("<h2 class='cx-h'>In the market's falls</h2><p>How much each fund lost in every fall of 10% or more in the Nifty 500 since 2018 "
+                     "(month-end high to month-end low), and in brackets what it made in the 12 months after the low. Sorted by the most recent fall, smallest loss first.</p>"
+                     f"<div class='tablewrap'><table class='cmp yy'><thead><tr><th class='l'>Fund</th>{fh}</tr></thead><tbody>"
+                     + "".join(f"<tr><td class='l'><a href='{f['_url']}'>{e(f['_name'].rstrip(' -'))}</a></td>"
+                               + "".join(f"<td class='num'>{_pct(a)}<small class='muted' style='display:block'>{('(' + _pct(b) + ')') if b is not None else ''}</small></td>" for a, b in fl)
+                               + "</tr>" for f, _, fl in fr)
+                     + "</tbody></table></div>")
+        path = year_path(B, c)
+        ylast = years[-1]
+        desc = (f"Calendar-year returns of every {lc} fund (Regular plans), {years[0]} to {ylast}: the five highest each year, the category median, "
+                f"the index, and how each fund did in the market's falls since 2018.")
+        intro = (f"Every {lc} fund's return in each calendar year, from month-end NAVs (Regular plans, growth option), sorted by {last_full}. "
+                 "A fund at the top one year is often in the middle the next, which is why our ratings look at the whole record rather than one year.")
+        body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
+<style>.cx-h{{font-size:26px;margin-top:36px}}.cx-ul{{margin:8px 0 0;padding-left:20px;display:grid;gap:4px}}.cx-ul li{{font-size:14.5px}}.yy td.l{{min-width:170px}}</style>
+<nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{B.slug(c)}/">{e(c)}</a> › Year by year</nav>
+<h1 style="font-size:clamp(28px,4vw,42px);margin-top:14px">{e(c)} fund returns, year by year</h1>
+<p class="lede" style="margin-top:12px">{e(intro)} Data to {B.dmy(as_of)}.</p>
+<h2 class="cx-h">The five highest returns each year</h2>
+<div class="grid g2" style="margin-top:12px">{''.join(tops)}</div>
+<h2 class="cx-h">Every fund, every year</h2>
+<div class="tablewrap" style="margin-top:12px"><table class="cmp yy"><thead><tr><th class="l">Fund</th>{head}</tr></thead><tbody>{idx_row}{body_rows}</tbody></table></div>
+{frows}
+<div class="row" style="margin-top:22px"><a class="btn primary" href="/mutual-funds/{B.slug(c)}/">{e(c)} fund ratings</a><a class="btn" href="/invest/portfolio-review/">Free portfolio review</a></div>
+<p class="note" style="margin-top:28px">Past returns do not predict future returns. This page lists facts, not recommendations to buy or sell any fund.</p>
+</div></section>"""
+        B.write(path, B.page(f"{c} fund returns year by year, {years[0]} to {ylast.replace(' so far', '')} | Aeterna Wealth", desc, path, body,
+                             (B.crumbs([("Mutual funds", "/mutual-funds/"), (c, f"/mutual-funds/{B.slug(c)}/"), ("Year by year", path)]),)))
+        urls.append((path, "monthly", "0.7"))
+        made[c] = path
+    return made

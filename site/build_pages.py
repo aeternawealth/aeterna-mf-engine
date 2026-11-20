@@ -699,10 +699,10 @@ def insight_pages(B, ins, urls, as_of):
         urls.append((path, "daily", "0.6"))
         cards.append(f"<a class='card stack' href='{path}' style='gap:8px;text-decoration:none;color:inherit'><div class='big-fig'>{B.e(i['figure'])}</div><b style='font:500 18px/1.3 var(--f-display)'>{B.e(i['title'])}</b><span class='muted' style='font-size:14px'>{B.e(i['text'][:160])}…</span></a>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Indian mutual funds in numbers</h1>
-<p class="lede" style="margin-top:12px">Facts worked out from our own data every weekday: what SIPs have earned, how many funds beat their index, and what costs add up to. Last updated {B.dmy(ins.get('as_of') or as_of)}.</p>
+<p class="lede" style="margin-top:12px">Facts worked out from our own data every weekday: what SIPs have earned, how many funds beat their index, and how often patient investors made money. Last updated {B.dmy(ins.get('as_of') or as_of)}.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""
     B.write("/insights/", B.page("Mutual fund insights: SIP returns, funds vs index, costs | Aeterna Wealth",
-                                 "Data-backed facts on Indian mutual funds, recomputed every weekday: 10-year SIP returns by category, SIPs started at market highs, how many active funds beat their index, and Regular vs Direct costs.",
+                                 "Data-backed facts on Indian mutual funds, recomputed every weekday: 10-year SIP returns by category, SIPs started at market highs, how many active funds beat their index, and how often funds held for 3 years made money.",
                                  "/insights/", body, (B.crumbs([("Insights", "/insights/")]),)))
     urls.append(("/insights/", "daily", "0.8"))
 

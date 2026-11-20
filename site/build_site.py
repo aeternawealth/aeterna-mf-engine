@@ -899,6 +899,9 @@ def main():
     import top_pages as TP
     made_top = TP.build(Bm, by_cat, urls, as_of)
     Bm.MADE_TOP = made_top
+    import stock_pages as SP      # "mutual funds holding <stock>" (before the comparison pages, which link to them)
+    stock_url = SP.build(Bm, funds, hold, urls, as_of)
+    Bm.STOCK_URL = stock_url
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
     made_idx, made_thm = P.group_pages(Bm, funds, urls, as_of)
     P.amc_pages(Bm, funds, urls, as_of)
@@ -913,8 +916,6 @@ def main():
     LP.learn_pages(Bm, funds, hold, ins, urls, as_of)
     import trust_pages as TR      # /about/, /method/, /contact/ as real pages
     TR.trust_pages(Bm, funds, urls)
-    import stock_pages as SP      # "mutual funds holding <stock>": the top 100 stocks (a test, Nov 2026)
-    stock_url = SP.build(Bm, funds, hold, urls, as_of)
     # on-page search for static pages: funds, stocks and pages in one light file (the app has its own search)
     pages = json.loads(re.search(r"const PAGES=(\[.*?\]);", app).group(1).replace("'", '"'))
     pages = [[n, ("/" + h if h.startswith("#") else h), d] for n, h, d in pages]

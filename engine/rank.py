@@ -160,7 +160,9 @@ def compute_metrics(u: pd.DataFrame, navs: dict, tri: pd.DataFrame, as_of: pd.Ti
                 continue
             m = debt_metrics(nav, bser, as_of, rate_days)
             m["bench_type"] = "category median"
-            m.update(horizon_metrics(nav, bser, as_of))
+            # period returns and ranks on the cleaned series too: a face-value change (e.g. UTI Liquid, Rs 4,700 to Rs 470
+            # units in 2026) showed as a -89% one-year return on the site, Nov 2026
+            m.update(horizon_metrics(debt_clean(nav), bser, as_of))
         elif r.category == "Arbitrage":
             if isinstance(r.benchmark, str) and r.benchmark in tri:
                 bser, btype = tri[r.benchmark].dropna(), "TRI"

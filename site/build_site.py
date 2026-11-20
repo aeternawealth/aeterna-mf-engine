@@ -899,10 +899,12 @@ def main():
     import top_pages as TP
     made_top = TP.build(Bm, by_cat, urls, as_of)
     Bm.MADE_TOP = made_top
+    import compare_extra as CX   # year-by-year and market-fall sections (fund and comparison pages)
     import stock_pages as SP      # "mutual funds holding <stock>" (before the comparison pages, which link to them)
     stock_url = SP.build(Bm, funds, hold, urls, as_of)
     Bm.STOCK_URL = stock_url
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
+    Bm.MADE_YEARS = CX.category_year_pages(Bm, funds, urls, as_of)   # /mutual-funds/<category>/year-by-year/
     made_idx, made_thm = P.group_pages(Bm, funds, urls, as_of)
     P.amc_pages(Bm, funds, urls, as_of)
     P.calculator_pages(Bm, urls, P.calc_js(app))
@@ -1103,7 +1105,7 @@ def main():
             if not isinstance(v, (int, float)) or mv is None:
                 continue
             if kind == "ter":
-                word = "cheaper" if v < mv - .005 else "costlier" if v > mv + .005 else "about the same"
+                word = "below the median" if v < mv - .005 else "above the median" if v > mv + .005 else "about the median"   # a plain fact, no verdict (owner, 13 Nov)
                 fv, fm = num(v, 2) + "%", num(mv, 2) + "%"
             else:
                 d = v - mv
@@ -1149,6 +1151,7 @@ def main():
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>
 {cat_html}
+{CX.fund_sections(Bm, f, funds)}
 {liq_html}
 {range_html}
 <div class="grid g2" style="margin-top:36px;align-items:start"><div><h2 style="font-size:26px">Risk</h2><div class="kv" style="margin-top:12px">{risk}</div>{flow_html if risk.count("<div>") <= 4 else ""}</div>
@@ -1235,7 +1238,7 @@ def main():
 <p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
 {gap_html}
 {leaders_story(c, L)}
-<div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a><a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
+<div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a>{f'<a class="btn" href="{Bm.MADE_YEARS[c]}">Returns year by year</a>' if c in getattr(Bm, "MADE_YEARS", {}) else ''}<a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
 {sub}{tabs}
 {(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="/learn/{g}/">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}

@@ -34,6 +34,21 @@ def sig(v, n=6):
     return float(f"{v:.{n}g}")
 
 
+def face_value_clean(nav: pd.Series) -> pd.Series:
+    """Debt NAVs: a one-day move of -40% or +60% is a face-value change (e.g. UTI Liquid, Rs 4,700 to Rs 470 units),
+    not a return. Same rule as engine.metrics.debt_clean, but scaled to today's NAV so the chart ends at the real
+    current price and the history is restated in today's units."""
+    s = nav.dropna()
+    s = s[~s.index.duplicated(keep="last")].sort_index()
+    r = s.pct_change()
+    bad = (r <= -0.4) | (r >= 0.6)
+    if not bad.any():
+        return s
+    r[bad] = 0.0
+    c = (1 + r.fillna(0)).cumprod()
+    return s.iloc[-1] * c / c.iloc[-1]
+
+
 def month_end(series: pd.Series, months: pd.PeriodIndex) -> list:
     s = series.dropna()
     s = s[~s.index.duplicated(keep="last")].sort_index()
@@ -216,6 +231,8 @@ def main():
         if not p.exists():
             continue
         d = pd.read_csv(p, parse_dates=["date"]).set_index("date")["nav"]
+        if f.get("asset_class") == "Debt":
+            d = face_value_clean(d)
         by_cat.setdefault(f["category"], {})[str(f["code"])] = month_end(d, months)
         d = d.dropna().sort_index()
         last[str(f["code"])] = [str(d.index[-1].date()), sig(d.iloc[-1])]

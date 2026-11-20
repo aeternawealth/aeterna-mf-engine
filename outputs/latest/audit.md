@@ -1,4 +1,4 @@
-# Audit 2026-11-19 04:27 UTC: 0 to fix, 2 to confirm
+# Audit 2026-11-20 04:21 UTC: 0 to fix, 2 to confirm
 CHECK D2 samco large cap fund: large 70 (needs >=80) (unclassified 9.4%), portfolio 2026-10
 CHECK D4 ELSS: no A+ fund this month (allowed by the score rule; the category table should say so)
 INFO D1 Nippon India Quant Fund (Direct, Sectoral/Thematic) is #1 with score 74.6: A, as A+ needs 75

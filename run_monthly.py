@@ -129,9 +129,20 @@ def main():
         if len(fresh):
             log(f"  new categories rated today (not in the monthly snapshot): {', '.join(sorted(fresh.category.unique()))}")
         out = out[out["category"].isin(rated_cats)]
+        # a fund missing from the snapshot in a rated category (e.g. a scheme AMFI had left unlabelled, added 23 Nov
+        # 2026) keeps the rating computed today against today's peer group; every snapshot fund keeps its monthly
+        # rating, so nobody else moves until the next monthly run
+        newbie = out[~out["code"].isin(s0["code"])][[c for c in keep if c in out.columns]].copy()
         out = out.drop(columns=[c for c in keep if c != "code" and c in out.columns]).merge(s0, on="code", how="left")
+        if len(newbie):
+            nb = newbie.set_index("code")
+            m = out["code"].isin(nb.index)
+            for c in nb.columns:
+                if c in out.columns:
+                    out[c] = out["code"].map(nb[c]).where(m, out[c])
+            log(f"  {int(m.sum())} plans not in the monthly snapshot rated today (interim, until the next monthly run)")
         out["tier"] = out["tier"].fillna("Unrated")
-        out["flags"] = out["flags"].map(lambda f: f.split(", ") if isinstance(f, str) and f else [])
+        out["flags"] = out["flags"].map(lambda f: f if isinstance(f, list) else f.split(", ") if isinstance(f, str) and f else [])
         out = pd.concat([out, fresh], ignore_index=True)
     elif not a.daily:
         o = out[[c for c in keep if c in out.columns]].copy()

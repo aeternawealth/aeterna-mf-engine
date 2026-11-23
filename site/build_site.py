@@ -464,6 +464,7 @@ def crumbs(items):
 
 CSS_VER = ""
 RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use one copy
+MOVED = {}   # old fund address -> new, for redirects (site/moved_funds.json)
 SEARCH_TAG = ""   # the on-page search script, set in main() with a content version
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
 HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll('.dd')),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
@@ -842,7 +843,20 @@ def main():
     (DIST / "data").mkdir(parents=True, exist_ok=True)
     if (S / "model_backtest.json").exists():   # the per-category test shown on the Method page
         shutil.copy(S / "model_backtest.json", DIST / "data" / "model-backtest.json")
-    (DIST / "data" / "fund-urls.json").write_text(json.dumps({str(f["code"]): f["_url"] for f in funds}, separators=(",", ":")), encoding="utf-8")
+    # a fund whose address changed since the last build (a tidied or corrected name) gets a permanent redirect from the
+    # old address, so links and Google rankings follow it; the map is kept across builds in site/moved_funds.json
+    global MOVED
+    mv_p = S / "moved_funds.json"
+    MOVED = json.loads(mv_p.read_text(encoding="utf-8")) if mv_p.exists() else {}
+    prev_p = DIST / "data" / "fund-urls.json"
+    prev = json.loads(prev_p.read_text(encoding="utf-8")) if prev_p.exists() else {}
+    now = {str(f["code"]): f["_url"] for f in funds}
+    for c, old_u in prev.items():
+        if c in now and now[c] != old_u:
+            MOVED[old_u] = now[c]
+    MOVED = {a: (now.get(next((c for c, u in now.items() if u == b), ""), b)) for a, b in MOVED.items() if a not in now.values()}
+    mv_p.write_text(json.dumps(MOVED, indent=1, sort_keys=True), encoding="utf-8")
+    (DIST / "data" / "fund-urls.json").write_text(json.dumps(now, separators=(",", ":")), encoding="utf-8")
     # portfolio check: a light list of every fund for the /portfolio-check/ page
     chk = [[f["code"], f["name"], f.get("plan_type") or "", f.get("category") or "", f.get("amc") or "", f.get("tier") or "Unrated",
              f.get("peer_rank"), f.get("peer_count"), f["_url"], 1 if "mandate_breach" in str(f.get("flags") or "") else 0] for f in funds]
@@ -1410,6 +1424,8 @@ def main():
            "/taxation-services/": "/invest/tax-planning/", "/the-magic-of-compounding-let-your-money-work-for-you/": "/calculators/sip/",
            "/mitigating-short-term-market-volatility/": "/insights/", "/tax-efficient-strategies-for-long-term-growth/": "/invest/tax-planning/",
            "/category/blog/": "/insights/", "/wp-sitemap.xml": "/sitemap.xml", "/sitemap_index.xml": "/sitemap.xml"}
+    for a, b in MOVED.items():
+        old.setdefault(a, b)
     import build_pages as BPG
     for pth in BPG.removed_index_compare_paths(Bm, funds):
         old.setdefault(pth, "/mutual-funds/index-fund/")

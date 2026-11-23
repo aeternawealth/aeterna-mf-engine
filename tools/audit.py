@@ -19,6 +19,14 @@ Page checks (site/dist, served locally, phone 390px and desktop 1280px, dark and
   P3  overlapping chart labels (SVG text boxes that intersect)
   P4  'nan', 'NaN', 'undefined', 'None' or '[object' in visible text
   P5  JavaScript errors in the console
+Data completeness and sanity (added 23 Nov 2026, after 20 schemes were found missing and UTI Liquid showed -89%):
+  C1  a live AMFI scheme in a category we cover is missing from the site (debt index / target-maturity funds excluded)
+  C2  an impossible return (a liquid fund down, an equity fund down 50% in a year): FAIL
+  C3  a fund with enough history (3 years; 1 for index funds) shown as not rated
+  C4  a portfolio matched to a scheme of a different category (a Midcap sheet on a Flexi Cap fund): FAIL
+  C5  one scheme split in two on the site (Direct and Regular under different names)
+  C6  a fund page title in capitals or with stray characters
+  C7  a large active fund (Rs 3,000 cr+) with no portfolio, or one two months old
 """
 from __future__ import annotations
 
@@ -91,6 +99,99 @@ def data_checks():
         st = r[r.gate.astype(str).str.startswith("stale") & r.tier.isin(["A+", "A", "B", "C"])]
         if len(st):
             say("FAIL", "D6", f"{len(st)} funds with a stale NAV still carry a rating")
+
+
+def completeness_checks():
+    fp = ROOT / "site" / "data" / "funds.json"
+    if not fp.exists():
+        return
+    funds = json.loads(fp.read_text(encoding="utf-8"))
+    sys.path.insert(0, str(ROOT))
+    # C1
+    try:
+        from engine import ingest
+        nav_t = (ROOT / "data" / "raw" / "NAVAll.txt").read_text(encoding="utf-8", errors="replace")
+        mst = ROOT / "data" / "raw" / "SchemeData.csv"
+        nav = ingest.fill_plan_option(ingest.parse_navall(nav_t), mst.read_text(encoding="utf-8") if mst.exists() else "")
+        end = nav["nav_date"].max()
+        g = nav[nav["category"].notna() & nav["option"].str.contains("growth", case=False)
+                & ~nav["option"].str.contains("idcw|dividend|bonus", case=False) & (nav["nav_date"] >= end - pd.Timedelta(days=10))]
+        g = g[~g["name"].str.contains(r"\bETF\b|fund of fund|FOF|segregat|bonus|unclaimed|institutional|retail|plan [a-c]\b|\bBeES\b", case=False, regex=True)]
+        g = g[~g["name"].str.contains(r"SDL|IBX|gilt|g-sec|gsec|PSU|bond|CPSE|AAA|T-?Bill|debt|crisil|treasury|maturity|target|\b20[2-4][0-9]\b", case=False, regex=True)
+              | ~g["category"].eq("Index Fund")]
+        g = g[g["category"] != "Debt Sectoral"]
+        key = lambda a, n: (str(a).lower(), re.sub(r"[^a-z0-9]+", " ", re.sub(r"(?i)\b(direct|regular)\s*plan\b|\bgrowth( option| plan)?\b|\bcash option\b", "", str(n)).lower()).strip())
+        have = {(key(f.get("amc"), f["name"]), f["plan_type"]) for f in funds} | {int(f["code"]) for f in funds}
+        miss = sorted({f"{r.name} ({'Direct' if 'direct' in str(r.plan).lower() else 'Regular'}, {r.category})" for r in g.itertuples()
+                       if r.code not in have and (key(r.amc, r.name), "Direct" if "direct" in str(r.plan).lower() else "Regular") not in have})
+        if miss:
+            say("CHECK", "C1", f"{len(miss)} live AMFI plans in categories we cover are not on the site, e.g. {'; '.join(miss[:6])}")
+        else:
+            say("INFO", "C1", f"every live AMFI plan in the categories we cover is on the site ({len(funds)} plans)")
+    except Exception as e:
+        say("CHECK", "C1", f"completeness check could not run: {type(e).__name__}: {str(e)[:120]}")
+    # C2
+    cash = {"Liquid", "Overnight", "Money Market", "Arbitrage", "Ultra Short Term"}
+    odd = []
+    for f in funds:
+        for k, lo, hi in (("ret_6M", -.45, 1.2), ("ret_1Y", -.5, 1.5), ("ret_3Y", -.35, .9), ("ret_5Y", -.3, .8)):
+            v = f.get(k)
+            if isinstance(v, (int, float)) and (v < lo or v > hi or (f.get("category") in cash and k != "ret_6M" and not 0 <= v <= .15)):
+                odd.append(f"{f['name']} ({f['plan_type']}) {k[4:]} {v * 100:.1f}%")
+    for o in odd[:8]:
+        say("FAIL", "C2", f"impossible-looking return: {o}")
+    # C3
+    unr = [f for f in funds if f.get("tier") in (None, "Unrated") and (f.get("gate") in (None, "", "ok"))
+           and (f.get("age_years") or 0) >= (1 if f.get("category") == "Index Fund" else 3)]
+    if unr:
+        say("CHECK", "C3", f"{len(unr)} plans with enough history shown as not rated, e.g. " + "; ".join(f"{f['name']} ({f['plan_type']})" for f in unr[:6]))
+    # C4
+    hm = sorted(p.name for p in (ROOT / "data" / "holdings").glob("20??-??") if (p / "_mapping_report.csv").exists())
+    if hm:
+        from engine import holdings as H
+        mr = pd.read_csv(ROOT / "data" / "holdings" / hm[-1] / "_mapping_report.csv").dropna(subset=["pair_key"])
+        win = mr.sort_values("score", ascending=False).drop_duplicates("pair_key")
+        for x in win.itertuples():
+            a, b = H._cat_words(str(x.title)), H._cat_words(x.pair_key.split("|", 1)[1])
+            if a and b and a != b and x.score < 1:
+                say("FAIL", "C4", f"portfolio '{x.title}' ({x.file}) is shown on {x.pair_key.split('|')[1]}: different category")
+    # C5
+    plans = {}
+    for f in funds:
+        plans.setdefault((f.get("amc"), f.get("pair_key")), set()).add(f["plan_type"])
+    one = [k for k, v in plans.items() if len(v) == 1]
+    norm = lambda k: re.sub(r"\b(cash|option|plan)\b|[^a-z0-9]+", "", str(k[1]).split("|")[-1])
+    seen = {}
+    for k in one:
+        seen.setdefault((k[0], norm(k)), []).append(k[1])
+    for (a, _), v in seen.items():
+        if len(v) > 1:
+            say("CHECK", "C5", f"one scheme shown as two funds: {' / '.join(x.split('|')[-1] for x in v)}")
+    # C6
+    bad = set()
+    for p in (DIST / "mutual-funds").glob("*/*/index.html") if DIST.exists() else []:
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", p.read_text(encoding="utf-8", errors="replace"), re.S)
+        t = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
+        if t and (re.search(r"\b[A-Z]{3,}\s+[A-Z]{3,}\s+[A-Z]{3,}", t) and not re.search(r"[a-z]", t.split("(")[0])
+                  or re.search(r"\s{2,}|[-.]\s*\(|[-.]$", t)):
+            bad.add(t)
+    if bad:
+        say("CHECK", "C6", f"{len(bad)} fund page titles in capitals or with stray characters, e.g. {' | '.join(sorted(bad)[:4])}")
+    # C7
+    hold = {}
+    hp = ROOT / "site" / "data" / "holdings.json"
+    if hp.exists():
+        hold = json.loads(hp.read_text(encoding="utf-8"))
+    lead = max((f.get("holdings_month") or "") for f in funds)
+    big = [f for f in funds if f.get("plan_type") == "Regular" and f.get("asset_class") == "Equity" and f.get("category") != "Index Fund"
+           and (f.get("aum_cr") or 0) >= 3000]
+    none_ = [f["name"] for f in big if f.get("pair_key") not in hold]
+    old = [f["name"] for f in big if f.get("pair_key") in hold and f.get("holdings_month") and lead
+           and (pd.Period(lead, "M") - pd.Period(f["holdings_month"], "M")).n >= 2]
+    if none_:
+        say("CHECK", "C7", f"{len(none_)} large active funds have no portfolio, e.g. {'; '.join(none_[:6])}")
+    if old:
+        say("CHECK", "C7", f"{len(old)} large active funds show a portfolio two or more months old, e.g. {'; '.join(old[:4])}")
 
 
 PAGE_JS = r"""async () => {
@@ -204,6 +305,7 @@ def history_checks():
 
 def main():
     data_checks()
+    completeness_checks()
     history_checks()
     if "--no-browser" not in sys.argv and DIST.exists():
         page_checks()

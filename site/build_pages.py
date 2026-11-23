@@ -17,6 +17,11 @@ def nice(name):
     mixed-case names are fixed too; real acronyms stay)."""
     if not name:
         return name
+    # stray characters from AMFI's file: 'UTI - Flexi Cap Fund.', 'Bandhan Gilt   Fund', 'ICICI Prudential Liquid Fund -'
+    name = re.sub(r"\s{2,}", " ", name).strip()
+    name = re.sub(r"[\s.\-–]+$", "", name)
+    name = re.sub(r"^(UTI|uti)\s*-\s*", "UTI ", name)
+    name = re.sub(r"(?i)[\s-]*\bcash option\b", "", name).strip()
     if not name.isupper():
         return " ".join(NICE_WORD.get(w, w.capitalize() if (w.isalpha() and w.isupper() and len(w) >= 5 and w not in ACR) else w)
                         for w in name.split(" "))

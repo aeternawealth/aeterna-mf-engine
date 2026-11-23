@@ -209,6 +209,25 @@ _GUARD = ["arbitrage", "hybrid", "balanced", "savings", "debt", "liquid", "etf",
           "fund of fund", "fof", "gold", "silver", "retirement", "children", "bond", "gilt", "income", "money market"]
 
 
+def _cat_words(s: str) -> set:
+    """The SEBI-category words in a scheme name or sheet title. Two names that carry different ones are different
+    schemes, however similar the rest (Nov 2026: 'Motilal Oswal Midcap Fund' scored 0.87 against 'Motilal Oswal
+    Flexi Cap Fund'; 'HSBC Small Cap Fund' 0.84 against 'HSBC Multi Cap Fund')."""
+    t = " " + re.sub(r"[^a-z0-9&]+", " ", (s or "").lower()) + " "
+    for a_, b_ in (("midcap", "mid cap"), ("smallcap", "small cap"), ("largecap", "large cap"), ("flexicap", "flexi cap"),
+                   ("multicap", "multi cap"), ("tax saver", "elss"), ("taxsaver", "elss")):
+        t = t.replace(a_, b_)
+    out = set()
+    if re.search(r" large (and |& ?)?mid", t):
+        out.add("large&mid")
+        t = re.sub(r" large (and |& ?)?mid( cap)?", " ", t)
+    for w in ("large cap", "mid cap", "small cap", "multi cap", "flexi cap", "focused", "value", "contra", "elss",
+              "dividend yield", "index"):
+        if f" {w} " in t:
+            out.add(w)
+    return out
+
+
 def map_to_schemes(parsed, universe: pd.DataFrame, cutoff=0.80) -> pd.DataFrame:
     """Match each portfolio to a pair_key, searching only within the AMC the file came from."""
     base = universe.drop_duplicates("pair_key")[["pair_key", "name", "amc"]].copy()
@@ -249,6 +268,8 @@ def map_to_schemes(parsed, universe: pd.DataFrame, cutoff=0.80) -> pd.DataFrame:
             tl = (best[2] or "").lower()
             nm = base.loc[base.pair_key == best[1], "name"].iloc[0].lower()
             ok = not any(w in tl and w not in nm for w in _GUARD)
+            ct, cn = _cat_words(tl), _cat_words(nm)
+            ok = ok and not (ct and cn and ct != cn)      # a Midcap sheet never lands on a Flexi Cap fund
         rows.append({"title": best[2] or (cands[0] if cands else ""), "file": fname, "amc": amc,
                      "score": round(best[0], 2), "pair_key": best[1] if ok else None, "holdings": df})
     out = pd.DataFrame(rows)

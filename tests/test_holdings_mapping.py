@@ -56,3 +56,31 @@ def test_folder_to_fund_house():
     assert f("Zerodha-Mutual-Fund") == "Zerodha CASE Mutual Fund"
     assert f("360-ONE-Mutual-Fund") == "360 ONE Mutual Fund"
     assert f("JM-Financial-Mutual-Fund") == "JM Financial Mutual Fund"
+
+
+MO = pd.DataFrame([
+    {"pair_key": "motilal oswal mutual fund|motilal oswal flexi cap fund", "name": "Motilal Oswal Flexi Cap Fund", "amc": "Motilal Oswal Mutual Fund"},
+    {"pair_key": "motilal oswal mutual fund|motilal oswal nifty midcap 150 index fund", "name": "Motilal Oswal Nifty Midcap 150 Index Fund", "amc": "Motilal Oswal Mutual Fund"},
+    {"pair_key": "hsbc mutual fund|hsbc multi cap fund", "name": "HSBC Multi Cap Fund", "amc": "HSBC Mutual Fund"},
+])
+
+
+def test_category_words_block_lookalike_schemes():
+    # Nov 2026: with the scheme itself missing from the universe, these sheets scored 0.84-0.89 against a sibling
+    parsed = [(["Motilal Oswal Midcap Fund"], DF, "Scheme_Portfolio_Details_October_2026.xlsx", "Motilal-Oswal-Mutual-Fund"),
+              (["MOTILAL OSWAL LARGE CAP FUND"], DF, "Scheme_Portfolio_Details_October_2026.xlsx", "Motilal-Oswal-Mutual-Fund"),
+              (["hsbc small cap fund"], DF, "a.xlsx", "HSBC-Mutual-Fund"),
+              (["HSBC Multi Cap Fund"], DF, "b.xlsx", "HSBC-Mutual-Fund")]
+    m = H.map_to_schemes(parsed, MO).set_index("title")["pair_key"]
+    assert pd.isna(m["Motilal Oswal Midcap Fund"])          # not the Flexi Cap fund, not the Midcap 150 index fund
+    assert pd.isna(m["MOTILAL OSWAL LARGE CAP FUND"])
+    assert pd.isna(m["hsbc small cap fund"])
+    assert m["HSBC Multi Cap Fund"] == "hsbc mutual fund|hsbc multi cap fund"
+
+
+def test_cat_words():
+    assert H._cat_words("Motilal Oswal Midcap Fund") == {"mid cap"}
+    assert H._cat_words("Kotak Large & Midcap Fund") == {"large&mid"}
+    assert H._cat_words("Mirae Asset Large and Midcap Fund") == {"large&mid"}
+    assert H._cat_words("Motilal Oswal Nifty Midcap 150 Index Fund") == {"mid cap", "index"}
+    assert H._cat_words("SBI Long Term Equity Fund (Tax Saver)") == {"elss"}

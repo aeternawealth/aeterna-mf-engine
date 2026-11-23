@@ -77,6 +77,73 @@ def parse_navall(text: str) -> pd.DataFrame:
     return df
 
 
+def fetch_scheme_master(s=None) -> str:
+    """AMFI's scheme master (one row per scheme code, with the full line name, e.g. 'Motilal Oswal Midcap
+    Fund-Direct Plan-Growth Option'). Cached; an empty string if neither the download nor a cached copy exists."""
+    s = s or _session()
+    cached = C.RAW / "SchemeData.csv"
+    try:
+        r = s.get(C.SCHEME_MASTER_URL, timeout=120)
+        r.raise_for_status()
+        if "Scheme NAV Name" not in r.text[:2000]:
+            raise ValueError("unexpected scheme master format")
+        C.RAW.mkdir(parents=True, exist_ok=True)
+        cached.write_text(r.text, encoding="utf-8")
+        return r.text
+    except Exception:
+        if cached.exists():
+            print("  scheme master download failed - using cached copy")
+            return cached.read_text(encoding="utf-8")
+        print("  scheme master unavailable - unlabelled NAVAll lines stay unlabelled")
+        return ""
+
+
+def fill_plan_option(df: pd.DataFrame, master_text: str) -> pd.DataFrame:
+    """Some fund houses' lines in NAVAll carry only the scheme name, with the plan and option columns blank
+    (Nov 2026: Motilal Oswal Midcap, HSBC Small Cap, Tata Nifty 50 Index and 17 more schemes were missing from the
+    site). Fill them from the scheme master's line name, matched by scheme code."""
+    if not master_text or df.empty:
+        return df
+    import csv
+    import io
+    names = {}
+    for row in csv.reader(io.StringIO(master_text)):
+        if len(row) > 5 and row[1].strip().isdigit():
+            names[int(row[1])] = row[5].strip()
+    df = df.copy()
+    nm = df["code"].map(names).fillna("")
+    low = nm.str.lower()
+    unl = (df["plan"] == "") | (df["option"] == "")
+    # only schemes with no labelled line at all: where AMFI labels some lines, the unlabelled ones are old plans
+    # (Plan B, Retail, Institutional) that would otherwise replace the current plan in the universe
+    all_unl = unl.groupby([df["amc"], df["name"]]).transform("all")
+    legacy = low.str.contains(r"retail|institutional|\bplan [a-c]\b|-b-|premium|segregat|bonus|closed", regex=True)
+    live = df["nav_date"] >= df["nav_date"].max() - pd.Timedelta(days=30)   # closed or merged schemes stay out
+    # or: the line fills a plan (growth) that the scheme's labelled lines do not cover (e.g. ABSL Value Direct)
+    mplan = low.map(lambda x: "direct" if "direct" in x else "regular")
+    mgrowth = ~low.str.contains("idcw|dividend|bonus|payout|reinvest", regex=True)
+    have = {}
+    lab = ~unl & df["option"].str.contains("growth", case=False)
+    for (a, n), p_ in zip(zip(df.loc[lab, "amc"], df.loc[lab, "name"]), df.loc[lab, "plan"].str.lower()):
+        have.setdefault((a, n), set()).add("direct" if "direct" in p_ else "regular")
+    gap = pd.Series([mg and pl not in have.get((a, n), set()) for a, n, pl, mg in zip(df["amc"], df["name"], mplan, mgrowth)], index=df.index)
+    ok = (all_unl | gap) & (nm != "") & ~legacy & live
+    blank_plan = (df["plan"] == "") & ok
+    blank_opt = (df["option"] == "") & ok
+    # mislabelled live lines: a clear master name wins (Motilal Oswal Contra's Direct Growth line is labelled
+    # 'Payout/Reinvestment'; HSBC Liquid's Direct Growth line is labelled plan 'Regular', option 'Direct')
+    clear_g = low.str.contains("growth") & mgrowth & low.str.contains("direct|regular", regex=True)
+    wrong = ~unl & clear_g & live & ~legacy & (nm != "") & (
+        ~df["option"].str.contains("growth", case=False) | (df["plan"].str.lower().str.contains("direct") != (mplan == "direct")))
+    df.loc[wrong, "plan"] = mplan[wrong].map({"direct": "Direct Plan", "regular": "Regular Plan"})
+    df.loc[wrong, "option"] = "Growth"
+    df.attrs["relabelled"] = df.loc[wrong, "code"].tolist()
+    df.loc[blank_plan, "plan"] = low[blank_plan].map(lambda x: "Direct Plan" if "direct" in x else "Regular Plan")
+    df.loc[blank_opt, "option"] = low[blank_opt].map(
+        lambda x: "IDCW" if any(k in x for k in ("idcw", "dividend", "bonus", "payout", "reinvest")) else "Growth")   # growth-only schemes name no option
+    return df
+
+
 def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     """Open-ended equity, equity index and arbitrage funds, Growth option, Direct & Regular."""
     u = navall[navall["category"].notna()].copy()
@@ -84,7 +151,7 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     is_growth = u["option"].str.contains("growth", case=False) | (
         u["name"].str.contains("growth", case=False) & ~u["option"].str.contains("idcw|dividend", case=False))
     u = u[is_growth]
-    u = u[~u["name"].str.contains(r"\bETF\b|fund of fund|FOF|segregated portfolio|bonus|unclaimed|institutional|retail plan", case=False, regex=True)]
+    u = u[~u["name"].str.contains(r"\bETF\b|fund of fund|FOF|segregated|bonus|unclaimed|institutional|retail plan", case=False, regex=True)]
     debt_like = u["name"].str.contains(
         r"crisil|\bibx\b|\bsdl\b|gilt|g-sec|gsec|bond|debt|t-bill|liquid|target maturity|\bpsu\b.*\b20\d\d\b|\b20[2-4]\d\b",
         case=False, regex=True)

@@ -16,6 +16,7 @@ MANUAL = DATA / "manual"          # optional ter.csv / aum.csv / flags.csv dropp
 OUT = ROOT / "outputs"
 
 NAVALL_URL = "https://portal.amfiindia.com/spages/NAVAll.txt"
+SCHEME_MASTER_URL = "https://portal.amfiindia.com/DownloadSchemeData_Po.aspx?mf=0"   # full line names: plan and option
 MFAPI_URL = "https://api.mfapi.in/mf/{code}"
 TRI_URL = "https://www.niftyindices.com/BackPage/getTotalReturnIndexString"
 TRI_LIST_URL = "https://www.niftyindices.com/BackPage/gethistoricaltypeindexdata"

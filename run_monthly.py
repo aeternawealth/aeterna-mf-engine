@@ -44,6 +44,10 @@ def main():
     log("[1/7] Universe (AMFI NAVAll)")
     text = (C.RAW / "NAVAll.txt").read_text(encoding="utf-8") if a.offline else ingest.fetch_navall()
     navall = ingest.parse_navall(text)
+    master = (C.RAW / "SchemeData.csv").read_text(encoding="utf-8") if a.offline and (C.RAW / "SchemeData.csv").exists() else ("" if a.offline else ingest.fetch_scheme_master())
+    n_blank = int(((navall["plan"] == "") | (navall["option"] == "")).sum())
+    navall = ingest.fill_plan_option(navall, master)
+    log(f"  {n_blank} NAVAll lines without plan/option; {n_blank - int(((navall['plan'] == '') | (navall['option'] == '')).sum())} filled from AMFI's scheme master")
     u = ingest.build_universe(navall)
     log(f"  {len(u)} equity + index schemes (growth, Direct & Regular)")
 

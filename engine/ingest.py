@@ -161,6 +161,7 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
     u["tax"] = u["category"].map(C.TAX_CLASS).fillna("equity")
     # pairing key so Direct and Regular of the same scheme sit side by side
     base = (u["name"].str.replace(r"(?i)\b(direct|regular)\s*plan\b", "", regex=True)
+            .str.replace(r"(?i)[\s-]*\bcash option\b", "", regex=True)      # ICICI Money Market's Regular plan
             .str.replace(r"(?i)\bgrowth( option| plan)?\b", "", regex=True)
             .str.replace(r"[^A-Za-z0-9&]+", " ", regex=True).str.strip().str.lower())
     u["pair_key"] = u["amc"].str.lower().str.strip() + "|" + base

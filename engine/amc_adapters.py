@@ -388,10 +388,31 @@ def _next(month: str):
 # Fund houses whose monthly file names follow a fixed pattern (seen in the files that worked for September 2026).
 # These return candidate addresses; ones that do not exist simply fail to download and the generic route runs.
 def kotak(month: str) -> list[str]:
+    """Kotak: forms-and-downloads > Portfolios > 'Consolidated & Fortnightly Portfolio' comes from
+    /api/kotakapi/forms/user/getsubheaderList/417?option=51 (behind a Radware bot check, so often unreachable from
+    scripts); the file itself sits on an open host. The folder name changes month to month: 'Consolidated-SEBI-Portfolio-
+    as-on-October-2026' (Oct 2026), '...-as-on-August-31,-2026', 'Consolidated-Portfolio-as-on-September-30,-2026'."""
     full, abbr, y = _month(month)
-    d, F = _month_end(month), full.capitalize()
-    return [f"https://vatseelabs-s3.kotakmf.com/FormsDownloads/Portfolios/Consolidated-Portfolio-as-on-{F}-{d.day},-{y}/"
-            f"ConsolidatedSEBIPortfolio{F}{y}.xlsx"]
+    F = full.capitalize()
+    host = "https://vatseelabs-s3.kotakmf.com/"
+    out = []
+    try:
+        r = requests.get("https://www.kotakmf.com/api/kotakapi/forms/user/getsubheaderList/417",
+                         params={"option": 51, "pagination": 1, "pageSize": 30, "pageNumber": 1},
+                         headers={**UA, "Referer": "https://www.kotakmf.com/Information/forms-and-downloads"}, timeout=40)
+        for row in (r.json().get("subHeaderList") or []) if r.ok and "json" in r.headers.get("content-type", "") else []:
+            t = (row.get("subHeaderTitle") or "").lower()
+            if t.startswith("consolidated") and full in t and str(y) in t and row.get("content"):
+                out.append(host + row["content"].lstrip("/"))
+    except Exception:
+        pass
+    name = f"ConsolidatedSEBIPortfolio{F}{y}.xlsx"
+    for d in _month_end_days(month):
+        for stem in ("Consolidated-SEBI-Portfolio-as-on", "Consolidated-Portfolio-as-on"):
+            out.append(f"{host}FormsDownloads/Portfolios/{stem}-{F}-{d.day},-{y}/{name}")
+    for stem in ("Consolidated-SEBI-Portfolio-as-on", "Consolidated-Portfolio-as-on"):
+        out.append(f"{host}FormsDownloads/Portfolios/{stem}-{F}-{y}/{name}")
+    return list(dict.fromkeys(out))
 
 
 def tata(month: str) -> list[str]:

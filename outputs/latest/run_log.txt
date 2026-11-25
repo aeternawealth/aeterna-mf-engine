@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-24 04:11
+Aeterna MF Engine run 2026-11-25 04:19
 [1/7] Universe (AMFI NAVAll)
   5802 NAVAll lines without plan/option; 459 filled from AMFI's scheme master
   2799 equity + index schemes (growth, Direct & Regular)
@@ -36,7 +36,6 @@ Aeterna MF Engine run 2026-11-24 04:11
   NAV 2700/2824
   NAV 2800/2824
   2824 NAV histories (110 of them liquid funds, the arbitrage yardstick)
-  79 schemes topped up with AMFI's newer NAV (mfapi was a day behind)
   bond-fund yardstick: Direct 3625 days, Regular 5386 days (86 plans)
   liquid-fund yardstick: Direct 5382 days, Regular 5387 days
 [5/7] Holdings for 2026-10

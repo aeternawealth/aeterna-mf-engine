@@ -318,6 +318,33 @@ def amc_watch(funds, nav_dir):
         print("amc watch:", len(out), "houses; most herded", rank[:3])
 
 
+def mcap_json():
+    """site/data/mcap.json {isin: [AMFI rank, 6-month average market cap in ₹ cr, 'large'/'mid'/'small']} for the stocks
+    funds hold, from data/manual/amfi_mcap.xlsx (AMFI's half-yearly list), so the site build (no pandas) can use it."""
+    p = ROOT / "data" / "manual" / "amfi_mcap.xlsx"
+    hp = OUT / "holdings.json"
+    if not p.exists() or not hp.exists():
+        return
+    held = {r[0] for rows in json.loads(hp.read_text()).values() for r in rows if r and r[0]}
+    raw = pd.read_excel(p, header=None)
+    h = next(i for i in range(30) if any("isin" in str(v).lower() for v in raw.iloc[i]))
+    df = raw.iloc[h + 1:].copy()
+    df.columns = [str(c).strip().lower() for c in raw.iloc[h]]
+    icol = next(c for c in df.columns if "isin" in c)
+    mcol = next(c for c in df.columns if "average of all" in c)
+    rcol = next(c for c in df.columns if c.startswith("sr"))
+    ccol = next(c for c in df.columns if "categor" in c)
+    out = {}
+    for isin, rk, mc, cat in zip(df[icol].astype(str).str.strip().str.upper(), df[rcol], df[mcol], df[ccol].astype(str).str.lower()):
+        if isin in held and pd.notna(mc):
+            out[isin] = [int(rk), round(float(mc)), next((k for k in ("large", "mid", "small") if k in cat), "small")]
+    period = (ROOT / "data" / "manual" / "amfi_mcap.period.txt")
+    body = json.dumps({"period": period.read_text().strip() if period.exists() else "", "s": out}, separators=(",", ":"))
+    mp = OUT / "mcap.json"
+    if not mp.exists() or mp.read_text() != body:
+        mp.write_text(body)
+
+
 def main():
     funds = json.loads((OUT / "funds.json").read_text())
     nav_dir = C.NAV_DIR
@@ -345,6 +372,7 @@ def main():
         last[str(f["code"])] = [str(d.index[-1].date()), sig(d.iloc[-1])]
     fine_navs(funds, nav_dir, tri, end)
     amc_watch(funds, nav_dir)
+    mcap_json()
     sizes = {}
     for cat, nav in by_cat.items():
         body = {"months": mlist, "nav": nav}

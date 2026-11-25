@@ -918,6 +918,9 @@ def main():
     import stock_pages as SP      # "mutual funds holding <stock>" (before the comparison pages, which link to them)
     stock_url = SP.build(Bm, funds, hold, urls, as_of)
     Bm.STOCK_URL = stock_url
+    import market_pages as MK      # /mutual-funds/crowded-stocks/ and /mutual-funds/money-flows/
+    MK.crowded(Bm, funds, hold, urls, stock_url)
+    MK.flows(Bm, funds, urls)
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
     Bm.MADE_YEARS = CX.category_year_pages(Bm, funds, urls, as_of)   # /mutual-funds/<category>/year-by-year/
     made_idx, made_thm = P.group_pages(Bm, funds, urls, as_of)

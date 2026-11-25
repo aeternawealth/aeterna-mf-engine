@@ -921,6 +921,7 @@ def main():
     import market_pages as MK      # /mutual-funds/crowded-stocks/ and /mutual-funds/money-flows/
     MK.crowded(Bm, funds, hold, urls, stock_url)
     MK.flows(Bm, funds, urls)
+    MK.moves(Bm, funds, hold, urls, stock_url)   # /mutual-funds/what-funds-bought-sold/ (rebuilt with each month's portfolios)
     cmp_map = P.compare_pages(Bm, funds, hold, urls, as_of)
     Bm.MADE_YEARS = CX.category_year_pages(Bm, funds, urls, as_of)   # /mutual-funds/<category>/year-by-year/
     made_idx, made_thm = P.group_pages(Bm, funds, urls, as_of)

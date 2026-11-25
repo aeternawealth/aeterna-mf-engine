@@ -88,4 +88,18 @@ function txCompute(p,regime){
 }
 
 function txBoth(p){const N=txCompute(p,'new'),O=txCompute(p,'old');return {N,O,best:O.payable<N.payable?'old':'new',saving:Math.abs(N.payable-O.payable)}}
-if(typeof module!=='undefined')module.exports={TAXRULES,txCompute,txBoth,txHRA,txSlabTax};
+function txAdvance(T,paid,o){/* advance tax for the year. T = tax for the year less TDS/TCS; paid = amounts paid in each window
+   [by 15 Jun, 16 Jun-15 Sep, 16 Sep-15 Dec, 16 Dec-15 Mar]; o.presumptive: presumptive business or profession (all by 15 Mar);
+   o.exempt: resident aged 60+ with no business income; o.months: months after March until the balance is paid (default 4, July).
+   Interest is 1% a month (3 months for each of the first three instalments, 1 for March) on the shortfall rounded down to
+   ₹100; none for June or September if 12% / 36% was paid. If less than 90% was paid by 31 March: 1% a month on the
+   unpaid tax from April until it is paid. */
+ o=o||{};T=Math.max(0,Math.round(+T||0));paid=(paid||[]).map(n0);while(paid.length<4)paid.push(0);
+ const r100=x=>Math.floor(Math.max(0,x)/100)*100,liable=T>=10000&&!o.exempt;
+ const pct=o.presumptive?[0,0,0,1]:[.15,.45,.75,1],tol=o.presumptive?[0,0,0,1]:[.12,.36,.75,1];
+ const due=[],cum=[],int=[];let c=0;
+ for(let i=0;i<4;i++){c+=paid[i];cum.push(c);due.push(Math.round(pct[i]*T));
+  int.push(liable&&pct[i]>0&&c<tol[i]*T?r100(pct[i]*T-c)*.01*(i<3?3:1):0)}
+ const months=o.months==null?4:o.months,late=liable&&cum[3]<.9*T?r100(T-cum[3])*.01*months:0;
+ return {T,liable,due,cum,int,late,interest:Math.round(int.reduce((a,b)=>a+b,0)+late)}}
+if(typeof module!=='undefined')module.exports={TAXRULES,txCompute,txBoth,txHRA,txSlabTax,txAdvance};

@@ -180,3 +180,148 @@ def flows(B, funds, urls):
           "Where new money is going in Indian mutual funds: net inflows and outflows by category, scheme and fund house, estimated from AMFI data, updated each quarter.",
           "Where the money is going", f"Net new money into India's active equity and hybrid funds, by category, scheme and fund house, to {B.e(qlab)}.", body, "Money flows")
     urls.append(("/mutual-funds/money-flows/", "monthly", "0.7"))
+
+
+# ------------------------------------------------------------------ what fund managers bought and sold
+MOVES = "/mutual-funds/what-funds-bought-sold/"
+
+
+def _moves_month(sch, cur, prev):
+    """per stock: schemes that bought it new, added to it, trimmed it, sold out; plus the biggest single new bets and exits.
+    Weights only (no share counts), so 'added' and 'trimmed' need a change of 0.5 points and a quarter of the position,
+    which a month's price move alone rarely produces."""
+    C = defaultdict(Counter)
+    bets, outs, held = [], [], Counter()
+    n = 0
+    for pk, f in sch.items():
+        c, p = cur.get(pk), prev.get(pk)
+        if not c or not p:
+            continue
+        n += 1
+        c = {i: w for i, w in c.items() if str(i).startswith("INE") and w >= 0.1}
+        p = {i: w for i, w in p.items() if str(i).startswith("INE") and w >= 0.1}
+        for i, w in c.items():
+            held[i] += 1
+            if i not in p:
+                C[i]["new"] += 1
+                bets.append((w, f, i))
+            elif w - p[i] >= 0.5 and w >= 1.25 * p[i]:
+                C[i]["add"] += 1
+            elif p[i] - w >= 0.5 and w <= 0.8 * p[i]:
+                C[i]["trim"] += 1
+        for i, w in p.items():
+            if i not in c:
+                C[i]["exit"] += 1
+                outs.append((w, f, i))
+    # a company whose ISIN changed (merger, demerger, new share class) shows as every holder selling one ISIN and buying
+    # another: pair them up (same schemes) and leave both out. A new ISIN no scheme held before is a new listing.
+    had = Counter(i for p in prev.values() for i in p)
+    ws = defaultdict(set)
+    for w, f, i in bets:
+        ws[("n", i)].add(f["code"])
+    for w, f, i in outs:
+        ws[("x", i)].add(f["code"])
+    fresh = [i for i in C if not had[i] and C[i]["new"]]
+    gone = [i for i in C if not held[i] and C[i]["exit"]]
+    drop = set()
+    for g in gone:
+        a = ws[("x", g)]
+        for i in fresh:
+            b = ws[("n", i)]
+            if i not in drop and len(a & b) >= 0.6 * len(a | b):
+                drop |= {g, i}
+                break
+    for i in drop:
+        C.pop(i, None)
+    bets = [x for x in bets if x[2] not in drop]
+    outs = [x for x in outs if x[2] not in drop]
+    listed = {i for i in fresh if i not in drop}
+    return n, C, held, sorted(bets, key=lambda x: -x[0]), sorted(outs, key=lambda x: -x[0]), listed
+
+
+def moves(B, funds, hold, urls, stock_url):
+    root = B.S.parent
+    mp = B.S / "data" / "mcap.json"
+    mc = (json.loads(mp.read_text()) if mp.exists() else {}).get("s", {})
+    sch = {pk: f for pk, f in _schemes(funds).items() if f.get("asset_class") == "Equity" and f.get("category") != "Index Fund"}
+    names = defaultdict(Counter)
+    for rows in hold.values():
+        for r in rows:
+            if len(r) >= 2 and r[0]:
+                names[r[0]][r[1]] += 1
+    months = sorted(d.name for d in (root / "data" / "holdings").glob("20??-??") if (d / "_weights.csv").exists())
+    pairs = [m for m in months if SP._prev_month(m) in months]
+    if not pairs:
+        return
+
+    def nm(i):
+        if names[i]:
+            return SP.clean_name(names[i].most_common(1)[0][0])
+        return SP.clean_name(mc[i][3]) if i in mc and len(mc[i]) > 3 and mc[i][3] else i
+
+    def link(i):
+        u = stock_url.get(i) if isinstance(stock_url, dict) else None
+        return f"<a href='{u}'>{B.e(nm(i))}</a>" if u else B.e(nm(i))
+
+    size = lambda i: {"large": "Large", "mid": "Mid", "small": "Small"}.get(mc[i][2], "–") if i in mc else "–"
+    fund = lambda f: f"<a href='{f['_url']}'>{B.e(f.get('_name') or f['name'])}</a><small class='muted' style='display:block;font-size:12px'>{B.e(f['category'])}</small>" if f.get("_url") else B.e(f.get("_name") or f["name"])
+    latest = pairs[-1]
+
+    def cap3(L):
+        out, k = [], Counter()
+        for x in L:
+            a = x[1].get("amc")
+            if k[a] < 3:
+                out.append(x)
+                k[a] += 1
+            if len(out) >= ROWS:
+                break
+        return out
+    for m in pairs:
+        n, C, held, bets, outs, listed = _moves_month(sch, SP._load_weights(root, m) or {}, SP._load_weights(root, SP._prev_month(m)) or {})
+        buy = {i: c["new"] + c["add"] for i, c in C.items()}
+        sell = {i: c["exit"] + c["trim"] for i, c in C.items()}
+        net = {i: buy[i] - sell[i] for i in C}
+        bought = sorted([i for i in C if buy[i] >= 3 and net[i] > 0], key=lambda i: (-net[i], -buy[i]))
+        sold = sorted([i for i in C if sell[i] >= 3 and net[i] < 0], key=lambda i: (net[i], -sell[i]))
+        ms = lambda L: [i for i in L if i in mc and mc[i][2] in ("mid", "small")]
+        head = ["Stock", "Size", "Schemes buying", "Schemes selling", "Schemes holding"]
+        tag = lambda i: " <small class='muted' style='display:block;font-size:12px'>new listing</small>" if i in listed else ""
+        row = lambda i: [link(i) + tag(i), size(i), f"{buy[i]} <small class='muted'>({C[i]['new']} new)</small>", f"{sell[i]} <small class='muted'>({C[i]['exit']} sold out)</small>", held[i]]
+        M, PM = B.mon(m), B.mon(SP._prev_month(m))
+        n_new, n_exit = sum(c["new"] for c in C.values()), sum(c["exit"] for c in C.values())
+        others = [x for x in reversed(pairs) if x != m]
+        arch = (" · ".join(f"<a href='{MOVES if x == latest else f'{MOVES}{x}/'}'>{B.mon(x)}</a>" for x in others))
+        body = (
+            f"<div class='grid g3' style='margin-top:22px'>"
+            f"<div class='card'><b style='font:600 26px var(--f-mono)'>{n}</b><span class='muted' style='display:block'>schemes compared, {PM} to {M}</span></div>"
+            f"<div class='card'><b style='font:600 26px var(--f-mono)'>{n_new:,}</b><span class='muted' style='display:block'>new positions opened</span></div>"
+            f"<div class='card'><b style='font:600 26px var(--f-mono)'>{n_exit:,}</b><span class='muted' style='display:block'>positions sold out</span></div></div>"
+            f"<h2 style='font-size:26px;margin-top:36px'>Most bought in {M}</h2>"
+            "<p style='margin-top:8px'>Stocks where the most schemes opened a new position or added clearly to one, net of the schemes cutting back.</p>"
+            + _table(head, [row(i) for i in bought[:ROWS]])
+            + f"<h2 style='font-size:26px;margin-top:36px'>Most sold in {M}</h2>"
+            "<p style='margin-top:8px'>Stocks where the most schemes sold out or cut back clearly, net of the schemes buying.</p>"
+            + _table(head, [row(i) for i in sold[:ROWS]])
+            + f"<h2 style='font-size:26px;margin-top:36px'>Mid and small caps: most bought</h2>" + _table(head, [row(i) for i in ms(bought)[:15]])
+            + f"<h2 style='font-size:26px;margin-top:36px'>Mid and small caps: most sold</h2>" + _table(head, [row(i) for i in ms(sold)[:15]])
+            + f"<h2 style='font-size:26px;margin-top:36px'>Biggest new bets</h2>"
+            "<p style='margin-top:8px'>Stocks a scheme did not own last month and now holds as a large position (at most three per fund house, so one house's reshuffle does not fill the list).</p>"
+            + _table(["Scheme", "Stock", "Weight now"], [[fund(f), link(i) + tag(i), f"{w:.1f}%"] for w, f, i in cap3(bets)], "45%")
+            + f"<h2 style='font-size:26px;margin-top:36px'>Biggest exits</h2>"
+            "<p style='margin-top:8px'>Large positions a scheme held last month and sold out of completely (at most three per fund house).</p>"
+            + _table(["Scheme", "Stock", f"Weight in {PM}"], [[fund(f), link(i), f"{w:.1f}%"] for w, f, i in cap3(outs)], "45%")
+            + (f"<p style='margin-top:26px'><b>Other months:</b> {arch}</p>" if arch else "")
+            + f"<p style='margin-top:18px;font-size:14.5px'>Related: <a href='/mutual-funds/crowded-stocks/'>Crowded stocks</a> · <a href='/mutual-funds/money-flows/'>Where the money is going</a> · "
+            "<a href='/mutual-funds/holding/'>Funds holding a stock</a></p>"
+            + f"<p class='muted' style='font-size:12.5px;margin-top:14px'>Active equity funds only (index funds left out), each scheme counted once, comparing each scheme's "
+            f"{M} portfolio with its {PM} portfolio; schemes without both are left out. Funds publish percentages, not share counts, so 'added' means the stock's weight rose by at least 0.5 "
+            "percentage points and by a quarter or more, and 'cut back' the same in reverse: more than a month's price move usually explains. Holdings under 0.1% "
+            "are ignored. 'New listing': a company no scheme held the month before, usually an IPO allotment. A change of a company's ISIN (after a merger or a new share class) is left out rather than counted as a sale and a purchase. Facts from fund portfolios, not a recommendation to buy or sell any stock.</p>")
+        path = MOVES if m == latest else f"{MOVES}{m}/"
+        lede = (f"What India's active equity fund managers bought and sold in {M}: the stocks most schemes added and cut, new bets and full exits, "
+                f"from each scheme's monthly portfolio. {'Updated every month when fund houses publish their portfolios.' if m == latest else ''}")
+        _page(B, path, f"What mutual funds bought and sold in {M}: stocks fund managers added and cut | Aeterna Wealth",
+              f"The stocks Indian mutual fund managers bought and sold in {M}: most bought, most sold, mid and small caps, biggest new bets and exits, from {n} schemes' portfolios.",
+              f"What fund managers bought and sold in {M}", lede, body, "Bought and sold")
+        urls.append((path, "monthly", "0.8" if m == latest else "0.5"))

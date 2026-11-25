@@ -176,7 +176,7 @@ def tax_pages(B, urls):
 <h2 style="font-size:24px;margin-top:28px">Rebate, surcharge, cess and capital gains</h2><ul style="margin-top:6px">{rules}</ul>
 <p class="muted" style="font-size:13px;margin-top:12px">Rules last checked {CHECKED}, under the Income-tax Act, 2025. Deductions are shown by their familiar names (80C, 80D and so on); the new section numbers will be added from the tax department's official mapping.</p>
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{faq_html}
-<p style="margin-top:22px;font-size:14.5px">Related: <a href="/income-tax/deductions/">Every deduction explained</a> · <a href="/income-tax/slabs-fy-2026-27/">Tax slabs FY {FY}</a> · <a href="/calculators/income-tax-old-vs-new/">What ELSS saves you</a> · <a href="/calculators/capital-gains-tax/">Capital gains tax calculator</a> · <a href="/learn/elss-tax-saving-mutual-funds/">ELSS explained</a></p>
+<p style="margin-top:22px;font-size:14.5px">Related: <a href="/income-tax/advance-tax-calculator/">Advance tax calculator</a> · <a href="/income-tax/deductions/">Every deduction explained</a> · <a href="/income-tax/slabs-fy-2026-27/">Tax slabs FY {FY}</a> · <a href="/calculators/income-tax-old-vs-new/">What ELSS saves you</a> · <a href="/calculators/capital-gains-tax/">Capital gains tax calculator</a> · <a href="/learn/elss-tax-saving-mutual-funds/">ELSS explained</a></p>
 <p class="muted" style="font-size:12.5px;margin-top:22px">An estimate from the figures you enter, not tax advice. Have a CA check your return before you file.</p>
 </div></section><script src="/assets/tax-engine.js?v={v}"></script><script>{js}</script>"""
     app_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": f"Income tax calculator FY {FY} by Aeterna Wealth", "url": B.SITE + path,
@@ -187,6 +187,8 @@ def tax_pages(B, urls):
 
     import tax_deductions as TD
     TD.deduction_pages(B, urls, {}, v)
+    import tax_advance as TA
+    adv = TA.advance_page(B, urls, v)
 
     # ---------------------------------------------------------------- slabs
     sp = "/income-tax/slabs-fy-2026-27/"
@@ -210,6 +212,7 @@ def tax_pages(B, urls):
 
     # ---------------------------------------------------------------- hub
     cards = [(path, "Income tax calculator", "Both regimes, every individual: salary, HRA, house property, capital gains, crypto, all deductions."),
+             (adv, "Advance tax calculator", "What to pay by 15 June, September, December and March, and the interest if you are late."),
              (sp, f"Tax slabs FY {FY}", "New and old regime rates for every age, rebate, surcharge and cess."),
              ("/income-tax/deductions/", "Deductions and exemptions", "80C, 80D, HRA, NPS, home-loan interest, 87A and more: limits, regime, a calculator each."),
              ("/calculators/income-tax-old-vs-new/", "Old vs new regime, quick check", "Your income and deductions in, the lower regime and what ELSS saves you out."),
@@ -223,7 +226,7 @@ def tax_pages(B, urls):
 <h1 style="font-size:clamp(30px,4vw,44px)">Income tax for individuals, tax year {FY}</h1>
 <p class="lede" style="margin-top:12px">Calculators and plain guides for the first year under the Income-tax Act, 2025: which regime to choose, what you can deduct, how capital gains are taxed, and when to pay and file.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(f"<a class='card stack sol' href='{u}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{e(n)}</b><span class='muted' style='font-size:14px'>{e(d)}</span></a>" for u, n, d in cards)}</div>
-<h2 style="font-size:26px;margin-top:40px">Key dates</h2><div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Date</th><th class="l">What</th></tr></thead><tbody>{''.join(f"<tr><td class='l'>{d}</td><td class='l'>{e(w)}</td></tr>" for d, w in dates)}</tbody></table></div>
+<h2 style="font-size:26px;margin-top:40px">Key dates</h2><div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Date</th><th class="l">What</th></tr></thead><tbody>{''.join(f"<tr><td class='l'>{d}</td><td class='l'>{e(w)}{' · <a href=' + chr(39) + adv + chr(39) + '>work out yours</a>' if 'advance tax' in w else ''}</td></tr>" for d, w in dates)}</tbody></table></div>
 <p class="muted" style="font-size:13px;margin-top:8px">Under current rules, checked {CHECKED}. The tax department can extend a due date; we update this page when it does.</p>
 <div class="card stack" style="gap:8px;margin-top:30px;border-color:var(--teal)"><b>Tax planning and return filing, with a CA</b><span class="muted" style="font-size:14px">A chartered accountant reviews your regime, deductions and capital gains, and can file your return.</span><a class="btn primary" href="{WA}{'Hi%2C%20I%20would%20like%20help%20with%20my%20income%20tax.'}" target="_blank" rel="noopener" style="justify-self:start">Ask on WhatsApp</a></div>
 </div></section>"""

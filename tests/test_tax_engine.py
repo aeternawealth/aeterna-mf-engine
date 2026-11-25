@@ -43,3 +43,22 @@ def test_slab_page_matches_engine():
     eng = _run("const T=require('./site/tax_engine.js');console.log(JSON.stringify(T.TAXRULES))")
     assert [[hi, round(r * 100)] for hi, r in eng["newSlabs"]] == [[hi, r] for lo, hi, r in TP.NEW]
     assert [[hi, round(r * 100)] for hi, r in eng["oldSlabs"]["60-79"]] == [[hi, r] for lo, hi, r in TP.OLD["60 to 79 (senior citizen)"]]
+
+
+ADV = [  # (tax after TDS, paid per window [to 15 Jun, to 15 Sep, to 15 Dec, to 15 Mar], options, expected interest)
+    (100000, [15000, 30000, 30000, 25000], {}, 0),                 # every instalment on time
+    (100000, [0, 0, 0, 100000], {}, 4050),                         # 15k x 3% + 45k x 3% + 75k x 3% = 450 + 1,350 + 2,250
+    (100000, [0, 0, 0, 0], {}, 9050),                              # 4,050 + March 1,000 + 4 months on 1L (April to July) 4,000
+    (100000, [12000, 24000, 39000, 25000], {}, 0),                 # 12% and 36% are enough for June and September
+    (100000, [0, 0, 0, 92000], {}, 4130),                          # 4,050 + March 8,000 x 1% = 80; 92% paid, so no late interest
+    (50000, [0, 0, 0, 50000], {"presumptive": True}, 0),           # presumptive business: all by 15 March
+    (50000, [0, 0, 0, 40000], {"presumptive": True}, 500),         # March 10k x 1% = 100; 80% paid, under 90%: 10k x 4 months = 400
+    (9000, [0, 0, 0, 0], {}, 0),                                   # under ₹10,000: no advance tax
+    (200000, [0, 0, 0, 0], {"exempt": True}, 0),                   # resident 60+ without business income
+    (123456, [0, 0, 0, 123456], {}, 4995),                         # 18,500 x 3% + 55,500 x 3% + 92,500 x 3% = 555 + 1,665 + 2,775 (rounded down to ₹100)
+]
+
+
+def test_advance_tax():
+    js = "const T=require('./site/tax_engine.js');const C=" + json.dumps(ADV) + ";console.log(JSON.stringify(C.map(([t,p,o])=>T.txAdvance(t,p,o).interest)))"
+    assert _run(js) == [c[3] for c in ADV]

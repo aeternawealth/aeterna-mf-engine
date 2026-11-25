@@ -319,13 +319,16 @@ def amc_watch(funds, nav_dir):
 
 
 def mcap_json():
-    """site/data/mcap.json {isin: [AMFI rank, 6-month average market cap in ₹ cr, 'large'/'mid'/'small']} for the stocks
-    funds hold, from data/manual/amfi_mcap.xlsx (AMFI's half-yearly list), so the site build (no pandas) can use it."""
+    """site/data/mcap.json {isin: [AMFI rank, 6-month average market cap in ₹ cr, 'large'/'mid'/'small', company name]} for
+    the stocks funds hold now or held in any saved month (so stocks funds sold out of keep a name), from
+    data/manual/amfi_mcap.xlsx (AMFI's half-yearly list), so the site build (no pandas) can use it."""
     p = ROOT / "data" / "manual" / "amfi_mcap.xlsx"
     hp = OUT / "holdings.json"
     if not p.exists() or not hp.exists():
         return
     held = {r[0] for rows in json.loads(hp.read_text()).values() for r in rows if r and r[0]}
+    for wp in (ROOT / "data" / "holdings").glob("*/_weights.csv"):
+        held |= set(pd.read_csv(wp, usecols=["isin"])["isin"].astype(str).str.upper())
     raw = pd.read_excel(p, header=None)
     h = next(i for i in range(30) if any("isin" in str(v).lower() for v in raw.iloc[i]))
     df = raw.iloc[h + 1:].copy()
@@ -334,10 +337,12 @@ def mcap_json():
     mcol = next(c for c in df.columns if "average of all" in c)
     rcol = next(c for c in df.columns if c.startswith("sr"))
     ccol = next(c for c in df.columns if "categor" in c)
+    ncol = next((c for c in df.columns if "name" in c), None)
+    names = df[ncol].astype(str).str.strip() if ncol else [""] * len(df)
     out = {}
-    for isin, rk, mc, cat in zip(df[icol].astype(str).str.strip().str.upper(), df[rcol], df[mcol], df[ccol].astype(str).str.lower()):
+    for isin, rk, mc, cat, nm in zip(df[icol].astype(str).str.strip().str.upper(), df[rcol], df[mcol], df[ccol].astype(str).str.lower(), names):
         if isin in held and pd.notna(mc):
-            out[isin] = [int(rk), round(float(mc)), next((k for k in ("large", "mid", "small") if k in cat), "small")]
+            out[isin] = [int(rk), round(float(mc)), next((k for k in ("large", "mid", "small") if k in cat), "small"), nm]
     period = (ROOT / "data" / "manual" / "amfi_mcap.period.txt")
     body = json.dumps({"period": period.read_text().strip() if period.exists() else "", "s": out}, separators=(",", ":"))
     mp = OUT / "mcap.json"

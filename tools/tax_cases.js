@@ -1,0 +1,22 @@
+// Writes docs/tax_cases_fy2026-27.csv: 50 varied cases with the engine's answer, for a CA to check line by line.
+const T=require('../site/tax_engine.js'),fs=require('fs');
+const C=[],sal=[300000,700000,1000000,1275000,1285000,1500000,1800000,2500000,4000000,5100000,12000000,25000000];
+for(const s of sal)C.push({salary:s});
+for(const s of [1000000,1500000,2500000])C.push({salary:s,c80:150000,d80self:25000,selfInterest:200000,nps1b:50000});
+for(const s of [1200000,1800000])C.push({salary:s,basic:s*.4,hraRecd:s*.2,rent:s*.24,metro:true,c80:150000});
+for(const a of ['60-79','80+'])for(const s of [600000,1200000])C.push({salary:s,age:a,interestFD:300000,d80self:50000});
+for(const s of [0,500000,2000000])C.push({salary:s,ltcg112A:400000,stcg111A:150000});
+C.push({business:1500000},{business:3000000,c80:150000},{business:800000,ltcg112A:200000});
+C.push({salary:900000,letRent:360000,municipal:20000,letInterest:400000},{salary:2400000,letRent:600000,letInterest:100000});
+C.push({interestFD:1500000,resident:false},{salary:2000000,resident:false,stcg111A:200000},{ltcgOther:3000000,salary:500000});
+C.push({salary:1000000,vda:300000},{salary:600000,lottery:100000},{salary:1500000,employerNPS:84000,basic:600000});
+C.push({salary:6000000,ltcg112A:5000000},{salary:11000000,stcg111A:2000000},{salary:22000000},{salary:60000000});
+C.push({salary:1100000,stcg111A:200000},{salary:800000,dividends:400000,interestSav:30000},{salary:1500000,e80:100000,g80:50000,u80:75000});
+C.push({salary:3500000,c80:150000,d80self:25000,d80parents:50000,selfInterest:200000,nps1b:50000,basic:1400000,hraRecd:600000,rent:840000,metro:true});
+C.push({interestFD:900000,age:'60-79'},{salary:400000,age:'80+',interestFD:200000});
+C.push({salary:900000,age:'60-79',resident:false},{business:2000000,age:'60-79',d80self:50000},{salary:5500000,c80:150000,selfInterest:200000},{salary:1350000,ltcg112A:300000},{salary:1000000,stcgSlab:300000,interestSav:15000});
+const keys=['age','resident','salary','basic','hraRecd','rent','metro','selfInterest','letRent','municipal','letInterest','business','interestSav','interestFD','dividends','stcg111A','ltcg112A','ltcgOther','vda','lottery','employerNPS','c80','nps1b','d80self','d80parents','e80','g80','u80'];
+const out=[['case',...keys,'new: taxable slab income','new: tax payable','old: taxable slab income','old: tax payable','lower','CA check (ok / correct figure)'].join(',')];
+C.slice(0,50).forEach((p,i)=>{const N=T.txCompute(p,'new'),O=T.txCompute(p,'old');
+ out.push([i+1,...keys.map(k=>p[k]===undefined?(k==='age'?'<60':k==='resident'?'yes':''):p[k]===false?'no':p[k]===true?'yes':p[k]),N.normal,N.payable,O.normal,O.payable,O.payable<N.payable?'old':'new',''].join(','))});
+fs.writeFileSync(__dirname+'/../docs/tax_cases_fy2026-27.csv',out.join('\n')+'\n');console.log(out.length-1,'cases');

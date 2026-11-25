@@ -1,4 +1,4 @@
-Aeterna MF Engine run 2026-11-25 04:19
+Aeterna MF Engine run 2026-11-25 10:45
 [1/7] Universe (AMFI NAVAll)
   5802 NAVAll lines without plan/option; 459 filled from AMFI's scheme master
   2799 equity + index schemes (growth, Direct & Regular)

@@ -537,7 +537,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund ratings</button>
         <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme of each AMC</small></a><a href="/portfolio-check/">Check your portfolio<small>How the funds you hold rate</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="/mutual-funds/holding/">Funds holding a stock<small>Which funds own a stock, and who bought or sold</small></a><a href="/method/">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
       <div class="dd" id="ddPlan"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Plan &amp; learn</button>
-        <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI, tax</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
+        <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI, tax</small></a><a href="/income-tax/">Income tax<small>Old vs new regime calculator, slabs, due dates</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
       <div class="dd" id="ddAbout"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">About</button>
         <div class="ddmenu"><a href="/about/">About Aeterna<small>Who we are and how we work</small></a><a href="/contact/">Contact<small>Call, WhatsApp or write to us</small></a><a href="/disclosures/">Disclosures<small>How we are paid, and our registrations</small></a></div></div>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="/contact/">Talk to us</a></div>
@@ -607,6 +607,15 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
       <svg viewBox="0 0 220 60" width="100%"><defs><linearGradient id="pfGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62d6b2" stop-opacity=".45"/><stop offset="1" stop-color="#62d6b2" stop-opacity=".04"/></linearGradient></defs><polygon class="pf-area" points="0,52 40,45 80,32 120,20 150,16 180,20 220,30 220,56 180,52 150,48 120,46 80,50 40,53 0,54" fill="var(--teal-soft)"/><polyline class="pf-line" pathLength="1" points="0,53 40,49 80,41 120,33 150,31 180,36 220,44" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/></svg>
       <div class="muted" style="font-size:11.5px">Range of outcomes across market history</div></div></div></div></section>
 
+  <section class="band" id="taxSec" style="padding-top:8px"><div class="wrap">
+    <div class="eyebrow">Income tax · tax year 2026-27</div>
+    <h2 style="margin-top:8px">Old or new regime? Work out your tax in two minutes</h2>
+    <p class="lede" style="margin-top:10px">Free calculators under the Income-tax Act, 2025: your tax in both regimes, every deduction explained, and a chartered accountant to check it before you file.</p>
+    <div class="grid g3" style="margin-top:22px">
+      <a class="card stack sol" href="/income-tax/calculator/" style="gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)"><b style="font:500 18px var(--f-display)">Income tax calculator</b><span class="muted" style="font-size:14px">Salary, HRA, house property, capital gains, crypto and every deduction, both regimes side by side.</span></a>
+      <a class="card stack sol" href="/income-tax/deductions/" style="gap:6px;text-decoration:none;color:inherit"><b style="font:500 18px var(--f-display)">Deductions explained</b><span class="muted" style="font-size:14px">80C, 80D, HRA, NPS, home-loan interest and the ₹12 lakh rebate, with a calculator each.</span></a>
+      <a class="card stack sol" href="/income-tax/slabs-fy-2026-27/" style="gap:6px;text-decoration:none;color:inherit"><b style="font:500 18px var(--f-display)">Tax slabs 2026-27</b><span class="muted" style="font-size:14px">New and old regime rates for every age, surcharge and cess.</span></a>
+    </div></div></section>
   <section class="band tint" id="catSec"><div class="wrap">
     <div class="row" style="justify-content:space-between;align-items:flex-end">
       <div><h2>Every fund category, rated every month</h2></div><a href="/mutual-funds/">All funds, by category</a></div>
@@ -675,7 +684,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
     <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
       <div class="seg" id="plan" role="group" aria-label="Plan"><button aria-pressed="true" data-v="Regular">Regular</button><button aria-pressed="false" data-v="Direct">Direct</button></div>
-      <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
+      <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="1M">1M</button><button aria-pressed="false" data-v="3M">3M</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
       <input type="search" id="q" placeholder="Search fund or AMC" aria-label="Search">
     </div>
     <div class="note" id="hzNote"></div>
@@ -1103,7 +1112,7 @@ async function insightsPage(){const I=await insights(),el=$('#insPage');
   bindTry(el)}
 
 /* ---------- search ---------- */
-const PAGES=[['Home','#home','Start here'],['Fund ratings','#ratings','Every equity, hybrid, index and debt fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Funds holding a stock','/mutual-funds/holding/','Which mutual funds hold a stock, and who bought or sold it'],['Method and backtest','/method/','How the ratings work'],['What we offer','/invest/','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Calculators','/calculators/','SIP, lump sum, goal, SWP, EMI and tax calculators'],['Money Plan','/plan/','How much to invest, and where, for each goal'],['Retirement planner','/plan/','Corpus, SWP and how long the money lasts (Money Plan)'],['Asset allocation','/plan/','Your mix of equity, debt and gold (Money Plan)'],['SIP backtest','#tools-sipreal','Real SIP results from actual NAVs'],['Insights','/insights/','This month in numbers'],['Investor guides','/learn/','Regular vs Direct, SIP vs lump sum, tax'],['All funds, by category','/mutual-funds/','Equity, hybrid and debt funds'],['Debt funds','/mutual-funds/','Liquid, overnight, corporate bond, gilt and more'],['Arbitrage funds','/mutual-funds/arbitrage/','Compared with liquid funds, before and after tax'],['Mutual fund investing','/invest/mutual-funds/','How we choose funds for you'],['SIP calculator','/calculators/sip/','Calculators'],['Capital-gains tax','/calculators/capital-gains-tax/','Calculators'],['PMS','/invest/pms/','Invest'],['AIFs','/invest/aif/','Invest'],['Bonds','/invest/bonds/','Invest'],['Unlisted shares','/invest/unlisted-shares/','Invest'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
+const PAGES=[['Home','#home','Start here'],['Income tax calculator','/income-tax/calculator/','Old vs new regime, tax year 2026-27, every deduction'],['Income tax slabs FY 2026-27','/income-tax/slabs-fy-2026-27/','New and old regime rates'],['Income tax','/income-tax/','Calculators, slabs and due dates'],['Income tax deductions','/income-tax/deductions/','80C, 80D, HRA, NPS, 24(b), 87A rebate'],['Fund ratings','#ratings','Every equity, hybrid, index and debt fund, by category'],['Compare and overlap','#compare','Up to four funds side by side'],['Funds holding a stock','/mutual-funds/holding/','Which mutual funds hold a stock, and who bought or sold it'],['Method and backtest','/method/','How the ratings work'],['What we offer','/invest/','Mutual funds, PMS, AIFs, bonds, unlisted shares'],['Calculators','/calculators/','SIP, lump sum, goal, SWP, EMI and tax calculators'],['Money Plan','/plan/','How much to invest, and where, for each goal'],['Retirement planner','/plan/','Corpus, SWP and how long the money lasts (Money Plan)'],['Asset allocation','/plan/','Your mix of equity, debt and gold (Money Plan)'],['SIP backtest','#tools-sipreal','Real SIP results from actual NAVs'],['Insights','/insights/','This month in numbers'],['Investor guides','/learn/','Regular vs Direct, SIP vs lump sum, tax'],['All funds, by category','/mutual-funds/','Equity, hybrid and debt funds'],['Debt funds','/mutual-funds/','Liquid, overnight, corporate bond, gilt and more'],['Arbitrage funds','/mutual-funds/arbitrage/','Compared with liquid funds, before and after tax'],['Mutual fund investing','/invest/mutual-funds/','How we choose funds for you'],['SIP calculator','/calculators/sip/','Calculators'],['Capital-gains tax','/calculators/capital-gains-tax/','Calculators'],['PMS','/invest/pms/','Invest'],['AIFs','/invest/aif/','Invest'],['Bonds','/invest/bonds/','Invest'],['Unlisted shares','/invest/unlisted-shares/','Invest'],['About us','#about','Who we are'],['Contact','#contact','Talk to us'],['Disclosures','#disclosures','Registration, commission, risk'],['Client login','https://onedigital.centricity.co.in/','Opens Centricity in a new tab']];
 function openSearch(){const o=$('#srch');o.hidden=false;const q=$('#srchQ');q.value='';drawSearch('');setTimeout(()=>q.focus(),10)}
 function closeSearch(){$('#srch').hidden=true}
 function drawSearch(q){
@@ -1395,7 +1404,9 @@ function catSection(){const el=$('#catGrid');if(!el)return;
   draw()}
 
 /* ---------- ratings ---------- */
-const HZN={Overall:'Track record',"6M":'6 months',"1Y":'1 year',"3Y":'3 years',"5Y":'5 years'};
+const AS_TIP="How different the fund's portfolio is from its index: 0% would be a copy of the index, 100% nothing in common. Worked out from the fund's latest monthly portfolio against the holdings of index funds that track its benchmark (or, where there are none, the average portfolio of its peers): half the sum of the gaps in each stock's weight. Higher means more of the result comes from the manager's own choices.";
+const YRS_={'1M':1/12,'3M':.25,'6M':.5,'1Y':1,'3Y':3,'5Y':5};
+const HZN={Overall:'Track record',"1M":'1 month',"3M":'3 months',"6M":'6 months',"1Y":'1 year',"3Y":'3 years',"5Y":'5 years'};
 function ratingsInit(){
   $('#cat').innerHTML=['Equity','Hybrid','Debt'].map(a=>{const C=cats().filter(c=>ASSET(c)===a);return C.length?`<optgroup label="${a}">${C.map(c=>`<option>${c}</option>`).join('')}</optgroup>`:''}).join('');
   $('#cat').onchange=e=>{S.cat=e.target.value;ratings()};
@@ -1406,7 +1417,7 @@ function ratingsInit(){
 function ratings(){
   $('#cat').value=S.cat;
   $$('#plan button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.plan));
-  $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
+  $$('#hz button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.v===S.hz);b.hidden=b.dataset.v!=='Overall'&&!S.funds.some(f=>f['score_'+b.dataset.v]!=null)});
   const h=S.hz, idx=S.cat==='Index Fund', arb=S.cat==='Arbitrage', dbt=DEBT.includes(S.cat);
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
   $('#hzNote').innerHTML=h==='Overall'?(dbt?'<b>Track record</b>: debt funds are compared with the median fund of their category on return, steadiness, cost and any sharp one-day fall well below their category. 3 years of history needed (1 year for overnight, liquid and money market funds).':arb?'<b>Track record</b>: arbitrage funds are compared on return over the index, consistency, fee and size, and need to beat liquid funds after tax for A or A+. 3 years of history needed.':'<b>Track record</b> needs at least 3 years of history (1 year for index funds).')+' Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings are recalculated every month (on the 11th, and again on the 16th once late portfolios arrive); returns and period ranks update every weekday. Ratings describe the record so far and are not forecasts.'
@@ -1414,7 +1425,7 @@ function ratings(){
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
   const sk=h==='Overall'?'score':'score_'+h;
-  const YRS={'6M':.5,'1Y':1,'3Y':3,'5Y':5};
+  const YRS={'1M':1/12,'3M':.25,'6M':.5,'1Y':1,'3Y':3,'5Y':5};
   const fmtPct2=v=>v==null?'–':num(v,2)+'%';
   const shortH=x=>x.replace(' months',' mo').replace(' years',' yrs').replace(' year',' yr');
   const first=f=>{if(h==='Overall')return tierT(f);if(f[sk]!=null)return `<span class="mono">${f['rank_'+h]}</span><span class="muted mono" style="font-size:12px"> / ${f['peers_'+h]}</span>`;
@@ -1442,7 +1453,7 @@ function ratings(){
    :idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
-    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period: CAGR for 1 year and longer, plain return for 6 months'],
+    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period: CAGR for 1 year and longer, plain return for shorter periods'],
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
@@ -1450,7 +1461,7 @@ function ratings(){
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
-    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Annualised return (CAGR) over the period, point to point. The 6-month figure is not annualised'],
+    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Annualised return (CAGR) over the period, point to point. Figures for 1, 3 and 6 months are not annualised'],
     [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'The fund’s CAGR minus its index’s CAGR (TRI, including dividends). Fund 15% a year vs index 12% a year = +3%. This is not alpha: alpha, on each fund page, also adjusts for the risk (beta) the fund took'],
     ['Up capture 3Y','upside_capture_3y',f=>num(f.upside_capture_3y,0),'In months the index rose, how much of the rise the fund caught. 100 = as much as the index; 110 = 10% more; 90 = only 90%. Higher is better'],
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
@@ -1459,7 +1470,7 @@ function ratings(){
     ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
-    'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
+    'Return':['Return',idx&&h==='Overall'?'1Y':YRS[h]<1?h:hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
     '1Y return':['Return','1Y'],'3Y vs liquid':['vs liquid','3Y'],'3Y vs liquid after tax':['vs liquid','3Y, after tax'],'Fund fee':['Fund fee','base TER'],
     'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
@@ -1498,7 +1509,7 @@ async function fund(code){
   const twin=S.funds.find(x=>x.pair_key===f.pair_key&&x.code!==f.code);
   const H=await holdings(); const top=(H[f.pair_key]||[]).slice(0,10);
   const fl=flags(f);
-  const per=['6M','1Y','3Y','5Y'].map(h=>{const r=f['ret_'+h],e=f['excess_'+h];return `<tr><td class="l">${HZN[h]}${h!=='6M'&&h!=='1Y'?' <span class="muted" style="font-size:12px">(a year)</span>':''}</td><td class="num">${pct(r)}</td><td class="num">${r==null||e==null?'–':pct(r-e)}</td><td class="num ${sg(e)}">${spct(e)}</td><td class="num">${f['rank_'+h]!=null?f['rank_'+h]+' / '+f['peers_'+h]:'–'}</td></tr>`}).join('');
+  const per=['1M','3M','6M','1Y','3Y','5Y'].map(h=>{const r=f['ret_'+h],e=f['excess_'+h];return `<tr><td class="l">${HZN[h]}${YRS_[h]>1?' <span class="muted" style="font-size:12px">(a year)</span>':''}</td><td class="num">${pct(r)}</td><td class="num">${r==null||e==null?'–':pct(r-e)}</td><td class="num ${sg(e)}">${spct(e)}</td><td class="num">${f['rank_'+h]!=null?f['rank_'+h]+' / '+f['peers_'+h]:'–'}</td></tr>`}).join('');
   const arb=f.category==='Arbitrage', dbt=DEBT.includes(f.category);
   const liqRows=arb?[[1,'1 year'],[3,'3 years (a year)']].map(([y,lab])=>{const fr=f['ret_'+y+'Y'],lr=f['liq_cagr_'+y+'y'];if(fr==null||lr==null)return '';
     const fa=fr*(1-TAXE),la=lr*(1-TAXS);return `<tr><td class="l">${lab}</td><td class="num">${pct(fr,2)}</td><td class="num">${pct(lr,2)}</td><td class="num ${sg(fr-lr)}">${spct(fr-lr,2)}</td><td class="num">${pct(fa,2)}</td><td class="num">${pct(la,2)}</td><td class="num ${sg(fa-la)}">${spct(fa-la,2)}</td></tr>`}).join(''):'';
@@ -1517,7 +1528,7 @@ async function fund(code){
       <div><div class="muted" style="font-size:13px">1-day change</div><div class="mono ${sg(f.nav_chg_1d)}" style="font-size:20px">${spct(f.nav_chg_1d,2)}</div></div>
       <div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">${f.ter==null?'–':num(f.ter,2)+'%'}</div>${arb&&f.ter_base!=null?`<div class="muted" style="font-size:12px">fund fee ${num(f.ter_base,2)}%, the rest trading taxes and costs</div>`:''}</div>
       <div><div class="muted" style="font-size:13px">${aumL(f)}</div><div class="mono" style="font-size:20px">${cr(f.aum_cr)}</div></div></div>
-    <div class="card row" style="gap:18px"><div>${tierW(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}${watchNote(f)?`<br><span style="font-size:13.5px;color:var(--brass)">${esc(watchNote(f))}</span>`:''}</p></div></div>
+    <div class="card row" style="gap:18px"><div>${tierW(f.tier)}</div><div style="flex:1;min-width:200px"><b>Track-record rating${f.peer_rank?(f.peer_count>1?`: ${f.peer_rank} of ${f.peer_count} in ${esc(f.peer_group)}`:`: no peers in ${esc(f.peer_group)}`):''}</b><p class="muted" style="font-size:14px;margin-top:4px">${f.score==null?'Not rated yet: needs at least 3 years of history.':f.peer_count==1?'The only plan of its type tracking this index, so there is no one to rank it against; it gets the neutral middle rating.':`Score ${num(f.score,1)} out of 100 against ${f.peer_count} peers. Describes the past, not a forecast.`}${capNote(f)?`<br><span class="flag" style="font-size:13.5px">${esc(capNote(f))}</span>`:''}${watchNote(f)?`<br><span style="font-size:13.5px;color:var(--brass)">${esc(watchNote(f))}</span>`:''}</p></div></div>
   </div>
   <h2 style="margin-top:40px;font-size:26px">${dbt?'Returns against the category median':'Returns against the index'}</h2>
   <div class="tablewrap" style="margin-top:14px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>${dbt?'Median '+esc(f.category)+' fund':'Index (TRI)'}</th><th>Difference</th><th>Rank in category</th></tr></thead><tbody>${per}</tbody></table></div>
@@ -1575,7 +1586,7 @@ function portfolioBlock(f,top){
   const other=Math.max(0,100-mix.reduce((s,m)=>s+(m[1]||0),0));
   return `<div style="margin-top:12px"><div class="mix">${mix.map(m=>`<div style="width:${m[1]||0}%;background:${m[2]}" title="${m[0]} cap ${num(m[1],0)}%"></div>`).join('')}</div>
   <div class="row" style="gap:16px;font-size:13px;margin-top:8px">${mix.map(m=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${m[2]};margin-right:6px"></span>${m[0]} ${num(m[1],0)}%</span>`).join('')}<span class="muted">Other / cash ${num(other,0)}%</span></div>
-  <div class="kv" style="margin-top:12px">${[['Stocks held',f.n_stocks??'–'],['Top 10 weight',f.top10_pct==null?'–':num(f.top10_pct,1)+'%'],['Active share',f.active_share==null?'–':num(f.active_share,0)+'%'],['Largest sector',f.top_sector?esc(f.top_sector)+' '+num(f.top_sector_pct,0)+'%':'–']].map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
+  <div class="kv" style="margin-top:12px">${[['Stocks held',f.n_stocks??'–'],['Top 10 weight',f.top10_pct==null?'–':num(f.top10_pct,1)+'%'],[`<span title="${AS_TIP}" style="border-bottom:1px dotted var(--ink-3);cursor:help">Active share</span>`,f.active_share==null?'–':num(f.active_share,0)+'%'],['Largest sector',f.top_sector?esc(f.top_sector)+' '+num(f.top_sector_pct,0)+'%':'–']].map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
   <h3 style="margin-top:22px">Top 10 holdings</h3><div class="kv" style="margin-top:8px;grid-template-columns:1fr">${top.map(t=>`<div><span>${esc(t[1])}</span><b>${num(t[2],1)}%</b></div>`).join('')}</div></div>`;
 }
 
@@ -1595,11 +1606,11 @@ async function compare(){
   if(!fs.length){$('#cmp').innerHTML='<div class="note">Start typing a fund name above. Tip: you can also press "Add to compare" on any fund page.</div>';return}
   const H=await holdings();
   const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tierW(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr)+(f.aum_asof?' <span class="muted" style="font-size:12px">'+esc(f.aum_asof)+'</span>':''),f=>f.aum_cr]]],
-    ['Returns (a year beyond 1Y)',[['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
+    ['Returns (a year beyond 1Y)',[['1 month',f=>pct(f.ret_1M),f=>f.ret_1M,1],['3 months',f=>pct(f.ret_3M),f=>f.ret_3M,1],['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
     ['Against its index',[['1 year',f=>spct(f.excess_1Y),f=>f.excess_1Y,1],['3 years',f=>spct(f.excess_3Y),f=>f.excess_3Y,1],['5 years',f=>spct(f.excess_5Y),f=>f.excess_5Y,1],['3Y rank in category',f=>f.rank_3Y!=null?f.rank_3Y+' / '+f.peers_3Y:'–']]],
     ['Risk',[['Max fall, 5Y',f=>pct(f.max_drawdown_5y),f=>f.max_drawdown_5y,1],['Downside capture',f=>num(f.downside_capture_3y,0),f=>f.downside_capture_3y,-1],['Sharpe, 3Y',f=>num(f.sharpe_3y,2),f=>f.sharpe_3y,1],['Volatility, 3Y',f=>pct(f.vol_3y),f=>f.vol_3y,-1]]],
     ['Past 3-year outcomes',[['Typical',f=>pct(f.hist3y_median),f=>f.hist3y_median,1],['Bad case (worst 10%)',f=>pct(f.hist3y_p10),f=>f.hist3y_p10,1],['Periods with a gain',f=>pct(f.hist3y_pos,0),f=>f.hist3y_pos,1]]],
-    ['Portfolio',[['Large / mid / small',f=>f.large_pct==null?'–':`${num(f.large_pct,0)} / ${num(f.mid_pct,0)} / ${num(f.small_pct,0)}`],['Stocks held',f=>f.n_stocks??'–'],['Top 10 weight',f=>f.top10_pct==null?'–':num(f.top10_pct,0)+'%'],['Active share',f=>f.active_share==null?'–':num(f.active_share,0)+'%']]]];
+    ['Portfolio',[['Large / mid / small',f=>f.large_pct==null?'–':`${num(f.large_pct,0)} / ${num(f.mid_pct,0)} / ${num(f.small_pct,0)}`],['Stocks held',f=>f.n_stocks??'–'],['Top 10 weight',f=>f.top10_pct==null?'–':num(f.top10_pct,0)+'%'],[`<span title="${AS_TIP}" style="border-bottom:1px dotted var(--ink-3);cursor:help">Active share</span>`,f=>f.active_share==null?'–':num(f.active_share,0)+'%']]]];
   let html=`<div class="tablewrap"><table><thead><tr><th class="l"></th>${fs.map(f=>`<th style="white-space:normal;min-width:160px;color:var(--ink);text-transform:none;letter-spacing:0;font:600 13.5px var(--f-body)"><a href="${furl(f.code)}" style="color:inherit">${esc(f.name)}</a></th>`).join('')}</tr></thead><tbody>`;
   rows.forEach(([sec,rs])=>{html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">${sec}</td></tr>`;
     rs.forEach(([lab,fmt,val,dir])=>{let best=null;if(dir&&fs.length>1){const v=fs.map(val).filter(x=>x!=null);if(v.length>1)best=dir>0?Math.max(...v):Math.min(...v)}
@@ -1607,7 +1618,7 @@ async function compare(){
   if(fs.length>1){html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">Portfolio overlap (share of portfolio in common stocks)</td></tr>`;
     const ov=(a,b)=>{const A=H[a.pair_key],B=H[b.pair_key];if(!A||!B)return null;const m={};A.forEach(x=>m[x[0]]=x[2]);let s=0;B.forEach(x=>{if(m[x[0]]!=null)s+=Math.min(m[x[0]],x[2])});return s};
     fs.forEach(a=>{html+=`<tr><td class="l">${esc(a.name)}</td>${fs.map(b=>{if(a===b)return'<td class="muted">—</td>';const o=a.pair_key===b.pair_key?100:ov(a,b);return `<td class="num">${o==null?'<span class="muted">no holdings yet</span>':num(o,0)+'%'}</td>`}).join('')}</tr>`})}
-  html+=`</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Teal = best among the selected funds on that row. Overlap uses each fund's latest monthly portfolio (${mon(S.meta.holdings_month)}).</p>`;
+  html+=`</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Teal = best among the selected funds on that row. Overlap uses each fund's latest monthly portfolio (${mon(S.meta.holdings_month)}).</p><p class="muted" style="font-size:12.5px;margin-top:6px"><b>Active share</b>: ${AS_TIP}</p>`;
   $('#cmp').innerHTML=html;
 }
 

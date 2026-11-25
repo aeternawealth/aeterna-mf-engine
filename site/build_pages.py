@@ -467,13 +467,14 @@ def group_pages(B, funds, urls, as_of):
 
 
 # ------------------------------------------------------------------ fund houses
-def amc_watch_html(B, a, W):
+def amc_watch_html(B, a, W, tot=None):
     """Fund-house watch (display only): written by site/build_series.py into site/data/amc_watch.json"""
     w = (W.get("houses") or {}).get(a)
     if not w:
         return ""
     med, h = W.get("median_herding"), w["herding"]
-    bits = [f"Over the last year, the weekly returns of its {w['schemes']} diversified equity schemes moved together with a score of <b>{h:.2f}</b> "
+    of = f" (of its {tot} schemes on this site; sectoral, index, hybrid and debt funds are left out)" if tot else ""
+    bits = [f"Over the last year, the weekly returns of its {w['schemes']} diversified equity schemes{of} moved together with a score of <b>{h:.2f}</b> "
             f"(0 = independent, 1 = identical; the median fund house is {med:.2f}; {w['rank']} of {w['of']} houses)."]
     if w.get("overlap") is not None:
         bits.append(f"Two of its schemes typically hold <b>{w['overlap']:.0f}%</b> of their portfolios in the same stocks.")
@@ -489,7 +490,7 @@ def amc_watch_html(B, a, W):
             "<p class='muted' style='font-size:12.5px;margin-top:6px'>For information; it does not change any fund's rating. Measured on returns over the median diversified equity fund each week.</p></div>")
 
 
-def amc_watch_table(B, W):
+def amc_watch_table(B, W, tot=None):
     """every fund house on the watch measures, most tightly linked first (display only)"""
     H = sorted((W.get("houses") or {}).items(), key=lambda x: x[1]["rank"])
     if not H:
@@ -499,14 +500,14 @@ def amc_watch_table(B, W):
     hl = " style='color:var(--brass);font-weight:600'"
     ov = lambda v: "–" if v.get("overlap") is None else f"{v['overlap']:.0f}%"
     rows = "".join(f"<tr><td class='l'><a href='/mutual-funds/amc/{B.slug(a)}/'>{B.e(a)}</a></td><td class='num'{hl if v['herding'] >= 0.40 else ''}>{v['herding']:.2f}</td>"
-                   f"<td class='num'>{ov(v)}</td><td class='num'>{pc(v.get('aum_growth'))}</td><td class='num'>{v['schemes']}</td></tr>" for a, v in H)
+                   f"<td class='num'>{ov(v)}</td><td class='num'>{pc(v.get('aum_growth'))}</td><td class='num'>{v['schemes']}{' of ' + str(tot[a]) if tot and tot.get(a) else ''}</td></tr>" for a, v in H)
     return (f"<h2 id='watch' style='font-size:26px;margin-top:40px;scroll-margin-top:84px'>How tightly each fund house's schemes move together</h2>"
             f"<p style='margin-top:10px'>When one house view drives every scheme, a house's funds tend to rise and fall together. The score is the average "
             f"correlation of its diversified equity schemes' weekly returns over the median fund, over the last year: 0 means independent, 1 identical; "
             f"the median fund house is {med:.2f}. Scores of 0.40 or more are highlighted. Holding funds from more than one fund house spreads this risk.</p>"
             "<div class='tablewrap' style='margin-top:14px'><table><thead><tr><th class='l'>Fund house</th><th>Move together</th><th>Shared stocks</th>"
-            f"<th>Equity AUM, 12 months</th><th>Schemes</th></tr></thead><tbody>{rows}</tbody></table></div>"
-            "<p class='muted' style='font-size:12.5px;margin-top:8px'>Shared stocks: the median share of portfolio two of its schemes hold in common. AUM change includes market moves. "
+            f"<th>Equity AUM, 12 months</th><th>Schemes scored</th></tr></thead><tbody>{rows}</tbody></table></div>"
+            "<p class='muted' style='font-size:12.5px;margin-top:8px'>Schemes scored: the house's diversified equity schemes with a year of history (large, mid, small, flexi, multi cap, large &amp; mid, focused, ELSS, value/contra, dividend yield), out of all its schemes on this site. Sectoral, index, hybrid and debt funds are left out: they follow a theme, an index or a bond market rather than the house's stock-picking view. Shared stocks: the median share of portfolio two of its schemes hold in common. AUM change includes market moves. "
             "For information; it does not change any fund's rating.</p>")
 
 
@@ -517,6 +518,7 @@ def amc_pages(B, funds, urls, as_of):
     by = {}
     for f in funds:
         by.setdefault(f.get("amc") or "Other", []).append(f)
+    TOT = {a: len({f.get('name') for f in L if f.get('plan_type') == 'Regular'} or {f.get('name') for f in L}) for a, L in by.items()}
     cards = []
     for a, L in sorted(by.items()):
         path = f"/mutual-funds/amc/{B.slug(a)}/"
@@ -536,7 +538,7 @@ def amc_pages(B, funds, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/amc/">Fund houses</a> › {B.e(a)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{B.e(a)}: equity and index funds</h1>
 <p class="lede" style="margin-top:12px">{schemes} schemes in {len(cats)} categories{f'; {top} of {len(rated)} rated plans are in the top two tiers of their category' if rated else ''}. Data as of {B.dmy(as_of)}.</p>
-{amc_watch_html(B, a, W)}
+{amc_watch_html(B, a, W, TOT.get(a))}
 {secs}{faq_html(B, faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation. Read the scheme documents before investing.</p></div></section>"""
         B.write(path, B.page(f"{a} schemes: equity fund ratings, returns and costs | Aeterna Wealth", desc, path, body,
@@ -547,7 +549,7 @@ def amc_pages(B, funds, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › Fund houses</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Mutual fund houses (AMCs) in India</h1>
 <p class="lede" style="margin-top:12px">{len(by)} fund houses with open-ended equity or index funds. Pick one to see every scheme it runs, rated within its category.</p>
-<ul style="columns:3 220px;margin-top:22px;line-height:2">{''.join(f'<li>{c}</li>' for c in cards)}</ul>{amc_watch_table(B, W)}</div></section>"""
+<ul style="columns:3 220px;margin-top:22px;line-height:2">{''.join(f'<li>{c}</li>' for c in cards)}</ul>{amc_watch_table(B, W, TOT)}</div></section>"""
     B.write("/mutual-funds/amc/", B.page("Mutual fund houses (AMCs) in India: all equity schemes rated | Aeterna Wealth",
                                          f"All {len(by)} Indian mutual fund houses with equity and index funds, each with its schemes rated on track record, returns, cost and holdings.",
                                          "/mutual-funds/amc/", body, (B.crumbs([("Mutual funds", "/mutual-funds/"), ("Fund houses", "/mutual-funds/amc/")]),)))

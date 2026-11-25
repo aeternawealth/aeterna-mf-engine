@@ -297,9 +297,9 @@ def index_metrics(nav: pd.Series, idx: pd.Series, as_of: pd.Timestamp) -> dict:
 
 
 # ---------------------------------------------------------------- horizon (period-wise) metrics
-HORIZONS = {"1M": 1 / 12, "3M": 0.25, "6M": 0.5, "1Y": 1, "3Y": 3, "5Y": 5}
+HORIZONS = {"1M": 1 / 12, "3M": 0.25, "YTD": None, "6M": 0.5, "1Y": 1, "3Y": 3, "5Y": 5}
 # rolling sub-window (in weeks) used for each horizon's consistency (hit-rate) measure
-_HIT_WINDOW = {"1M": 1, "3M": 2, "6M": 4, "1Y": 13, "3Y": 52, "5Y": 156}
+_HIT_WINDOW = {"1M": 1, "3M": 2, "YTD": 2, "6M": 4, "1Y": 13, "3Y": 52, "5Y": 156}
 
 
 def horizon_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp) -> dict:
@@ -310,7 +310,11 @@ def horizon_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp) -> di
     if len(nav) < 20 or len(bench) < 20:
         return m
     for h, yrs in HORIZONS.items():
-        start = as_of - pd.DateOffset(months=round(yrs * 12))
+        if h == "YTD":                                  # calendar year to date: from the last NAV of last year
+            start = pd.Timestamp(as_of.year - 1, 12, 31)
+            yrs = (as_of - start).days / 365.25
+        else:
+            start = as_of - pd.DateOffset(months=round(yrs * 12))
         if nav.index[0] > start + pd.Timedelta(days=10):
             continue                                    # not old enough for this horizon
         j = pd.concat([nav, bench], axis=1, keys=["f", "b"]).dropna()

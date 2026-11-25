@@ -349,7 +349,7 @@ def data_meta(holdings_month=None, tri_date=None):
 def write_outputs(out: pd.DataFrame, folder, holdings_top=None, meta=None):
     folder.mkdir(parents=True, exist_ok=True)
     extra = [c for c in out.columns if c.startswith(("hist3y_", "flow_")) or c == "aum_1y_ago_cr"]
-    hz = extra + [c for c in out.columns if re.match(r"^(ret|excess|ir|dcap|mdd|hit|te|sortino|score|rank|peers)_(1M|3M|6M|1Y|3Y|5Y)$", c)]
+    hz = extra + [c for c in out.columns if re.match(r"^(ret|excess|ir|dcap|mdd|hit|te|sortino|score|rank|peers)_(1M|3M|YTD|6M|1Y|3Y|5Y)$", c)]
     cols = [c for c in DISPLAY_COLS if c in out.columns] + [c for c in out.columns if c.startswith("pillar_")] + hz
     o = out[cols].copy()
     o["flags"] = o["flags"].map(lambda f: ", ".join(f) if isinstance(f, list) else "")

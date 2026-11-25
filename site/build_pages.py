@@ -489,6 +489,27 @@ def amc_watch_html(B, a, W):
             "<p class='muted' style='font-size:12.5px;margin-top:6px'>For information; it does not change any fund's rating. Measured on returns over the median diversified equity fund each week.</p></div>")
 
 
+def amc_watch_table(B, W):
+    """every fund house on the watch measures, most tightly linked first (display only)"""
+    H = sorted((W.get("houses") or {}).items(), key=lambda x: x[1]["rank"])
+    if not H:
+        return ""
+    med = W.get("median_herding")
+    pc = lambda v: "–" if v is None else f"{v * 100:+.0f}%"
+    hl = " style='color:var(--brass);font-weight:600'"
+    ov = lambda v: "–" if v.get("overlap") is None else f"{v['overlap']:.0f}%"
+    rows = "".join(f"<tr><td class='l'><a href='/mutual-funds/amc/{B.slug(a)}/'>{B.e(a)}</a></td><td class='num'{hl if v['herding'] >= 0.40 else ''}>{v['herding']:.2f}</td>"
+                   f"<td class='num'>{ov(v)}</td><td class='num'>{pc(v.get('aum_growth'))}</td><td class='num'>{v['schemes']}</td></tr>" for a, v in H)
+    return (f"<h2 style='font-size:26px;margin-top:40px'>How tightly each fund house's schemes move together</h2>"
+            f"<p style='margin-top:10px'>When one house view drives every scheme, a house's funds tend to rise and fall together. The score is the average "
+            f"correlation of its diversified equity schemes' weekly returns over the median fund, over the last year: 0 means independent, 1 identical; "
+            f"the median fund house is {med:.2f}. Scores of 0.40 or more are highlighted. Holding funds from more than one fund house spreads this risk.</p>"
+            "<div class='tablewrap' style='margin-top:14px'><table><thead><tr><th class='l'>Fund house</th><th>Move together</th><th>Shared stocks</th>"
+            f"<th>Equity AUM, 12 months</th><th>Schemes</th></tr></thead><tbody>{rows}</tbody></table></div>"
+            "<p class='muted' style='font-size:12.5px;margin-top:8px'>Shared stocks: the median share of portfolio two of its schemes hold in common. AUM change includes market moves. "
+            "For information; it does not change any fund's rating.</p>")
+
+
 def amc_pages(B, funds, urls, as_of):
     from pathlib import Path
     wp = Path(__file__).resolve().parent / "data" / "amc_watch.json"
@@ -526,7 +547,7 @@ def amc_pages(B, funds, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › Fund houses</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Mutual fund houses (AMCs) in India</h1>
 <p class="lede" style="margin-top:12px">{len(by)} fund houses with open-ended equity or index funds. Pick one to see every scheme it runs, rated within its category.</p>
-<ul style="columns:3 220px;margin-top:22px;line-height:2">{''.join(f'<li>{c}</li>' for c in cards)}</ul></div></section>"""
+<ul style="columns:3 220px;margin-top:22px;line-height:2">{''.join(f'<li>{c}</li>' for c in cards)}</ul>{amc_watch_table(B, W)}</div></section>"""
     B.write("/mutual-funds/amc/", B.page("Mutual fund houses (AMCs) in India: all equity schemes rated | Aeterna Wealth",
                                          f"All {len(by)} Indian mutual fund houses with equity and index funds, each with its schemes rated on track record, returns, cost and holdings.",
                                          "/mutual-funds/amc/", body, (B.crumbs([("Mutual funds", "/mutual-funds/"), ("Fund houses", "/mutual-funds/amc/")]),)))

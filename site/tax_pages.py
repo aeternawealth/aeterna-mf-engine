@@ -176,7 +176,7 @@ def tax_pages(B, urls):
 <h2 style="font-size:24px;margin-top:28px">Rebate, surcharge, cess and capital gains</h2><ul style="margin-top:6px">{rules}</ul>
 <p class="muted" style="font-size:13px;margin-top:12px">Rules last checked {CHECKED}. Section numbers are those of the Income-tax Act, 1961, the names most people still use; the Income-tax Act, 2025 keeps the same limits under new numbers.</p>
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{faq_html}
-<p style="margin-top:22px;font-size:14.5px">Related: <a href="/income-tax/slabs-fy-2026-27/">Tax slabs FY {FY}</a> · <a href="/calculators/income-tax-old-vs-new/">What ELSS saves you</a> · <a href="/calculators/capital-gains-tax/">Capital gains tax calculator</a> · <a href="/learn/elss-tax-saving-mutual-funds/">ELSS explained</a></p>
+<p style="margin-top:22px;font-size:14.5px">Related: <a href="/income-tax/deductions/">Every deduction explained</a> · <a href="/income-tax/slabs-fy-2026-27/">Tax slabs FY {FY}</a> · <a href="/calculators/income-tax-old-vs-new/">What ELSS saves you</a> · <a href="/calculators/capital-gains-tax/">Capital gains tax calculator</a> · <a href="/learn/elss-tax-saving-mutual-funds/">ELSS explained</a></p>
 <p class="muted" style="font-size:12.5px;margin-top:22px">An estimate from the figures you enter, not tax advice. Have a CA check your return before you file.</p>
 </div></section><script src="/assets/tax-engine.js?v={v}"></script><script>{js}</script>"""
     app_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": f"Income tax calculator FY {FY} by Aeterna Wealth", "url": B.SITE + path,
@@ -184,6 +184,9 @@ def tax_pages(B, urls):
               "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"}, "publisher": {"@id": B.SITE + "/#org"}, "description": desc}
     B.write(path, B.page(title, desc, path, body, (app_ld, faq_ld, B.crumbs([("Income tax", "/income-tax/"), ("Calculator", path)]))))
     urls.append((path, "weekly", "0.9"))
+
+    import tax_deductions as TD
+    TD.deduction_pages(B, urls, {}, v)
 
     # ---------------------------------------------------------------- slabs
     sp = "/income-tax/slabs-fy-2026-27/"
@@ -208,6 +211,7 @@ def tax_pages(B, urls):
     # ---------------------------------------------------------------- hub
     cards = [(path, "Income tax calculator", "Both regimes, every individual: salary, HRA, house property, capital gains, crypto, all deductions."),
              (sp, f"Tax slabs FY {FY}", "New and old regime rates for every age, rebate, surcharge and cess."),
+             ("/income-tax/deductions/", "Deductions and exemptions", "80C, 80D, HRA, NPS, home-loan interest, 87A and more: limits, regime, a calculator each."),
              ("/calculators/income-tax-old-vs-new/", "Old vs new regime, quick check", "Your income and deductions in, the lower regime and what ELSS saves you out."),
              ("/calculators/capital-gains-tax/", "Capital gains tax calculator", "Equity and debt funds, bonds and unlisted shares."),
              ("/learn/capital-gains-tax-on-mutual-funds/", "Tax on mutual fund gains", "Short and long term, equity and debt, SIPs and switches."),

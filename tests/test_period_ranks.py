@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine import config as C  # noqa: E402
 
-HORIZONS = ("1M", "3M", "6M", "1Y", "3Y", "5Y")
+HORIZONS = ("1M", "3M", "YTD", "6M", "1Y", "3Y", "5Y")
 
 
 def test_equity_and_hybrid_period_views_have_no_cost():

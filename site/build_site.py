@@ -740,7 +740,8 @@ def fund_chart(f):
             f'<div class="card fchart" data-code="{f["code"]}" data-file="{e(file)}" data-bench="{e(bk)}" data-bname="{e(bname)}" data-name="{e(f["_name"])}">'
             '<div class="fc-head"><div class="fc-key"></div><div class="fc-tabs" role="group" aria-label="Period"></div></div>'
             '<div class="fc-wrap"><div class="fc-plot"></div><div class="fc-tip" hidden></div></div><p class="fc-sum muted"></p></div>'
-            '<p class="muted" style="font-size:12.5px;margin-top:8px">Month-end values; the last point is the latest NAV. '
+            '<p class="muted" style="font-size:12.5px;margin-top:8px">Daily NAVs up to 1 year, weekly for 3 years, month-end beyond; the last point is the latest NAV. '
+            'Drag across the chart to zoom in; CSV downloads the NAVs shown. '
             + ("The index is its total-return version (dividends reinvested). " if bk else "")
             + 'Returns are after the fund\'s costs. Past performance does not guarantee future returns.</p>'
             f'<script src="/assets/fundchart.js?v={FC_VER}" defer></script>')
@@ -866,7 +867,7 @@ def main():
     RET_RANK.clear()
     by = {}
     for f in funds:
-        for h in ("1M", "3M", "6M", "1Y", "3Y", "5Y"):
+        for h in ("1M", "3M", "YTD", "6M", "1Y", "3Y", "5Y"):
             if f.get("excess_" + h) is not None:
                 by.setdefault((f.get("peer_group"), f.get("plan_type"), h), []).append(f)
     for (pg, pl, h), g in by.items():
@@ -984,8 +985,10 @@ def main():
         desc = " ".join(desc_bits)[:300]
         title = f"{search_name(f['_name'])} {f['plan_type']} Growth: NAV, returns, rating & review | Aeterna Wealth"
         rows = ""
-        for h, lab in (("1M", "1 month"), ("3M", "3 months"), ("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
+        for h, lab in (("1M", "1 month"), ("3M", "3 months"), ("YTD", "This year so far"), ("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)
+            if r is None and h in ("1M", "3M", "YTD"):
+                continue
             rr = RET_RANK.get((f["code"], h))
             rank_s = "%d / %d" % rr if rr else "–"
             idx_s = pct(r - x) if r is not None and x is not None else "–"
@@ -1322,7 +1325,7 @@ def main():
     (DIST / "data" / "funds.json").write_text(json.dumps([{k: _slim(k, v) for k, v in f.items() if k not in unused} for f in json.loads((S / "data" / "funds.json").read_text())],
                                                          separators=(",", ":")), encoding="utf-8")
     cols = ["code", "name", "amc", "category", "plan_type", "benchmark", "tier", "score", "peer_rank", "peer_count", "nav_latest", "nav_date",
-            "ter", "aum_cr", "ret_1M", "ret_3M", "ret_6M", "ret_1Y", "ret_3Y", "ret_5Y", "excess_1Y", "excess_3Y", "excess_5Y", "max_drawdown_5y",
+            "ter", "aum_cr", "ret_1M", "ret_3M", "ret_YTD", "ret_6M", "ret_1Y", "ret_3Y", "ret_5Y", "excess_1Y", "excess_3Y", "excess_5Y", "max_drawdown_5y",
             "upside_capture_3y", "downside_capture_3y", "info_ratio_3y", "alpha_3y"]
     with open(DIST / "data" / "funds.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)

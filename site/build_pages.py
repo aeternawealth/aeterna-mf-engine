@@ -467,7 +467,32 @@ def group_pages(B, funds, urls, as_of):
 
 
 # ------------------------------------------------------------------ fund houses
+def amc_watch_html(B, a, W):
+    """Fund-house watch (display only): written by site/build_series.py into site/data/amc_watch.json"""
+    w = (W.get("houses") or {}).get(a)
+    if not w:
+        return ""
+    med, h = W.get("median_herding"), w["herding"]
+    bits = [f"Over the last year, the weekly returns of its {w['schemes']} diversified equity schemes moved together with a score of <b>{h:.2f}</b> "
+            f"(0 = independent, 1 = identical; the median fund house is {med:.2f}; {w['rank']} of {w['of']} houses)."]
+    if w.get("overlap") is not None:
+        bits.append(f"Two of its schemes typically hold <b>{w['overlap']:.0f}%</b> of their portfolios in the same stocks.")
+    if w.get("aum_growth") is not None:
+        g = w["aum_growth"]
+        bits.append(f"Its equity assets {'grew' if g >= 0 else 'fell'} <b>{abs(g) * 100:.0f}%</b> in 12 months, market moves included.")
+    hi = h >= 0.40
+    tail = ("When one house view drives every scheme, they tend to rise and fall together. In our study of 2009 to 2025, the fund house with the best "
+            "3-year record across its schemes was usually back in the middle or lower within three years. Holding funds from more than one fund house "
+            "spreads that risk." if hi else "Its schemes behave more independently of each other than at most fund houses.")
+    return (f"<div class='card' style='margin-top:22px{';border-color:var(--brass)' if hi else ''}'><b>Fund-house watch{': schemes move together' if hi else ''}</b>"
+            f"<p style='margin-top:8px;font-size:14.5px'>{' '.join(bits)} {B.e(tail)}</p>"
+            "<p class='muted' style='font-size:12.5px;margin-top:6px'>For information; it does not change any fund's rating. Measured on returns over the median diversified equity fund each week.</p></div>")
+
+
 def amc_pages(B, funds, urls, as_of):
+    from pathlib import Path
+    wp = Path(__file__).resolve().parent / "data" / "amc_watch.json"
+    W = json.loads(wp.read_text()) if wp.exists() else {}
     by = {}
     for f in funds:
         by.setdefault(f.get("amc") or "Other", []).append(f)
@@ -490,6 +515,7 @@ def amc_pages(B, funds, urls, as_of):
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/amc/">Fund houses</a> › {B.e(a)}</nav>
 <h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{B.e(a)}: equity and index funds</h1>
 <p class="lede" style="margin-top:12px">{schemes} schemes in {len(cats)} categories{f'; {top} of {len(rated)} rated plans are in the top two tiers of their category' if rated else ''}. Data as of {B.dmy(as_of)}.</p>
+{amc_watch_html(B, a, W)}
 {secs}{faq_html(B, faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation. Read the scheme documents before investing.</p></div></section>"""
         B.write(path, B.page(f"{a} schemes: equity fund ratings, returns and costs | Aeterna Wealth", desc, path, body,

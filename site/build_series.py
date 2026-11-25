@@ -211,6 +211,113 @@ def insights_from_site():
     return ins
 
 
+FINE = OUT / "nav"   # daily and weekly points for the fund-page charts
+
+
+def _pack(s: pd.Series, base: pd.Timestamp) -> dict:
+    """{s: first date, d: day gaps, v: values}: dates as gaps in days keep the files small"""
+    days = ((s.index - base).days).tolist()
+    return {"s": str(base.date()), "d": [days[0]] + [b - a for a, b in zip(days, days[1:])], "v": [sig(v) for v in s.tolist()]}
+
+
+def _fine(s: pd.Series, me: pd.Timestamp) -> pd.Series:
+    """up to the last month end: weekly points for 3 years, daily for the last 13 months"""
+    s = s[s.index <= me].dropna()
+    cut = me - pd.DateOffset(months=13)
+    wk = s[(s.index > me - pd.DateOffset(years=3)) & (s.index <= cut)].resample("W-FRI").last().dropna()
+    return pd.concat([wk, s[s.index > cut]]).sort_index()
+
+
+def fine_navs(funds, nav_dir, tri, end):
+    """site/data/nav/<code>.json (to the last month end; rewritten once a month, so the repository grows little) and
+    site/data/nav/recent-<category>.json + recent-bench.json (the days since; small, daily). bench.json for the indices."""
+    FINE.mkdir(parents=True, exist_ok=True)
+    me = (end.to_period("M") - 1).to_timestamp(how="end").normalize()
+    stamp, recent, n = str(me.date()), {}, 0
+    for f in funds:
+        p = nav_dir / f"{int(f['code'])}.csv"
+        if not p.exists():
+            continue
+        d = pd.read_csv(p, parse_dates=["date"]).set_index("date")["nav"].sort_index()
+        d = d[~d.index.duplicated(keep="last")]
+        if f.get("asset_class") == "Debt":
+            d = face_value_clean(d)
+        out = FINE / f"{int(f['code'])}.json"
+        h = _fine(d, me)
+        if len(h) >= 5:
+            old = json.loads(out.read_text()) if out.exists() else {}
+            if old.get("u") != stamp:
+                out.write_text(json.dumps({"u": stamp, **_pack(h, h.index[0])}, separators=(",", ":")))
+                n += 1
+        r = d[d.index > me].dropna()
+        if len(r):
+            recent.setdefault(slug(f["category"]), {})[str(f["code"])] = _pack(r, me)
+    for cat, body in recent.items():
+        (FINE / f"recent-{cat}.json").write_text(json.dumps({"u": stamp, "nav": body}, separators=(",", ":")))
+    benches = sorted({f.get("benchmark") for f in funds if f.get("benchmark") in tri.columns})
+    bh, br = {}, {}
+    for b in benches:
+        s = tri[b].dropna().sort_index()
+        h = _fine(s, me)
+        if len(h) >= 5:
+            bh[b] = _pack(h, h.index[0])
+        r = s[s.index > me]
+        if len(r):
+            br[b] = _pack(r, me)
+    bp = FINE / "bench.json"
+    if (json.loads(bp.read_text()).get("u") if bp.exists() else None) != stamp:
+        bp.write_text(json.dumps({"u": stamp, "tri": bh}, separators=(",", ":")))
+    (FINE / "recent-bench.json").write_text(json.dumps({"u": stamp, "tri": br}, separators=(",", ":")))
+    print(f"fine NAVs: {n} fund files rewritten (to {stamp}), {len(recent)} recent files")
+
+
+WATCH_CATS = {"Large Cap", "Large & Mid Cap", "Mid Cap", "Small Cap", "Flexi Cap", "Multi Cap", "Focused", "ELSS", "Value / Contra", "Dividend Yield"}
+
+
+def amc_watch(funds, nav_dir):
+    """Fund-house watch (display only; not a rating input): how far one house view drives all of a house's schemes.
+    herding = mean pairwise correlation of its diversified schemes' weekly returns over the median such scheme, last
+    52 weeks (audit/amc_cycles.py: Quant 0.6-0.65 in 2024-26, median house about 0.15); overlap = median share of
+    portfolio two of its schemes hold in common; aum_growth = 12-month change in its equity AUM."""
+    import numpy as np
+    F = [f for f in funds if f["plan_type"] == "Regular" and f.get("category") in WATCH_CATS and (f.get("age_years") or 0) >= 1]
+    W = {}
+    for f in F:
+        p = nav_dir / f"{int(f['code'])}.csv"
+        if p.exists():
+            d = pd.read_csv(p, parse_dates=["date"]).set_index("date")["nav"]
+            W[f["code"]] = d[~d.index.duplicated()].resample("W-FRI").last().pct_change(fill_method=None)
+    if not W:
+        return
+    R = pd.DataFrame(W)
+    R = R[R.index > R.index.max() - pd.Timedelta(days=365)]
+    R = R.sub(R.median(axis=1), axis=0)
+    hold = json.loads((OUT / "holdings.json").read_text()) if (OUT / "holdings.json").exists() else {}
+    by = {}
+    for f in F:
+        by.setdefault(f["amc"], []).append(f)
+    out = {}
+    for a, L in by.items():
+        cs = [f["code"] for f in L if f["code"] in R.columns and R[f["code"]].notna().sum() > 40]
+        if len(cs) < 4:
+            continue
+        m = R[cs].corr().values
+        herd = float(np.nanmean(m[np.triu_indices(len(cs), 1)]))
+        ws = [{x[0]: x[2] for x in hold[f["pair_key"]] if isinstance(x[2], (int, float))} for f in L if hold.get(f.get("pair_key"))]
+        ovs = [sum(min(ws[i][k], ws[j][k]) for k in ws[i] if k in ws[j]) for i in range(len(ws)) for j in range(i + 1, len(ws))]
+        now = sum(f.get("aum_cr") or 0 for f in L if f.get("aum_1y_ago_cr"))
+        ago = sum(f.get("aum_1y_ago_cr") or 0 for f in L if f.get("aum_1y_ago_cr"))
+        out[a] = {"herding": round(herd, 2), "schemes": len(cs), "overlap": round(float(np.median(ovs)), 1) if len(ovs) >= 3 else None,
+                  "aum_growth": round(now / ago - 1, 3) if ago else None}
+    if out:
+        med = float(np.median([v["herding"] for v in out.values()]))
+        rank = sorted(out, key=lambda a: -out[a]["herding"])
+        for i, a in enumerate(rank):
+            out[a]["rank"], out[a]["of"] = i + 1, len(rank)
+        (OUT / "amc_watch.json").write_text(json.dumps({"median_herding": round(med, 2), "houses": out}, separators=(",", ":")))
+        print("amc watch:", len(out), "houses; most herded", rank[:3])
+
+
 def main():
     funds = json.loads((OUT / "funds.json").read_text())
     nav_dir = C.NAV_DIR
@@ -236,6 +343,8 @@ def main():
         by_cat.setdefault(f["category"], {})[str(f["code"])] = month_end(d, months)
         d = d.dropna().sort_index()
         last[str(f["code"])] = [str(d.index[-1].date()), sig(d.iloc[-1])]
+    fine_navs(funds, nav_dir, tri, end)
+    amc_watch(funds, nav_dir)
     sizes = {}
     for cat, nav in by_cat.items():
         body = {"months": mlist, "nav": nav}

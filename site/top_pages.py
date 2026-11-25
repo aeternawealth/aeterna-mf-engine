@@ -111,7 +111,7 @@ def build(B, by_cat, urls, as_of):
             for p in ("Regular", "Direct"):
                 x = s.get(p)
                 if x:
-                    rk = f" · #{int(x['peer_rank'])} of {int(x['peer_count'])}" if x.get("peer_rank") else ""
+                    rk = f" · #{int(x['peer_rank'])} of {int(x['peer_count'])}" if x.get("peer_rank") and (x.get("peer_count") or 0) > 1 else ""
                     plans.append(f"<a href='{x['_url']}'>{p}</a> {B.tier_badge(x.get('tier'))}<span class='muted' style='font-size:13px'>{rk} · expense ratio {B.num(x.get('ter'), 2)}%</span>")
             prev = _prev_tier(B.RH, (r or d)["code"], month)
             moved = ""

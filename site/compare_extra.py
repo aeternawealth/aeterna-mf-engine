@@ -221,7 +221,7 @@ def sections(B, a, b, ra, rb, hold, name_fn, stock_url=None):
     # 5. the record, fund by fund
     def reading(f, r):
         bits = []
-        if r.get("tier") and r.get("tier") != "Unrated" and r.get("peer_rank"):
+        if r.get("tier") and r.get("tier") != "Unrated" and r.get("peer_rank") and (r.get("peer_count") or 0) > 1:
             bits.append(f"rated {r['tier']} (Regular plan), #{int(r['peer_rank'])} of {int(r['peer_count'])} in its category this month")
         if r.get("excess_3Y") is not None:
             bits.append(f"{_spct(r['excess_3Y'])} a year against its index over 3 years")

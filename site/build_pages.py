@@ -324,6 +324,9 @@ USE = {   # "Using it well": practical reading of each calculator's result, writ
 
 
 def calculator_pages(B, urls, calc_js):
+    import tax_calc as TC
+    if not any(c["id"] == "income-tax-old-vs-new" for c in CALCS):
+        CALCS.insert(1, TC.entry(fld, sel))
     cards = ["<a class='card stack sol' href='/plan/' style='gap:6px;text-decoration:none;color:inherit;border-color:var(--teal)'><b style='font:500 18px var(--f-display)'>Money Plan</b><span class='muted' style='font-size:14px'>How much to invest, and where, for each goal; what to change in what you hold; how long retirement money lasts.</span></a>"]
     for c in CALCS:
         path = f"/calculators/{c['id']}/"
@@ -356,9 +359,9 @@ def calculator_pages(B, urls, calc_js):
         cards.append(f"<a class='card stack sol' href='{path}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{c['name']}</b><span class='muted' style='font-size:14px'>{B.e(c['desc'].split(': ', 1)[-1][:120])}</span></a>")
     cards.append("<a class='card stack sol' href='/#tools-sipreal' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>SIP backtest on real NAVs</b><span class='muted' style='font-size:14px'>What a SIP in actual funds of a category would be worth today, from any start month.</span></a>")
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Financial calculators</h1>
-<p class="lede" style="margin-top:12px">Free calculators for the questions families ask most: SIPs, goals, retirement income, home loans, returns (CAGR and XIRR), inflation and capital-gains tax. Each one shows how it is calculated.</p>
+<p class="lede" style="margin-top:12px">Free calculators for the questions families ask most: income tax (old vs new regime), SIPs, goals, retirement income, home loans, returns (CAGR and XIRR), inflation and capital-gains tax. Each one shows how it is calculated.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""
-    B.write("/calculators/", B.page("Financial calculators: SIP, home loan prepayment, CAGR, XIRR, SWP, EMI, tax | Aeterna Wealth",
+    B.write("/calculators/", B.page("Financial calculators: income tax old vs new, SIP, home loan prepayment, CAGR, XIRR, SWP, EMI, tax | Aeterna Wealth",
                                     "Free financial calculators for India: SIP with step-up, lump sum, goal planner, home loan prepay-or-invest, CAGR, XIRR, SWP retirement income, loan EMI, inflation and capital-gains tax, each with its method explained.",
                                     "/calculators/", body, (B.crumbs([("Calculators", "/calculators/")]),)))
     urls.append(("/calculators/", "monthly", "0.8"))
@@ -523,6 +526,8 @@ def overlap(h1, h2):
 def _rk(B, X):
     if X.get("score") is None or X.get("peer_rank") is None:
         return "–"
+    if (X.get("peer_count") or 0) <= 1:
+        return "no peers"
     return f"{X['score']:.0f} · #{int(X['peer_rank'])} of {int(X['peer_count'])}"
 
 

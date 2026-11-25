@@ -516,7 +516,7 @@ def more_guides(d, f):
         faq=[("Can I withdraw ELSS before 3 years?", "No. Each investment is locked for 3 years from its own date, even in an emergency."),
              ("Is ELSS worth it under the new tax regime?", "Not for tax. Without the 80C deduction it is an ordinary equity fund with a 3-year lock-in."),
              ("How much can I claim?", "Up to ₹1.5 lakh a year under Section 80C, shared with PPF, EPF, life insurance premiums, home-loan principal and other 80C items.")],
-        links=[("/mutual-funds/elss/", "Every ELSS fund compared"), ("/mutual-funds/elss/top-rated/", "Top-rated ELSS funds this month"), ("/learn/capital-gains-tax-on-mutual-funds/", "Tax on fund gains")],
+        links=[("/calculators/income-tax-old-vs-new/", "Calculator: old vs new regime, and what ELSS saves you"), ("/mutual-funds/elss/", "Every ELSS fund compared"), ("/mutual-funds/elss/top-rated/", "Top-rated ELSS funds this month"), ("/learn/capital-gains-tax-on-mutual-funds/", "Tax on fund gains")],
     ))
     G.append(dict(
         slug="mutual-fund-exit-load",

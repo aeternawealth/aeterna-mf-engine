@@ -81,7 +81,7 @@ CAT_INFO = {   # what SEBI's categorisation (Oct 2017 circular, multi cap revise
     "Debt Sectoral": "lend mainly to one sector, such as financial services (a category new in 2026)",
 }
 CAT_GUIDES = {   # investor guides (site/learn_pages.py) linked from each category page
-    "ELSS": [("elss-tax-saving-mutual-funds", "ELSS: the tax saving and the lock-in"), ("capital-gains-tax-on-mutual-funds", "Tax on fund gains")],
+    "ELSS": [("elss-tax-saving-mutual-funds", "ELSS: the tax saving and the lock-in"), ("/calculators/income-tax-old-vs-new/", "Old vs new regime: what ELSS saves you"), ("capital-gains-tax-on-mutual-funds", "Tax on fund gains")],
     "Flexi Cap": [("flexi-cap-vs-multi-cap", "Flexi cap vs multi cap"), ("how-many-mutual-funds-should-i-own", "How many funds to own")],
     "Multi Cap": [("flexi-cap-vs-multi-cap", "Flexi cap vs multi cap"), ("how-many-mutual-funds-should-i-own", "How many funds to own")],
     "Large Cap": [("index-funds-vs-active-funds", "Index funds vs active funds"), ("mutual-fund-portfolio-overlap", "Fund overlap")],
@@ -161,7 +161,7 @@ RH_JS = r"""function rhDraw(el){const H=JSON.parse(el.dataset.h),T=['A+','A','B'
  <line id="rhG" y1="14" y2="176" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhHit" x="${L-10}" y="0" width="${W-L-R+20}" height="196" fill="transparent"/></svg><div class="rh-tip" id="rhTip" aria-live="polite"></div>`;
  const tip=document.getElementById('rhTip'),g=document.getElementById('rhG'),hit=document.getElementById('rhHit');
  if(H.some(h=>h[6]==='after a fall'))el.insertAdjacentHTML('beforeend','<p class="muted" style="font-size:12.5px;margin-top:6px;display:flex;gap:8px;align-items:center"><span style="display:inline-block;width:14px;height:12px;background:var(--brass);opacity:.35;border-radius:2px"></span>Shaded months: after-a-fall mode. The category\'s index was below its 200-day average, so half the score came from the after-a-fall criteria.</p>');
- const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]+' ('+({'A+':'Leading','A':'Strong','B':'In line','C':'Lagging','Watch':'Under review'}[h[1]]||'')+')'}${h[2]?` · ${h[2]} of ${h[3]} in its group`:''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
+ const show=i=>{const h=H[i];tip.innerHTML=`<b>${mo(h[0])}</b> <span class="tier-dot" style="background:${CL[h[1]]}"></span>${h[1]==='Unrated'?'Not rated':'Rated '+h[1]+' ('+({'A+':'Leading','A':'Strong','B':'In line','C':'Lagging','Watch':'Under review'}[h[1]]||'')+')'}${h[2]?(h[3]>1?` · ${h[2]} of ${h[3]} in its group`:' · no peers in its group'):''}${h[6]==='after a fall'?' · after-a-fall mode':''}${h[5]?`<span class="rh-why">${h[5]}</span>`:''}`;g.setAttribute('x1',x(i));g.setAttribute('x2',x(i));g.setAttribute('visibility','visible')};
  const at=e=>{const r=hit.getBoundingClientRect();return Math.max(0,Math.min(n-1,Math.round(((e.clientX-r.left)/r.width*(W-L-R+20)-10)/(W-L-R)*(n-1))))};
  hit.addEventListener('pointermove',e=>show(at(e)));hit.addEventListener('pointerdown',e=>show(at(e)));
  let last=-1;H.forEach((h,i)=>{if(h[5])last=i});show(last>=0?last:n-1);g.setAttribute('visibility','hidden')}
@@ -507,7 +507,7 @@ def footer():
     return f"""<footer class="site"><div class="wrap"><div class="cols">
  <div class="stack" style="gap:8px"><b style="font:500 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/mutual-funds/holding/">Funds holding a stock</a><a href="/learn/">Investor guides</a><a href="/method/">Method and backtest</a></div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a><a href="/calculators/income-tax-old-vs-new/">Income tax: old vs new</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
  </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans, included in the expense ratio; it charges no separate fee. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
 
@@ -973,7 +973,7 @@ def main():
         arb = f["category"] == "Arbitrage"
         desc_bits = [f"{f['_name']} {f['plan_type']} Growth: {f['category'].lower()} fund from {f.get('amc', '')}."]
         if rated:
-            desc_bits.append(f"Rated {f['tier']} on its track record (#{int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans).")
+            desc_bits.append(f"Rated {f['tier']} on its track record (#{int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans)." if (f.get('peer_count') or 0) > 1 else f"The only {f['plan_type']} plan tracking its index, so it has no peers to rank against.")
         if arb and r3 is not None and f.get("liq_cagr_3y") is not None:
             desc_bits.append(f"3-year return {pct(r3)} a year vs {pct(f['liq_cagr_3y'])} for the median liquid fund (before tax).")
         elif r3 is not None and e3 is not None:
@@ -1041,7 +1041,7 @@ def main():
         if top and not arb:
             faq.append((f"What does {f['_name']} invest in?", f"Its largest holdings are {', '.join(t[1] for t in top[:3])}" + (f", with {num(f.get('n_stocks'), 0)} stocks in all" if f.get('n_stocks') else "") + f" ({mon(f.get('holdings_month') or meta.get('holdings_month'))} portfolio)."))
         if rated:
-            faq.append((f"How is {f['_name']} rated?", f"{f['tier']}: {int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans in {f.get('peer_group')}, on its track record. This describes the past and is not a recommendation."))
+            faq.append((f"How is {f['_name']} rated?", (f"{f['tier']}: {int(f.get('peer_rank') or 0)} of {int(f.get('peer_count') or 0)} {f['plan_type']} plans in {f.get('peer_group')}, on its track record." if (f.get('peer_count') or 0) > 1 else f"It is the only {f['plan_type']} plan in its group ({f.get('peer_group')}), so there are no peers to rank it against; the {f['tier']} shown is the neutral middle rating. Judge it on its tracking difference and tracking error.") + " This describes the past and is not a recommendation."))
         cmp_links = "".join(f"<li><a href='{pth}'>{e(f['_name'])} vs {e(name_by_pair.get(k, ''))}</a></li>" for k, pth in cmp_by.get(f.get("pair_key"), []))
         sim = "".join(
             f"<a class='card' href='{x['_url']}' style='display:grid;gap:6px;text-decoration:none;color:inherit;padding:14px 16px'>"
@@ -1055,8 +1055,8 @@ def main():
                 + "".join(f"<details class='faq'><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in faq))
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
         twin_btn = ('<a class="btn" href="%s">See %s plan</a>' % (twin["_url"], e(twin["plan_type"]))) if twin else ""
-        rate_head = (": %d of %d in %s" % (int(f.get("peer_rank") or 0), int(f.get("peer_count") or 0), e(f.get("peer_group")))) if rated else ""
-        rate_text = ("%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
+        rate_head = ((": %d of %d in %s" % (int(f.get("peer_rank") or 0), int(f.get("peer_count") or 0), e(f.get("peer_group")))) if (f.get("peer_count") or 0) > 1 else ": no peers in %s" % e(f.get("peer_group"))) if rated else ""
+        rate_text = ("The only plan of its type tracking this index, so there is no one to rank it against; it gets the neutral middle rating. Its tracking difference and tracking error below are the measures to judge it on." if (f.get("peer_count") or 0) == 1 else "%s, score %s out of 100. Describes the past, not a forecast." % (TIER_WORD.get(f["tier"], f["tier"]), num(f.get("score"), 1))) if rated \
             else "Not rated yet: a rating needs at least 3 years of history (1 year for index funds)."
         cap_html = ('<p class="flag" style="font-size:13.5px;margin-top:4px">%s</p>' % e(cn)) if cn else ""
         sc = f.get("score")
@@ -1254,7 +1254,7 @@ def main():
 {leaders_story(c, L)}
 <div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a>{f'<a class="btn" href="{Bm.MADE_YEARS[c]}">Returns year by year</a>' if c in getattr(Bm, "MADE_YEARS", {}) else ''}<a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
 {sub}{tabs}
-{(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="/learn/{g}/">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}
+{(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="{g if g.startswith("/") else "/learn/" + g + "/"}">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell. Read the scheme documents before investing.</p>
 </div></section>"""

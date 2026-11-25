@@ -26,6 +26,10 @@ jobs:
         with: { ref: "${{ env.TARGET }}" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
+      - name: Fingerprints of the live pages, before this deploy replaces them
+        if: env.TARGET == 'main'
+        continue-on-error: true
+        run: curl -sf https://aeternawealth.com/data/page-hashes.json -o /tmp/live-hashes.json || echo '{}' > /tmp/live-hashes.json
       - name: Build the static site
         run: python site/build_site.py
       - name: Upload to Cloudflare Pages
@@ -42,7 +46,15 @@ jobs:
           python - <<'PY'
           import json, re, urllib.request
           key = re.search(r'INDEXNOW_KEY = "([0-9a-f]+)"', open("site/build_site.py").read()).group(1)
-          urls = re.findall(r"<loc>([^<]+)</loc>", open("site/dist/sitemap.xml").read())[:10000]
+          # only pages whose content changed since the last deploy (fingerprints in /data/page-hashes.json)
+          new = json.load(open("site/dist/data/page-hashes.json"))
+          try:
+              old = json.load(open("/tmp/live-hashes.json"))
+          except Exception:
+              old = {}
+          urls = [f"https://aeternawealth.com{u}" for u, h in new.items() if old.get(u) != h][:10000]
+          if not urls:
+              print("IndexNow: nothing changed"); raise SystemExit(0)
           body = json.dumps({"host": "aeternawealth.com", "key": key, "keyLocation": f"https://aeternawealth.com/{key}.txt", "urlList": urls}).encode()
           req = urllib.request.Request("https://api.indexnow.org/indexnow", data=body, headers={"Content-Type": "application/json; charset=utf-8"})
           print("IndexNow:", urllib.request.urlopen(req, timeout=30).status, len(urls), "URLs")

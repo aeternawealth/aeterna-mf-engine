@@ -340,7 +340,9 @@ def jsonld(obj):
 
 ORG_LD = {
     "@context": "https://schema.org", "@type": "FinancialService", "@id": SITE + "/#org",
-    "name": ORG["brand"], "legalName": ORG["name"], "url": SITE + "/", "logo": SITE + "/icon-512.png", "image": SITE + "/og.png",
+    "name": ORG["brand"], "legalName": ORG["name"], "alternateName": [ORG["name"], "aeternawealth.com"],
+    "url": SITE + "/", "logo": SITE + "/icon-512.png", "image": SITE + "/og.png",
+    "identifier": {"@type": "PropertyValue", "propertyID": "AMFI ARN (mutual fund distributor registration)", "value": ORG["arn"]},
     "telephone": ORG["phone"], "email": ORG["email"],
     "description": "AMFI-registered mutual fund distributor (ARN-317889) in Delhi. Rates every Indian mutual fund on its track record "
                    "against its own index and peers, and offers a free portfolio review. Also arranges PMS, AIFs and bonds for families across India.",
@@ -438,7 +440,7 @@ THEME_JS = ('<meta name="theme-color" content="#f6f8f7"><script>try{var t=localS
 
 
 # legal pages stay linked from every footer but out of search, so Google's sitelinks for the brand show the useful pages
-NOINDEX_PATHS = {"/privacy/", "/terms/", "/grievances/", "/disclosures/"}
+NOINDEX_PATHS = {"/privacy/", "/terms/", "/grievances/", "/disclosures/", "/links/"}
 
 
 def head(title, desc, path, extra_ld=(), og_type="website"):
@@ -466,6 +468,10 @@ CSS_VER = ""
 RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use one copy
 MOVED = {}   # old fund address -> new, for redirects (site/moved_funds.json)
 SEARCH_TAG = ""   # the on-page search script, set in main() with a content version
+_FONTS = Path(__file__).resolve().parent / "fonts"
+FONT_HEAD = ("".join(f'<link rel="preload" href="/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
+                     for n in ("libre-franklin-latin", "source-serif-4-latin", "source-serif-4-italic-400-latin", "ibm-plex-mono-normal-400-latin"))
+             + "<style>" + (_FONTS / "fonts.css").read_text(encoding="utf-8").split("\n", 1)[1].replace("\n", "") + "</style>")   # fonts served from this site
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
 HEADER_JS = ("<script>(function(){var dd=[].slice.call(document.querySelectorAll('.dd')),n=document.getElementById('nav'),m=document.getElementById('menuBtn');"
              "function shut(x){x.classList.remove('open');var y=x.querySelector('.ddbtn');if(y)y.setAttribute('aria-expanded','false')}"
@@ -514,8 +520,7 @@ def footer():
 
 def page(title, desc, path, body, ld=()):
     return (f'<!doctype html>\n<html lang="en-IN" data-theme="light"><head>{head(title, desc, path, ld)}'
-            '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&display=swap">'
+            + FONT_HEAD +
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
             f'{HEADER}<main>{body}{review_cta(path)}</main>{footer()}{WA_FLOAT}{SEARCH_TAG}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
@@ -820,6 +825,8 @@ def main():
     (DIST / "assets" / "search.js").write_text(_sj, encoding="utf-8")
     SEARCH_TAG = f'<script src="/assets/search.js?v={hashlib.sha1(_sj.encode("utf-8")).hexdigest()[:10]}" defer></script>'
     (DIST / "assets" / "fundchart.js").write_text(fc, encoding="utf-8")
+    shutil.rmtree(DIST / "fonts", ignore_errors=True)
+    shutil.copytree(_FONTS, DIST / "fonts", ignore=shutil.ignore_patterns("*.css"))
     SERIES_FILE, BENCH_KEYS = {}, set()      # fund code -> the /data/series file holding its month-end NAVs
     for sp in sorted((S / "data" / "series").glob("*.json")):
         if sp.stem in ("bench", "last"):
@@ -1299,11 +1306,11 @@ def main():
     # ---- the app (home page) with full head
     home_desc = ("Every Indian mutual fund rated on how it has actually performed. A free portfolio review, "
                  "and PMS, AIFs and bonds for families across India.")
-    site_ld = {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#website", "name": "Aeterna Wealth", "url": SITE + "/",
+    site_ld = {"@context": "https://schema.org", "@type": "WebSite", "@id": SITE + "/#website", "name": "Aeterna Wealth", "alternateName": ["aeternawealth.com", ORG["name"]], "url": SITE + "/",
                "publisher": {"@id": SITE + "/#org"},
                "potentialAction": {"@type": "SearchAction", "target": {"@type": "EntryPoint", "urlTemplate": SITE + "/?q={search_term_string}"},
                                    "query-input": "required name=search_term_string"}}
-    app_body = app.replace('<title>Aeterna Wealth</title>', '', 1)
+    app_body = app.replace('<title>Aeterna Wealth</title>', '', 1).replace('<!-- FONTS -->', FONT_HEAD, 1)
     app_body = re.sub(r'<meta name="description"[^>]*>', '', app_body, count=1)
     index = ('<!doctype html>\n<html lang="en-IN" data-theme="light"><head>'
              + head("Aeterna Wealth: Mutual funds, rated and chosen for you", home_desc, "/", (ORG_LD, site_ld))
@@ -1337,6 +1344,24 @@ def main():
         for f in funds:
             w.writerow([f.get(c, "") for c in cols] + [SITE + f["_url"]])
 
+    # ---- /links/: the link in the Instagram (and other social) bio; kept out of search
+    L = [("/invest/portfolio-review/", "Free portfolio review", "Send us what you hold; we show how each fund rates"),
+         ("/#ratings", "Mutual fund ratings", "Every fund, rated against its index and peers every month"),
+         ("/mutual-funds/what-funds-bought-sold/", "What fund managers bought and sold", "This month's buys, sells, new bets and exits"),
+         ("/income-tax/advance-tax-calculator/", "Advance tax calculator", "What to pay by each instalment"),
+         ("/income-tax/calculator/", "Income tax calculator", "Old vs new regime, tax year 2026-27"),
+         ("/plan/", "Money Plan", "How much to invest, and where. Free"),
+         ("/mutual-funds/crowded-stocks/", "Crowded stocks", "What mutual funds own most of"),
+         ("https://wa.me/918595993600?text=" + "Hi%2C%20I%20found%20you%20on%20Instagram.", "Chat on WhatsApp", ORG["phone"])]
+    btn = "".join(f"<a class='card stack' href='{u}' style='gap:2px;text-decoration:none;color:inherit;text-align:center;padding:16px'"
+                  + (" target='_blank' rel='noopener'" if u.startswith("http") else "")
+                  + f"><b style='font:500 18px var(--f-display)'>{e(t)}</b><span class='muted' style='font-size:13.5px'>{e(d)}</span></a>" for u, t, d in L)
+    write("/links/", page("Aeterna Wealth: links", "Aeterna Wealth's most-used pages: fund ratings, free portfolio review, tax calculators and market data.", "/links/",
+          "<section class='band' style='padding-top:32px'><div class='wrap' style='max-width:560px'>"
+          "<h1 style='font-size:32px;text-align:center'>Aeterna Wealth</h1>"
+          f"<p class='lede' style='text-align:center;margin-top:8px'>Mutual funds, rated and chosen with numbers. {e(ORG['arn'])}.</p>"
+          f"<div class='stack' style='gap:12px;margin-top:24px'>{btn}</div></div></section>"))
+
     # ---- sitemap, robots, llms
     today = str(date.today())
     (DIST / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -1351,14 +1376,21 @@ def main():
     about = (f"> {ORG['name']} (Aeterna Wealth) is a wealth management firm in New Delhi, India, working with families across India on "
              "mutual funds, portfolio management services (PMS), alternative investment funds (AIFs), bonds, unlisted shares and tax-aware "
              f"planning. It is an AMFI-registered mutual fund distributor ({ORG['arn']}); it is not a SEBI-registered investment adviser "
-             "and does not advise on individual listed shares. Its website compares every Indian equity and index mutual fund using public data from AMFI, NSE Indices and fund houses: track-record ratings, returns against "
+             "and does not advise on individual listed shares. Website: aeternawealth.com. Its website compares every Indian equity and index mutual fund using public data from AMFI, NSE Indices and fund houses: track-record ratings, returns against "
              "total-return indices, risk, costs and holdings for every Indian equity and index mutual fund, updated every weekday. "
+             "It also publishes, for each listed Indian stock, which mutual fund schemes hold it and which bought or sold it last month, "
+             "from the funds' monthly portfolio disclosures; and free income tax calculators for individuals. "
              "Ratings describe past track records and are not forecasts or investment advice.")
     links = "\n".join(f"- [{c} funds]({SITE}/mutual-funds/{slug(c)}/)" for c in cats)
     llms = (f"# Aeterna Wealth\n\n{about}\n\nContact: {ORG['phone']} · {ORG['email']} · {ORG['street']}, {ORG['city']} {ORG['pin']}\n"
             + ("Profiles: " + ", ".join(SOCIAL) + "\n" if SOCIAL else "")
             + f"\n## Fund data\n- [All categories]({SITE}/mutual-funds/)\n{links}\n\n## Downloadable data\n- [All funds, latest metrics (CSV)]({SITE}/data/funds.csv)\n"
             f"- [All funds (JSON)]({SITE}/data/funds.json)\n- [Data dates and sources (JSON)]({SITE}/data/meta.json)\n- [This month's insights (JSON)]({SITE}/data/insights.json)\n\n"
+            f"## Market data (from mutual funds' monthly portfolios)\n- [Which mutual funds hold a stock: one page per listed stock]({SITE}/mutual-funds/holding/)\n"
+            f"- [What fund managers bought and sold this month]({SITE}/mutual-funds/what-funds-bought-sold/)\n- [Crowded stocks: what funds own most of]({SITE}/mutual-funds/crowded-stocks/)\n"
+            f"- [Where the money is going: net flows by category and fund house]({SITE}/mutual-funds/money-flows/)\n- [Fund houses and how tightly each house's funds move together]({SITE}/mutual-funds/amc/)\n\n"
+            f"## Income tax (tax year 2026-27)\n- [Income tax calculator, old vs new regime]({SITE}/income-tax/calculator/)\n- [Advance tax calculator]({SITE}/income-tax/advance-tax-calculator/)\n"
+            f"- [Tax slabs]({SITE}/income-tax/slabs-fy-2026-27/)\n- [Deductions]({SITE}/income-tax/deductions/)\n\n"
             f"## Tools and guides\n- [Calculators: SIP, lump sum, goal, SWP, EMI, inflation, capital-gains tax]({SITE}/calculators/)\n- [Fund houses]({SITE}/mutual-funds/amc/)\n- [Insights]({SITE}/insights/)\n\n"
             f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/method/)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")
     (DIST / "llms.txt").write_text(llms, encoding="utf-8")
@@ -1456,6 +1488,7 @@ def main():
         "/assets/*\n  Cache-Control: public, max-age=3600\n"
         "/data/*\n  Cache-Control: public, max-age=300\n"
         "/og.png\n  Cache-Control: public, max-age=86400\n"
+        "/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n"
         # the production *.pages.dev alias serves the same site: keep it out of search so Google indexes one copy
         "https://aeterna-wealth.pages.dev/*\n  X-Robots-Tag: noindex\n", encoding="utf-8")
     print(f"built {DIST}: {len(funds)} fund pages, {len(cats)} categories, {len(urls)} URLs in sitemap, launched={LAUNCHED}")

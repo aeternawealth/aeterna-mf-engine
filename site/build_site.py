@@ -720,7 +720,7 @@ def fund_story(f):
 FC_VER, SERIES_FILE, BENCH_KEYS = "", {}, set()
 FC_CSS = ("<style>.fchart{position:relative;margin-top:14px}.fc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;min-height:34px}"
           ".fc-key{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}.fc-key i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}"
-          ".fc-key i.dash{background:repeating-linear-gradient(90deg,var(--ink-3) 0 5px,transparent 5px 9px)}.fc-tabs{display:flex;gap:4px;flex-wrap:wrap}"
+          ".fc-key i.dash{background:repeating-linear-gradient(90deg,var(--ink-3) 0 5px,transparent 5px 9px)}.fc-tabs{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;min-height:34px}.fc-tabs::-webkit-scrollbar{display:none}.fc-tabs button{flex:none}.fc-key{min-height:20px}@media(max-width:640px){.fc-head{min-height:74px;align-content:flex-start}.fc-tabs{width:100%}}"
           ".fc-tabs button{font:500 12.5px var(--f-mono);padding:5px 11px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);border-radius:999px;cursor:pointer;min-height:32px}"
           ".fc-tabs button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:var(--on-teal,#fff)}"
           ".fc-plot{height:250px;margin-top:10px;touch-action:pan-y}.fc-plot svg{display:block;overflow:visible}"
@@ -741,7 +741,7 @@ def fund_chart(f):
             '<div class="fc-head"><div class="fc-key"></div><div class="fc-tabs" role="group" aria-label="Period"></div></div>'
             '<div class="fc-wrap"><div class="fc-plot"></div><div class="fc-tip" hidden></div></div><p class="fc-sum muted"></p></div>'
             '<p class="muted" style="font-size:12.5px;margin-top:8px">Daily NAVs up to 1 year, weekly for 3 years, month-end beyond; the last point is the latest NAV. '
-            'Drag across the chart to zoom in; CSV downloads the NAVs shown. '
+            'Drag across the chart to zoom in. '
             + ("The index is its total-return version (dividends reinvested). " if bk else "")
             + 'Returns are after the fund\'s costs. Past performance does not guarantee future returns.</p>'
             f'<script src="/assets/fundchart.js?v={FC_VER}" defer></script>')

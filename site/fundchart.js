@@ -1,8 +1,7 @@
 /* Growth of ₹10,000 on fund pages: the fund's NAV against its index (total return).
    Short ranges (1M to 1Y) use daily NAVs, 3Y weekly, 5Y and longer month-end values, all from files the site
    publishes: /data/nav/<code>.json (to the last month end), /data/nav/recent-<category>.json (the days since),
-   /data/series/* (month-end history). Drag across the chart to zoom in; hover or touch for values; the CSV button
-   downloads what is on screen. Loads only when the chart scrolls near the screen. */
+   /data/series/* (month-end history). Drag across the chart to zoom in; hover or touch for values. Loads only when the chart scrolls near the screen. */
 (() => {
   const C = {};
   const get = u => C[u] || (C[u] = fetch(u).then(r => r.ok ? r.json() : null).catch(() => null));
@@ -132,14 +131,6 @@
     st.shown = V;
   }
 
-  function csv(el, st) {
-    const rows = [['date', 'nav', 'index_tri', 'value_of_10000']].concat(st.shown.map(p => [iso(p.t), p.nav, p.tri ?? '', Math.round(p.f)]));
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([rows.map(r => r.join(',')).join('\n') + '\n'], { type: 'text/csv' }));
-    a.download = (el.dataset.name || 'fund').replace(/[^\w]+/g, '-').toLowerCase() + '-nav.csv';
-    document.body.appendChild(a); a.click(); a.remove();
-  }
-
   function init(el) {
     const code = el.dataset.code, bn = el.dataset.bench || '', cat = el.dataset.file;
     Promise.all([get('/data/series/' + cat + '.json'), bn ? get('/data/series/bench.json') : null, get('/data/series/last.json'),
@@ -156,10 +147,9 @@
         });
         const st = { P, F, name: el.dataset.name, bname: bn ? el.dataset.bname : '', zoom: null, period: avail.some(p => p[0] === '1Y') ? '1Y' : avail[avail.length - 1][0] };
         el.querySelector('.fc-tabs').innerHTML = avail.map(([p]) => `<button type="button" data-p="${p}" aria-pressed="false">${p}</button>`).join('') +
-          '<button type="button" class="fc-reset" hidden>Reset zoom</button><button type="button" class="fc-csv" title="Download the NAVs shown">CSV</button>';
+          '<button type="button" class="fc-reset" hidden>Reset zoom</button>';
         el.querySelectorAll('.fc-tabs button[data-p]').forEach(bt => bt.onclick = () => { st.period = bt.dataset.p; st.zoom = null; render(el, st); });
         el.querySelector('.fc-reset').onclick = () => { st.zoom = null; render(el, st); };
-        el.querySelector('.fc-csv').onclick = () => csv(el, st);
         el.querySelector('.fc-key').innerHTML = `<span><i style="background:var(--teal)"></i>${esc(st.name)}</span>` + (st.bname ? `<span><i class="dash"></i>${esc(st.bname)}</span>` : '');
         render(el, st);
         let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => render(el, st), 150); });

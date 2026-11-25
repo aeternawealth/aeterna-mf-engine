@@ -297,20 +297,20 @@ def index_metrics(nav: pd.Series, idx: pd.Series, as_of: pd.Timestamp) -> dict:
 
 
 # ---------------------------------------------------------------- horizon (period-wise) metrics
-HORIZONS = {"6M": 0.5, "1Y": 1, "3Y": 3, "5Y": 5}
+HORIZONS = {"1M": 1 / 12, "3M": 0.25, "6M": 0.5, "1Y": 1, "3Y": 3, "5Y": 5}
 # rolling sub-window (in weeks) used for each horizon's consistency (hit-rate) measure
-_HIT_WINDOW = {"6M": 4, "1Y": 13, "3Y": 52, "5Y": 156}
+_HIT_WINDOW = {"1M": 1, "3M": 2, "6M": 4, "1Y": 13, "3Y": 52, "5Y": 156}
 
 
 def horizon_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp) -> dict:
-    """Metrics computed strictly inside each look-back window (6M/1Y/3Y/5Y).
+    """Metrics computed strictly inside each look-back window (1M/3M/6M/1Y/3Y/5Y).
     A horizon is only filled if the fund has existed for the whole window."""
     nav, bench = _cut(nav, as_of), _cut(bench, as_of)
     m = {}
     if len(nav) < 20 or len(bench) < 20:
         return m
     for h, yrs in HORIZONS.items():
-        start = as_of - pd.DateOffset(months=int(yrs * 12))
+        start = as_of - pd.DateOffset(months=round(yrs * 12))
         if nav.index[0] > start + pd.Timedelta(days=10):
             continue                                    # not old enough for this horizon
         j = pd.concat([nav, bench], axis=1, keys=["f", "b"]).dropna()
@@ -318,7 +318,7 @@ def horizon_metrics(nav: pd.Series, bench: pd.Series, as_of: pd.Timestamp) -> di
         if len(base) == 0:
             continue
         j = j[j.index >= base.max()]
-        if len(j) < 60:
+        if len(j) < max(15, min(60, int(yrs * 150))):      # ~20 trading days in 1M, 60 in 3M+
             continue
         span = (j.index[-1] - j.index[0]).days / 365.25
         # one return definition everywhere: last NAV on/before (end - period) to last NAV, CAGR over the nominal years

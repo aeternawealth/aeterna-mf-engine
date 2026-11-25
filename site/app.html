@@ -682,7 +682,7 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
     <div class="controls rate-controls">
       <select id="cat" aria-label="Category"></select>
       <div class="seg" id="plan" role="group" aria-label="Plan"><button aria-pressed="true" data-v="Regular">Regular</button><button aria-pressed="false" data-v="Direct">Direct</button></div>
-      <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
+      <div class="seg" id="hz" role="group" aria-label="Rank by"><button aria-pressed="true" data-v="Overall">Track record</button><button aria-pressed="false" data-v="1M">1M</button><button aria-pressed="false" data-v="3M">3M</button><button aria-pressed="false" data-v="6M">6M</button><button aria-pressed="false" data-v="1Y">1Y</button><button aria-pressed="false" data-v="3Y">3Y</button><button aria-pressed="false" data-v="5Y">5Y</button></div>
       <input type="search" id="q" placeholder="Search fund or AMC" aria-label="Search">
     </div>
     <div class="note" id="hzNote"></div>
@@ -1402,7 +1402,9 @@ function catSection(){const el=$('#catGrid');if(!el)return;
   draw()}
 
 /* ---------- ratings ---------- */
-const HZN={Overall:'Track record',"6M":'6 months',"1Y":'1 year',"3Y":'3 years',"5Y":'5 years'};
+const AS_TIP="How different the fund's portfolio is from its index: 0% would be a copy of the index, 100% nothing in common. Worked out from the fund's latest monthly portfolio against the holdings of index funds that track its benchmark (or, where there are none, the average portfolio of its peers): half the sum of the gaps in each stock's weight. Higher means more of the result comes from the manager's own choices.";
+const YRS_={'1M':1/12,'3M':.25,'6M':.5,'1Y':1,'3Y':3,'5Y':5};
+const HZN={Overall:'Track record',"1M":'1 month',"3M":'3 months',"6M":'6 months',"1Y":'1 year',"3Y":'3 years',"5Y":'5 years'};
 function ratingsInit(){
   $('#cat').innerHTML=['Equity','Hybrid','Debt'].map(a=>{const C=cats().filter(c=>ASSET(c)===a);return C.length?`<optgroup label="${a}">${C.map(c=>`<option>${c}</option>`).join('')}</optgroup>`:''}).join('');
   $('#cat').onchange=e=>{S.cat=e.target.value;ratings()};
@@ -1413,7 +1415,7 @@ function ratingsInit(){
 function ratings(){
   $('#cat').value=S.cat;
   $$('#plan button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.plan));
-  $$('#hz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.hz));
+  $$('#hz button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.v===S.hz);b.hidden=b.dataset.v!=='Overall'&&!S.funds.some(f=>f['score_'+b.dataset.v]!=null)});
   const h=S.hz, idx=S.cat==='Index Fund', arb=S.cat==='Arbitrage', dbt=DEBT.includes(S.cat);
   $('#rateLede').textContent=`${S.cat}: ${S.plan} plans, ${h==='Overall'?'ranked on long-term track record':'ranked on the last '+HZN[h]}. Data as of ${dmy(S.meta.as_of)}.`;
   $('#hzNote').innerHTML=h==='Overall'?(dbt?'<b>Track record</b>: debt funds are compared with the median fund of their category on return, steadiness, cost and any sharp one-day fall well below their category. 3 years of history needed (1 year for overnight, liquid and money market funds).':arb?'<b>Track record</b>: arbitrage funds are compared on return over the index, consistency, fee and size, and need to beat liquid funds after tax for A or A+. 3 years of history needed.':'<b>Track record</b> needs at least 3 years of history (1 year for index funds).')+' Younger funds show as unrated; switch to 6M or 1Y to see them. Ratings are recalculated every month (on the 11th, and again on the 16th once late portfolios arrive); returns and period ranks update every weekday. Ratings describe the record so far and are not forecasts.'
@@ -1421,7 +1423,7 @@ function ratings(){
   const F=S.funds.filter(f=>f.category===S.cat&&f.plan_type===S.plan&&(!S.q||(f.name+' '+f.amc).toLowerCase().includes(S.q)));
   const groups={};F.forEach(f=>(groups[f.peer_group]=groups[f.peer_group]||[]).push(f));
   const sk=h==='Overall'?'score':'score_'+h;
-  const YRS={'6M':.5,'1Y':1,'3Y':3,'5Y':5};
+  const YRS={'1M':1/12,'3M':.25,'6M':.5,'1Y':1,'3Y':3,'5Y':5};
   const fmtPct2=v=>v==null?'–':num(v,2)+'%';
   const shortH=x=>x.replace(' months',' mo').replace(' years',' yrs').replace(' year',' yr');
   const first=f=>{if(h==='Overall')return tierT(f);if(f[sk]!=null)return `<span class="mono">${f['rank_'+h]}</span><span class="muted mono" style="font-size:12px"> / ${f['peers_'+h]}</span>`;
@@ -1449,7 +1451,7 @@ function ratings(){
    :idx?[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within funds tracking the same index':'Rank on this period among funds that existed for all of it'],
-    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period: CAGR for 1 year and longer, plain return for 6 months'],
+    ['Return',h==='Overall'?'ret_1Y':r,f=>pct(f[h==='Overall'?'ret_1Y':r]),h==='Overall'?'1-year return':'Return over the period: CAGR for 1 year and longer, plain return for shorter periods'],
     ['Tracking difference','tracking_diff_1y',f=>fmtPct2(f.tracking_diff_1y),"How far the fund's 1-year return fell short of its index. Closer to zero is better"],
     ['Tracking error 1Y','tracking_err_1y',f=>fmtPct2(f.tracking_err_1y),"How much the fund's daily returns wobble around the index. Lower is better"],
     ['Expense ratio','ter',f=>fmtPct2(f.ter),'Yearly cost of the plan, taken out of the NAV'],
@@ -1457,7 +1459,7 @@ function ratings(){
    :[
     ['Fund','name',null,'Fund name, fund house and age'],
     [h==='Overall'?'Rating':'Rank','first',f=>first(f),h==='Overall'?'Track-record rating within the peer group (A+, A, B, C)':'Rank on this period among funds that existed for all of it'],
-    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Annualised return (CAGR) over the period, point to point. The 6-month figure is not annualised'],
+    [h==='Overall'?'3Y return':'Return',r,f=>pct(f[r]),'Annualised return (CAGR) over the period, point to point. Figures for 1, 3 and 6 months are not annualised'],
     [h==='Overall'?'3Y vs index':'vs index',ex,f=>spct(f[ex]),'The fund’s CAGR minus its index’s CAGR (TRI, including dividends). Fund 15% a year vs index 12% a year = +3%. This is not alpha: alpha, on each fund page, also adjusts for the risk (beta) the fund took'],
     ['Up capture 3Y','upside_capture_3y',f=>num(f.upside_capture_3y,0),'In months the index rose, how much of the rise the fund caught. 100 = as much as the index; 110 = 10% more; 90 = only 90%. Higher is better'],
     ['Down capture 3Y','downside_capture_3y',f=>num(f.downside_capture_3y,0),'In months the index fell, how much of the fall the fund took. 100 = as much as the index; 90 = only 90%; 110 = 10% more. Lower is better'],
@@ -1466,7 +1468,7 @@ function ratings(){
     ['AUM','aum_cr',f=>f.aum_cr==null?'–':Math.round(f.aum_cr).toLocaleString('en-IN'),'Assets under management in ₹ crore, all plans of the scheme, at the latest month end AMFI has published (the figure fund factsheets use). Where AMFI has no month-end figure, its quarterly average is shown and labelled on the fund page']];
   const hp=h==='Overall'?'':h;
   const HD={'Fund':['Fund',''],'Rating':['Rating',''],'Rank':['Rank',hp],'3Y return':['Return','3Y CAGR'],
-    'Return':['Return',idx&&h==='Overall'?'1Y':h==='6M'?'6M':hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
+    'Return':['Return',idx&&h==='Overall'?'1Y':YRS[h]<1?h:hp+' CAGR'],'3Y vs index':['vs index','3Y'],'vs index':['vs index',hp],
     'Up capture 3Y':['Up capture','3Y'],'Down capture 3Y':['Down capture','3Y'],'Max fall 5Y':['Max fall','5Y'],
     '1Y return':['Return','1Y'],'3Y vs liquid':['vs liquid','3Y'],'3Y vs liquid after tax':['vs liquid','3Y, after tax'],'Fund fee':['Fund fee','base TER'],
     'Expense ratio':['Expense ratio','TER'],'AUM':['AUM','₹ cr'],'Tracking difference':['Tracking diff.','1Y'],'Tracking error 1Y':['Tracking error','1Y']};
@@ -1505,7 +1507,7 @@ async function fund(code){
   const twin=S.funds.find(x=>x.pair_key===f.pair_key&&x.code!==f.code);
   const H=await holdings(); const top=(H[f.pair_key]||[]).slice(0,10);
   const fl=flags(f);
-  const per=['6M','1Y','3Y','5Y'].map(h=>{const r=f['ret_'+h],e=f['excess_'+h];return `<tr><td class="l">${HZN[h]}${h!=='6M'&&h!=='1Y'?' <span class="muted" style="font-size:12px">(a year)</span>':''}</td><td class="num">${pct(r)}</td><td class="num">${r==null||e==null?'–':pct(r-e)}</td><td class="num ${sg(e)}">${spct(e)}</td><td class="num">${f['rank_'+h]!=null?f['rank_'+h]+' / '+f['peers_'+h]:'–'}</td></tr>`}).join('');
+  const per=['1M','3M','6M','1Y','3Y','5Y'].map(h=>{const r=f['ret_'+h],e=f['excess_'+h];return `<tr><td class="l">${HZN[h]}${YRS_[h]>1?' <span class="muted" style="font-size:12px">(a year)</span>':''}</td><td class="num">${pct(r)}</td><td class="num">${r==null||e==null?'–':pct(r-e)}</td><td class="num ${sg(e)}">${spct(e)}</td><td class="num">${f['rank_'+h]!=null?f['rank_'+h]+' / '+f['peers_'+h]:'–'}</td></tr>`}).join('');
   const arb=f.category==='Arbitrage', dbt=DEBT.includes(f.category);
   const liqRows=arb?[[1,'1 year'],[3,'3 years (a year)']].map(([y,lab])=>{const fr=f['ret_'+y+'Y'],lr=f['liq_cagr_'+y+'y'];if(fr==null||lr==null)return '';
     const fa=fr*(1-TAXE),la=lr*(1-TAXS);return `<tr><td class="l">${lab}</td><td class="num">${pct(fr,2)}</td><td class="num">${pct(lr,2)}</td><td class="num ${sg(fr-lr)}">${spct(fr-lr,2)}</td><td class="num">${pct(fa,2)}</td><td class="num">${pct(la,2)}</td><td class="num ${sg(fa-la)}">${spct(fa-la,2)}</td></tr>`}).join(''):'';
@@ -1582,7 +1584,7 @@ function portfolioBlock(f,top){
   const other=Math.max(0,100-mix.reduce((s,m)=>s+(m[1]||0),0));
   return `<div style="margin-top:12px"><div class="mix">${mix.map(m=>`<div style="width:${m[1]||0}%;background:${m[2]}" title="${m[0]} cap ${num(m[1],0)}%"></div>`).join('')}</div>
   <div class="row" style="gap:16px;font-size:13px;margin-top:8px">${mix.map(m=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${m[2]};margin-right:6px"></span>${m[0]} ${num(m[1],0)}%</span>`).join('')}<span class="muted">Other / cash ${num(other,0)}%</span></div>
-  <div class="kv" style="margin-top:12px">${[['Stocks held',f.n_stocks??'–'],['Top 10 weight',f.top10_pct==null?'–':num(f.top10_pct,1)+'%'],['Active share',f.active_share==null?'–':num(f.active_share,0)+'%'],['Largest sector',f.top_sector?esc(f.top_sector)+' '+num(f.top_sector_pct,0)+'%':'–']].map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
+  <div class="kv" style="margin-top:12px">${[['Stocks held',f.n_stocks??'–'],['Top 10 weight',f.top10_pct==null?'–':num(f.top10_pct,1)+'%'],[`<span title="${AS_TIP}" style="border-bottom:1px dotted var(--ink-3);cursor:help">Active share</span>`,f.active_share==null?'–':num(f.active_share,0)+'%'],['Largest sector',f.top_sector?esc(f.top_sector)+' '+num(f.top_sector_pct,0)+'%':'–']].map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
   <h3 style="margin-top:22px">Top 10 holdings</h3><div class="kv" style="margin-top:8px;grid-template-columns:1fr">${top.map(t=>`<div><span>${esc(t[1])}</span><b>${num(t[2],1)}%</b></div>`).join('')}</div></div>`;
 }
 
@@ -1602,11 +1604,11 @@ async function compare(){
   if(!fs.length){$('#cmp').innerHTML='<div class="note">Start typing a fund name above. Tip: you can also press "Add to compare" on any fund page.</div>';return}
   const H=await holdings();
   const rows=[['Basics',[['Category',f=>esc(f.category)],['Plan',f=>f.plan_type],['Track-record rating',f=>tierW(f.tier)],['NAV',f=>f.nav_latest==null?'–':'₹'+num(f.nav_latest,2)+' <span class="muted" style="font-size:12px">'+dmy(f.nav_date)+'</span>'],['Expense ratio',f=>f.ter==null?'–':num(f.ter,2)+'%',f=>f.ter,-1],['AUM',f=>cr(f.aum_cr)+(f.aum_asof?' <span class="muted" style="font-size:12px">'+esc(f.aum_asof)+'</span>':''),f=>f.aum_cr]]],
-    ['Returns (a year beyond 1Y)',[['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
+    ['Returns (a year beyond 1Y)',[['1 month',f=>pct(f.ret_1M),f=>f.ret_1M,1],['3 months',f=>pct(f.ret_3M),f=>f.ret_3M,1],['6 months',f=>pct(f.ret_6M),f=>f.ret_6M,1],['1 year',f=>pct(f.ret_1Y),f=>f.ret_1Y,1],['3 years',f=>pct(f.ret_3Y),f=>f.ret_3Y,1],['5 years',f=>pct(f.ret_5Y),f=>f.ret_5Y,1]]],
     ['Against its index',[['1 year',f=>spct(f.excess_1Y),f=>f.excess_1Y,1],['3 years',f=>spct(f.excess_3Y),f=>f.excess_3Y,1],['5 years',f=>spct(f.excess_5Y),f=>f.excess_5Y,1],['3Y rank in category',f=>f.rank_3Y!=null?f.rank_3Y+' / '+f.peers_3Y:'–']]],
     ['Risk',[['Max fall, 5Y',f=>pct(f.max_drawdown_5y),f=>f.max_drawdown_5y,1],['Downside capture',f=>num(f.downside_capture_3y,0),f=>f.downside_capture_3y,-1],['Sharpe, 3Y',f=>num(f.sharpe_3y,2),f=>f.sharpe_3y,1],['Volatility, 3Y',f=>pct(f.vol_3y),f=>f.vol_3y,-1]]],
     ['Past 3-year outcomes',[['Typical',f=>pct(f.hist3y_median),f=>f.hist3y_median,1],['Bad case (worst 10%)',f=>pct(f.hist3y_p10),f=>f.hist3y_p10,1],['Periods with a gain',f=>pct(f.hist3y_pos,0),f=>f.hist3y_pos,1]]],
-    ['Portfolio',[['Large / mid / small',f=>f.large_pct==null?'–':`${num(f.large_pct,0)} / ${num(f.mid_pct,0)} / ${num(f.small_pct,0)}`],['Stocks held',f=>f.n_stocks??'–'],['Top 10 weight',f=>f.top10_pct==null?'–':num(f.top10_pct,0)+'%'],['Active share',f=>f.active_share==null?'–':num(f.active_share,0)+'%']]]];
+    ['Portfolio',[['Large / mid / small',f=>f.large_pct==null?'–':`${num(f.large_pct,0)} / ${num(f.mid_pct,0)} / ${num(f.small_pct,0)}`],['Stocks held',f=>f.n_stocks??'–'],['Top 10 weight',f=>f.top10_pct==null?'–':num(f.top10_pct,0)+'%'],[`<span title="${AS_TIP}" style="border-bottom:1px dotted var(--ink-3);cursor:help">Active share</span>`,f=>f.active_share==null?'–':num(f.active_share,0)+'%']]]];
   let html=`<div class="tablewrap"><table><thead><tr><th class="l"></th>${fs.map(f=>`<th style="white-space:normal;min-width:160px;color:var(--ink);text-transform:none;letter-spacing:0;font:600 13.5px var(--f-body)"><a href="${furl(f.code)}" style="color:inherit">${esc(f.name)}</a></th>`).join('')}</tr></thead><tbody>`;
   rows.forEach(([sec,rs])=>{html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">${sec}</td></tr>`;
     rs.forEach(([lab,fmt,val,dir])=>{let best=null;if(dir&&fs.length>1){const v=fs.map(val).filter(x=>x!=null);if(v.length>1)best=dir>0?Math.max(...v):Math.min(...v)}
@@ -1614,7 +1616,7 @@ async function compare(){
   if(fs.length>1){html+=`<tr><td class="l" colspan="${fs.length+1}" style="background:var(--band);font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--teal)">Portfolio overlap (share of portfolio in common stocks)</td></tr>`;
     const ov=(a,b)=>{const A=H[a.pair_key],B=H[b.pair_key];if(!A||!B)return null;const m={};A.forEach(x=>m[x[0]]=x[2]);let s=0;B.forEach(x=>{if(m[x[0]]!=null)s+=Math.min(m[x[0]],x[2])});return s};
     fs.forEach(a=>{html+=`<tr><td class="l">${esc(a.name)}</td>${fs.map(b=>{if(a===b)return'<td class="muted">—</td>';const o=a.pair_key===b.pair_key?100:ov(a,b);return `<td class="num">${o==null?'<span class="muted">no holdings yet</span>':num(o,0)+'%'}</td>`}).join('')}</tr>`})}
-  html+=`</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Teal = best among the selected funds on that row. Overlap uses each fund's latest monthly portfolio (${mon(S.meta.holdings_month)}).</p>`;
+  html+=`</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Teal = best among the selected funds on that row. Overlap uses each fund's latest monthly portfolio (${mon(S.meta.holdings_month)}).</p><p class="muted" style="font-size:12.5px;margin-top:6px"><b>Active share</b>: ${AS_TIP}</p>`;
   $('#cmp').innerHTML=html;
 }
 

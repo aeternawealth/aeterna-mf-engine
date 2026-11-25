@@ -414,7 +414,7 @@ CLOSET_INDEX_BY_CATEGORY = {"Large Cap": 30}   # large caps structurally hug the
 # Period-wise (horizon) rankings: every fund old enough for the window is ranked.
 # 3Y+ is the recommended view; 6M/1Y mostly reflect recent momentum / luck.
 # ---------------------------------------------------------------------------
-HORIZON_LIST = ["6M", "1Y", "3Y", "5Y"]
+HORIZON_LIST = ["1M", "3M", "6M", "1Y", "3Y", "5Y"]
 # Funds carrying these long-term red flags get tier "Avoid" and are NOT given period ranks either,
 # so a short-term bounce can't push a chronic underperformer to the top of a 6M/1Y table.
 HARD_FLAGS = ("chronic_underperformer", "risk_without_reward")
@@ -433,7 +433,8 @@ def horizon_protocol(h: str, category: str) -> dict:
     # equity and hybrid (Nov 2026, owner's approval): no cost input. Every return here is taken from the NAV, which is
     # already net of the fund's expenses, so the expense ratio would count the same cost twice; its 10 went to return
     # over the benchmark. Index, arbitrage and debt period views keep cost (see docs/thesis_cost_in_ratings.md).
-    w = {"6M": (60, 0, 10, 10, 20), "1Y": (50, 10, 10, 10, 20), "3Y": (35, 15, 15, 10, 25), "5Y": (35, 15, 15, 10, 25)}[h]
+    # 1M has ~4 weekly points: no downside capture or hit rate is possible, so return and the worst fall carry it
+    w = {"1M": (80, 0, 0, 20, 0), "3M": (60, 0, 10, 10, 20), "6M": (60, 0, 10, 10, 20), "1Y": (50, 10, 10, 10, 20), "3Y": (35, 15, 15, 10, 25), "5Y": (35, 15, 15, 10, 25)}[h]
     p = {f"excess_{h}": ("Return", w[0], True), f"ir_{h}": ("Return", w[1], True),
          f"dcap_{h}": ("Risk", w[2], False), f"mdd_{h}": ("Risk", w[3], True),
          f"hit_{h}": ("Consistency", w[4], True)}

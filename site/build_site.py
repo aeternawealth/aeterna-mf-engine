@@ -589,7 +589,7 @@ def leaders_story(c, L):
         add("Gain in rising months (upside capture)", "upside_capture_3y", lambda v: f"{v:.0f}%", lambda a, b: None)
         add("Deepest fall, 5 years", "max_drawdown_5y", lambda v: pct(abs(v)), lambda a, b: None)
     if fam == "equity":
-        add("Active share", "active_share", lambda v: f"{v:.0f}%",
+        add("Active share (how far the portfolio is from its index, 0–100%)", "active_share", lambda v: f"{v:.0f}%",
             lambda a, b: f"Their portfolios differed more from the index (active share {a:.0f}% against {b:.0f}%)." if a > b + 5 else
                          f"Leaders did not need to stray further from the index (active share {a:.0f}% against {b:.0f}%)." if a < b - 5 else None)
         add("Stocks held", "n_stocks", lambda v: f"{v:.0f}", lambda a, b: None)
@@ -866,7 +866,7 @@ def main():
     RET_RANK.clear()
     by = {}
     for f in funds:
-        for h in ("6M", "1Y", "3Y", "5Y"):
+        for h in ("1M", "3M", "6M", "1Y", "3Y", "5Y"):
             if f.get("excess_" + h) is not None:
                 by.setdefault((f.get("peer_group"), f.get("plan_type"), h), []).append(f)
     for (pg, pl, h), g in by.items():
@@ -984,7 +984,7 @@ def main():
         desc = " ".join(desc_bits)[:300]
         title = f"{search_name(f['_name'])} {f['plan_type']} Growth: NAV, returns, rating & review | Aeterna Wealth"
         rows = ""
-        for h, lab in (("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
+        for h, lab in (("1M", "1 month"), ("3M", "3 months"), ("6M", "6 months"), ("1Y", "1 year"), ("3Y", "3 years (a year)"), ("5Y", "5 years (a year)")):
             r, x = f.get("ret_" + h), f.get("excess_" + h)
             rr = RET_RANK.get((f["code"], h))
             rank_s = "%d / %d" % rr if rr else "–"
@@ -1322,7 +1322,7 @@ def main():
     (DIST / "data" / "funds.json").write_text(json.dumps([{k: _slim(k, v) for k, v in f.items() if k not in unused} for f in json.loads((S / "data" / "funds.json").read_text())],
                                                          separators=(",", ":")), encoding="utf-8")
     cols = ["code", "name", "amc", "category", "plan_type", "benchmark", "tier", "score", "peer_rank", "peer_count", "nav_latest", "nav_date",
-            "ter", "aum_cr", "ret_6M", "ret_1Y", "ret_3Y", "ret_5Y", "excess_1Y", "excess_3Y", "excess_5Y", "max_drawdown_5y",
+            "ter", "aum_cr", "ret_1M", "ret_3M", "ret_6M", "ret_1Y", "ret_3Y", "ret_5Y", "excess_1Y", "excess_3Y", "excess_5Y", "max_drawdown_5y",
             "upside_capture_3y", "downside_capture_3y", "info_ratio_3y", "alpha_3y"]
     with open(DIST / "data" / "funds.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)

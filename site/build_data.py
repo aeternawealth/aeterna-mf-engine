@@ -12,7 +12,7 @@ KEEP = ["code","name","amc","asset_class","tax","bench_label","category","peer_g
  "hist3y_n","hist3y_median","hist3y_p10","hist3y_p90","hist3y_worst","hist3y_best","hist3y_pos","hist3y_gt7","hist3y_from",
  "flow_1q","flow_4q","flow_quarter","aum_1y_ago_cr","n_stocks","top10_pct","large_pct","mid_pct","small_pct","active_share",
  "cash_other_pct","top_sector","top_sector_pct","mandate_breaches","holdings_month"]
-for h in ["6M","1Y","3Y","5Y"]:
+for h in ["1M","3M","6M","1Y","3Y","5Y"]:
     KEEP += [f"ret_{h}", f"excess_{h}", f"rank_{h}", f"peers_{h}", f"score_{h}"]
 def clean(v):
     if isinstance(v, float):

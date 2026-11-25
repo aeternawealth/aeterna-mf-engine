@@ -500,7 +500,7 @@ def amc_watch_table(B, W):
     ov = lambda v: "–" if v.get("overlap") is None else f"{v['overlap']:.0f}%"
     rows = "".join(f"<tr><td class='l'><a href='/mutual-funds/amc/{B.slug(a)}/'>{B.e(a)}</a></td><td class='num'{hl if v['herding'] >= 0.40 else ''}>{v['herding']:.2f}</td>"
                    f"<td class='num'>{ov(v)}</td><td class='num'>{pc(v.get('aum_growth'))}</td><td class='num'>{v['schemes']}</td></tr>" for a, v in H)
-    return (f"<h2 style='font-size:26px;margin-top:40px'>How tightly each fund house's schemes move together</h2>"
+    return (f"<h2 id='watch' style='font-size:26px;margin-top:40px;scroll-margin-top:84px'>How tightly each fund house's schemes move together</h2>"
             f"<p style='margin-top:10px'>When one house view drives every scheme, a house's funds tend to rise and fall together. The score is the average "
             f"correlation of its diversified equity schemes' weekly returns over the median fund, over the last year: 0 means independent, 1 identical; "
             f"the median fund house is {med:.2f}. Scores of 0.40 or more are highlighted. Holding funds from more than one fund house spreads this risk.</p>"

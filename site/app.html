@@ -111,6 +111,29 @@ header.site nav.main{gap:6px} nav.main>.dd>.ddbtn{padding:9px 13px;font-size:15p
  .nav-cta{display:flex;gap:10px;flex-wrap:wrap;padding-top:10px;margin-top:6px;border-top:1px solid var(--rule)} .nav-only{display:block}
  header.site nav.main{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--surface);border-bottom:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-left,0px)) 12px;justify-self:stretch}
  header.site nav.main.open{display:flex;max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow-y:auto;overscroll-behavior:contain} .menu-btn{display:block} .hdr-cta{display:none}}
+/* menu v2 (Nov 2026): brand left, six groups, a wide Funds panel; collapsible groups on phones */
+.ddcol{display:flex;flex-direction:column;min-width:0}
+.ddh{display:block;font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:8px 12px 4px}
+.nav-quick{display:none}
+@media (min-width:1181px){
+ header.site .wrap{grid-template-columns:auto minmax(0,1fr) auto;gap:18px}
+ header.site .brand{justify-self:start;order:-1}
+ header.site nav.main{gap:2px}
+ nav.main>.dd>.ddbtn{padding:9px 11px;font-size:15px}
+ .ddmenu.mega{min-width:700px;grid-template-columns:1.1fr .9fr 1.1fr;gap:2px 8px;padding:8px}
+ .ddmenu.mega a{white-space:normal}
+ .dd.open .ddmenu.mega{display:grid}}
+@media (hover:hover) and (min-width:1181px){.dd:hover .ddmenu.mega,.dd:focus-within .ddmenu.mega{display:grid}}
+@media (max-width:1180px){
+ nav.main .dd .ddmenu,nav.main .dd .ddmenu.mega{display:none;padding:0 0 8px 8px}
+ nav.main .dd.open .ddmenu{display:flex;flex-direction:column}
+ nav.main .ddbtn{pointer-events:auto;width:100%;justify-content:space-between;font:600 16px var(--f-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ink)!important;padding:14px 10px!important;border-radius:0!important;background:none!important;border-bottom:1px solid var(--rule)!important}
+ nav.main .ddbtn::after{display:inline-block!important}
+ nav.main .dd.open>.ddbtn{color:var(--teal)!important}
+ nav.main .dd.open>.ddbtn::after{transform:translateY(2px) rotate(225deg)}
+ nav.main .ddh{padding:12px 10px 2px}
+ .nav-quick{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;padding:8px 0 6px}
+ nav.main .nav-quick a{border:1px solid var(--rule);text-align:center;padding:11px 8px;font-weight:600;color:var(--ink)}}
 @media (max-width:420px){.brand b{font-size:19px}.brand svg{width:28px;height:27px}}
 /* sections */
 section.band{padding-block:72px}
@@ -530,12 +553,17 @@ a.fl-node:hover rect,a.fl-node:focus-visible rect{stroke:var(--teal);fill:var(--
 <!-- HEADER-START -->
   <div class="wrap">
     <nav class="main" id="nav" aria-label="Main">
+      <div class="nav-quick nav-only"><a href="#ratings">Fund ratings</a><a href="/portfolio-check/">Check portfolio</a><a href="/income-tax/calculator/">Tax calculator</a><a href="/plan/">Money Plan</a></div>
+      <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Funds</button>
+        <div class="ddmenu mega"><div class="ddcol"><span class="ddh">Ratings</span><a href="#ratings">All fund ratings<small>Sort and filter every fund in a category</small></a><a href="/ratings-update/">This month's rating changes<small>What moved, and why</small></a><a href="/method/">How the ratings work<small>Method and backtest</small></a></div><div class="ddcol"><span class="ddh">Categories</span><a href="/mutual-funds/large-cap/">Large Cap</a><a href="/mutual-funds/mid-cap/">Mid Cap</a><a href="/mutual-funds/small-cap/">Small Cap</a><a href="/mutual-funds/flexi-cap/">Flexi Cap</a><a href="/mutual-funds/elss/">ELSS (tax saving)</a><a href="/mutual-funds/balanced-advantage/">Balanced Advantage</a><a href="/mutual-funds/">All categories<small>Equity, hybrid and debt</small></a></div><div class="ddcol"><span class="ddh">Tools</span><a href="/portfolio-check/">Check your portfolio<small>How the funds you hold rate</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="/compare/">Fund vs fund<small>Popular head-to-head comparisons</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme, by fund house</small></a></div></div></div>
+      <div class="dd" id="ddRes"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Research</button>
+        <div class="ddmenu"><a href="/mutual-funds/money-flows/">Where the money is going<small>Net flows by category, fund and fund house</small></a><a href="/mutual-funds/crowded-stocks/">Crowded stocks<small>What funds own most of, and are piling into</small></a><a href="/mutual-funds/holding/">Funds holding a stock<small>Who owns a stock, and who bought or sold</small></a><a href="/mutual-funds/amc/#watch">Fund-house watch<small>How tightly each house's funds move together</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
+      <div class="dd" id="ddTax"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Tax</button>
+        <div class="ddmenu"><a href="/income-tax/calculator/">Income tax calculator<small>Old vs new regime, every income type</small></a><a href="/income-tax/slabs-fy-2026-27/">Tax slabs, tax year 2026-27</a><a href="/income-tax/deductions/">Deductions<small>80C, 80D, HRA, NPS and more, with calculators</small></a><a href="/calculators/capital-gains-tax/">Capital gains on funds<small>Tax when you redeem</small></a><a href="/income-tax/">Income tax hub<small>Key dates and guides</small></a><a href="/invest/tax-planning/">Tax planning and ITR filing<small>Done for you</small></a></div></div>
+      <div class="dd" id="ddPlan"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Plan</button>
+        <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI</small></a><a href="/learn/">Investor guides<small>SIP vs lump sum, when to sell, and more</small></a></div></div>
       <div class="dd" id="ddInv"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Invest</button>
-        <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual fund investing<small>How we choose and manage funds for you</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/tax-planning/">Tax planning<small>Capital gains, redemption order, NRIs</small></a><a href="/invest/portfolio-review/">Portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
-      <div class="dd" id="ddMf"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Fund ratings</button>
-        <div class="ddmenu"><a href="#ratings">Fund ratings<small>Sort and filter every fund in a category</small></a><a href="/mutual-funds/">All funds, by category<small>Equity, hybrid and debt funds</small></a><a href="/mutual-funds/amc/">Fund houses<small>Every scheme, and how tightly each house's funds move together</small></a><a href="/portfolio-check/">Check your portfolio<small>How the funds you hold rate</small></a><a href="#compare">Compare and overlap<small>Up to four funds side by side</small></a><a href="/mutual-funds/holding/">Funds holding a stock<small>Which funds own a stock, and who bought or sold</small></a><a href="/mutual-funds/crowded-stocks/">Crowded stocks<small>What funds own most of, and are piling into</small></a><a href="/mutual-funds/money-flows/">Where the money is going<small>Net flows by category, fund and fund house</small></a><a href="/method/">Method and backtest<small>How the ratings work, and how they tested</small></a></div></div>
-      <div class="dd" id="ddPlan"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">Plan &amp; learn</button>
-        <div class="ddmenu"><a href="/plan/">Money Plan<small>How much to invest, and where. Free</small></a><a href="/calculators/">Calculators<small>SIP, goal, retirement income, EMI, tax</small></a><a href="/income-tax/">Income tax<small>Old vs new regime calculator, slabs, due dates</small></a><a href="/learn/">Investor guides<small>Regular vs Direct, SIP vs lump sum, tax and more</small></a><a href="/insights/">Insights<small>Facts from this month's data</small></a></div></div>
+        <div class="ddmenu"><a href="/invest/mutual-funds/">Mutual fund investing<small>How we choose and manage funds for you</small></a><a href="/invest/portfolio-review/">Free portfolio review<small>Everything you hold, in one view</small></a><a href="/invest/pms/">PMS<small>Portfolio management services, from ₹50 lakh</small></a><a href="/invest/aif/">AIFs<small>Private equity, credit and long-short funds</small></a><a href="/invest/bonds/">Bonds<small>Listed bonds for income and fixed maturities</small></a><a href="/invest/unlisted-shares/">Unlisted shares<small>Pre-IPO companies, paperwork handled</small></a><a href="/invest/">All solutions<small>How the products compare</small></a></div></div>
       <div class="dd" id="ddAbout"><button class="ddbtn" type="button" aria-haspopup="true" aria-expanded="false">About</button>
         <div class="ddmenu"><a href="/about/">About Aeterna<small>Who we are and how we work</small></a><a href="/contact/">Contact<small>Call, WhatsApp or write to us</small></a><a href="/disclosures/">Disclosures<small>How we are paid, and our registrations</small></a></div></div>
       <div class="nav-cta"><a class="btn" href="https://onedigital.centricity.co.in/" target="_blank" rel="noopener">Client login</a><a class="btn primary" href="/contact/">Talk to us</a></div>
@@ -1705,7 +1733,7 @@ function route(){
    const f=view==='fund'&&S.byCode.get(code);document.title=f?`${f.name} (${f.plan_type}) | Aeterna Wealth`:(view==='home'?T.home:(T[view]||'Aeterna Wealth')+' | Aeterna Wealth')}
   $$('nav.main a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+view)||a.removeAttribute('aria-current'));
   $$('nav.main a').forEach(a=>{if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-  const cur={ddMf:['ratings','compare','method','fund'],ddInv:['solutions'],ddPlan:['tools','insights'],ddAbout:['about','contact','disclosures']};
+  const cur={ddMf:['ratings','compare','method','fund'],ddInv:['solutions'],ddPlan:['tools'],ddRes:['insights'],ddTax:[],ddAbout:['about','contact','disclosures']};
   for(const id in cur){const b=$('#'+id+' .ddbtn');if(cur[id].includes(view))b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');$('#'+id).classList.remove('open');b.setAttribute('aria-expanded','false')}
   if(view==='contact'&&S.topic){const m=$('#cm');$$('#ci input').forEach(i=>{if(S.topic.toLowerCase().includes(i.value.toLowerCase()))i.checked=true});if(m&&!m.value)m.value=`I'd like to know more about ${S.topic}.`;S.topic=null}
   if(view==='about')requestAnimationFrame(abJourney);

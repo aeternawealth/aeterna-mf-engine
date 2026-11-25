@@ -469,7 +469,8 @@ RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use 
 MOVED = {}   # old fund address -> new, for redirects (site/moved_funds.json)
 SEARCH_TAG = ""   # the on-page search script, set in main() with a content version
 _FONTS = Path(__file__).resolve().parent / "fonts"
-FONT_HEAD = ("".join(f'<link rel="preload" href="/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
+WWW_JS = ("<script>if(/^www\\./.test(location.hostname))location.replace('https://aeternawealth.com'+location.pathname+location.search+location.hash)</script>")   # until the Cloudflare 301 rule exists
+FONT_HEAD = WWW_JS + ("".join(f'<link rel="preload" href="/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
                      for n in ("libre-franklin-latin", "source-serif-4-latin", "source-serif-4-italic-400-latin", "ibm-plex-mono-normal-400-latin"))
              + "<style>" + (_FONTS / "fonts.css").read_text(encoding="utf-8").split("\n", 1)[1].replace("\n", "") + "</style>")   # fonts served from this site
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu
@@ -1456,6 +1457,18 @@ def main():
                             "Try the <a href='/mutual-funds/'>fund categories</a>, the <a href='/#tools'>calculators</a> or the <a href='/'>home page</a>.</p></div></section>"))
     (DIST / "CNAME").write_text("aeternawealth.com\n")
     (DIST / f"{INDEXNOW_KEY}.txt").write_text(INDEXNOW_KEY, encoding="utf-8")
+    # content fingerprints of every indexable page, so the deploy tells IndexNow only about pages that changed (Nov 2026:
+    # it sent all 3,600 URLs on every deploy, several times a day)
+    import hashlib as _h
+    fp = {}
+    for u, _cf, _pr in urls:
+        f = DIST / u.strip("/") / "index.html" if u != "/" else DIST / "index.html"
+        if u in NOINDEX_PATHS or not f.exists():
+            continue
+        t = f.read_text(encoding="utf-8", errors="replace")
+        t = t[t.find("<main"):t.rfind("</main>")] if "<main" in t else t
+        fp[u] = _h.sha1(re.sub(r"\?v=[0-9a-f]+", "", t).encode("utf-8")).hexdigest()[:12]
+    (DIST / "data" / "page-hashes.json").write_text(json.dumps(fp, separators=(",", ":")), encoding="utf-8")
     # 301s from the old WordPress site's genuine pages, so any ranking they earned carries over
     # (its ~1,760 injected spam pages are deliberately left to 404 so search engines drop them)
     old = {"/about-us/": "/about/", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",

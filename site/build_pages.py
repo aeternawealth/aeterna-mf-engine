@@ -629,6 +629,7 @@ def compare_pages(B, funds, hold, urls, as_of):
         else:
             groups.append((c, D[:CMP_TOP]))
     pairs, keep = [], set()
+    hub = {}
     for c, D in groups:
         pairs += [(c, a, b) for a, b in combinations(D, 2)]
         reg = lambda f: (by_pair.get(f.get("pair_key"), {}).get("Regular") or f).get("aum_cr") or 0
@@ -722,6 +723,20 @@ def compare_pages(B, funds, hold, urls, as_of):
                                  (faq_ld(faq), B.crumbs([("Mutual funds", "/mutual-funds/"), (c, f"/mutual-funds/{B.slug(c)}/"), ("Compare", path)]))))
             urls.append((path, "weekly", "0.6"))
             made[(a["pair_key"], b["pair_key"])] = path
+            if path not in B.NOINDEX_PATHS:
+                hub.setdefault(c, []).append((a["_name"], b["_name"], path))
+    # /compare/: the hub for the comparisons Google indexes, by category (Nov 2026: the menu linked here before it existed)
+    sec = "".join(f"<h2 style='font-size:24px;margin-top:30px'><a href='/mutual-funds/{B.slug(c)}/'>{B.e(c)}</a></h2><ul style='columns:2 300px;margin-top:10px;line-height:1.9'>"
+                  + "".join(f"<li><a href='{u}'>{B.e(x)} vs {B.e(y)}</a></li>" for x, y, u in sorted(L)) + "</ul>" for c, L in sorted(hub.items()))
+    body = (f"<section class='band' style='padding-top:28px'><div class='wrap'><nav aria-label='Breadcrumb' class='muted' style='font-size:13.5px'><a href='/mutual-funds/'>Mutual funds</a> › Compare</nav>"
+            "<h1 style='font-size:clamp(30px,4vw,44px);margin-top:14px'>Compare mutual funds side by side</h1>"
+            "<p class='lede' style='margin-top:12px'>The most-compared funds in each category, head to head: returns year by year, how far each fell in "
+            "market falls, what they own and how much their portfolios overlap. To compare any funds of your own, up to four at once, use the "
+            "<a href='/#compare'>compare tool</a>.</p>" + sec + "</div></section>")
+    B.write("/compare/", B.page("Compare mutual funds: head-to-head returns, falls and overlap | Aeterna Wealth",
+                                "Compare India's most-compared mutual funds head to head: returns year by year, falls in market crashes, holdings and portfolio overlap, by category.",
+                                "/compare/", body, (B.crumbs([("Mutual funds", "/mutual-funds/"), ("Compare", "/compare/")]),)))
+    urls.append(("/compare/", "weekly", "0.7"))
     return made
 
 

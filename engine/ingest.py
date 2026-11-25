@@ -165,8 +165,14 @@ def build_universe(navall: pd.DataFrame) -> pd.DataFrame:
             .str.replace(r"(?i)\bgrowth( option| plan)?\b", "", regex=True)
             .str.replace(r"[^A-Za-z0-9&]+", " ", regex=True).str.strip().str.lower())
     u["pair_key"] = u["amc"].str.lower().str.strip() + "|" + base
-    # some schemes list two growth lines per plan (e.g. legacy + current); keep the oldest code
-    u = u.sort_values("code").drop_duplicates(["pair_key", "plan_type"], keep="first")
+    # some schemes list two growth lines per plan (legacy + current). Keep, in order: a line AMFI still prices (a line it
+    # stopped pricing must not displace the live plan, e.g. Sundaram Banking & PSU's 2024 'Retail GROWTH'); a line that is
+    # not a legacy retail/institutional class (Nippon India Liquid's 'Retail Plan' beside its current Regular plan); the
+    # oldest code. A plan's only growth line is always kept, whatever it is called (Franklin's Direct 'Retail Plan Growth').
+    stale = (u["nav_date"] < u["nav_date"].max() - pd.Timedelta(days=10)) if "nav_date" in u.columns else False
+    legacy = u["option"].fillna("").str.contains(r"retail|institutional", case=False)
+    u = (u.assign(_s=stale, _l=legacy).sort_values(["_s", "_l", "code"])
+          .drop_duplicates(["pair_key", "plan_type"], keep="first").drop(columns=["_s", "_l"]))
     return u.reset_index(drop=True)
 
 

@@ -35,13 +35,26 @@ def match_index(name: str, tri_cols) -> str | None:
     return best
 
 
-def index_label(name: str, amc: str) -> str:
-    n = name
-    amc_word = (amc or "").replace("Mutual Fund", "").strip()
-    if amc_word:
-        n = re.sub(re.escape(amc_word), "", n, flags=re.I)
-    n = re.sub(r"(?i)\b(index fund|index|fund|direct|regular|plan|growth|option|-)\b", " ", n)
-    return re.sub(r"\s+", " ", n).strip().upper() or name
+def index_label(name: str, amc: str = None) -> str:
+    """The index a fund tracks, read from its name: from the first index-family word onwards, so the fund house's
+    name never leaks into the peer group (before Dec 2026: 'KOTAK BSE SENSEX', 'MF BSE SENSEX', '- BSE SENSEX' and
+    'INDIA BSE SENSEX' were four peer groups beside 'BSE SENSEX'; see docs/thesis_index_peer_groups.md)."""
+    n = re.sub(r"(?i)\((formerly|erstwhile)[^)]*\)?|\b(formerly|erstwhile) known as\b.*$", " ", name)
+    n = re.sub(r"[-\u2013(),]", " ", n).upper()
+    m = re.search(r"\b(NIFTY|BSE|SENSEX|S&P|NASDAQ|MSCI|CRISIL|NYSE|HANG SENG)", n)
+    if m:
+        n = n[m.start():]
+    n = re.sub(r"\b(INDEX FUND|INDEX|FUND|FOF|DIRECT|REGULAR|PLAN|GROWTH|OPTION)\b", " ", n)
+    n = re.sub(r"^NIFTYIT\b", "NIFTY IT", re.sub(r"\s+", " ", n).strip())
+    n = re.sub(r"\bCAPITAL MARKETS\b", "CAPITAL MARKET", n)
+    if n == "NIFTY":            # 'SBI Nifty Index Fund' tracks the Nifty 50
+        n = "NIFTY 50"
+    return n or name.upper()
+
+
+def _label_key(label: str) -> str:
+    """spacing and punctuation do not make a different index: 'NIFTY50 EQUAL WEIGHT' = 'NIFTY 50 EQUAL WEIGHT'"""
+    return re.sub(r"[^A-Z0-9&:]", "", label.upper())
 
 
 def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
@@ -66,6 +79,13 @@ def assign_peers(u: pd.DataFrame, tri: pd.DataFrame) -> pd.DataFrame:
     tracked = u.loc[ix, "name"].map(lambda n: match_index(n, tri.columns))
     labels = [t if isinstance(t, str) else index_label(n, a)
               for t, n, a in zip(tracked, u.loc[ix, "name"], u.loc[ix, "amc"])]
+    # one spelling per index (the most common one), and the index's own TRI where the label names one
+    spell = {}
+    for (k, l), _n in pd.Series([(_label_key(l), l) for l in labels], dtype=object).value_counts().items():
+        spell.setdefault(k, l)
+    labels = [spell[_label_key(l)] for l in labels]
+    bykey = {_label_key(c): c for c in tri.columns}
+    tracked = [t if isinstance(t, str) else bykey.get(_label_key(l)) for t, l in zip(tracked, labels)]
     u.loc[ix, "benchmark"] = tracked
     u.loc[ix, "peer_group"] = ["Index: " + l for l in labels]
     # arbitrage: the Nifty 50 Arbitrage index if niftyindices lists it (name matched loosely), else a peer proxy

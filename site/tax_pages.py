@@ -102,7 +102,7 @@ FAQ = [
     ("What deductions are allowed in the new regime?", "The standard deduction (₹75,000), your employer's NPS contribution (up to 14% of basic and DA), and deductions within house property for a let-out home. 80C, 80D, HRA and home-loan interest on a self-occupied home are not allowed."),
     ("Do senior citizens get a higher exemption?", "Only in the old regime: ₹3 lakh at 60 to 79 and ₹5 lakh at 80 and above, for residents. The new regime has one set of slabs for every age. Seniors also get a ₹50,000 deduction for deposit interest under 80TTB and a ₹50,000 health insurance limit under 80D in the old regime."),
     ("How are NRIs taxed?", "On income earned or received in India, at the same slabs. NRIs do not get the rebate, the higher exemption for seniors, 80TTB, or the use of the unused basic exemption against capital gains."),
-    ("What changed with the Income-tax Act, 2025?", "It replaced the 1961 Act from 1 April 2026, renumbering the sections (80C is now section 123) and keeping the rates and limits. FY 2026-27 is the first year filed under it, in returns due by 31 July 2027 for most individuals."),
+    ("What changed with the Income-tax Act, 2025?", "It replaced the 1961 Act from 1 April 2026. It keeps the rates and limits, renumbers the sections, and replaces the old 'previous year' and 'assessment year' with a single tax year: tax year 2026-27 is 1 April 2026 to 31 March 2027, what used to be FY 2026-27 / AY 2027-28. Returns for it are due by 31 July 2027 for most individuals."),
     ("What is not included in this calculator?", "Agricultural income, HUFs, firms and companies, alternative minimum tax, foreign tax credits, clubbing of income, set-off of brought-forward losses and some rare deductions. If any apply to you, have a CA check the result."),
     ("When is the last date to save tax for FY 2026-27?", "31 March 2027 for investments and payments that count (80C, 80D, NPS). The return is due by 31 July 2027 for most individuals, and advance tax instalments fall on 15 June, 15 September, 15 December and 15 March."),
 ]
@@ -155,13 +155,13 @@ def tax_pages(B, urls):
 
     # ---------------------------------------------------------------- the calculator
     path = "/income-tax/calculator/"
-    title = f"Income tax calculator FY {FY} (AY {AY}): old vs new regime | Aeterna Wealth"
-    desc = (f"Free income tax calculator for FY {FY} (AY {AY}) under the Income-tax Act, 2025: salary, HRA, house property, business, "
+    title = f"Income tax calculator tax year {FY} (FY {FY}): old vs new regime | Aeterna Wealth"
+    desc = (f"Free income tax calculator for tax year {FY} under the Income-tax Act, 2025: salary, HRA, house property, business, "
             "capital gains, crypto, every deduction, rebate, surcharge and cess, for residents, NRIs and senior citizens, old and new regime side by side.")
     body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/income-tax/">Income tax</a> › Calculator</nav>
-<h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Income tax calculator FY {FY}: old vs new regime</h1>
-<p class="lede" style="margin-top:12px">Your tax for the year 1 April 2026 to 31 March 2027 (assessment year {AY}), under both regimes, for any individual: salaried or self-employed, resident or NRI, any age. Fill in what applies; leave the rest at zero.</p>
+<h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Income tax calculator, tax year {FY}: old vs new regime</h1>
+<p class="lede" style="margin-top:12px">Your tax for tax year {FY} (1 April 2026 to 31 March 2027) under the Income-tax Act, 2025, in both regimes, for any individual: salaried or self-employed, resident or NRI, any age. Fill in what applies; leave the rest at zero.</p>
 <div class="tool" id="txForm" style="margin-top:22px"><div class="stack" style="gap:12px">{_form(B)}</div>
 <div class="stack" id="txSide"><div class="out" id="txOut"></div><div class="tablewrap" id="txTbl" tabindex="0"></div>
 <p class="muted" id="txDed" style="font-size:13px"></p><div class="card" id="txTips"></div>
@@ -174,7 +174,7 @@ def tax_pages(B, urls):
 <li>The rebate, then surcharge with marginal relief, then the 4% cess.</li></ol>
 <h2 style="font-size:24px;margin-top:28px">FY {FY} slab rates</h2>{slab_tables()}
 <h2 style="font-size:24px;margin-top:28px">Rebate, surcharge, cess and capital gains</h2><ul style="margin-top:6px">{rules}</ul>
-<p class="muted" style="font-size:13px;margin-top:12px">Rules last checked {CHECKED}. Section numbers are those of the Income-tax Act, 1961, the names most people still use; the Income-tax Act, 2025 keeps the same limits under new numbers.</p>
+<p class="muted" style="font-size:13px;margin-top:12px">Rules last checked {CHECKED}, under the Income-tax Act, 2025. Deductions are shown by their familiar names (80C, 80D and so on); the new section numbers will be added from the tax department's official mapping.</p>
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{faq_html}
 <p style="margin-top:22px;font-size:14.5px">Related: <a href="/income-tax/deductions/">Every deduction explained</a> · <a href="/income-tax/slabs-fy-2026-27/">Tax slabs FY {FY}</a> · <a href="/calculators/income-tax-old-vs-new/">What ELSS saves you</a> · <a href="/calculators/capital-gains-tax/">Capital gains tax calculator</a> · <a href="/learn/elss-tax-saving-mutual-funds/">ELSS explained</a></p>
 <p class="muted" style="font-size:12.5px;margin-top:22px">An estimate from the figures you enter, not tax advice. Have a CA check your return before you file.</p>
@@ -193,7 +193,7 @@ def tax_pages(B, urls):
     sfaq = FAQ[1:2] + FAQ[3:6]
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/income-tax/">Income tax</a> › Slabs FY {FY}</nav>
-<h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Income tax slabs FY {FY} (AY {AY}): new and old regime</h1>
+<h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">Income tax slabs, tax year {FY}: new and old regime</h1>
 <p class="lede" style="margin-top:12px">Budget 2026 left the slabs unchanged. In the new regime, the default, income up to ₹12 lakh is tax-free for residents through the rebate (₹12.75 lakh of salary after the standard deduction). The old regime keeps its slabs and its deductions.</p>
 <p style="margin-top:16px"><a class="btn primary" href="{path}">Work out your tax in both regimes</a></p>
 {slab_tables()}
@@ -203,8 +203,8 @@ def tax_pages(B, urls):
 </div></section>"""
     sld = {"@context": "https://schema.org", "@type": "FAQPage",
            "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in sfaq]}
-    B.write(sp, B.page(f"Income tax slabs FY {FY} (AY {AY}): new and old regime, senior citizens | Aeterna Wealth",
-                       f"Income tax slab rates for FY {FY} (AY {AY}): new regime, old regime for below 60, senior and super senior citizens, the ₹12 lakh rebate, surcharge, cess and capital gains rates.",
+    B.write(sp, B.page(f"Income tax slabs FY {FY} (tax year {FY}): new and old regime, senior citizens | Aeterna Wealth",
+                       f"Income tax slab rates for tax year {FY} under the Income-tax Act, 2025: new regime, old regime for below 60, senior and super senior citizens, the ₹12 lakh rebate, surcharge, cess and capital gains rates.",
                        sp, body, (sld, B.crumbs([("Income tax", "/income-tax/"), (f"Slabs FY {FY}", sp)]))))
     urls.append((sp, "monthly", "0.8"))
 
@@ -220,7 +220,7 @@ def tax_pages(B, urls):
              ("31 March 2027", f"Last day for FY {FY} tax-saving investments and payments"), ("31 July 2027", f"Return due for FY {FY}, for individuals without a tax audit"),
              ("31 December 2027", "Last day for a belated or revised return for FY " + FY)]
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
-<h1 style="font-size:clamp(30px,4vw,44px)">Income tax for individuals, FY {FY}</h1>
+<h1 style="font-size:clamp(30px,4vw,44px)">Income tax for individuals, tax year {FY}</h1>
 <p class="lede" style="margin-top:12px">Calculators and plain guides for the first year under the Income-tax Act, 2025: which regime to choose, what you can deduct, how capital gains are taxed, and when to pay and file.</p>
 <div class="grid g3" style="margin-top:26px">{''.join(f"<a class='card stack sol' href='{u}' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 18px var(--f-display)'>{e(n)}</b><span class='muted' style='font-size:14px'>{e(d)}</span></a>" for u, n, d in cards)}</div>
 <h2 style="font-size:26px;margin-top:40px">Key dates</h2><div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Date</th><th class="l">What</th></tr></thead><tbody>{''.join(f"<tr><td class='l'>{d}</td><td class='l'>{e(w)}</td></tr>" for d, w in dates)}</tbody></table></div>
@@ -228,6 +228,6 @@ def tax_pages(B, urls):
 <div class="card stack" style="gap:8px;margin-top:30px;border-color:var(--teal)"><b>Tax planning and return filing, with a CA</b><span class="muted" style="font-size:14px">A chartered accountant reviews your regime, deductions and capital gains, and can file your return.</span><a class="btn primary" href="{WA}{'Hi%2C%20I%20would%20like%20help%20with%20my%20income%20tax.'}" target="_blank" rel="noopener" style="justify-self:start">Ask on WhatsApp</a></div>
 </div></section>"""
     B.write("/income-tax/", B.page(f"Income tax FY {FY}: calculator, slabs, deductions and due dates | Aeterna Wealth",
-                                   f"Income tax for individuals in FY {FY} (AY {AY}): a full old vs new regime calculator, slab rates, deductions, capital gains and the key dates for paying and filing.",
+                                   f"Income tax for individuals in tax year {FY}, under the Income-tax Act, 2025: a full old vs new regime calculator, slab rates, deductions, capital gains and the key dates for paying and filing.",
                                    "/income-tax/", body, (B.crumbs([("Income tax", "/income-tax/")]),)))
     urls.append(("/income-tax/", "weekly", "0.9"))

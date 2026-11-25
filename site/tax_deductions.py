@@ -90,7 +90,7 @@ D = [
          who="Any taxpayer filing under the old regime who donates to an eligible fund or institution.",
          rules=["Four kinds: 100% with no limit (e.g. PM National Relief Fund), 50% with no limit (e.g. PM Drought Relief Fund), 100% within the 10% limit, and 50% within the 10% limit (most registered charities).",
                 "The 10% limit is on gross total income less other deductions and income taxed at special rates.",
-                "Cash donations above ₹2,000 do not qualify.", "The charity reports your donation to the tax department; your deduction is checked against its Form 10BE certificate.",
+                "Cash donations above ₹2,000 do not qualify.", "The charity reports your donation to the tax department; your deduction is checked against the certificate it issues.",
                 "Not allowed in the new regime."],
          faq=[("Can I claim 80G on a cash donation?", "Only up to ₹2,000 in cash. Larger donations must be by cheque, card or bank transfer.")],
          links=[("/income-tax/calculator/", "Full income tax calculator")]),
@@ -98,7 +98,7 @@ D = [
          lead="If you pay rent but receive no HRA, for example as a self-employed person, you can deduct up to ₹60,000 a year (₹5,000 a month) under 80GG in the old regime.",
          who="Individuals who get no HRA, and who (and whose spouse, minor child or HUF) own no home in the city where they live or work.",
          rules=["Deduction = the least of: ₹5,000 a month; 25% of total income; rent paid − 10% of total income. Total income here is before this deduction.",
-                "File Form 10BA, a declaration, with your return.", "Not allowed in the new regime."],
+                "File the declaration the return form asks for.", "Not allowed in the new regime."],
          faq=[("Who can claim 80GG?", "Anyone paying rent who receives no HRA and owns no home in the place they live or work."),
               ("What is the maximum under 80GG?", "₹60,000 a year.")],
          links=[("/income-tax/deductions/hra-exemption/", "HRA exemption")]),
@@ -119,7 +119,7 @@ D = [
          lead="A resident with a disability certified by a medical authority can deduct a flat ₹75,000, or ₹1.25 lakh for a severe disability (80% or more), in the old regime.",
          who="Resident individuals with a disability of 40% or more.",
          rules=["Flat deduction, whatever is actually spent.", "Disability of 40% or more: ₹75,000; severe disability (80% or more): ₹1.25 lakh.",
-                "A certificate from a specified medical authority is needed (Form 10-IA for some conditions).", "Not allowed in the new regime."],
+                "A certificate from a specified medical authority is needed.", "Not allowed in the new regime."],
          faq=[("Do I need to show expenses for 80U?", "No. It is a flat deduction based on the certificate.")],
          links=[("/income-tax/deductions/section-80dd/", "80DD for a dependant with a disability")]),
     dict(slug="section-80dd", sec="80DD", name="Section 80DD: dependant with a disability", short="80DD: care of a dependant with a disability", limit=None, calc="dis",
@@ -207,7 +207,7 @@ def deduction_pages(B, urls, newsec=None, eng_v=""):
         path = f"/income-tax/deductions/{d['slug']}/"
         ns = newsec.get(d["sec"])
         nsl = f" It is section {ns} of the Income-tax Act, 2025." if ns else ""
-        title = f"{d['name']} FY 2026-27: limit, rules, old vs new regime | Aeterna Wealth"
+        title = f"{d['name']}, tax year 2026-27: limit, rules, old vs new regime | Aeterna Wealth"
         desc = (d["lead"][:150].rsplit(" ", 1)[0] + "…") if len(d["lead"]) > 155 else d["lead"]
         faq = d["faq"] + ([("What is the new section number under the Income-tax Act, 2025?", f"Section {ns}. The Income-tax Act, 2025 replaced the 1961 Act from 1 April 2026 and keeps the same limit under the new number; most people and many forms still call it {d['sec']}.")] if ns else [])
         js = CALC_JS.replace("__KIND__", json.dumps(d["calc"])).replace("__LIMIT__", json.dumps(d["limit"]))
@@ -218,11 +218,11 @@ def deduction_pages(B, urls, newsec=None, eng_v=""):
 <p class="lede" style="margin-top:12px">{e(d['lead'])}{e(nsl)}</p>
 <div class="tool" id="dCalc" style="margin-top:22px"><div class="card stack">{calc_html(d)}</div><div class="stack"><div class="out" id="dOut"></div><div class="card"><p id="dTxt" style="font-size:14.5px"></p></div></div></div>
 <h2 style="font-size:24px;margin-top:36px">Who can claim it</h2><p style="margin-top:8px">{e(d['who'])}</p>
-<h2 style="font-size:24px;margin-top:28px">The rules for FY 2026-27</h2><ul style="margin-top:8px">{''.join(f"<li style='margin-top:8px'>{e(r)}</li>" for r in d['rules'])}</ul>
+<h2 style="font-size:24px;margin-top:28px">The rules for tax year 2026-27 (Income-tax Act, 2025)</h2><ul style="margin-top:8px">{''.join(f"<li style='margin-top:8px'>{e(r)}</li>" for r in d['rules'])}</ul>
 <h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f"<details class='faq'><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in faq)}
 <div class="card stack" style="gap:8px;margin-top:28px;border-color:var(--teal)"><b>Not sure what you can claim?</b><span class="muted" style="font-size:14px">A chartered accountant can review your deductions and regime before you file.</span><a class="btn primary" style="justify-self:start" href="{WA}{'Hi%2C%20I%20have%20a%20question%20about%20' + d['sec'].replace('(', '%28').replace(')', '%29')}" target="_blank" rel="noopener">Ask on WhatsApp</a></div>
 <p style="margin-top:22px;font-size:14.5px">Related: {rel} · <a href="/income-tax/deductions/">All deductions</a> · <a href="/income-tax/calculator/">Full tax calculator</a></p>
-<p class="muted" style="font-size:12.5px;margin-top:18px">Rules last checked {CHECKED}. Section numbers are those of the Income-tax Act, 1961, the names most people still use. An estimate, not tax advice.</p>
+<p class="muted" style="font-size:12.5px;margin-top:18px">Rules last checked {CHECKED}, under the Income-tax Act, 2025. Shown by its familiar name; the new section number will be added from the tax department's official mapping. An estimate, not tax advice.</p>
 </div></section>{'<script src="/assets/tax-engine.js?v=' + eng_v + '"></script>' if d['calc'] == 'rebate' else ''}<script>{js}</script>"""
         ld = {"@context": "https://schema.org", "@type": "FAQPage",
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
@@ -234,12 +234,12 @@ def deduction_pages(B, urls, newsec=None, eng_v=""):
                    f"<td class='l'>{'Both' if d['slug'] in ('section-80ccd-2', 'standard-deduction', 'section-87a-rebate') else 'Old only'}</td></tr>" for p, d, ns in cards)
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/income-tax/">Income tax</a> › Deductions</nav>
-<h1 style="font-size:clamp(28px,4vw,42px);margin-top:14px">Income tax deductions and exemptions, FY 2026-27</h1>
+<h1 style="font-size:clamp(28px,4vw,42px);margin-top:14px">Income tax deductions and exemptions, tax year 2026-27</h1>
 <p class="lede" style="margin-top:12px">Every common deduction for individuals, with its limit, which regime allows it and a small calculator. The new regime allows only three of them: the standard deduction, your employer's NPS contribution and the rebate.</p>
-<div class="tablewrap" style="margin-top:20px"><table><thead><tr><th class="l">Section (1961 Act)</th>{'<th class="l">Income-tax Act, 2025</th>' if hasn else ''}<th class="l">What it covers</th><th class="l">Regime</th></tr></thead><tbody>{rows}</tbody></table></div>
+<div class="tablewrap" style="margin-top:20px"><table><thead><tr><th class="l">Deduction (familiar name)</th>{'<th class="l">Income-tax Act, 2025</th>' if hasn else ''}<th class="l">What it covers</th><th class="l">Regime</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p style="margin-top:18px"><a class="btn primary" href="/income-tax/calculator/">Work out your tax with all of them</a></p>
 </div></section>"""
-    B.write("/income-tax/deductions/", B.page("Income tax deductions FY 2026-27: 80C, 80D, HRA, NPS, 24(b), 87A and more | Aeterna Wealth",
+    B.write("/income-tax/deductions/", B.page("Income tax deductions tax year 2026-27: 80C, 80D, HRA, NPS, 24(b), 87A and more | Aeterna Wealth",
                                               "Every income tax deduction and exemption for individuals in FY 2026-27: limits, old vs new regime, with a calculator for each.",
                                               "/income-tax/deductions/", body, (B.crumbs([("Income tax", "/income-tax/"), ("Deductions", "/income-tax/deductions/")]),)))
     urls.append(("/income-tax/deductions/", "monthly", "0.8"))

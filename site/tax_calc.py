@@ -80,7 +80,7 @@ def entry(fld, sel):
                    for g in (1000000, 1200000, 1500000, 1800000, 2000000, 2500000, 3000000, 5000000) for n, D in [be(g)])
     return {"id": "income-tax-old-vs-new", "name": "Income tax: old vs new regime", "h1": f"Income tax calculator FY {FY}: old vs new regime, and what ELSS saves",
             "title": f"Income tax calculator FY {FY}: old vs new regime, 80C and ELSS saving | Aeterna Wealth",
-            "desc": f"Free income tax calculator for FY {FY} (AY 2027-28): tax under the old and new regimes side by side, which is lower for you, and how much tax an ELSS investment under 80C actually saves.",
+            "desc": f"Free income tax calculator for tax year {FY} (Income-tax Act, 2025): tax under the old and new regimes side by side, which is lower for you, and how much tax an ELSS investment under 80C actually saves.",
             "intro": "Enter your yearly income and the deductions you already claim. The calculator works out your tax under both regimes, shows which is lower, and what filling your ₹1.5 lakh 80C limit with ELSS would change.",
             "inputs": lambda: fld("g", "Yearly income before tax (₹)", 1500000, 100000, 50000000, 10000)
             + sel("st", "Salaried or pensioner?", [("1", "Yes: standard deduction applies"), ("0", "No: business or other income")], "1")

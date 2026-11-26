@@ -440,7 +440,7 @@ THEME_JS = ('<meta name="theme-color" content="#f6f8f7"><script>try{var t=localS
 
 
 # legal pages stay linked from every footer but out of search, so Google's sitelinks for the brand show the useful pages
-NOINDEX_PATHS = {"/privacy/", "/terms/", "/grievances/", "/disclosures/", "/links/"}
+NOINDEX_PATHS = set()   # owner, 26 Nov 2026: every page on aeternawealth.com is indexable (legal, links and comparison pages included)
 
 
 def head(title, desc, path, extra_ld=(), og_type="website"):
@@ -1362,6 +1362,7 @@ def main():
           "<h1 style='font-size:32px;text-align:center'>Aeterna Wealth</h1>"
           f"<p class='lede' style='text-align:center;margin-top:8px'>Mutual funds, rated and chosen with numbers. {e(ORG['arn'])}.</p>"
           f"<div class='stack' style='gap:12px;margin-top:24px'>{btn}</div></div></section>"))
+    urls.append(("/links/", "monthly", "0.3"))
 
     # ---- sitemap, robots, llms
     today = str(date.today())

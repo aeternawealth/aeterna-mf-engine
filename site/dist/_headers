@@ -12,5 +12,7 @@
   Cache-Control: public, max-age=300
 /og.png
   Cache-Control: public, max-age=86400
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
 https://aeterna-wealth.pages.dev/*
   X-Robots-Tag: noindex

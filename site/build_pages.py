@@ -717,8 +717,6 @@ def compare_pages(B, funds, hold, urls, as_of):
 {faq_html(B, faq)}
 {_related(B, a, b, rel, path, c)}
 <p class="note" style="margin-top:28px">Past performance does not guarantee future returns. This comparison is not a recommendation to buy or sell either fund.</p></div></section>"""
-            if (a["pair_key"], b["pair_key"]) not in keep and (b["pair_key"], a["pair_key"]) not in keep:
-                B.NOINDEX_PATHS.add(path)     # kept for visitors, out of Google: only the most-compared pairs are indexed
             B.write(path, B.page(f"{a['_name']} vs {b['_name']}: returns, falls, holdings and overlap | Aeterna Wealth", desc, path, body,
                                  (faq_ld(faq), B.crumbs([("Mutual funds", "/mutual-funds/"), (c, f"/mutual-funds/{B.slug(c)}/"), ("Compare", path)]))))
             urls.append((path, "weekly", "0.6"))

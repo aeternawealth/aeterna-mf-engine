@@ -32,6 +32,8 @@ jobs:
         run: curl -sf https://aeternawealth.com/data/page-hashes.json -o /tmp/live-hashes.json || echo '{}' > /tmp/live-hashes.json
       - name: Build the static site
         run: python site/build_site.py
+      - name: SEO guard (trust box, editorial policy, llms.txt, AI crawlers, no hidden AI text; tools/seo_guard.py)
+        run: python tools/seo_guard.py
       - name: Upload to Cloudflare Pages
         if: env.HAS_TOKEN == 'true'
         uses: cloudflare/wrangler-action@v3

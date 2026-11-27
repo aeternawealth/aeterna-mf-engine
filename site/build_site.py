@@ -1514,7 +1514,7 @@ def main():
     # (its ~1,760 injected spam pages are deliberately left to 404 so search engines drop them)
     old = {"/about-us/": "/about/", "/services/": "/invest/", "/offerings/": "/invest/", "/blogs/": "/insights/", "/resources/": "/calculators/",
            "/contact-us/": "/contact/", "/thankyou-page/": "/", "/sip/": "/calculators/sip/", "/lumpsum/": "/calculators/lumpsum/",
-           "/terms-conditions/": "/terms/", "/privacy-policy-2/": "/privacy/", "/pms/": "/invest/pms/", "/aif/": "/invest/aif/",
+           "/terms-conditions/": "/terms/", "/privacy-policy-2/": "/privacy/", 
            "/debt-products/": "/invest/bonds/", "/loan-against-mf/": "/invest/mutual-funds/", "/succession-planning/": "/invest/",
            "/taxation-services/": "/invest/tax-planning/", "/the-magic-of-compounding-let-your-money-work-for-you/": "/calculators/sip/",
            "/mitigating-short-term-market-volatility/": "/insights/", "/tax-efficient-strategies-for-long-term-growth/": "/invest/tax-planning/",

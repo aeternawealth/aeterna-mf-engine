@@ -422,7 +422,7 @@ def hub_page(B, D, S, managers):
               f"<div class='row' style='gap:10px;flex-wrap:wrap;margin-top:14px'>{groups}</div></div>"
             + f"<div class='pm-sec'><h2>Portfolio managers</h2><p class='muted'>{len(shown_m)} managers with at least one strategy over ₹100 crore.</p>{mlist}</div>"
             + "<div class='pm-sec'><h2>Read more</h2><p><a href='/pms/how-pms-returns-are-measured/'>How PMS returns are measured and how we rate</a> · "
-              "<a href='/aif/'>Alternative investment funds (AIFs)</a> · <a href='/mutual-funds/'>Mutual fund ratings</a></p></div>")
+              "<a href='/aif/'>Alternative investment funds (AIFs)</a> · <a href='/invest/pms/'>How we help with PMS</a> · <a href='/mutual-funds/'>Mutual fund ratings</a></p></div>")
     title = f"PMS returns and ratings: {len(rated)} strategies ranked on their record ({_mo(D['as_of'])}) | Aeterna Wealth"
     desc = (f"PMS performance for {len(S)} strategies over ₹100 crore: returns after fees, worst falls, consistency against Nifty 500 TRI and ratings, "
             f"from APMI data to {_mo(D['as_of'])}.")
@@ -455,7 +455,7 @@ def aif_page(B):
 <li><b>Category III:</b> funds that trade listed shares and derivatives and may use leverage: long-only equity, long-short and hedge strategies. Can be open- or closed-ended.</li></ul>
 <h2>Why we do not rank AIFs</h2><p>No one publishes returns for individual AIF schemes. SEBI's benchmarking framework (CRISIL, NSE and others) gives each AIF its own report privately and publishes only category-level averages twice a year, for March and September. Private equity and credit funds are also valued only occasionally, and their returns depend on when each investment is sold. A ranking from public data would be guesswork, so we do not make one.</p>
 <h2>What to ask before investing in an AIF</h2><ul><li>The scheme's returns since its first close, as an IRR, against its category benchmark from the benchmarking agency's report.</li><li>The fees: management fee, set-up costs, the hurdle rate and the manager's share of profits.</li><li>The lock-in and when the fund expects to return money; whether you can exit early.</li><li>How your returns are taxed: Category I and II pass income through to investors; Category III is taxed in the fund.</li></ul>
-<p>For listed-equity strategies with monthly reported returns, see our <a href='/pms/'>PMS ratings</a>.</p></div>"""
+<p>For listed-equity strategies with monthly reported returns, see our <a href='/pms/'>PMS ratings</a>. <a href='/invest/aif/'>How we help with AIFs</a>.</p></div>"""
     _wrap(B, path, "AIF categories explained: Category I, II and III alternative investment funds | Aeterna Wealth",
           "What alternative investment funds are, SEBI's three categories, why scheme-level AIF returns are not public, and what to ask before investing.",
           [("AIFs", path)], "Alternative investment funds (AIFs)", "What they are, how SEBI classifies them, and what you can and cannot find out before investing.", body)

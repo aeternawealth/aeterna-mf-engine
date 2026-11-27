@@ -7,6 +7,8 @@
   explains it; the menu, noindex and section changes came on 25-27 Nov, after the drop.
 - Reading: the Nov 2026 core update finished on 24 Nov; sitelinks are algorithmic and often reshuffle for small brands
   after one. Plan: request indexing for home and section hubs; keep section names and addresses stable; re-check 4 and 11 Dec.
+- www: owner added the Cloudflare 301 rule; tested www home, a deep page and a query string (all 301 to the same
+  address on aeternawealth.com). Stopgap www script removed from every page.
 
 ## 2026-11-27 (trust signals, AI search, skills)
 - Audit: 0 FAIL (seo_audit: I1 titles over 70 chars, 580, unchanged; audit.py CHECK lines are data items, unchanged).

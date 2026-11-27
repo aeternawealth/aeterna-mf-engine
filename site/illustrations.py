@@ -66,5 +66,6 @@ def hero(name="orbit"):
     return f"<svg class='ill-h' viewBox='0 0 360 220' aria-hidden='true' focusable='false'>{art}</svg>"
 
 
-TEXTURE = ("body{background-image:radial-gradient(color-mix(in srgb,var(--ink) 9%,transparent) 1px,transparent 1.3px);background-size:22px 22px;background-attachment:fixed}"
+TEXTURE = (":root{--tex:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='1.1' fill='%2314211e' fill-opacity='.09'/%3E%3C/svg%3E\")}:root[data-theme=\"dark\"]{--tex:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='1.1' fill='%23eaf3ef' fill-opacity='.09'/%3E%3C/svg%3E\")}"
+           "body{background-image:var(--tex)}"
            ".ill-h{width:100%;max-width:340px;height:auto;display:block}@media (max-width:900px){.ill-h{display:none}}")

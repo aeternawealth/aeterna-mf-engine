@@ -28,7 +28,7 @@ Work on `staging`. `staging` may hold commits awaiting the owner's approval (see
 and any commit titled "HELD ON STAGING"): never merge `staging` into `main` while one is there. Publish your own commits
 only: commit on staging, push, then `git checkout main && git pull && git cherry-pick <your commits> && git push`, then
 merge main back into staging. Before publishing: `python site/build_site.py`, `python tools/seo_audit.py`,
-`python tools/audit.py` (nothing marked FAIL goes live), the tests in `.github/workflows/tests.yml`, and a browser check
+`python tools/seo_guard.py` (the deploy runs it too; never weaken it), `python tools/audit.py` (nothing marked FAIL goes live), the tests in `.github/workflows/tests.yml`, and a browser check
 of every page you changed at 390px and 1280px, light and dark (Playwright is installed). Clean `site/dist` and
 `outputs/` before committing (only code and docs are committed; workflows rebuild data).
 

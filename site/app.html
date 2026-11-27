@@ -1149,9 +1149,12 @@ function drawSearch(q){
     .sort((a,b)=>(a.plan_type==='Regular'?0:1)-(b.plan_type==='Regular'?0:1)||(b.aum_cr||0)-(a.aum_cr||0)).slice(0,10):[];
   if(t.length&&!S.stocks){S.stocks=[];fetch('/data/stocks.json').then(r=>r.ok?r.json():[]).then(d=>{S.stocks=d;const v=$('#srchQ').value;if(v.trim())drawSearch(v)}).catch(()=>{})}
   const st=t.length?(S.stocks||[]).filter(x=>t.every(w=>x[0].toLowerCase().includes(w))).slice(0,5):[];
+  if(t.length&&!S.pms){S.pms=[];fetch('/data/search.json').then(r=>r.ok?r.json():{p:[]}).then(d=>{S.pms=(d.p||[]).filter(x=>x[1].startsWith('/pms/'));const v=$('#srchQ').value;if(v.trim())drawSearch(v)}).catch(()=>{})}
+  const pm=t.length?(S.pms||[]).filter(x=>t.every(w=>(x[0]+' '+x[2]).toLowerCase().includes(w))).slice(0,6):[];
   const ext=h=>h.startsWith('http')?' target="_blank" rel="noopener"':'';
   $('#srchRes').innerHTML=(fs.length?`<div class="grp">Mutual funds</div>`+fs.map(f=>`<a href="${furl(f.code)}"><span style="min-width:0"><span style="display:block">${esc(f.name)}</span><small>${esc(f.plan_type)} · ${esc(f.category)}</small></span>${tier(f.tier)}</a>`).join(''):'')
    +(st.length?`<div class="grp">Stocks: which funds hold it</div>`+st.map(x=>`<a href="${x[1]}"><span>${esc(x[0])}</span><small>${x[2]} schemes hold it</small></a>`).join(''):'')
+   +(pm.length?`<div class="grp">PMS strategies</div>`+pm.map(x=>`<a href="${x[1]}"><span>${esc(x[0].replace(/ \(PMS\)$/,''))}</span><small>${esc(x[2])}</small></a>`).join(''):'')
    +(pg.length?`<div class="grp">Pages and tools</div>`+pg.map(p=>`<a href="${p[1]}"${ext(p[1])} data-tool="${p[0]==='SIP calculator'?'sip':p[0]==='SIP backtest'?'sipreal':p[0]==='Capital-gains tax'?'tax':''}"><span>${esc(p[0])}</span><small>${esc(p[2])}</small></a>`).join(''):'')
    ||`<p class="muted" style="padding:14px">No match. Try a fund house, like "HDFC", a category, like "small cap", or a stock, like "Reliance".</p>`;
   const as=$$('#srchRes a');as.forEach((a,i)=>{a.setAttribute('aria-selected',i===0);a.onclick=()=>{if(a.dataset.tool)S.tool=a.dataset.tool;closeSearch()}});

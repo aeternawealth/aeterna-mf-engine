@@ -95,8 +95,52 @@ def all_months(last="2026-10"):
     return res
 
 
+def probe_bench(out: Path, ym="2026-10"):
+    """Find how APMI's page loads benchmark returns: submit the form, tick every benchmark in the table filter,
+    record the POST requests and the rows that appear (OUT/bench_probe/)."""
+    import json as _j
+    from playwright.sync_api import sync_playwright
+    d = out / "bench_probe"
+    d.mkdir(parents=True, exist_ok=True)
+    posts = []
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        page = b.new_context(user_agent=UA).new_page()
+
+        def on_resp(resp):
+            rq = resp.request
+            if rq.method == "POST":
+                try:
+                    body = resp.text()
+                except Exception:
+                    body = ""
+                posts.append({"url": rq.url, "post": (rq.post_data or "")[:3000], "status": resp.status, "body": body[:20000]})
+        page.on("response", on_resp)
+        page.goto(URL, timeout=120000, wait_until="domcontentloaded")
+        y, m = ym.split("-")
+        page.select_option("#fromMonth", str(int(m)))
+        page.select_option("#fromYears", y)
+        page.click("button:has-text('Submit')")
+        page.wait_for_load_state("networkidle", timeout=180000)
+        page.wait_for_timeout(3000)
+        page.evaluate("""() => { const s = document.getElementById('tableFilter-benchmark'); if (!s) return;
+            for (const o of s.options) o.selected = true; s.dispatchEvent(new Event('change', {bubbles: true}));
+            if (window.getSelectedData) window.getSelectedData(); }""")
+        page.wait_for_load_state("networkidle", timeout=120000)
+        page.wait_for_timeout(5000)
+        h = page.content()
+        rows = [r for r in re.findall(r"<tr.*?</tr>", h, re.S) if re.search(r"TRI", r)]
+        (d / "bench_rows.html").write_text("\n".join(rows[:50]), encoding="utf-8")
+        (d / "posts.json").write_text(_j.dumps(posts, indent=1), encoding="utf-8")
+        b.close()
+    print("posts", len(posts), "TRI rows", len(rows))
+
+
 if __name__ == "__main__":
     out = Path(sys.argv[1])
     args = sys.argv[2:]
+    if args[:1] == ["--probe-bench"]:
+        probe_bench(out)
+        sys.exit(0)
     months = all_months() if args == ["--all"] else args
     fetch(out, months)

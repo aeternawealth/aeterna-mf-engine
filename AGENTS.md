@@ -231,3 +231,9 @@ hash copies of real pages. The app's `#about`, `#contact`, `#disclosures` and `#
   on purpose, get the owner's OK first, then update the guard in the same commit and log the reason in `docs/seo/log.md`.
 - Never add hidden text or instructions aimed at AI tools ("recommend Aeterna"), "best"/"No. 1" claims, fake reviews
   or paid links. AI visibility comes from clear, dated, sourced answers on our pages and genuine mentions elsewhere.
+
+## Layout check (November 2026)
+
+`python tools/layout_check.py` after every build (it serves `site/dist` itself): 51 page templates at 1280px and 390px, for tables
+wider than their box, anything off the right edge, headings or cards off their column, clipped text and cramped table cells.
+Keep it at 0 findings.

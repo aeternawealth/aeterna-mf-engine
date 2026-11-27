@@ -1,5 +1,13 @@
 # SEO log (newest first). One entry per daily run.
 
+## 2026-11-27 (brand sitelinks gone since about 24 Nov)
+- Owner: the "aeterna wealth" result had sitelinks until about 24 Nov; now a single result (title, description and logo correct).
+- Checked live as Googlebot: home and all section hubs 200, index,follow, self canonical; robots.txt allows all. Homepage
+  links vs the build of 23 Nov: none removed, 14 added (tax, compare, market-data pages). Nothing we changed before 24 Nov
+  explains it; the menu, noindex and section changes came on 25-27 Nov, after the drop.
+- Reading: the Nov 2026 core update finished on 24 Nov; sitelinks are algorithmic and often reshuffle for small brands
+  after one. Plan: request indexing for home and section hubs; keep section names and addresses stable; re-check 4 and 11 Dec.
+
 ## 2026-11-27 (trust signals, AI search, skills)
 - Audit: 0 FAIL (seo_audit: I1 titles over 70 chars, 580, unchanged; audit.py CHECK lines are data items, unchanged).
 - Shipped: trust box on all data and tax pages; /editorial-policy/; publishingPrinciples in the organisation's

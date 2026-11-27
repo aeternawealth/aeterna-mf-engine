@@ -14,6 +14,8 @@ import re
 import statistics
 from pathlib import Path
 
+import illustrations as ILL
+
 CATS = [  # series file, display name, category page, family
     ("large-cap", "Large Cap", "large-cap", "Equity"), ("large-mid-cap", "Large & Mid Cap", "large-and-mid-cap", "Equity"),
     ("flexi-cap", "Flexi Cap", "flexi-cap", "Equity"), ("multi-cap", "Multi Cap", "multi-cap", "Equity"),
@@ -106,6 +108,7 @@ def _ranges(items, W=760, row=34, label=""):
 CSS = """<style>
 .rs{--gap:44px}.rs-eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
 .rs h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin-top:10px}.rs .lede{margin-top:12px}
+.rs-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:center}@media (max-width:900px){.rs-hero{grid-template-columns:1fr}}
 .rs-sec{margin-top:var(--gap)}.rs-sec>h2{font-size:clamp(24px,2.6vw,30px)}.rs-sec>p.muted{margin-top:6px;font-size:15px}
 .rs-chart{margin-top:14px;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:14px 12px 10px;overflow-x:auto}
 .rs-chart svg{width:100%;height:auto;display:block;min-width:560px}
@@ -369,10 +372,11 @@ def hub(B, urls, as_of, new):
     e = B.e
     cards = getattr(B, "INSIGHT_CARDS", [])
     feat = new[:3]
-    fc = "".join(f"<a class='rs-card' href='{c['path']}'><span class='rs-tag'>{e(c['tag'])}</span><span class='fig'>{e(c['fig'])}</span><b class='t'>{e(c['title'])}</b>"
+    TI = {"Categories": "calendar", "Risk": "fall", "Patience": "growth", "Fund choice": "dots", "Updated every weekday": "bars"}
+    fc = "".join(f"<a class='rs-card' href='{c['path']}'>{ILL.icon(TI.get(c['tag'], 'lens'), 48)}<span class='rs-tag'>{e(c['tag'])}</span><span class='fig'>{e(c['fig'])}</span><b class='t'>{e(c['title'])}</b>"
                  f"<span class='muted'>{e(c['text'])}</span><span style='margin-top:auto;font-weight:600;font-size:14px;color:var(--teal)'>Read →</span></a>" for c in feat)
     rest = new[3:] + [{"path": p, "fig": f, "title": t, "text": x[:170].rsplit(" ", 1)[0] + "…", "tag": "Updated every weekday"} for p, f, t, x in cards]
-    rc = "".join(f"<a class='rs-card' href='{c['path']}'><span class='rs-tag'>{e(c['tag'])}</span><span class='fig'>{e(c['fig'])}</span><b class='t'>{e(c['title'])}</b>"
+    rc = "".join(f"<a class='rs-card' href='{c['path']}'>{ILL.icon(TI.get(c['tag'], 'lens'), 40)}<span class='rs-tag'>{e(c['tag'])}</span><span class='fig'>{e(c['fig'])}</span><b class='t'>{e(c['title'])}</b>"
                  f"<span class='muted'>{e(c['text'])}</span></a>" for c in rest)
     mk = [("/mutual-funds/money-flows/", "Where the money is going", "Net flows into and out of every category, fund and fund house, quarter by quarter."),
           ("/mutual-funds/what-funds-bought-sold/", "What fund managers bought and sold", "This month's biggest buys, sells, new bets and exits across every equity fund."),
@@ -380,12 +384,14 @@ def hub(B, urls, as_of, new):
           ("/mutual-funds/holding/", "Funds holding a stock", "Which funds own a stock, how much, and who bought or sold it last month."),
           ("/mutual-funds/amc/", "Fund houses compared", "Every fund house's funds, ratings and how closely its funds move together."),
           ("/ratings-update/", "This month's rating changes", "Which funds moved up or down a tier this month, and why.")]
-    mc = "".join(f"<a class='rs-card' href='{u}'><b class='t'>{e(t)}</b><span class='muted'>{e(d)}</span></a>" for u, t, d in mk)
+    MI = ["coins", "bars", "people", "lens", "layers", "calendar"]
+    mc = "".join(f"<a class='rs-card' href='{u}'>{ILL.icon(MI[k % 6], 40)}<b class='t'>{e(t)}</b><span class='muted'>{e(d)}</span></a>" for k, (u, t, d) in enumerate(mk))
     pm = [("/pms/", "PMS returns, risk and ratings", "Every PMS strategy over ₹100 crore, measured against the right yardstick."),
           ("/pms/ratings/equity/", "Equity PMS ratings", "Large and multi cap, and mid and small cap strategies, ranked within their style."),
           ("/pms/how-pms-returns-are-measured/", "How PMS returns are measured", "TWRR, after fees, three yardsticks, the evidence and the limits."),
           ("/aif/", "AIFs explained", "Category I, II and III; how they compare with PMS and mutual funds.")]
-    pc = "".join(f"<a class='rs-card' href='{u}'><b class='t'>{e(t)}</b><span class='muted'>{e(d)}</span></a>" for u, t, d in pm)
+    PI = ["dots", "growth", "scale", "layers"]
+    pc = "".join(f"<a class='rs-card' href='{u}'>{ILL.icon(PI[k % 4], 40)}<b class='t'>{e(t)}</b><span class='muted'>{e(d)}</span></a>" for k, (u, t, d) in enumerate(pm))
     guides = _titles(B.DIST, "learn")
     gl = "".join(f"<div><a href='{u}'>{e(t)}</a></div>" for u, t in guides)
     tax = [("/income-tax/", "Income tax hub"), ("/income-tax/calculator/", "Income tax calculator"), ("/income-tax/slabs-fy-2026-27/", "Income tax slabs FY 2026-27"),
@@ -407,9 +413,9 @@ def hub(B, urls, as_of, new):
     path = "/insights/"
     nstory = len(new) + len(cards)
     html = (CSS + "<style>.pm-chip{display:inline-flex;border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13.5px;color:var(--ink-2);text-decoration:none}.pm-chip:hover{border-color:var(--teal);color:var(--teal)}</style>"
-            f"<section class='band rs' style='padding-top:26px'><div class='wrap'><div class='rs-eyebrow'>Research</div><h1>Insights and research</h1>"
+            f"<section class='band rs' style='padding-top:26px'><div class='wrap'><div class='rs-hero'><div><div class='rs-eyebrow'>Research</div><h1>Insights and research</h1>"
             f"<p class='lede'>{nstory} data stories on Indian mutual funds, worked out from our own data, plus monthly market data, PMS research, our methods, "
-            f"{len(guides)} investor guides and the tax guides: everything we publish, in one place. Last updated {B.dmy(as_of)}.</p>{body}</div></section>")
+            f"{len(guides)} investor guides and the tax guides: everything we publish, in one place. Last updated {B.dmy(as_of)}.</p></div>{ILL.hero('lines')}</div>{body}</div></section>")
     B.write(path, B.page("Mutual fund research and insights: data stories, market data, PMS, guides | Aeterna Wealth",
                          "Data stories on Indian mutual funds (category returns by year, falls and recoveries, 5-year odds, SIP returns, funds vs index), monthly market data, PMS research, methods and investor guides.",
                          path, html, (B.crumbs([("Insights", path)]),)))

@@ -14,6 +14,9 @@ import json
 import math
 from collections import defaultdict
 
+import charts as C
+import illustrations as ILL
+
 GROUP_SLUG = {"Equity": "equity", "Debt": "debt", "Hybrid and multi-asset": "hybrid-and-multi-asset"}
 GROUP_TXT = {"Equity": "equity", "Debt": "debt", "Hybrid and multi-asset": "hybrid and multi-asset"}
 TIER_WORD = {"A+": "Leading", "A": "Strong", "B": "In line", "C": "Lagging"}
@@ -82,7 +85,7 @@ def url_m(m):
 STYLE = """<style>
 .pm{--gap:44px}.pm .pos{color:var(--good)}.pm .neg{color:var(--bad)}
 .pm-eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-.pm-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.pm-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:end}.pm-side{display:grid;gap:12px}.pm-side .ill-h{max-width:320px}
 .pm-hero h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin-top:10px;letter-spacing:-.01em}
 .pm-hero .lede{margin-top:12px}
 .pm-stamp{border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:12px 14px;font-size:13px;color:var(--ink-2);min-width:220px;line-height:1.6}
@@ -108,7 +111,7 @@ a.pm-chip:hover{border-color:var(--teal);color:var(--teal)}
 .pm-ring b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:500 30px/1 var(--f-mono)}.pm-ring b small{display:block;font:400 10.5px var(--f-body);color:var(--ink-3);margin-top:4px}
 .pm-rate h3{font:500 22px/1.25 var(--f-display);margin:8px 0 6px}.pm-rate p{margin:0;font-size:14.5px;color:var(--ink-2)}
 .pm-pil{display:grid;gap:10px}.pm-pil div{display:grid;grid-template-columns:150px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:13.5px;color:var(--ink-2)}.pm-pil b{font:500 13px var(--f-mono);color:var(--ink);text-align:right}
-.pm-two{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.pm-two{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.pm-two>div{min-width:0}
 .pm-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-top:16px}
 .pm-card{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 20px;text-decoration:none;color:inherit;min-width:0}
 a.pm-card:hover{border-color:var(--teal)}.pm-card h3{font:500 20px/1.25 var(--f-display);margin:0}.pm-card .muted{font-size:13.5px}
@@ -119,7 +122,7 @@ a.pm-card:hover{border-color:var(--teal)}.pm-card h3{font:500 20px/1.25 var(--f-
 .pm-mini li>span:first-child{font:500 12px var(--f-mono);color:var(--ink-3)}
 .pm-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px;counter-reset:st}
 .pm-steps>div{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 20px;counter-increment:st}
-.pm-steps>div:before{content:counter(st,decimal-leading-zero);font:500 13px var(--f-mono);color:var(--teal)}.pm-steps h3{font:500 19px/1.3 var(--f-display);margin:6px 0}.pm-steps p{margin:0;font-size:14px;color:var(--ink-2)}
+.pm-steps>div:before{content:counter(st,decimal-leading-zero);font:500 13px var(--f-mono);color:var(--teal)}.pm-steps .ill-i{margin:10px 0 2px}.pm-steps h3{font:500 19px/1.3 var(--f-display);margin:6px 0}.pm-steps p{margin:0;font-size:14px;color:var(--ink-2)}
 .pm-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
 .pm-tools input{flex:1;min-width:200px;max-width:340px;border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px;font:inherit;font-size:14.5px;background:var(--surface);color:var(--ink)}
 .pm-seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
@@ -164,111 +167,16 @@ def _kpis(items):
     return "<div class='pm-kpis'>" + "".join(f"<div><span>{k}</span><b>{v}</b>{f'<small>{s}</small>' if s else ''}</div>" for k, v, s in items) + "</div>"
 
 
-def _line_chart(series, labels, fmt=lambda v: f"{v:,.0f}", zero=None, h=330, area=False, label="chart"):
-    """series: [(name, colour, values)]; labels: month keys. Plain SVG, no script; the last value is labelled."""
-    W, H, L, R, T, Bm = 960, h, 64, 72, 14, 30
-    vals = [v for _, _, s in series for v in s if v is not None]
-    if not vals:
-        return ""
-    lo, hi = min(vals + ([zero] if zero is not None else [])), max(vals + ([zero] if zero is not None else []))
-    if hi == lo:
-        hi += 1
-    pad = (hi - lo) * 0.07
-    lo, hi = lo - pad, hi + pad
-    n = len(labels)
-    x = lambda i: L + (W - L - R) * (i / max(1, n - 1))
-    y = lambda v: T + (H - T - Bm) * (1 - (v - lo) / (hi - lo))
-    g = []
-    for v in _ticks(lo, hi, 4):
-        g.append(f"<line x1='{L}' x2='{W - R}' y1='{y(v):.1f}' y2='{y(v):.1f}' stroke='var(--rule)'/>"
-                 f"<text x='{L - 8}' y='{y(v) + 4:.1f}' text-anchor='end' font-size='11' fill='var(--ink-3)'>{fmt(v)}</text>")
-    if zero is not None:
-        g.append(f"<line x1='{L}' x2='{W - R}' y1='{y(zero):.1f}' y2='{y(zero):.1f}' stroke='var(--ink-3)' stroke-dasharray='3 3'/>")
-    step = max(1, math.ceil(n / 6))
-    for i in range(0, n, step):
-        g.append(f"<text x='{x(i):.1f}' y='{H - 8}' text-anchor='middle' font-size='11' fill='var(--ink-3)'>{_mo(labels[i])}</text>")
-    ends = []
-    for k, (name, col, s) in enumerate(series):
-        pts = [(x(i), y(v)) for i, v in enumerate(s) if v is not None]
-        if not pts:
-            continue
-        P = " ".join(f"{a:.1f},{b:.1f}" for a, b in pts)
-        if area and k == 0:
-            base = y(max(lo, min(hi, zero if zero is not None else lo)))
-            g.append(f"<polygon fill='{col}' opacity='.09' points='{pts[0][0]:.1f},{base:.1f} {P} {pts[-1][0]:.1f},{base:.1f}'/>")
-        g.append(f"<polyline fill='none' stroke='{col}' stroke-width='{2.4 if k == 0 else 1.8}' stroke-linejoin='round' points='{P}'/>")
-        ends.append((pts[-1], col, [v for v in s if v is not None][-1]))
-    # end labels, nudged apart when they would overlap
-    ends.sort(key=lambda e: e[0][1])
-    last_y = -99
-    for (px, py), col, lv in ends:
-        ty = max(py + 4, last_y + 14)
-        last_y = ty
-        g.append(f"<circle cx='{px:.1f}' cy='{py:.1f}' r='3.5' fill='{col}'/>"
-                 f"<text x='{px + 7:.1f}' y='{ty:.1f}' font-size='11.5' font-weight='600' fill='{col}'>{fmt(lv)}</text>")
-    leg = "".join(f"<span><i style='background:{c}'></i>{n_}</span>" for n_, c, _ in series)
-    return (f"<div class='pm-chart'><svg viewBox='0 0 {W} {H}' role='img' aria-label='{label}'>{''.join(g)}</svg>"
-            f"<div class='pm-leg'>{leg}</div></div>")
+def _line_chart(series, labels, fmt=lambda v: f"{v:,.0f}", zero=None, h=300, area=False, label="chart", small=False):
+    return C.line(series, labels, fmt, zero, h, area, label, small=small)
 
 
-def _bars(labels, vals, h=250, fmt=lambda v: f"₹{v:,.0f} cr", label="bar chart"):
-    W, H, L, R, T, Bm = 960, h, 64, 12, 12, 30
-    v2 = [v for v in vals if v is not None]
-    if not v2:
-        return ""
-    lo, hi = min(0, min(v2)), max(0, max(v2))
-    if hi == lo:
-        hi += 1
-    n = len(labels)
-    bw = (W - L - R) / n
-    y = lambda v: T + (H - T - Bm) * (1 - (v - lo) / (hi - lo))
-    g = [f"<line x1='{L}' x2='{W - R}' y1='{y(0):.1f}' y2='{y(0):.1f}' stroke='var(--ink-3)'/>"]
-    for k in (lo, hi):
-        if k:
-            g.append(f"<text x='{L - 8}' y='{y(k) + 4:.1f}' text-anchor='end' font-size='11' fill='var(--ink-3)'>{fmt(k)}</text>")
-    for i, v in enumerate(vals):
-        if v is None:
-            continue
-        y0, y1 = sorted((y(0), y(v)))
-        g.append(f"<rect x='{L + i * bw + 1:.1f}' y='{y0:.1f}' width='{max(1, bw - 2):.1f}' height='{max(0.5, y1 - y0):.1f}' rx='1.5' "
-                 f"fill='{'var(--good)' if v >= 0 else 'var(--bad)'}'><title>{_mo(labels[i])}: {fmt(v)}</title></rect>")
-    step = max(1, math.ceil(n / 6))
-    for i in range(0, n, step):
-        g.append(f"<text x='{L + i * bw + bw / 2:.1f}' y='{H - 8}' text-anchor='middle' font-size='11' fill='var(--ink-3)'>{_mo(labels[i])}</text>")
-    return f"<div class='pm-chart'><svg viewBox='0 0 {W} {H}' role='img' aria-label='{label}'>{''.join(g)}</svg></div>"
+def _bars(labels, vals, h=230, fmt=lambda v: f"₹{v:,.0f} cr", label="bar chart"):
+    return C.bars(labels, vals, fmt, h, label)
 
 
-def _scatter(pts, xl, yl, h=470, label="scatter"):
-    """pts: [(x, y, tier, name, url, highlight)]; plain SVG, each dot a link with a tooltip."""
-    if not pts:
-        return ""
-    W, H, L, R, T, Bm = 960, h, 54, 16, 16, 42
-    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-    x0, x1 = min(xs), max(xs)
-    y0, y1 = min(ys + [0]), max(ys + [0])
-    px, py = (x1 - x0) * .05 or 1, (y1 - y0) * .06 or 1
-    x0, x1, y0, y1 = x0 - px, x1 + px, y0 - py, y1 + py
-    X = lambda v: L + (W - L - R) * (v - x0) / (x1 - x0)
-    Y = lambda v: T + (H - T - Bm) * (1 - (v - y0) / (y1 - y0))
-    g = []
-    for v in _ticks(y0, y1):
-        g.append(f"<line x1='{L}' x2='{W - R}' y1='{Y(v):.1f}' y2='{Y(v):.1f}' stroke='var(--rule)'/><text x='{L - 8}' y='{Y(v) + 4:.1f}' text-anchor='end' font-size='11' fill='var(--ink-3)'>{f'{v:+.0f}%'.replace('-', '−') if v else '0%'}</text>")
-    for u in _ticks(x0, x1):
-        g.append(f"<text x='{X(u):.1f}' y='{H - 22}' text-anchor='middle' font-size='11' fill='var(--ink-3)'>{u:.0f}%</text>")
-    g.append(f"<line x1='{L}' x2='{W - R}' y1='{Y(0):.1f}' y2='{Y(0):.1f}' stroke='var(--ink-3)' stroke-dasharray='3 3'/>")
-    g.append(f"<text x='{(L + W - R) / 2:.0f}' y='{H - 4}' text-anchor='middle' font-size='11.5' fill='var(--ink-2)'>{xl}</text>"
-             f"<text x='{L + 4}' y='{T + 10}' font-size='11.5' fill='var(--ink-2)'>{yl}</text>")
-    hl = []
-    for x, yv, t, nm, u, me in sorted(pts, key=lambda p: p[5]):
-        dot = (f"<a href='{u}'><circle cx='{X(x):.1f}' cy='{Y(yv):.1f}' r='{7 if me else 4.6}' fill='{TIER_VAR.get(t, 'var(--t-u)')}' "
-               f"fill-opacity='{1 if me else .78}' stroke='{'var(--ink)' if me else 'var(--surface)'}' stroke-width='{2 if me else 1}'>"
-               f"<title>{nm}: alpha {yv:+.1f}% a year, volatility {x:.1f}%{f' · {t}' if t else ''}</title></circle></a>")
-        (hl if me else g).append(dot)
-        if me:
-            hl.append(f"<text x='{min(X(x) + 10, W - 90):.1f}' y='{max(Y(yv) - 10, T + 24):.1f}' font-size='12' font-weight='700' fill='var(--ink)'>This strategy</text>")
-    leg = "".join(f"<span><i class='dot' style='background:{TIER_VAR[t]}'></i>{t} {TIER_WORD[t]}</span>" for t in ("A+", "A", "B", "C"))
-    return (f"<div class='pm-chart'><svg viewBox='0 0 {W} {H}' role='img' aria-label='{label}'>{''.join(g + hl)}</svg>"
-            f"<div class='pm-leg'>{leg}</div></div>")
+def _scatter(pts, xl, yl, h=440, label="scatter"):
+    return C.scatter(pts, xl, yl, h, label, me_label="This strategy")
 
 
 def _ticks(lo, hi, n=5):
@@ -331,13 +239,13 @@ def _prev(m):
 
 def _wrap(B, path, title, desc, crumbs, hero, body, ld=(), js=""):
     nav = " › ".join(f"<a href='{u}'>{B.e(t)}</a>" if u != path else B.e(t) for t, u in crumbs)
-    html = (STYLE + f"<section class='band pm' style='padding-top:26px'><div class='wrap'><nav aria-label='Breadcrumb' class='muted' style='font-size:13.5px'>{nav}</nav>"
+    html = (STYLE + C.assets() + f"<section class='band pm' style='padding-top:26px'><div class='wrap'><nav aria-label='Breadcrumb' class='muted' style='font-size:13.5px'>{nav}</nav>"
             f"{hero}{body}{_talk(B)}{_foot(B)}</div></section>{js}")
     B.write(path, B.page(title, desc, path, html, (B.crumbs(crumbs),) + tuple(ld)))
 
 
-def _hero(B, eyebrow, h1, lede, stamp="", chips=""):
-    st = f"<div class='pm-stamp'>{stamp}</div>" if stamp else ""
+def _hero(B, eyebrow, h1, lede, stamp="", chips="", art="lines"):
+    st = f"<div class='pm-side'>{ILL.hero(art) if art else ''}{f'<div class=pm-stamp>{stamp}</div>' if stamp else ''}</div>" if (stamp or art) else ""
     return (f"<div class='pm-hero' style='margin-top:16px'><div><div class='pm-eyebrow'>{eyebrow}</div><h1>{B.e(h1)}</h1>"
             f"<p class='lede'>{lede}</p>{chips}</div>{st}</div>")
 
@@ -390,7 +298,7 @@ def strategy_page(B, D, s, peers, mgr_all):
     lede = (f"A discretionary {s['type'].lower()} PMS strategy run by {B.e(s['manager'])}, with {_cr(s['aum'])} of client money at the end of {_mo(lastm)}. "
             f"Over 3 years it returned {_p(a['r3y'])} a year after fees"
             + (f", {_p(abs(ex3))} a year {'more' if ex3 >= 0 else 'less'} than its yardstick, {B.e(yname)}" if ex3 is not None else "") + ".")
-    hero = _hero(B, "PMS strategy", s["name"], lede, chips=f"<div class='pm-chips'>{chips}</div>")
+    hero = _hero(B, "PMS strategy", s["name"], lede, chips=f"<div class='pm-chips'>{chips}</div>", art="lines")
     kpis = _kpis([("Assets", _cr(s["aum"]), f"end of {_mo(lastm)}"), ("3 years, a year", _p(a["r3y"]), "after fees"),
                   ("vs its yardstick, 3 years", f"<span{_cls(ex3)}>{_p(ex3, 1, True)}</span>", B.e(ysh) + ", a year"),
                   ("Worst fall", _p(m.get("max_dd")), f"yardstick {_p(m.get('bench_dd'))}")])
@@ -610,7 +518,7 @@ def manager_page(B, D, mg, L):
                         label=f"{mg['name']} assets over time") if len(hm) >= 6 else ""
     lede = (f"{B.e(mg['name'])} manages {_cr(mg['aum_all'])} across {mg['n_all']} PMS strategies reported to APMI for {_mo(D['as_of'])}. "
             f"{len(L)} of them hold ₹100 crore or more and are shown here; {len(rated)} have a long enough discretionary record to rate.")
-    hero = _hero(B, "Portfolio manager", mg["name"], lede, _stamp(D))
+    hero = _hero(B, "Portfolio manager", mg["name"], lede, _stamp(D), art="lines")
     best = min((s for s in rated if s.get("rank")), key=lambda s: s["rank"] / s["of"], default=None)
     kp = _kpis([("Assets, all strategies", _cr(mg["aum_all"]), f"{mg['n_all']} strategies"), ("Shown here (₹100 cr+)", str(len(L)), _cr(tot)),
                 ("Rated", str(len(rated)), "discretionary, 3-year record"),
@@ -663,7 +571,7 @@ def group_page(B, D, g, L):
     else:
         lede = (f"{len(L)} discretionary hybrid and multi-asset PMS strategies with ₹100 crore or more and 3 years of reported returns, each measured against "
                 "the passive mix of Nifty 500 TRI and bond funds that matched its ups and downs most closely.")
-    hero = _hero(B, "PMS ratings", f"{g} PMS strategies, rated", lede, _stamp(D))
+    hero = _hero(B, "PMS ratings", f"{g} PMS strategies, rated", lede, _stamp(D), art="dots")
     med = lambda v: sorted(v)[len(v) // 2] if v else None
     exs = [s["m"].get("ex3y") for s in L if s["m"].get("ex3y") is not None]
     beat = sum(x > 0 for x in exs)
@@ -704,7 +612,7 @@ def hub_page(B, D, S, managers):
     lede = (f"Every PMS strategy in India reports its returns to APMI each month. We read all {D['n_all']:,} of them, show the {len(S)} with ₹100 crore or more, "
             f"and rate the {len(rated)} discretionary ones with 3 years of record, each against a yardstick that fits it: the right style index for equity, "
             "bond funds for debt, a matched mix for hybrid.")
-    hero = _hero(B, "PMS research", "PMS returns, risk and ratings", lede, _stamp(D),
+    hero = _hero(B, "PMS research", "PMS returns, risk and ratings", lede, _stamp(D), art="dots", chips=
                  "<div class='pm-chips'>" + "".join(f"<a class='pm-chip' href='/pms/ratings/{GROUP_SLUG[g]}/'>{g} ratings →</a>" for g in GROUP_SLUG)
                  + "<a class='pm-chip' href='#managers'>All portfolio managers →</a></div>")
     kp = _kpis([("Money in PMS", _crs(D["aum_all"]), f"{D['n_all']:,} strategies"), ("Shown here", str(len(S)), "₹100 crore or more"),
@@ -712,26 +620,23 @@ def hub_page(B, D, S, managers):
                 ("Equity strategies ahead of their index", f"{beat} of {len(exs)}", "over 3 years, after fees")])
     ah = I.get("aum_hist", {})
     am = sorted(ah)
-    aum_chart = _line_chart([("All PMS strategies", "var(--teal)", [ah[k] for k in am])], am, fmt=lambda v: f"₹{v / 1e5:,.1f}L cr", area=True,
-                            label="Money in PMS over time") if len(am) >= 6 else ""
+    aum_chart = _line_chart([("All PMS strategies", "var(--teal)", [ah[k] for k in am])], am, fmt=lambda v: f"₹{v / 1e5:,.2f}L cr", area=True, h=230,
+                            label="Money in PMS over time", small=True) if len(am) >= 6 else ""
     sb = I.get("size_bands", [])
-    tot_n = sum(x[1] for x in sb) or 1
-    tot_a = sum(x[2] for x in sb) or 1
-    bands = ""
-    if sb:
-        bands = ("<div class='pm-two' style='margin-top:14px'><div><p class='pm-sub' style='margin:0'><b>Strategies</b> by size</p>"
-                 + _hbars([(x[0], x[1] / tot_n * 100) for x in sb], lambda v: f"{v:.0f}%", label="Share of strategies by size", W=440)
-                 + "</div><div><p class='pm-sub' style='margin:0'><b>Money</b> by size</p>"
-                 + _hbars([(x[0], x[2] / tot_a * 100) for x in sb], lambda v: f"{v:.0f}%", colour="var(--brass)", label="Share of money by size", W=440) + "</div></div>")
-    small = sum(x[1] for x in sb[:2]) / tot_n * 100 if sb else 0
-    big = sum(x[2] for x in sb[2:]) / tot_a * 100 if sb else 0
+    small = sum(x[1] for x in sb[:2]) / (sum(x[1] for x in sb) or 1) * 100 if sb else 0
+    big = sum(x[2] for x in sb[2:]) / (sum(x[2] for x in sb) or 1) * 100 if sb else 0
+    SZ = ["var(--t-u)", "var(--t-c)", "var(--t-b)", "var(--t-a)", "var(--t-ap)"]
+    bands = C.split_bar([("Strategies", [(x[0], x[1]) for x in sb]), ("Money", [(x[0], x[2]) for x in sb])], SZ, label="Strategies and money by size", bare=True) if sb else ""
     at = I.get("aum_type", {})
-    mix = _hbars(sorted(((k, v / 1e5) for k, v in at.items()), key=lambda x: -x[1]), lambda v: f"₹{v:,.2f} lakh cr", label="Money by asset class", W=520) if at else ""
-    market = (f"<div class='pm-sec' id='market'><h2>The PMS market in one view</h2><p class='muted'>Client money in every strategy APMI reports, month by month since {_mo(D['first'])}: "
-              f"{_crs(ah[am[0]]) if am else '–'} then, {_crs(ah[am[-1]]) if am else '–'} now.</p>{aum_chart}"
-              f"<p class='pm-sub' style='margin-top:28px'>Most strategies are small; most money is not. {small:.0f}% of discretionary equity strategies manage under "
-              f"₹100 crore, but {big:.0f}% of the money sits in the ones above it, which is where we draw our line.</p>{bands}"
-              + (f"<p class='pm-sub' style='margin-top:28px'>By asset class: all strategies, discretionary and non-discretionary.</p>{mix}" if mix else "") + "</div>")
+    mix = C.split_bar([("Money", sorted(((k, v) for k, v in at.items()), key=lambda x: -x[1]))], ["var(--teal)", "var(--brass)", "var(--t-a)", "var(--t-b)"],
+                      label="Money by asset class", bare=True) if at else ""
+    market = (f"<div class='pm-sec' id='market'><h2>The PMS market in one view</h2><p class='muted'>Client money in every strategy APMI reports: "
+              f"{_crs(ah[am[0]]) if am else '–'} in {_mo(am[0]) if am else ''}, {_crs(ah[am[-1]]) if am else '–'} in {_mo(am[-1]) if am else ''}. Hover or tap the chart for any month.</p>"
+              f"<div class='pm-two' style='grid-template-columns:1.4fr 1fr;align-items:stretch'><div>{aum_chart}</div>"
+              f"<div><div class='ch sm' style='height:calc(100% - 14px);box-sizing:border-box'><p class='pm-sub' style='margin:2px 0 0'><b>Most strategies are small; most money is not.</b> "
+              f"{small:.0f}% of discretionary equity strategies manage under ₹100 crore, but {big:.0f}% of the money is in the ones above it, which is where we draw our line.</p>"
+              f"{bands}"
+              f"<p class='pm-sub' style='margin:16px 0 0'><b>By asset class</b> (all strategies)</p>{mix}</div></div></div></div>")
     scat = _scatter([(s["m"]["vol"], s["m"]["alpha"], s.get("tier"), B.e(s["name"]), url_s(s), False) for s in eqr
                      if s["m"].get("vol") is not None and s["m"].get("alpha") is not None],
                     "Volatility, a year →", "↑ Alpha over its own index, a year", label="Rated equity PMS: alpha against volatility")
@@ -757,10 +662,10 @@ def hub_page(B, D, S, managers):
     groups = (f"<div class='pm-sec' id='groups'><h2>Top of each peer group</h2><p class='muted'>Strategies are only compared with others of the same kind, "
               f"each against its own yardstick. Rated at the quarterly review of data to {_mo(D['review'])}.</p><div class='pm-cards'>{''.join(pg_cards)}</div></div>")
     how = ("<div class='pm-sec' id='how'><h2>How we rate, in three steps</h2><div class='pm-steps'>"
-           "<div><h3>A fair yardstick</h3><p>Equity against the style index it tracks most closely; debt against bond funds; hybrid against a matched mix. A small-cap manager has to beat small caps.</p></div>"
-           "<div><h3>Skill, consistency, risk</h3><p>Alpha and information ratio, how often it was ahead, and how it fell: the measures that lined up best with the next year in our test. Not last year's return.</p></div>"
-           "<div><h3>Reviewed quarterly</h3><p>Numbers update monthly; ratings every quarter, with a buffer so a strategy does not flip on one month. Large withdrawals count at once.</p></div>"
-           "</div><p style='margin-top:12px'><a href='/pms/how-pms-returns-are-measured/'>The full method, the evidence and its limits →</a></p></div>")
+           "<div>{I1}<h3>A fair yardstick</h3><p>Equity against the style index it tracks most closely; debt against bond funds; hybrid against a matched mix. A small-cap manager has to beat small caps.</p></div>"
+           "<div>{I2}<h3>Skill, consistency, risk</h3><p>Alpha and information ratio, how often it was ahead, and how it fell: the measures that lined up best with the next year in our test. Not last year's return.</p></div>"
+           "<div>{I3}<h3>Reviewed quarterly</h3><p>Numbers update monthly; ratings every quarter, with a buffer so a strategy does not flip on one month. Large withdrawals count at once.</p></div>"
+           "</div><p style='margin-top:12px'><a href='/pms/how-pms-returns-are-measured/'>The full method, the evidence and its limits →</a></p></div>").replace("{I1}", ILL.icon("scale")).replace("{I2}", ILL.icon("dots")).replace("{I3}", ILL.icon("calendar"))
     shown_m = [mg for mg in managers if MLINK.get(mg["slug"])]
     by_l = defaultdict(list)
     for mg in shown_m:
@@ -817,7 +722,7 @@ def method_page(B, D):
     W_DB = [("ex_ann", 25), ("sortino", 20), ("ir", 15), ("hit_12m", 15), ("max_dd", 15), ("vol", 10)]
     W_HY = [("alpha", 20), ("ir", 15), ("hit_12m", 15), ("sortino", 15), ("rel_dd", 15), ("down_capture", 10), ("vol", 10)]
     hero = _hero(B, "Method", "How PMS returns are measured, and how we rate", "What the numbers on our PMS pages mean, the yardstick each strategy is held to, "
-                 "how the score is built, how often ratings change, and what the evidence does and does not show.", _stamp(D),
+                 "how the score is built, how often ratings change, and what the evidence does and does not show.", _stamp(D), art="rings", chips=
                  "<div class='pm-chips'><a class='pm-chip' href='#yardstick'>Yardsticks</a><a class='pm-chip' href='#rating'>The score</a>"
                  "<a class='pm-chip' href='#review'>Review cycle</a><a class='pm-chip' href='#evidence'>Evidence</a></div>")
     body = f"""<div class='prose' style='max-width:860px'>
@@ -834,7 +739,7 @@ def method_page(B, D):
 <div class='prose' style='max-width:860px'>
 <h2 id='rating'>The score</h2><p>Each measure is turned into a percentile within the peer group (100 = top) and blended with the weights below. Rated: discretionary strategies with ₹100 crore or more (kept until they fall below ₹75 crore), a 3-year return and at least 24 months of monthly record.</p></div>
 <div class='pm-steps'>
-<div><h3>Equity</h3><p>Skill 70, risk 30</p>{wtab(W_EQ)}</div><div><h3>Debt</h3><p>Return, downside and steadiness</p>{wtab(W_DB)}</div><div><h3>Hybrid and multi-asset</h3><p>Return over its mix, with protection</p>{wtab(W_HY)}</div></div>
+<div>{ILL.icon('growth')}<h3>Equity</h3><p>Skill 70, risk 30</p>{wtab(W_EQ)}</div><div>{ILL.icon('shield')}<h3>Debt</h3><p>Return, downside and steadiness</p>{wtab(W_DB)}</div><div>{ILL.icon('scale')}<h3>Hybrid and multi-asset</h3><p>Return over its mix, with protection</p>{wtab(W_HY)}</div></div>
 <div class='prose' style='max-width:860px'>
 <h2>Tiers</h2><ul><li><b>A+ Leading:</b> top 10% of the peer group and a score of 70 or more.</li><li><b>A Strong:</b> top 30% and 55 or more.</li><li><b>B In line:</b> the middle.</li><li><b>C Lagging:</b> bottom 30%.</li></ul>
 <p>A or A+ also needs a lead over the yardstick both over 3 years and over the whole record (positive alpha); otherwise B. A strategy whose clients withdrew more than 30% of its money in the last 12 months is held at B, with the reason shown.</p>
@@ -855,9 +760,9 @@ def aif_page(B):
     path = "/aif/"
     X = getattr(B, "INVEST_EXTRA", {}).get("aif")
     cats = ("<div class='pm-steps'>"
-            "<div><h3>Category I</h3><p>Start-ups, early-stage and social ventures, SME and infrastructure funds. Usually closed-ended, 7–10 years, money called in stages. Income passes through to investors for tax.</p></div>"
-            "<div><h3>Category II</h3><p>Private equity, private credit, real estate and funds of funds: everything that is not I or III, with no borrowing beyond day-to-day needs. Closed-ended, often 5–8 years; income passes through.</p></div>"
-            "<div><h3>Category III</h3><p>Listed-market strategies that can trade actively and use leverage or derivatives: long-only, long-short. Can be open-ended. Taxed in the fund, not in your hands.</p></div></div>")
+            "<div>{I4}<h3>Category I</h3><p>Start-ups, early-stage and social ventures, SME and infrastructure funds. Usually closed-ended, 7–10 years, money called in stages. Income passes through to investors for tax.</p></div>"
+            "<div>{I5}<h3>Category II</h3><p>Private equity, private credit, real estate and funds of funds: everything that is not I or III, with no borrowing beyond day-to-day needs. Closed-ended, often 5–8 years; income passes through.</p></div>"
+            "<div>{I6}<h3>Category III</h3><p>Listed-market strategies that can trade actively and use leverage or derivatives: long-only, long-short. Can be open-ended. Taxed in the fund, not in your hands.</p></div></div>").replace("{I4}", ILL.icon("growth")).replace("{I5}", ILL.icon("layers")).replace("{I6}", ILL.icon("bars"))
     cmp_ = _table(["", "Mutual fund", "PMS", "AIF"],
                   [["Minimum", "₹100 or less", "₹50 lakh", "₹1 crore (most)"], ["You own", "Units of a pooled fund", "The shares, in your own demat", "Units of a pooled fund"],
                    ["Returns published", "Every day (NAV)", "Every month (APMI)", "No; category averages twice a year"],
@@ -867,7 +772,7 @@ def aif_page(B):
 <div class='inv-sec'><h2>What to ask before investing</h2><div class='body'><ul><li>The scheme's returns since its first close, as an IRR, against its category benchmark from the benchmarking agency's report.</li><li>The fees: management fee, set-up costs, the hurdle rate and the manager's share of profits.</li><li>The lock-in and when the fund expects to return money; whether you can exit early.</li><li>How your returns are taxed: Category I and II pass income through to investors; Category III is taxed in the fund.</li></ul><p>For listed-equity strategies with monthly reported returns, see our <a href='/pms/'>PMS returns and ratings</a>.</p></div></div>"""
     hero = _hero(B, "Alternative investments", "Alternative investment funds (AIFs)",
                  "What they are, how SEBI classifies them, how they compare with mutual funds and PMS, what they cost, and what you can and cannot find out before investing.",
-                 chips="<div class='pm-chips'><a class='pm-chip' href='#categories'>The three categories</a><a class='pm-chip' href='#compare'>AIF, PMS or mutual fund</a>"
+                 art="rings", chips="<div class='pm-chips'><a class='pm-chip' href='#categories'>The three categories</a><a class='pm-chip' href='#compare'>AIF, PMS or mutual fund</a>"
                        "<a class='pm-chip' href='#ask'>What to ask</a><a class='pm-chip' href='/pms/'>PMS ratings →</a></div>")
     body = (f"<div class='pm-sec' id='categories'><h2>The three categories</h2><p class='muted'>SEBI's AIF Regulations, 2012 sort every fund into one of three categories, "
             f"which decides what it may invest in, whether it may borrow and how it is taxed.</p>{cats}</div>"

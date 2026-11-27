@@ -22,6 +22,9 @@ import shutil
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import illustrations as ILL   # line illustrations and the page texture
+
 S = Path(__file__).resolve().parent
 DIST = S / "dist"
 SITE = "https://aeternawealth.com"
@@ -549,7 +552,7 @@ def trust_box(path):
 def page(title, desc, path, body, ld=()):
     return (f'<!doctype html>\n<html lang="en-IN" data-theme="light"><head>{head(title, desc, path, ld)}'
             + FONT_HEAD +
-            '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
+            '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}' + ILL.TEXTURE + '</style></head><body>'
             f'{HEADER}<main>{body}{trust_box(path)}{review_cta(path)}</main>{footer()}{WA_FLOAT}{SEARCH_TAG}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
@@ -1011,6 +1014,10 @@ def main():
     for x in sorted(funds, key=lambda x: -(x.get("aum_cr") or 0)):
         if x["category"] == "Index Fund" and hold.get(x.get("pair_key")) and x.get("peer_group") not in idx_proxy:
             idx_proxy[x.get("peer_group")] = x
+    import charts as CH, mf_viz as MV   # interactive charts and the PMS-style visuals on fund and category pages
+    PEERS = {}
+    for _f in funds:
+        PEERS.setdefault((_f.get('peer_group'), _f['plan_type']), []).append(_f)
     for f in funds:
         twin = next((x for x in funds if x.get("pair_key") == f.get("pair_key") and x["code"] != f["code"]), None)
         top = (hold.get(f.get("pair_key")) or [])[:10]
@@ -1200,7 +1207,7 @@ def main():
                 plan_html = (f"<p style='margin-top:12px'><b>Regular plan.</b> Bought through a distributor, who chooses, reviews and services the investment; "
                              f"the fund house pays the distributor out of the plan's expense ratio, so every return shown here is already after it. "
                              f"The <a href='{twin['_url']}'>Direct plan</a> holds the same portfolio without a distributor.</p>")
-        body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
+        body = MV.CSS + CH.assets() + f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › <a href="/mutual-funds/{slug(f['category'])}/">{e(f['category'])}</a> › {e(f['_name'])}</nav>
 <div class="eyebrow" style="margin-top:18px">{e(f['category'])} · {e(f['plan_type'])} plan · Growth</div>
 <h1 style="font-size:clamp(28px,4vw,42px);margin-top:8px">{e(f['_name'])} ({e(f['plan_type'])})</h1>
@@ -1210,13 +1217,14 @@ def main():
 <div class="row" style="margin-top:16px"><button class="btn primary" type="button" id="addCmp" data-code="{f['code']}">Add to compare</button>{twin_btn}<a class="btn" href="{wa_link(f"Hello Aeterna, I'd like to ask about {f['_name']} ({f['plan_type']} plan).")}" target="_blank" rel="noopener">Ask about this fund on WhatsApp</a></div>
 <div class="grid g2" style="margin-top:24px;align-items:stretch">
  <div class="card" style="display:grid;gap:22px;align-content:start"><div class="navbox" style="align-items:flex-start"><div><div class="muted" style="font-size:13px">NAV on {dmy(f.get('nav_date'))}</div><div class="big">{inr2(f.get('nav_latest'))}</div></div>{day_html}<div><div class="muted" style="font-size:13px">Expense ratio</div><div class="mono" style="font-size:20px">{num(f.get('ter'), 2)}%</div>{f"<div class='muted' style='font-size:12px'>fund fee {num(f.get('ter_base'), 2)}%, the rest trading taxes and costs</div>" if arb and f.get('ter_base') is not None else ""}</div><div><div class="muted" style="font-size:13px">{aum_label(f)}</div><div class="mono" style="font-size:20px">{cr(f.get('aum_cr'))}</div></div></div>{ret_tiles(f)}</div>
- <div class="card row" style="gap:18px"><div>{tier_badge(f.get('tier'), True)}</div><div style="flex:1;min-width:200px"><b>Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
+ <div class="card row" style="gap:18px;align-items:center">{MV.ring(f.get('score'), f.get('tier')) if rated and (f.get('peer_count') or 0) > 1 else ''}<div style="flex:1;min-width:200px"><div>{tier_badge(f.get('tier'), True)}</div><b style="display:block;margin-top:8px">Track-record rating{rate_head}</b><p class="muted" style="font-size:14px;margin-top:4px">{rate_text}</p>{cap_html}</div></div>
 </div>
 {fund_story(f)}
 {review_status(f, RH.get(str(f["code"])))}
 {rh_html}
 {fund_chart(f)}
-<h2 style="margin-top:36px;font-size:26px">Returns against the index</h2>
+{(lambda ch: f"<div class='mv-sec' id='peers-dots'><h2>Against its peers</h2><p class='muted'>Every {e(f['plan_type'])} plan in {e(f.get('peer_group') or f['category'])}: 3-year return over the index (after expenses) against how much it swung. Colour is the rating; up and to the left is better. Hover or tap a dot for its numbers.</p>{ch}</div>" if ch else "")(MV.peer_dots(PEERS.get((f.get('peer_group'), f['plan_type']), []), e, me=f, label=f"{f['_name']} among its peers"))}
+<h2 style="margin-top:36px;font-size:26px" id="returns">Returns against the index</h2>
 <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th class="l">Period</th><th>Fund</th><th>Index (TRI)</th><th>Difference</th><th>Rank by return</th></tr></thead><tbody>{rows}</tbody></table></div>
 <p class="muted" style="font-size:12.5px;margin-top:8px">Growth option, point to point to {dmy(f.get('nav_date'))}; periods over a year are annualised (CAGR). Index returns use the total-return index, which includes dividends. Rank by return: among {e(f['plan_type'])} plans in {e(f.get('peer_group') or f['category'])} with a record for the whole period, by return over the index.</p>
 {cat_html}
@@ -1300,17 +1308,21 @@ def main():
         desc = (f"All {len(L)} arbitrage mutual fund plans in India compared: track-record ratings, returns vs liquid funds before and after tax, fund fees and AUM. Updated daily.")[:300] if arbc else \
             (f"All {len(L)} {lc} mutual fund plans in India compared: track-record ratings, 3-year returns vs "
                 f"{BPH if BPH else bench + ' TRI' if bench else 'their index'}, expense ratios and AUM. {beat} of {len(e3)} Regular plans beat the index over 3 years. Updated daily.")[:300]
-        body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
+        _mvk, _mvs = MV.category_block(c, L, e, dmy(as_of), (BPH if BPH else ('the ' + bench + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'its index'))
+        body = MV.CSS + CH.assets() + f"""<section class="band" style="padding-top:28px"><div class="wrap">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/mutual-funds/">Mutual funds</a> › {e(c)}</nav>
-<h1 style="font-size:clamp(30px,4vw,44px);margin-top:14px">{e(c)} funds in India</h1>
+<div class="mv-hero"><div><div class="eyebrow" style="margin-top:14px">Mutual fund category · {e(asset_class(c))}</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">{e(c)} funds in India</h1>
 <p class="lede" style="margin-top:12px">{len(L)} plans ({len(reg)} Regular, {len(L) - len(reg)} Direct), rated on their track record against {(e(BPH) if BPH else ('the ' + e(bench) + ' total-return index')) if (bench or BPH) else ('the median arbitrage fund' if arbc else 'their index')}{', liquid funds' if arbc else ''} and their peers. Data as of {dmy(as_of)}.</p>
-<p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p>
+<p style="margin-top:14px">{e(CAT_PITCH.get(c, ''))} SEBI requires {e(c if c == 'ELSS' else lc)} funds to {e(CAT_INFO.get(c, 'follow their stated mandate'))}.</p></div>{ILL.hero("dots")}</div>
+{_mvk}
+{MV.nav([("dots", "At a glance"), ("leaders", "What separates the leaders"), ("funds", "Every fund"), ("faq", "Questions")] if _mvs else [("leaders", "What separates the leaders"), ("funds", "Every fund"), ("faq", "Questions")])}
 {gap_html}
-{leaders_story(c, L)}
+{_mvs}
+<div id="leaders" class="mv-sec" style="margin-top:0">{leaders_story(c, L)}</div>
 <div class="row" style="margin-top:16px">{f'<a class="btn primary" href="{made_top[c]}">Top-rated {e(lc)} funds this month</a>' if c in made_top else ''}<a class="btn{' primary' if c not in made_top else ''}" href="/?cat={e(c)}#ratings">Sort and filter interactively</a>{f'<a class="btn" href="{Bm.MADE_YEARS[c]}">Returns year by year</a>' if c in getattr(Bm, "MADE_YEARS", {}) else ''}<a class="btn" href="/#compare">Compare funds</a><a class="btn" href="{wa_link(f"Hello Aeterna, I'd like help choosing a {c} fund.")}" target="_blank" rel="noopener">Ask us on WhatsApp</a></div>
-{sub}{tabs}
+<div id="funds" class="mv-sec" style="margin-top:0">{sub}{tabs}</div>
 {(lambda gl: f'<p style="margin-top:24px"><b>Guides:</b> ' + ' · '.join(f'<a href="{g if g.startswith("/") else "/learn/" + g + "/"}">{e(t)}</a>' for g, t in gl) + '</p>' if gl else '')(CAT_GUIDES.get(c, []))}
-<h2 style="font-size:24px;margin-top:36px">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
+<h2 style="font-size:24px;margin-top:36px;scroll-margin-top:90px" id="faq">Common questions</h2>{''.join(f'<details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)}
 <p class="note" style="margin-top:28px">Ratings describe past track records and are not a recommendation to buy or sell. Read the scheme documents before investing.</p>
 </div></section>"""
         write(path, page(f"{c} mutual funds: top-rated by track record, {mon(as_of[:7]) if as_of else ''}".replace("Index Fund mutual funds", "Index funds").replace("Sectoral/Thematic mutual funds", "Sectoral and thematic funds") + " | Aeterna Wealth", desc, path, body,
@@ -1325,12 +1337,12 @@ def main():
         cards = [h for a, h in cat_cards if a == ac]
         n_ac = sum(1 for f in funds if asset_class(f["category"]) == ac)
         cnt = f" <span class='muted' style='font-size:16px;font-weight:400'>{n_ac:,} plans</span>" if n_ac else ""
-        hub_sections += (f"<h2 id='{ac.lower()}' style='font-size:28px;margin-top:34px'>{ac} funds{cnt}</h2>"
+        hub_sections += (f"<h2 id='{ac.lower()}' style='font-size:28px;margin-top:34px;display:flex;align-items:center;gap:12px'>{ILL.icon({'Equity': 'growth', 'Hybrid': 'scale', 'Debt': 'shield'}.get(ac, 'coins'), 44)}<span>{ac} funds{cnt}</span></h2>"
                          f"<p class='muted' style='margin-top:6px'>{e(blurb)}</p>"
                          + (f"<div class='grid g3' style='margin-top:16px'>{''.join(cards)}</div>" if cards else ""))
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
-<h1 style="font-size:clamp(30px,4vw,44px)">Mutual funds in India, compared</h1>
-<p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right yardstick and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p>
+{MV.CSS}<div class="mv-hero"><div><div class="eyebrow">Mutual fund research</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">Mutual funds in India, compared</h1>
+<p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right yardstick and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p></div>{ILL.hero("rings")}</div>
 {hub_sections}
 <div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:500 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
 <h2 style="font-size:24px;margin-top:34px">Top-rated this month</h2><p class="muted" style="margin-top:6px">The funds rated A+ or A in each category, with why, what changed and how much they overlap.</p>

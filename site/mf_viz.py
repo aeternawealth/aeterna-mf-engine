@@ -6,7 +6,7 @@ import math
 import charts as C
 
 CSS = """<style>
-.mv-hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:center}@media (max-width:900px){.mv-hero{grid-template-columns:1fr}}
+.mv-hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;align-items:start}@media (max-width:900px){.mv-hero{grid-template-columns:1fr}}
 .mv-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-top:22px}
 .mv-kpis div{background:var(--surface);padding:15px 17px}.mv-kpis>div>span{display:block;color:var(--ink-2);font-size:13px}.mv-kpis b{display:block;font:500 23px/1.25 var(--f-mono);margin-top:4px}
 .mv-kpis small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:2px}

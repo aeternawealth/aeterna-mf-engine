@@ -85,11 +85,11 @@ def url_m(m):
 STYLE = """<style>
 .pm{--gap:44px}.pm .pos{color:var(--good)}.pm .neg{color:var(--bad)}
 .pm-eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-.pm-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:end}.pm-side{display:grid;gap:12px}.pm-side .ill-h{max-width:320px}
+.pm-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:center}.pm-side{display:grid;gap:12px}.pm-side .ill-h{max-width:320px}
 .pm-hero h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin-top:10px;letter-spacing:-.01em}
 .pm-hero .lede{margin-top:12px}
-.pm-stamp{border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:12px 14px;font-size:13px;color:var(--ink-2);min-width:220px;line-height:1.6}
-.pm-stamp b{display:block;font:500 14px var(--f-mono);color:var(--ink)}
+.pm-stamp{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;margin-top:16px;font-size:13px;color:var(--ink-2);line-height:1.6}
+.pm-stamp b{display:inline;margin-right:10px;font:500 13.5px var(--f-mono);color:var(--ink)}
 .pm-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.pm-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px;color:var(--ink-2);text-decoration:none}
 a.pm-chip:hover{border-color:var(--teal);color:var(--teal)}
 .pm-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-top:26px}
@@ -245,9 +245,10 @@ def _wrap(B, path, title, desc, crumbs, hero, body, ld=(), js=""):
 
 
 def _hero(B, eyebrow, h1, lede, stamp="", chips="", art="lines"):
-    st = f"<div class='pm-side'>{ILL.hero(art) if art else ''}{f'<div class=pm-stamp>{stamp}</div>' if stamp else ''}</div>" if (stamp or art) else ""
+    st = f"<div class='pm-side'>{ILL.hero(art)}</div>" if art else ""
+    sp = f"<div class='pm-stamp'>{stamp}</div>" if stamp else ""
     return (f"<div class='pm-hero' style='margin-top:16px'><div><div class='pm-eyebrow'>{eyebrow}</div><h1>{B.e(h1)}</h1>"
-            f"<p class='lede'>{lede}</p>{chips}</div>{st}</div>")
+            f"<p class='lede'>{lede}</p>{chips}{sp}</div>{st}</div>")
 
 
 def _stamp(D):

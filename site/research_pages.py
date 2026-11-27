@@ -108,7 +108,7 @@ def _ranges(items, W=760, row=34, label=""):
 CSS = """<style>
 .rs{--gap:44px}.rs-eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
 .rs h1{font-size:clamp(30px,4.4vw,48px);line-height:1.08;margin-top:10px}.rs .lede{margin-top:12px}
-.rs-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:center}@media (max-width:900px){.rs-hero{grid-template-columns:1fr}}
+.rs-hero{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:start}@media (max-width:900px){.rs-hero{grid-template-columns:1fr}}
 .rs-sec{margin-top:var(--gap)}.rs-sec>h2{font-size:clamp(24px,2.6vw,30px)}.rs-sec>p.muted{margin-top:6px;font-size:15px}
 .rs-chart{margin-top:14px;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);padding:14px 12px 10px;overflow-x:auto}
 .rs-chart svg{width:100%;height:auto;display:block;min-width:560px}

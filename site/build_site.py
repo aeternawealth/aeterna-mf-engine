@@ -354,6 +354,7 @@ ORG_LD = {
     "sameAs": SOCIAL,
     "founder": [dict({"@type": "Person", "name": t["name"], "sameAs": [t["linkedin"]]}, **({"jobTitle": t["role"]} if t.get("role") else {}))
                 for t in CFG.get("team", [])],
+    "publishingPrinciples": SITE + "/editorial-policy/",
     "knowsAbout": ["Mutual funds", "Portfolio management services", "Alternative investment funds", "Bonds",
                    "Unlisted shares", "Tax planning"],
 }
@@ -515,15 +516,41 @@ def footer():
  <div class="stack" style="gap:8px"><b style="font:500 18px var(--f-display);color:var(--ink)">{ORG['name']}</b><span>AMFI-registered Mutual Fund Distributor · {ORG['arn']}</span><span>{ORG['street']}, {ORG['city']} {ORG['pin']}</span><span>+91 85959 93600 · {ORG['email']}</span>{f'<span>{soc}</span>' if soc else ''}</div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Fund data</b><a href="/mutual-funds/">All categories</a><a href="/mutual-funds/amc/">Fund houses</a><a href="/mutual-funds/index-fund/">Index funds</a><a href="/insights/">Insights</a><a href="/mutual-funds/holding/">Funds holding a stock</a><a href="/learn/">Investor guides</a><a href="/method/">Method and backtest</a></div>
  <div class="stack" style="gap:6px"><b style="color:var(--ink)">Calculators</b><a href="/plan/">Money Plan</a><a href="/calculators/sip/">SIP calculator</a><a href="/calculators/goal/">Goal planner</a><a href="/calculators/swp/">SWP calculator</a><a href="/calculators/emi/">EMI calculator</a><a href="/calculators/capital-gains-tax/">Capital gains tax</a><a href="/income-tax/calculator/">Income tax calculator</a><a href="/income-tax/">Income tax guides</a></div>
- <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/disclosures/">Disclosures</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
+ <div class="stack" style="gap:6px"><b style="color:var(--ink)">Company</b><a href="/invest/">What we offer</a><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/disclosures/">Disclosures</a><a href="/editorial-policy/">Editorial policy</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/grievances/">Grievances</a></div>
  </div><p class="cat-links" style="margin:18px 0 0;font-size:13.5px;line-height:2;color:var(--ink-3)"><b style="color:var(--ink-2);font-weight:600">Fund categories:</b> <a href="/mutual-funds/large-cap/">Large Cap</a> · <a href="/mutual-funds/mid-cap/">Mid Cap</a> · <a href="/mutual-funds/small-cap/">Small Cap</a> · <a href="/mutual-funds/large-and-mid-cap/">Large &amp; Mid Cap</a> · <a href="/mutual-funds/multi-cap/">Multi Cap</a> · <a href="/mutual-funds/flexi-cap/">Flexi Cap</a> · <a href="/mutual-funds/focused/">Focused</a> · <a href="/mutual-funds/value-contra/">Value / Contra</a> · <a href="/mutual-funds/dividend-yield/">Dividend Yield</a> · <a href="/mutual-funds/elss/">ELSS</a> · <a href="/mutual-funds/sectoral-thematic/">Sectoral/Thematic</a> · <a href="/mutual-funds/index-fund/">Index funds</a> · <a href="/mutual-funds/arbitrage/">Arbitrage</a> · <a href="/mutual-funds/liquid/">Liquid</a> · <a href="/mutual-funds/corporate-bond/">Corporate Bond</a> · <a href="/mutual-funds/gilt/">Gilt</a> · <b style="color:var(--ink-2);font-weight:600;margin-left:6px">Learn:</b> <a href="/learn/">Investor guides</a></p><p class="disc">Mutual fund investments are subject to market risks; read all scheme-related documents carefully. {ORG['name']} is a mutual fund distributor ({ORG['arn']}) and earns commission from asset management companies on Regular plans, included in the expense ratio; it charges no separate fee. Ratings describe past track records using public data and are not investment advice, a recommendation or a forecast. Past performance does not guarantee future returns.</p></div></footer>"""
+
+
+DATA_AS_OF = ""   # the NAV date of this build, set in main(); shown in the trust box
+TRUST_DATA = ("/mutual-funds/", "/compare/", "/insights/")
+TRUST_TAX = ("/income-tax/", "/calculators/capital-gains-tax/")
+
+
+def trust_box(path):
+    """'Who makes these ratings': who stands behind the numbers, on every data and tax page (no names, owner's rule).
+    Finance pages are judged on who publishes them; this says it on the page itself, not only in the footer."""
+    if path.startswith(TRUST_TAX):
+        head_, what = "Who publishes this", ("Tax rules are taken from the Income-tax Act, 2025, the Finance Act and CBDT notifications and circulars. "
+                                             "Calculators show their working so every figure can be checked.")
+    elif path.startswith(TRUST_DATA):
+        head_, what = "Who makes these ratings", ("Ratings are computed by published rules from public data: AMFI (NAVs, expense ratios, AUM, market-cap lists), "
+                                                  "NSE Indices (total-return indices) and fund houses' monthly portfolio disclosures. The same rules apply to every fund house.")
+    else:
+        return ""
+    upd = f" Data as of {dmy(DATA_AS_OF)}." if DATA_AS_OF else ""
+    return ('<section class="band" style="padding:0 0 28px"><div class="wrap"><aside class="card" aria-label="' + head_ + '" style="font-size:14px;line-height:1.55">'
+            f'<b style="font:500 17px var(--f-display)">{head_}</b>'
+            f'<p class="muted" style="margin:6px 0 0">{e(ORG["name"])}, an AMFI-registered mutual fund distributor '
+            f'(<a href="https://www.amfiindia.com/locate-distributor" target="_blank" rel="noopener" style="white-space:nowrap">{ORG["arn"]}</a>), New Delhi. '
+            f'{what}{upd} We are not an investment adviser; nothing here is a recommendation to buy or sell.</p>'
+            '<p style="margin:8px 0 0"><a href="/method/">How ratings work</a> · <a href="/editorial-policy/">Editorial and corrections policy</a> · '
+            '<a href="/disclosures/">How we are paid</a> · <a href="/about/">About us</a></p></aside></div></section>')
 
 
 def page(title, desc, path, body, ld=()):
     return (f'<!doctype html>\n<html lang="en-IN" data-theme="light"><head>{head(title, desc, path, ld)}'
             + FONT_HEAD +
             '<link rel="stylesheet" href="/assets/site.css?v=' + CSS_VER + '"><style>table.cmp th{white-space:normal;text-transform:none;letter-spacing:0;font:600 14px/1.3 var(--f-body)}table.cmp td{white-space:normal}@media (max-width:600px){table.cmp th,table.cmp td{padding:8px 6px;font-size:13px}}.prose h2{font-size:24px;margin:30px 0 8px}.prose ul{padding-left:20px}[hidden]{display:none!important}</style></head><body>'
-            f'{HEADER}<main>{body}{review_cta(path)}</main>{footer()}{WA_FLOAT}{SEARCH_TAG}{HEADER_JS}{MOTION_JS}</body></html>\n')
+            f'{HEADER}<main>{body}{trust_box(path)}{review_cta(path)}</main>{footer()}{WA_FLOAT}{SEARCH_TAG}{HEADER_JS}{MOTION_JS}</body></html>\n')
 
 
 REVIEW_PATHS = ("/mutual-funds/", "/compare/", "/learn/")
@@ -798,6 +825,8 @@ def main():
     hold = json.loads((S / "data" / "holdings.json").read_text()) if (S / "data" / "holdings.json").exists() else {}
     ins = json.loads((S / "data" / "insights.json").read_text()) if (S / "data" / "insights.json").exists() else {"items": []}
     as_of = meta.get("as_of")
+    global DATA_AS_OF
+    DATA_AS_OF = as_of or ""
     if DIST.exists():
         for sub in ("mutual-funds", "assets", "invest", "learn", "calculators", "compare", "insights", "disclosures", "privacy", "terms", "grievances"):
             shutil.rmtree(DIST / sub, ignore_errors=True)
@@ -1393,16 +1422,21 @@ def main():
             f"## Income tax (tax year 2026-27)\n- [Income tax calculator, old vs new regime]({SITE}/income-tax/calculator/)\n- [Advance tax calculator]({SITE}/income-tax/advance-tax-calculator/)\n"
             f"- [Tax slabs]({SITE}/income-tax/slabs-fy-2026-27/)\n- [Deductions]({SITE}/income-tax/deductions/)\n\n"
             f"## Tools and guides\n- [Calculators: SIP, lump sum, goal, SWP, EMI, inflation, capital-gains tax]({SITE}/calculators/)\n- [Fund houses]({SITE}/mutual-funds/amc/)\n- [Insights]({SITE}/insights/)\n\n"
-            f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/method/)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")
+            f"## How to cite\nCite as: Aeterna Wealth (aeternawealth.com), with the page address and the data date shown on the page. "
+            "Ratings are track-record assessments by an AMFI-registered mutual fund distributor, not investment advice.\n\n"
+            f"## More\n- [Full text for language models]({SITE}/llms-full.txt)\n- [Method and backtest]({SITE}/method/)\n- [Editorial and corrections policy]({SITE}/editorial-policy/)\n- [About Aeterna Wealth]({SITE}/about/)\n- [Disclosures]({SITE}/disclosures/)\n- [Privacy]({SITE}/privacy/)\n")
     (DIST / "llms.txt").write_text(llms, encoding="utf-8")
     full = [f"# Aeterna Wealth: full reference\n\n{about}\n",
-            "## How the ratings work\nFunds are compared only within their SEBI category and plan type (Regular with Regular, Direct with Direct), "
-            "against the total-return version of the category benchmark. Pillars: long-run excess return over the index (25%), risk-adjusted "
-            "return: information ratio, capture ratio and Jensen's alpha (35%), consistency (20%), cost (10%) and portfolio: active share, SEBI "
-            "mandate fit, cash and turnover (10%). Tiers: A+ = top 10% of a peer group with a score of at least 70; A = top 30% with at least 55; "
-            "then B and C. An equity fund off its SEBI mandate in two consecutive monthly portfolios is rated one step lower; persistent underperformers at C. "
-            "A 2019-2025 backtest found the ratings did not predict the next three years' returns, so they are presented as track-record "
-            "assessments, not forecasts.\n",
+            "## How the ratings work\nFunds are compared only within their SEBI category and plan type (Regular with Regular, Direct with Direct). "
+            "Equity funds are measured against their category's total-return index, hybrid funds against a blend of equity and bond yardsticks, "
+            "debt funds against the median fund of their category. Every return is taken from the NAV, which is already net of the fund's expenses. "
+            "Equity funds use a model chosen for each category from about 40 tested (mainly recent return over the index, capture of market rises, "
+            "and the fund's lean towards the part of the market its category allows); hybrid and debt funds are rated on return over their yardstick, "
+            "protection in falls and consistency. Equity tiers: A+ = score of 75 or more out of 100, A = 65 or more, then B and C; hybrid, debt and "
+            "index funds: A+ = top 10% with a score of 70+, A = top 30% with 55+. Red flags (a SEBI mandate breach in two consecutive portfolios, "
+            "deep drawdowns, closet indexing, credit events in debt funds) cap a fund's rating. Ratings are revised on the 11th and 16th of each month. "
+            "They describe past track records and are not forecasts or recommendations. Full method and the published backtest: "
+            f"{SITE}/method/\n",
             f"## Data sources and schedule\nNAVs: AMFI (daily). Index data: NSE Indices total-return indices (daily). Expense ratios, AUM and "
             f"market-cap classes: AMFI. Holdings: each fund house's monthly portfolio disclosure (refreshed on the 11th and 16th). Latest data: {dmy(as_of)}.\n",
             "## Categories\n"]

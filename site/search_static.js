@@ -27,14 +27,17 @@
   function draw(v){
     var t=v.toLowerCase().trim().split(/\s+/).filter(Boolean),has=function(h){h=h.toLowerCase();return t.every(function(w){return h.indexOf(w)>=0})};
     if(!D){res.innerHTML='<p class="muted" style="padding:14px">Loading…</p>';return}
-    var pg=D.p.filter(function(p){return !t.length||has(p[0]+' '+p[2])}).slice(0,t.length?4:8);
+    var isP=function(p){return /^\/pms\/[^\/]+\/[^\/]+\/$/.test(p[1])};
+    var pm=t.length?D.p.filter(function(p){return isP(p)&&has(p[0]+' '+p[2])}).slice(0,5):[];
+    var pg=D.p.filter(function(p){return !isP(p)&&(!t.length||has(p[0]+' '+p[2]))}).slice(0,t.length?4:8);
     var fs=t.length?D.f.filter(function(f){return has(f[0]+' '+f[3]+' '+f[2]+' '+f[1])})
       .sort(function(a,b){return (a[1]==='Regular'?0:1)-(b[1]==='Regular'?0:1)||(b[6]||0)-(a[6]||0)}).slice(0,10):[];
     var st=t.length?D.s.filter(function(x){return has(x[0])}).slice(0,5):[];
     var ext=function(h){return /^http/.test(h)?' target="_blank" rel="noopener"':''};
-    res.innerHTML=(fs.length?'<div class="grp">Funds</div>'+fs.map(function(f){return '<a href="'+f[5]+'"><span style="min-width:0"><span style="display:block">'+esc(f[0])+'</span><small>'+esc(f[1])+' · '+esc(f[2])+'</small></span>'+tier(f[4])+'</a>'}).join(''):'')
+    res.innerHTML=(fs.length?'<div class="grp">Mutual funds</div>'+fs.map(function(f){return '<a href="'+f[5]+'"><span style="min-width:0"><span style="display:block">'+esc(f[0])+'</span><small>'+esc(f[1])+' · '+esc(f[2])+'</small></span>'+tier(f[4])+'</a>'}).join(''):'')
       +(st.length?'<div class="grp">Stocks: which funds hold it</div>'+st.map(function(x){return '<a href="'+x[1]+'"><span>'+esc(x[0])+'</span><small>'+x[2]+' schemes hold it</small></a>'}).join(''):'')
-      +(pg.length?'<div class="grp">Pages</div>'+pg.map(function(p){return '<a href="'+p[1]+'"'+ext(p[1])+'><span>'+esc(p[0])+'</span><small>'+esc(p[2])+'</small></a>'}).join(''):'')
+      +(pm.length?'<div class="grp">PMS strategies</div>'+pm.map(function(p){return '<a href="'+p[1]+'"><span>'+esc(p[0].replace(/ \(PMS\)$/,''))+'</span><small>'+esc(p[2])+'</small></a>'}).join(''):'')
+      +(pg.length?'<div class="grp">Pages and tools</div>'+pg.map(function(p){return '<a href="'+p[1]+'"'+ext(p[1])+'><span>'+esc(p[0])+'</span><small>'+esc(p[2])+'</small></a>'}).join(''):'')
       ||'<p class="muted" style="padding:14px">No match. Try a fund house, like "HDFC", a category, like "small cap", or a stock, like "Reliance".</p>';
   }
   function open(){if(!o)build();o.hidden=false;q.value='';draw('');load();setTimeout(function(){q.focus()},10)}

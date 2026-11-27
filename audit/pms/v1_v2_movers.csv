@@ -1,0 +1,84 @@
+strategy,manager,peer_group,yardstick,v1,v2,rank,of,score,ex3y_vs_yardstick,alpha,ir,vol,max_dd
+Phillip Income Builder Portfolio Growth,Phillipcapital (India) Pvt Ltd,Debt,median high-quality bond fund,A,A+,1,12,82.7,6.62,9.82,3.51,1.2,-0.1
+dezerv. Dynamic Debt Strategy,Dezerv Investments Private Limited,Debt,median high-quality bond fund,A,A+,2,12,79.2,3.45,7.79,2.63,0.6,0
+Phillip Income Builder Portfolio Regular Income,Phillipcapital (India) Pvt Ltd,Debt,median high-quality bond fund,A+,A,3,12,75.6,7.13,9.26,3.44,1.3,-0.3
+High Yield Strategy,Unifi Capital Pvt Ltd,Debt,median high-quality bond fund,B,A,4,12,68.3,2.25,6.76,1.89,0.6,0
+Asset Allocation with Dynamic Rebalancing,Aarohan Holdings And Advisors Private Limited,Hybrid and multi-asset,70% Nifty 500 TRI + 30% median high-quality bond fund,A,A+,3,26,76.7,4.4,3.84,0.83,11.1,-10.3
+Kotak Pioneer Model Strategy Investment Approach Aggressive,Kotak Mahindra Asset Management Company Ltd,Hybrid and multi-asset,75% Nifty 500 TRI + 25% median high-quality bond fund,B,A,7,26,69.4,3.68,2.53,0.51,12.2,-12.4
+Dynamic Asset Allocation Portfolio Aggressive,NJ Asset Management Private Limited,Hybrid and multi-asset,60% Nifty 500 TRI + 40% median high-quality bond fund,C,B,17,26,43.7,0.26,-0.04,-0.01,9.5,-11.2
+Dynamic ETF Allocation Portfolio Aggressive,NJ Asset Management Private Limited,Hybrid and multi-asset,55% Nifty 500 TRI + 45% median high-quality bond fund,B,C,19,26,35.1,-1.83,-1.11,-0.74,8.7,-9.0
+Eiml Capital,Emkay Investment Managers Limited,Large and multi cap,Nifty 50 TRI,A,A+,4,156,85.5,8.82,5.47,0.49,13.4,-14.6
+Fundamental-Based / Value-Oriented Approach,Laburnum Capital Advisors Private Limited,Large and multi cap,Nifty 50 TRI,B,A+,6,156,84.7,1.35,5.6,0.46,10.7,-8.9
+Emerging Corporates India Portfolio,Multi-Act Equity Consultancy Private Limited,Large and multi cap,Nifty 500 TRI,A,A+,10,156,82.0,5.58,6.23,0.42,14.8,-12.5
+All Weather Equity,Capitalmind Financial Services Private Limited,Large and multi cap,Nifty 500 TRI,A,A+,12,156,80.7,1.73,2.64,0.68,13.9,-16.2
+ALL Weather,Ckredence Wealth Management Pvt Ltd,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A,A+,13,156,80.6,3.07,5.52,0.43,14.3,-15.4
+Delphi 4C Advantage Portfolio,Motilal Oswal Wealth Limited,Large and multi cap,Nifty 500 TRI,A,A+,15,156,79.4,1.83,2.75,0.45,13.3,-14.6
+Q India Value Equity Strategy - Constrained V,Quantum Advisors Private Limited,Large and multi cap,Nifty 50 TRI,B,A,17,156,79.2,3.23,4.04,0.98,13.8,-14.1
+Flexi-Cap Wealth Creator Portfolio (A5),Infinity Alternatives Investment Managers Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A+,A,18,156,78.8,3.16,4.05,0.84,16.7,-15.7
+ICICI Prudential PMS Largecap Strategy,ICICI Prudential Asset Management Company Ltd,Large and multi cap,Nifty 500 TRI,A+,A,19,156,78.7,6.2,4.46,1.03,15.9,-19.1
+Diversified Multicap,Ckredence Wealth Management Pvt Ltd,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A+,A,20,156,77.0,3.33,5.76,0.63,16.4,-16.2
+Carnelian Capital Compounder Strategy,Carnelian Asset Management & Advisors Pvt Ltd,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A+,A,26,156,75.3,10.29,7.91,1.35,18.1,-19.8
+InCred Healthcare Portfolio,Incred Asset Management Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A+,A,27,156,74.4,7.52,13.39,0.66,18.9,-20.9
+Ambit Coffee Can Portfolio,Ambit Investment Advisors Private Limited,Large and multi cap,Nifty 50 TRI,B,A,30,156,73.0,1.74,1.88,0.2,13.7,-15.0
+SiMPL Multi Cap Value Portfolio,Securities Investment Management Private Limited,Large and multi cap,Nifty 500 TRI,B,A,33,156,71.5,1.02,2.95,0.25,14.8,-16.8
+East Lane Long Term Growth,East Lane Capital Llp,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,B,A,37,156,70.4,1.78,3.91,0.04,14.2,-16.7
+SageOne LargeCap,Sageone Investment Managers Llp,Large and multi cap,Nifty 500 TRI,A,B,49,156,63.3,4.52,2.85,0.6,16.6,-18.3
+Helios India Rising Portfolio,Helios Capital Asset Management (India) Pvt. Ltd,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A,B,53,156,62.3,2.2,2.99,0.39,16.3,-19.5
+Flexi-cap Fundamental Opportunities,True Beacon Investment Advisors LLP,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A,B,60,156,59.1,4.14,2.66,0.25,16.4,-17.8
+Freedom Portfolio,NJ Asset Management Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A,B,63,156,57.8,1.54,0.69,-0.09,15.3,-18.6
+Apex,J M Financial Ltd,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,A,B,66,156,56.8,3.8,2.7,0.28,16.6,-21.4
+Kings of Capital,Marcellus Investment Managers Private Limited,Large and multi cap,Nifty 50 TRI,C,B,89,156,46.3,-1.92,-0.2,-0.09,15.0,-17.9
+The ALL-STAR Portfolio,Clubmillionaire Financial Services Private Limited,Large and multi cap,Nifty 500 TRI,C,B,90,156,46.2,-2.2,-0.49,-0.32,14.9,-19.0
+OAKS Tenet Portfolio (Formerly Known as ABC Equity Portfolio)-Public Markets,Oaks Asset Management Private Limited,Large and multi cap,Nifty 500 TRI,C,B,91,156,46.2,-2.03,-0.12,-0.11,15.7,-21.9
+360 ONE Open - Enhancer Series - Passive Equity Enhancer,360 One Portfolio Managers Limited (Formerly Known As Iifl Wealth Portfolio Managers Limited),Large and multi cap,Nifty 500 TRI,C,B,98,156,42.9,-2.15,-1.67,-0.74,14.9,-16.0
+Bespoke Accounts,HDFC Asset Management Company Limited,Large and multi cap,Nifty 50 TRI,C,B,100,156,42.7,-2.61,-0.71,-0.68,10.8,-14.7
+Core Value Concentrated,Buglerock Capital Private Limited,Large and multi cap,Nifty 500 TRI,C,B,102,156,42.4,-0.9,-0.46,-0.29,14.6,-17.0
+Trfsl Bluechip,T Ram Financial Services Private Limited,Large and multi cap,Nifty 50 TRI,C,B,105,156,41.6,-3.49,-1.35,-0.32,14.1,-18.6
+Growth at Reasonable Price,Banyan Tree Advisors Pvt Ltd,Large and multi cap,Nifty 50 TRI,C,B,106,156,41.1,-2.47,-0.65,-0.42,12.3,-19.1
+Spark INDIA@75 Core And Satellite Strategy,Spark Asia Impact Managers Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,C,B,107,156,36.4,-5.92,-1.5,-0.6,14.9,-16.4
+Enam India Diversified Equity Advantage Portfolio,Enam Asset Management Company Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,C,B,108,156,36.2,-1.43,-0.72,-0.54,14.5,-20.0
+Freedom ETF Portfolio,NJ Asset Management Private Limited,Large and multi cap,Nifty 500 TRI,C,B,109,156,35.2,-1.06,-1.13,-0.4,15.2,-18.8
+Itus Fundamental Value Fund,Itus Capital Advisors Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,B,C,111,156,33.3,-2.31,-1.01,-0.62,14.6,-21.2
+Purnartha Dynamic Midcap,Purnartha Investment Advisers Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,B,C,114,156,32.2,-0.71,-3.71,-0.44,18.0,-17.4
+Renaissance India Next Portfolio,Renaissance Investment Managers Private Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,B,C,124,156,28.1,-1.12,-1.34,-0.36,16.3,-20.3
+Emkay NEW Vitalized India,Emkay Investment Managers Limited,Large and multi cap,Nifty 500 Multicap 50:25:25 TRI,B,C,127,156,26.7,5.09,-0.98,-0.21,18.1,-20.4
+Dynamic Investment Approach,Systematix Shares & Stocks (India) Limited,Mid and small cap,Nifty Smallcap 250 TRI,A,A+,6,127,85.4,8.19,9.37,0.65,20.0,-20.8
+Motilal Oswal Mid to Mega Strategy,Motilal Oswal Asset Management Company Limited - Portfolio Managers,Mid and small cap,Nifty Smallcap 250 TRI,A,A+,10,127,81.5,4.83,6.22,0.44,21.2,-21.1
+Wallfort Ameya Fund,Wallfort Fund Management Llp,Mid and small cap,Nifty Smallcap 250 TRI,A,A+,11,127,79.7,11.26,18.34,0.8,26.9,-25.1
+Svan Investment Managers LLP - Velocity,Svan Investment Managers LLP,Mid and small cap,Nifty Smallcap 250 TRI,A,A+,13,127,76.1,4.62,7.62,0.79,24.6,-22.2
+AAA Budding Beasts PMS,AlfAccurate Advisors Pvt Ltd,Mid and small cap,Nifty Smallcap 250 TRI,A+,A,15,127,75.1,6.24,5.88,0.38,19.0,-21.5
+SISOP,Sundaram Alternate Assets Limited,Mid and small cap,Nifty Midcap 150 TRI,A+,A,19,127,72.1,9.47,4.58,0.31,20.3,-14.8
+Diversified,Wallfort Fund Management Llp,Mid and small cap,Nifty Smallcap 250 TRI,A+,A,20,127,72.0,13.31,13.61,1.06,31.1,-31.1
+Alchemy Select Stock,Alchemy Capital Management Pvt Ltd,Mid and small cap,Nifty Midcap 150 TRI,A+,A,21,127,72.0,4.72,3.92,0.28,18.5,-21.4
+Activealphamc,Samvitti Capital Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,A,22,127,70.2,3.99,7.17,0.79,26.4,-29.8
+Voyager,Sundaram Alternate Assets Limited,Mid and small cap,Nifty Midcap 150 TRI,A+,A,25,127,66.5,8.07,3.54,0.24,19.7,-15.8
+Wright Factor Fund,Wryght Research And Capital Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,A,26,127,65.6,0.51,4.26,0.2,22.4,-22.9
+Pmsaggressive,Samvitti Capital Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,A,27,127,65.4,2.58,4.63,0.4,24.1,-27.6
+Nirmal Bang Equity Multi Cap,Nirmal Bang Securities Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,A,29,127,64.8,7.11,6.87,0.61,21.6,-27.5
+ValueQuest Growth,Valuequest Investment Advisors Pvt. Ltd.,Mid and small cap,Nifty Midcap 150 TRI,B,A,31,127,63.6,0.77,4.63,0.35,19.4,-20.8
+Girik BluFIN Strategy,Girik Wealth Advisors Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,A,35,127,62.7,3.51,4.49,0.42,22.9,-30.1
+Ace Multicap,Asit C. Mehta Investment Interrmediates Ltd.,Mid and small cap,Nifty Midcap 150 TRI,A,B,39,127,62.0,2.56,4.75,0.51,21.0,-23.7
+Surge India,Capitalmind Financial Services Private Limited,Mid and small cap,Nifty Midcap 150 TRI,A,B,40,127,60.9,1.49,3.08,0.16,18.1,-22.2
+MAPL Value Investing Fund,Mittal Analytics Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,A,B,43,127,59.9,4.78,3.82,0.55,25.7,-23.1
+Growth Mantra Fund,Turtle Wealth Management Pvt. Ltd.,Mid and small cap,Nifty Midcap 150 TRI,A,B,44,127,59.7,3.68,5.82,0.12,17.3,-29.7
+Emerging Opportunities Strategy,Zen Wealth Management Services Ltd,Mid and small cap,Nifty Smallcap 250 TRI,A,B,45,127,59.4,-0.97,2.51,0.04,20.3,-19.0
+Select Sector Portfolio NR,Aditya Birla Sun Life Amc Limited,Mid and small cap,Nifty Midcap 150 TRI,A,B,49,127,57.1,2.25,0.93,-0.12,17.2,-17.0
+S.E.L.F,Sundaram Alternate Assets Limited,Mid and small cap,Nifty Midcap 150 TRI,A,B,50,127,56.9,7.27,3.44,0.38,20.9,-17.2
+SiMPL Small Cap Value Portfolio,Securities Investment Management Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,A,B,54,127,55.8,4.71,1.74,-0.13,20.6,-20.5
+UpperCrust Wealth Fund,Moat Financial Services Private Limited,Mid and small cap,Nifty Midcap 150 TRI,A,B,56,127,54.7,5.17,2.49,0.22,22.7,-25.8
+ICICI Prudential PMS PIPE Strategy,ICICI Prudential Asset Management Company Ltd,Mid and small cap,Nifty Midcap 150 TRI,A,B,61,127,53.2,-1.74,1.59,0.08,17.9,-20.1
+Ohm Growth,Ohm Portfolio Equi Research Private Limited,Mid and small cap,Nifty Midcap 150 TRI,A,B,76,127,46.9,3.66,0.77,0.32,25.4,-21.7
+BRAINPOINT Future Winners,Brainpoint Investment Centre Pvt Ltd,Mid and small cap,Nifty Midcap 150 TRI,A,B,84,127,42.7,1.42,0.87,-0.01,17.7,-22.3
+ValueQuest Platinum,Valuequest Investment Advisors Pvt. Ltd.,Mid and small cap,Nifty Smallcap 250 TRI,C,B,87,127,37.9,-3.25,0.79,-0.17,21.3,-26.1
+Roha Emerging Champions Portfolio,Roha Asset Managers LLP,Mid and small cap,Nifty Smallcap 250 TRI,C,B,88,127,37.5,-4.6,-0.84,-0.02,23.5,-27.7
+Alchemy W.I.N Strategy,Alchemy Capital Management Pvt Ltd,Mid and small cap,Nifty Midcap 150 TRI,C,B,89,127,36.9,-4.28,-1.39,-0.11,23.0,-32.4
+Composite India Garp Fund,Composite Investments Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,C,90,127,36.5,0.11,-0.41,-0.3,20.8,-24.0
+RHPMPL- Super Value M&S CAP Portfolio,Right Horizons Portfolio Management Pvt Ltd,Mid and small cap,Nifty Smallcap 250 TRI,B,C,91,127,35.5,0.86,0.66,-0.03,22.3,-26.9
+Avestha Growth,Avestha Fund Management Llp,Mid and small cap,Nifty Midcap 150 TRI,B,C,92,127,35.0,-1.32,-2.34,-0.12,22.1,-24.4
+Master Trust India Growth Strategy,Master Portfolio Services Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,C,93,127,32.3,-1.28,-1.33,-0.61,19.4,-22.5
+Emerging Leaders,Solidarity Advisors Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,C,95,127,31.2,5.22,1.1,-0.13,24.5,-26.2
+Purnartha Pratham,Purnartha Investment Advisers Private Limited,Mid and small cap,Nifty Midcap 150 TRI,B,C,96,127,31.0,-3.15,-2.84,-0.48,18.8,-20.3
+Purnartha Vision,Purnartha Investment Advisers Private Limited,Mid and small cap,Nifty Midcap 150 TRI,B,C,98,127,30.9,-3.6,-3.77,-0.64,18.3,-18.3
+Alchemy High Growth,Alchemy Capital Management Pvt Ltd,Mid and small cap,Nifty Midcap 150 TRI,B,C,104,127,27.1,-1.8,-4.06,-0.26,21.8,-34.2
+SageOne Small Cap,Sageone Investment Managers Llp,Mid and small cap,Nifty Smallcap 250 TRI,B,C,105,127,26.6,-2.23,-2.38,-0.47,21.3,-24.2
+Valentis Rising Star Opportunity Fund,Valentis Advisors Private Limited,Mid and small cap,Nifty Smallcap 250 TRI,B,C,107,127,25.8,-0.96,-1.75,-0.25,22.5,-27.1

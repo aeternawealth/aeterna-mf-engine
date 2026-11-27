@@ -202,7 +202,7 @@ def guides(d, f):
         faq=[("Is PMS better than mutual funds?", "Not by default. It is more concentrated and usually costs more; it is worth it only if it adds return or diversification after costs and tax."),
              ("What is the minimum for PMS?", "₹50 lakh, in cash or eligible shares."),
              ("Can I exit a PMS any time?", "Yes; SEBI caps exit loads at 3% in the first year, 2% in the second and 1% in the third.")],
-        links=[("/invest/pms/", "PMS with us"), ("/invest/mutual-funds/", "Mutual funds with us")],
+        links=[("/pms/", "PMS returns and how we help"), ("/invest/mutual-funds/", "Mutual funds with us")],
     ))
     G.append(dict(
         slug="index-funds-vs-active-funds",

@@ -44,8 +44,11 @@ def url_s(s):
     return f"/pms/{s['mslug']}/{s['slug']}/"
 
 
+MLINK = {}   # manager slug -> the page that covers the manager (filled in build)
+
+
 def url_m(m):
-    return f"/pms/{m}/"
+    return MLINK.get(m) or "/pms/"
 
 
 STYLE = """<style>
@@ -310,7 +313,7 @@ def strategy_page(B, D, s, peers, mgr_all):
                + _table(["Strategy", "Rating", "3 years a year", "Assets"],
                         [[(f"<a href='{url_s(x)}'>{B.e(x['name'])}</a>" if x.get("rated") else B.e(x["name"])), B.tier_badge(x.get("tier")) if x.get("tier") else "<span class='muted'>not rated</span>",
                           _p(x["apmi"].get("r3y")), _cr(x["aum"])] for x in sorted(others, key=lambda x: -x["aum"])])
-               + f"<p style='margin-top:10px'><a href='{url_m(s['mslug'])}'>All of {B.e(s['manager'])}'s strategies</a></p></div>")
+               + (f"<p style='margin-top:10px'><a href='{url_m(s['mslug'])}'>All of {B.e(s['manager'])}'s strategies</a></p>" if url_m(s["mslug"]) != "/pms/" else "") + "</div>")
     first, lastm = months[0], months[-1]
     ex3 = m.get("ex3y")
     lede = (f"{B.e(s['name'])} is a discretionary {s['type'].lower()} PMS strategy run by {B.e(s['manager'])}, with {_cr(s['aum'])} of client money "
@@ -339,13 +342,13 @@ def strategy_page(B, D, s, peers, mgr_all):
              else f"{s['name']} PMS: returns, risk and rating | Aeterna Wealth")
     desc = (f"{s['name']} ({s['manager']}): {_p(a['r3y'])} a year over 3 years after fees, worst fall {_p(m.get('max_dd'))}, assets {_cr(s['aum'])}"
             + (f"; rated {tier} ({s['rank']} of {s['of']})" if tier else "") + f". Data to {_mo(lastm)}.")
-    crumbs = [("PMS", "/pms/"), (s["manager"], url_m(s["mslug"])), (s["name"], path)]
+    crumbs = [("PMS", "/pms/")] + ([(s["manager"], url_m(s["mslug"]))] if url_m(s["mslug"]) not in ("/pms/", path) else []) + [(s["name"], path)]
     _wrap(B, path, title, desc, crumbs, s["name"], lede, body, (faq_ld(faq),))
 
 
 # ------------------------------------------------------------------ manager page
 def manager_page(B, D, mg, L):
-    path = url_m(mg["slug"])
+    path = f"/pms/{mg['slug']}/"
     rated = [s for s in L if s.get("rated")]
     rows = [[(f"<a href='{url_s(s)}'>{B.e(s['name'])}</a>" if s.get("rated") else B.e(s["name"]))
              + f"<div class='muted' style='font-size:12.5px'>{B.e(s['type'])} · {'discretionary' if s['service'] == 'D' else 'non-discretionary'}"
@@ -407,9 +410,10 @@ def hub_page(B, D, S, managers):
     top = _table(head, _rated_rows(B, eq[:25]))
     groups = "".join(f"<a class='btn' href='/pms/ratings/{GROUP_SLUG[g]}/'>{g} ({sum(s['group'] == g for s in rated)})</a>"
                      for g in ("Equity", "Debt", "Hybrid and multi-asset"))
-    shown_m = [mg for mg in managers if mg["has_page"]]
-    mlist = ("<div style='columns:3 220px;column-gap:28px;margin-top:12px;font-size:14.5px;line-height:1.9'>"
-             + "".join(f"<div><a href='{url_m(mg['slug'])}'>{B.e(mg['name'])}</a></div>" for mg in shown_m) + "</div>")
+    shown_m = [mg for mg in managers if MLINK.get(mg["slug"])]
+    mlist = (f"<details class='faq' style='margin-top:12px'><summary>Show all {len(shown_m)} portfolio managers</summary>"
+             "<div style='columns:3 220px;column-gap:28px;margin-top:12px;font-size:14.5px;line-height:1.9'>"
+             + "".join(f"<div><a href='{url_m(mg['slug'])}'>{B.e(mg['name'])}</a></div>" for mg in shown_m) + "</div></details>")
     lede = (f"Every PMS strategy reports its returns to APMI each month. We take all {D['n_all']:,} of them, keep the {len(S)} with ₹100 crore or more, "
             f"and rate the {len(rated)} discretionary ones with 3 years of record: not on last year's return, but on how consistently and how safely "
             f"they beat the market over {len(eq[0]['months']) if eq else 0} months.")
@@ -422,11 +426,20 @@ def hub_page(B, D, S, managers):
               f"<div class='row' style='gap:10px;flex-wrap:wrap;margin-top:14px'>{groups}</div></div>"
             + f"<div class='pm-sec'><h2>Portfolio managers</h2><p class='muted'>{len(shown_m)} managers with at least one strategy over ₹100 crore.</p>{mlist}</div>"
             + "<div class='pm-sec'><h2>Read more</h2><p><a href='/pms/how-pms-returns-are-measured/'>How PMS returns are measured and how we rate</a> · "
-              "<a href='/aif/'>Alternative investment funds (AIFs)</a> · <a href='/invest/pms/'>How we help with PMS</a> · <a href='/mutual-funds/'>Mutual fund ratings</a></p></div>")
+              "<a href='/aif/'>Alternative investment funds (AIFs)</a> · <a href='/mutual-funds/'>Mutual fund ratings</a></p></div>")
+    X = getattr(B, "INVEST_EXTRA", {}).get("pms")
+    ld = ()
+    if X:
+        from build_pages import faq_ld
+        body += (X["css"] + "<div class='pm-sec'><h2 style='font-size:30px'>PMS explained</h2><div class='inv-facts' style='margin-top:16px'>" + X["facts"] + "</div>"
+                 + f"<div style='margin-top:20px'>{X['secs']}<div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{X['steps']}</ol></div></div>"
+                 + "<div class='inv-sec'><h2>Common questions</h2><div class='body'>"
+                 + "".join(f"<details class='faq'><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>" for q, a in X["faq"]) + "</div></div></div></div>")
+        ld = (faq_ld(X["faq"]),)
     title = f"PMS returns and ratings: {len(rated)} strategies ranked on their record ({_mo(D['as_of'])}) | Aeterna Wealth"
     desc = (f"PMS performance for {len(S)} strategies over ₹100 crore: returns after fees, worst falls, consistency against Nifty 500 TRI and ratings, "
             f"from APMI data to {_mo(D['as_of'])}.")
-    _wrap(B, path, title, desc, [("PMS", "/pms/")], "PMS returns and ratings", lede, body)
+    _wrap(B, path, title, desc, [("PMS", "/pms/")], "PMS returns and ratings", lede, body, ld)
 
 
 def method_page(B, D):
@@ -448,17 +461,23 @@ def method_page(B, D):
 
 def aif_page(B):
     path = "/aif/"
-    body = """<div class='prose' style='max-width:780px'>
-<h2>What an AIF is</h2><p>An alternative investment fund (AIF) is a privately pooled fund registered with SEBI under the AIF Regulations, 2012, for investors putting in at least ₹1 crore (less for accredited investors and employees of the manager). Unlike a mutual fund it can invest in unlisted companies, private credit, real estate and complex strategies, and most have a lock-in.</p>
-<h2>The three categories</h2><ul><li><b>Category I:</b> funds SEBI wants to encourage: venture capital, angel, SME, social impact and infrastructure funds. Usually closed-ended, 5 to 10 years.</li>
-<li><b>Category II:</b> everything that is neither I nor III, without leverage except to meet day-to-day needs: private equity, private credit and debt, real estate funds, funds of funds. Closed-ended, typically 3 to 8 years.</li>
-<li><b>Category III:</b> funds that trade listed shares and derivatives and may use leverage: long-only equity, long-short and hedge strategies. Can be open- or closed-ended.</li></ul>
-<h2>Why we do not rank AIFs</h2><p>No one publishes returns for individual AIF schemes. SEBI's benchmarking framework (CRISIL, NSE and others) gives each AIF its own report privately and publishes only category-level averages twice a year, for March and September. Private equity and credit funds are also valued only occasionally, and their returns depend on when each investment is sold. A ranking from public data would be guesswork, so we do not make one.</p>
-<h2>What to ask before investing in an AIF</h2><ul><li>The scheme's returns since its first close, as an IRR, against its category benchmark from the benchmarking agency's report.</li><li>The fees: management fee, set-up costs, the hurdle rate and the manager's share of profits.</li><li>The lock-in and when the fund expects to return money; whether you can exit early.</li><li>How your returns are taxed: Category I and II pass income through to investors; Category III is taxed in the fund.</li></ul>
-<p>For listed-equity strategies with monthly reported returns, see our <a href='/pms/'>PMS ratings</a>. <a href='/invest/aif/'>How we help with AIFs</a>.</p></div>"""
-    _wrap(B, path, "AIF categories explained: Category I, II and III alternative investment funds | Aeterna Wealth",
-          "What alternative investment funds are, SEBI's three categories, why scheme-level AIF returns are not public, and what to ask before investing.",
-          [("AIFs", path)], "Alternative investment funds (AIFs)", "What they are, how SEBI classifies them, and what you can and cannot find out before investing.", body)
+    X = getattr(B, "INVEST_EXTRA", {}).get("aif")
+    mine = """<div class='inv-sec'><h2>Why we do not rank AIFs</h2><div class='body'><p>No one publishes returns for individual AIF schemes. SEBI's benchmarking framework (CRISIL, NSE and others) gives each AIF its own report privately and publishes only category-level averages twice a year, for March and September. Private equity and credit funds are also valued only occasionally, and their returns depend on when each investment is sold. A ranking from public data would be guesswork, so we do not make one.</p></div></div>
+<div class='inv-sec'><h2>What to ask before investing</h2><div class='body'><ul><li>The scheme's returns since its first close, as an IRR, against its category benchmark from the benchmarking agency's report.</li><li>The fees: management fee, set-up costs, the hurdle rate and the manager's share of profits.</li><li>The lock-in and when the fund expects to return money; whether you can exit early.</li><li>How your returns are taxed: Category I and II pass income through to investors; Category III is taxed in the fund.</li></ul><p>For listed-equity strategies with monthly reported returns, see our <a href='/pms/'>PMS returns and ratings</a>.</p></div></div>"""
+    ld = ()
+    if X:
+        from build_pages import faq_ld
+        body = (X["css"] + "<div class='inv-facts' style='margin-top:20px'>" + X["facts"] + "</div><div style='margin-top:24px'>" + X["secs"] + mine
+                + f"<div class='inv-sec'><h2>How we work with you</h2><div class='body'><ol class='inv-steps'>{X['steps']}</ol></div></div>"
+                + "<div class='inv-sec'><h2>Common questions</h2><div class='body'>"
+                + "".join(f"<details class='faq'><summary>{B.e(q)}</summary><p>{B.e(a)}</p></details>" for q, a in X["faq"]) + "</div></div></div>")
+        ld = (faq_ld(X["faq"]),)
+    else:
+        body = "<div style='margin-top:24px'>" + mine + "</div>"
+    _wrap(B, path, "AIFs in India: Category I, II and III, minimum ₹1 crore, fees and tax | Aeterna Wealth",
+          "Alternative investment funds explained: SEBI's Category I, II and III, the ₹1 crore minimum, lock-ins, fees, tax, why scheme returns are not public and what to ask before investing.",
+          [("AIFs", path)], "Alternative investment funds (AIFs)",
+          "What they are, how SEBI classifies them, what they cost, and what you can and cannot find out before investing.", body, ld)
 
 
 def build(B, urls):
@@ -486,8 +505,16 @@ def build(B, urls):
     by_m = defaultdict(list)
     for s in S:
         by_m[s["mslug"]].append(s)
+    MLINK.clear()
     for mg in D["managers"]:
-        mg["has_page"] = any(s.get("rated") for s in by_m[mg["slug"]]) or sum(s["aum"] for s in by_m[mg["slug"]]) >= 500
+        L = by_m[mg["slug"]]
+        rated = [s for s in L if s.get("rated")]
+        # one page per thing: a manager page only when it covers 2+ strategies; otherwise its one rated strategy's page is the page
+        mg["has_page"] = len(L) >= 2 and bool(rated)
+        if mg["has_page"]:
+            MLINK[mg["slug"]] = f"/pms/{mg['slug']}/"
+        elif len(rated) == 1:
+            MLINK[mg["slug"]] = url_s(rated[0])
     for g_ in GROUP_SLUG:
         L = [s for s in S if s["group"] == g_ and s.get("rated")]
         if L:
@@ -500,7 +527,7 @@ def build(B, urls):
     for mg in D["managers"]:
         if mg["has_page"]:
             manager_page(B, D, mg, by_m[mg["slug"]])
-            urls.append((url_m(mg["slug"]), "monthly", "0.5"))
+            urls.append((f"/pms/{mg['slug']}/", "monthly", "0.5"))
     hub_page(B, D, S, D["managers"])
     method_page(B, D)
     aif_page(B)

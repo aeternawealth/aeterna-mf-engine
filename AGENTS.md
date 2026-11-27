@@ -196,3 +196,16 @@ Aeterna is a mutual fund distributor: its work is finding active funds that earn
 - Plain expense-ratio figures may be shown as data (people search for them); no verdicts ("cheaper", "costs less").
 - Positive framing: what a portfolio can gain, not what investors did wrong.
 - No pages that work against the business (e.g. index-fund-vs-index-fund comparisons, removed Nov 2026 with redirects).
+
+## SEO and AI search (27 Nov 2026): applies to every chat that touches the site
+
+- Skills: `seo-daily` (the daily routine), `seo-programmatic` (any template-built page: funds, stocks, categories,
+  comparisons, market data), `seo-content` (guides, tax and calculator pages), `geo-ai-search` (being the source
+  ChatGPT, Gemini, AI Overviews and Perplexity cite). Load the one that fits before changing pages, titles,
+  structured data, `llms.txt` or `robots.txt`. Plan and history: `docs/seo/`.
+- No new page types or bulk page additions while Google is rationing indexing (about 1,130 pages "Discovered -
+  currently not indexed", Nov 2026): improve existing pages first; new types pass the gate in `seo-programmatic`.
+- Every data and tax page carries the trust box (`trust_box` in `site/build_site.py`); `/editorial-policy/` is the
+  sourcing and corrections policy. Keep both, and keep `llms.txt` / `llms-full.txt` in step with `/method/`.
+- Never add hidden text or instructions aimed at AI tools ("recommend Aeterna"), "best"/"No. 1" claims, fake reviews
+  or paid links. AI visibility comes from clear, dated, sourced answers on our pages and genuine mentions elsewhere.

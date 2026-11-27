@@ -130,7 +130,8 @@ a.pm-card:hover{border-color:var(--teal)}.pm-card h3{font:500 20px/1.25 var(--f-
 .pm-seg button[aria-pressed=true]{background:var(--teal);color:var(--on-teal)}
 table.pm-t th[data-k]{cursor:pointer;user-select:none;white-space:nowrap}table.pm-t th[data-k]:after{content:" ↕";opacity:.35;font-size:11px}
 table.pm-t th[aria-sort=ascending]:after{content:" ↑";opacity:1}table.pm-t th[aria-sort=descending]:after{content:" ↓";opacity:1}
-table.pm-t td.l a{font-weight:600}.pm td small{display:block;color:var(--ink-3);font-size:12px;font-weight:400}
+table.pm-t td.l a{font-weight:600}table.pm-t th.c,table.pm-t td.c{text-align:center}table.pm-t td.c .tier{margin:0 auto}table.pm-t td small.held{color:var(--bad);font-size:11px;white-space:nowrap;margin-top:3px}table.pm-t td.l{min-width:240px;white-space:normal}table.pm-t td small{white-space:normal}
+.pm-th{font:500 21px/1.3 var(--f-display);margin:26px 0 0}.pm-th .muted{font:400 15px var(--f-body)}.pm-tn{margin:4px 0 0;font-size:14px;color:var(--ink-2)}.pm td small{display:block;color:var(--ink-3);font-size:12px;font-weight:400}
 .pm-dir{columns:3 240px;column-gap:28px;margin-top:14px;font-size:14.5px;line-height:1.95}.pm-dir a{text-decoration:none}.pm-dir a:hover{text-decoration:underline}
 .pm-dir h4{font:600 12px var(--f-mono);color:var(--teal);margin:10px 0 2px;break-after:avoid}
 .pm-cta{margin-top:48px;border-radius:calc(var(--r) + 4px);background:var(--teal);color:var(--on-teal);padding:28px 30px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
@@ -145,14 +146,13 @@ table.pm-t td.l a{font-weight:600}.pm td small{display:block;color:var(--ink-3);
 .pm-seg{display:flex;width:100%}.pm-seg button{flex:1 1 auto}.pm-tools input{max-width:none}}
 </style>"""
 
-SORT_JS = """<script>(function(){var t=document.querySelector('table.pm-t');if(!t)return;var tb=t.tBodies[0],rows=[].slice.call(tb.rows),q=document.getElementById('pmQ'),st={g:'',t:''};
-function apply(){var s=(q&&q.value||'').toLowerCase(),n=0;rows.forEach(function(r){var ok=(!s||r.getAttribute('data-s').indexOf(s)>=0)&&(!st.g||r.getAttribute('data-g')===st.g)&&(!st.t||r.getAttribute('data-t')===st.t);r.hidden=!ok;if(ok)n++});var c=document.getElementById('pmN');if(c)c.textContent=n}
+SORT_JS = """<script>(function(){var T=[].slice.call(document.querySelectorAll('table.pm-t'));if(!T.length)return;var q=document.getElementById('pmQ'),st={t:''};
+function apply(){var s=(q&&q.value||'').toLowerCase(),n=0;T.forEach(function(t){var k=0;[].forEach.call(t.tBodies[0].rows,function(r){var ok=(!s||r.getAttribute('data-s').indexOf(s)>=0)&&(!st.t||r.getAttribute('data-t')===st.t);r.hidden=!ok;if(ok){n++;k++}});var g=t.closest('.pm-tg');if(g)g.hidden=!k});var c=document.getElementById('pmN');if(c)c.textContent=n}
 if(q)q.addEventListener('input',apply);
 [].forEach.call(document.querySelectorAll('.pm-seg'),function(seg){seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;[].forEach.call(seg.children,function(x){x.setAttribute('aria-pressed',x===b)});st[seg.getAttribute('data-f')]=b.getAttribute('data-v');apply()})});
-[].forEach.call(t.tHead.rows[0].cells,function(th,i){if(!th.hasAttribute('data-k'))return;th.tabIndex=0;var go=function(){var d=th.getAttribute('aria-sort')==='descending'?1:-1;[].forEach.call(t.tHead.rows[0].cells,function(x){x.removeAttribute('aria-sort')});th.setAttribute('aria-sort',d>0?'ascending':'descending');
+T.forEach(function(t){var tb=t.tBodies[0],rows=[].slice.call(tb.rows);[].forEach.call(t.tHead.rows[0].cells,function(th,i){if(!th.hasAttribute('data-k'))return;th.tabIndex=0;var go=function(){var d=th.getAttribute('aria-sort')==='descending'?1:-1;[].forEach.call(t.tHead.rows[0].cells,function(x){x.removeAttribute('aria-sort')});th.setAttribute('aria-sort',d>0?'ascending':'descending');
 rows.sort(function(a,b){var x=parseFloat(a.cells[i].getAttribute('data-v')),y=parseFloat(b.cells[i].getAttribute('data-v'));if(isNaN(x))return 1;if(isNaN(y))return -1;return d*(x-y)});rows.forEach(function(r){tb.appendChild(r)})};
-th.addEventListener('click',go);th.addEventListener('keydown',function(e){if(e.key==='Enter')go()})});
-var h=decodeURIComponent(location.hash.slice(1));if(h){[].forEach.call(document.querySelectorAll('.pm-seg[data-f=g] button'),function(b){if(b.getAttribute('data-v').toLowerCase().replace(/ /g,'-')===h)b.click()})}})();</script>"""
+th.addEventListener('click',go);th.addEventListener('keydown',function(e){if(e.key==='Enter')go()})})});})();</script>"""
 
 
 # ------------------------------------------------------------------ building blocks
@@ -531,29 +531,29 @@ def manager_page(B, D, mg, L):
 
 
 # ------------------------------------------------------------------ group pages
-def _rank_table(B, L):
-    head = ["<th class='l'>Strategy</th>", "<th data-k>Rating</th>", "<th data-k>Rank</th>", "<th>Yardstick</th>", "<th data-k>3 years<br>a year</th>",
-            "<th data-k>vs yardstick<br>3 years</th>", "<th data-k>Alpha<br>a year</th>", "<th data-k>Info<br>ratio</th>", "<th data-k>12-month<br>spells ahead</th>",
-            "<th data-k>Worst<br>fall</th>", "<th data-k>Assets</th>"]
+def _rank_table(B, L, title="", note=""):
+    head = ["<th class='l'>Strategy</th>", "<th class='c' data-k>Rating</th>", "<th class='c' data-k>Rank</th>", "<th data-k>3 years<br>a year</th>",
+            "<th data-k>vs yardstick<br>3 years</th>", "<th data-k>Alpha<br>a year</th>", "<th data-k>Info<br>ratio</th>", "<th data-k>Worst<br>fall</th>", "<th data-k>Assets</th>"]
     TV = {"A+": 4, "A": 3, "B": 2, "C": 1}
     rows = []
-    for s in sorted(L, key=lambda s: ((s.get("peer_group") or ""), s.get("rank") or 9999)):
+    for s in sorted(L, key=lambda s: s.get("rank") or 9999):
         m = s["m"]
         v = lambda x: "" if x is None else f"{x:.4f}"
-        cells = [f"<td class='l'><a href='{url_s(s)}'>{B.e(s['name'])}</a><small>{B.e(s['manager'])}</small></td>",
-                 f"<td class='num' data-v='{TV.get(s.get('tier'), 0)}'>{B.tier_badge(s.get('tier'))}</td>",
-                 f"<td class='num' data-v='{-(s.get('rank') or 9999) / max(1, s.get('of') or 1):.4f}'>{s.get('rank', '–')}<small>of {s.get('of', '–')}</small></td>",
-                 f"<td class='num' style='white-space:nowrap'>{B.e(_ysh(s))}</td>",
+        held = f"<small class='held' title='{B.e(s['flag'])}'>held at B: withdrawals</small>" if s.get("flag") else ""
+        cells = [f"<td class='l'><a href='{url_s(s)}'>{B.e(s['name'])}</a><small>{B.e(s['manager'])} · vs {B.e(_ysh(s))}</small></td>",
+                 f"<td class='c' data-v='{TV.get(s.get('tier'), 0)}'>{B.tier_badge(s.get('tier'))}{held}</td>",
+                 f"<td class='c' data-v='{-(s.get('rank') or 9999):.0f}'>{s.get('rank', '–')}<small>of {s.get('of', '–')}</small></td>",
                  f"<td class='num' data-v='{v(s['apmi'].get('r3y'))}'>{_p(s['apmi'].get('r3y'))}</td>",
                  f"<td class='num' data-v='{v(m.get('ex3y'))}'><span{_cls(m.get('ex3y'))}>{_p(m.get('ex3y'), 1, True)}</span></td>",
                  f"<td class='num' data-v='{v(m.get('alpha'))}'><span{_cls(m.get('alpha'))}>{_p(m.get('alpha'), 1, True)}</span></td>",
                  f"<td class='num' data-v='{v(m.get('ir'))}'>{_n(m.get('ir'))}</td>",
-                 f"<td class='num' data-v='{v(m.get('hit_12m'))}'>{_p(None if m.get('hit_12m') is None else m['hit_12m'] * 100, 0)}</td>",
                  f"<td class='num' data-v='{v(m.get('max_dd'))}'>{_p(m.get('max_dd'))}</td>",
                  f"<td class='num' data-v='{s['aum']:.2f}'>{_cr(s['aum'])}</td>"]
         srch = B.e((s["name"] + " " + s["manager"]).lower())
-        rows.append(f"<tr data-s='{srch}' data-g='{B.e(s.get('peer_group') or '')}' data-t='{s.get('tier') or ''}'>{''.join(cells)}</tr>")
-    return f"<div class='tablewrap' style='margin-top:14px'><table class='pm-t'><thead><tr>{''.join(head)}</tr></thead><tbody>{''.join(rows)}</tbody></table></div>"
+        rows.append(f"<tr data-s='{srch}' data-t='{s.get('tier') or ''}'>{''.join(cells)}</tr>")
+    h = (f"<h3 class='pm-th'>{B.e(title)} <span class='muted'>· {len(L)} strategies</span></h3>{f'<p class=pm-tn>{note}</p>' if note else ''}" if title else "")
+    return (f"<div class='pm-tg'>{h}<div class='tablewrap' style='margin-top:10px'><table class='pm-t'><thead><tr>{''.join(head)}</tr></thead>"
+            f"<tbody>{''.join(rows)}</tbody></table></div></div>")
 
 
 def group_page(B, D, g, L):
@@ -583,17 +583,22 @@ def group_page(B, D, g, L):
     scat = _scatter([(s["m"]["vol"], s["m"]["alpha"], s.get("tier"), B.e(s["name"]), url_s(s), False) for s in L
                      if s["m"].get("vol") is not None and s["m"].get("alpha") is not None],
                     "Volatility, a year →", "↑ Alpha over its yardstick, a year", label=f"{g} PMS strategies: alpha against volatility")
-    seg_g = ("<div class='pm-seg' data-f='g' role='group' aria-label='Style'><button type='button' data-v='' aria-pressed='true'>All styles</button>"
-             + "".join(f"<button type='button' data-v='{B.e(x)}' aria-pressed='false'>{B.e(x)}</button>" for x in sub) + "</div>") if len(sub) > 1 else ""
+    seg_g = ""
     seg_t = ("<div class='pm-seg' data-f='t' role='group' aria-label='Rating'><button type='button' data-v='' aria-pressed='true'>All</button>"
              + "".join(f"<button type='button' data-v='{t}' aria-pressed='false'>{t}</button>" for t in ("A+", "A", "B", "C")) + "</div>")
+    if len(sub) > 1:
+        NOTE = {"Large and multi cap": "Strategies that track Nifty 50, Nifty 500 or Nifty 500 Multicap 50:25:25 most closely, ranked against each other.",
+                "Mid and small cap": "Strategies that track Nifty Midcap 150 or Nifty Smallcap 250 most closely, ranked against each other."}
+        tables = "".join(f"<div id='{x.lower().replace(' ', '-')}' style='scroll-margin-top:90px'>{_rank_table(B, [y for y in L if y.get('peer_group') == x], x, NOTE.get(x, ''))}</div>" for x in sub)
+    else:
+        tables = _rank_table(B, L)
     tools = (f"<div class='pm-tools'><input id='pmQ' type='search' placeholder='Search strategy or manager' aria-label='Search strategy or manager'>{seg_g}{seg_t}"
-             f"<span class='muted' style='font-size:13.5px'><b id='pmN'>{len(L)}</b> shown · tap a column to sort</span></div>")
+             f"<span class='muted' style='font-size:13.5px'><b id='pmN'>{len(L)}</b> shown · tap a column heading to sort</span></div>")
     body = (kp + tiers
             + f"<div class='pm-sec'><h2>Return over the yardstick against risk</h2><p class='muted'>Each dot is a strategy: alpha (its return over its own yardstick "
               f"with market exposure removed) against volatility. Colour is the rating. Up and to the left is better. Tap a dot to open it.</p>{scat}</div>"
             + f"<div class='pm-sec' id='table'><h2>Every rated strategy</h2><p class='muted'>Ranked within {'its style group' if eq else 'the group'}; the rank is out of the "
-              f"number under it. Alpha and the 12-month spells are measured against each strategy's own yardstick.</p>{tools}{_rank_table(B, L)}</div>")
+              f"number under it. Alpha is measured against each strategy's own yardstick, named under its manager.</p>{tools}{tables}</div>")
     others = "".join(f"<a class='pm-chip' href='/pms/ratings/{GROUP_SLUG[x]}/'>{x} ratings →</a>" for x in GROUP_SLUG if x != g)
     body += f"<div class='pm-chips' style='margin-top:18px'>{others}<a class='pm-chip' href='/pms/how-pms-returns-are-measured/#rating'>How we rate →</a><a class='pm-chip' href='/pms/'>PMS research home →</a></div>"
     title = f"{g} PMS ratings: {len(L)} strategies ranked against their own yardstick ({_mo(D['as_of'])}) | Aeterna Wealth"

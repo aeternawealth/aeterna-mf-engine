@@ -71,7 +71,7 @@ def fetch(out: Path, months, debug: Path = None):
                         body = r.text()
                         name = f"{ym}_{t.replace(' ', '')}_{sv}.txt"
                         (raw / name).write_text(body, encoding="utf-8")
-                        row.update(bytes=len(body), status=str(r.status), note=re.sub(r"\\s+", " ", body[:160]))
+                        row.update(bytes=len(body), status=str(r.status), note=re.sub(r"\s+", " ", body[:160]))
                     except Exception as e:
                         row.update(status="fail", note=f"{type(e).__name__}: {str(e)[:200]}")
                     log.append(row)

@@ -102,3 +102,62 @@ def category_block(c, L, e, as_of_txt, bench_txt):
     sec = (f"<div class='mv-sec' id='dots'><h2>Every fund at a glance</h2><p class='muted'>Each dot is a Regular plan: its 3-year return over {bench_txt} (after expenses) "
            f"against how much it swung. Colour is the rating. Up and to the left is better. Hover or tap a dot for its numbers; click to open it.</p>{charts}</div>")
     return k, sec
+
+
+def dots_data(funds, asset_class):
+    """Compact data for the all-funds dot chart (/data/dots.json): Regular plans with a 3-year volatility, index funds left out."""
+    fam = {"Equity": "E", "Hybrid": "H", "Debt": "D"}
+    r = lambda v: None if v is None else round(v * 100, 2)
+    out = []
+    for f in funds:
+        if f["plan_type"] != "Regular" or f.get("vol_3y") is None or f["category"] == "Index Fund" or not f.get("_url"):
+            continue
+        out.append([f["_name"], f["_url"], f["category"], fam.get(asset_class(f["category"]), "E"), f.get("tier") if f.get("tier") in C.TIER_VAR else "",
+                    r(f.get("excess_1Y")), r(f.get("excess_3Y")), r(f["vol_3y"]), r(f.get("ret_1Y")), r(f.get("ret_3Y"))])
+    return out
+
+
+EXPLORER = """<div class='mv-sec' id='all-dots'><h2>Every fund on one chart</h2>
+<p class='muted'>Each dot is a Regular plan: its return over its own yardstick (the category index for equity, a composite for hybrid, the category's median fund for debt),
+after expenses, against how much it swung over 3 years. Colour is the rating. Up and to the left is better. Hover or tap a dot for its numbers; click to open it.</p>
+<div class='pm-tools' style='display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px'>
+<div class='xs-seg' data-k='f' role='group' aria-label='Asset class'><button type='button' data-v='E' aria-pressed='true'>Equity</button><button type='button' data-v='H' aria-pressed='false'>Hybrid</button><button type='button' data-v='D' aria-pressed='false'>Debt</button><button type='button' data-v='' aria-pressed='false'>All</button></div>
+<div class='xs-seg' data-k='p' role='group' aria-label='Period'><button type='button' data-v='3' aria-pressed='true'>3 years</button><button type='button' data-v='1' aria-pressed='false'>1 year</button></div>
+<select id='xsCat' aria-label='Category' class='xs-sel'><option value=''>All categories</option></select>
+<span class='muted' style='font-size:13.5px'><b id='xsN'>–</b> funds</span></div>
+<div class='ch' id='xsCh' data-dots='1' style='min-height:200px'><p class='muted' style='padding:20px'>Loading the chart…</p></div>
+<p class='muted' style='font-size:12.5px;margin-top:8px'>Volatility is over 3 years in both views, so only plans with a 3-year record are shown. Index funds are not shown: they aim to match their index, not beat it. Hollow dots are beyond the scale and drawn at its edge; their own numbers are in the tooltip.</p></div>
+<style>.xs-seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.xs-seg button{border:0;background:none;padding:9px 14px;font:600 13.5px var(--f-body);color:var(--ink-2);cursor:pointer;border-right:1px solid var(--rule)}.xs-seg button:last-child{border-right:0}
+.xs-seg button[aria-pressed=true]{background:var(--teal);color:var(--on-teal)}.xs-sel{border:1px solid var(--rule);border-radius:var(--r);padding:9px 12px;font:inherit;font-size:14px;background:var(--surface);color:var(--ink);max-width:100%}
+#xsCh svg.w{min-width:0}</style>
+<script>(function(){var D=null,st={f:'E',p:'3',c:''},ch=document.getElementById('xsCh'),sel=document.getElementById('xsCat'),TV={'A+':'var(--t-ap)','A':'var(--t-a)','B':'var(--t-b)','C':'var(--t-c)'},TW={'A+':'Leading','A':'Strong','B':'In line','C':'Lagging'};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;')}
+function ticks(lo,hi,n){var raw=(hi-lo)/n,mag=Math.pow(10,Math.floor(Math.log10(raw||1))),st=[1,2,2.5,5,10].map(function(m){return m*mag}).find(function(s){return s>=raw})||raw,v=Math.ceil(lo/st)*st,o=[];while(v<=hi+1e-9){o.push(Math.round(v*1e6)/1e6);v+=st}return o}
+function cats(){var s={};D.forEach(function(d){if(!st.f||d[3]===st.f)s[d[2]]=(s[d[2]]||0)+1});var k=Object.keys(s).sort();sel.innerHTML='<option value="">All categories</option>'+k.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+' ('+s[c]+')</option>'}).join('');if(k.indexOf(st.c)<0)st.c='';sel.value=st.c}
+function draw(){var yi=st.p==='1'?5:6,P=D.filter(function(d){return (!st.f||d[3]===st.f)&&(!st.c||d[2]===st.c)&&d[yi]!=null&&d[7]!=null});document.getElementById('xsN').textContent=P.length;
+ if(P.length<2){ch.innerHTML='<p class="muted" style="padding:20px">Not enough funds with a record for this view.</p>';return}
+ var nar=ch.clientWidth<600,W=nar?440:960,H=nar?480:480,L=48,R=14,T=34,B=44,q=function(a,p){a=a.slice().sort(function(x,y){return x-y});return a[Math.min(a.length-1,Math.max(0,Math.round(p*(a.length-1))))]},
+ xs=P.map(function(d){return d[7]}),ys=P.map(function(d){return d[yi]}),cut=P.length>40?.01:0,
+ lo=Math.min(0,q(ys,cut)),hi=Math.max(0,q(ys,1-cut)),x0=q(xs,0),x1=q(xs,1-cut);
+ var px=(x1-x0)*.05||1,py=(hi-lo)*.06||1;x0-=px;x1+=px;lo-=py;hi+=py;
+ var X=function(v){return L+(W-L-R)*(Math.max(x0,Math.min(x1,v))-x0)/(x1-x0)},Y=function(v){return T+(H-T-B)*(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))},g='';
+ ticks(lo,hi,5).forEach(function(v){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v).toFixed(1)+'" y2="'+Y(v).toFixed(1)+'" stroke="var(--rule)"/><text x="'+(L-8)+'" y="'+(Y(v)+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="var(--ink-3)">'+(v>0?'+':v<0?'−':'')+Math.abs(v)+'%</text>'});
+ ticks(x0,x1,5).forEach(function(u){g+='<text x="'+X(u).toFixed(1)+'" y="'+(H-24)+'" text-anchor="middle" font-size="12" fill="var(--ink-3)">'+u+'%</text>'});
+ g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(0).toFixed(1)+'" y2="'+Y(0).toFixed(1)+'" stroke="var(--ink-3)" stroke-dasharray="3 3"/>';
+ g+='<text x="'+((L+W-R)/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="12.5" fill="var(--ink-2)">Volatility over 3 years, a year →</text><text x="'+(L+4)+'" y="'+(T+4)+'" font-size="12.5" fill="var(--ink-2)">↑ '+(st.p==='1'?'1-year':'3-year')+' return over its yardstick'+(st.p==='3'?', a year':'')+'</text>';
+ var r=(P.length>300?3.6:P.length>120?4.4:5.4)*(nar?1.25:1);
+ P.forEach(function(d){var y=d[yi],tt='<b>'+esc(d[0])+'</b><span>'+esc(d[2])+'</span>'+(d[4]?'<span>Rating<em>'+d[4]+' '+TW[d[4]]+'</em></span>':'')+'<span>'+(st.p==='1'?'1-year':'3-year')+' return over yardstick<em>'+(y>0?'+':'')+y.toFixed(1)+'%</em></span><span>'+(st.p==='1'?'1-year return':'3-year return, a year')+'<em>'+(d[st.p==='1'?8:9]!=null?d[st.p==='1'?8:9].toFixed(1)+'%':'–')+'</em></span><span>Volatility, 3 years<em>'+d[7].toFixed(1)+'%</em></span>';
+  var out=y>hi||y<lo||d[7]>x1,cl=TV[d[4]]||'var(--t-u)';if(out)tt+='<span>Off the scale: drawn at the edge</span>';
+  g+='<circle class="d" tabindex="0" cx="'+X(d[7]).toFixed(1)+'" cy="'+Y(y).toFixed(1)+'" r="'+r+'" fill="'+(out?'var(--surface)':cl)+'" fill-opacity="'+(out?1:.8)+'" stroke="'+(out?cl:'var(--surface)')+'" stroke-width="'+(out?2:1)+'" data-u="'+esc(d[1])+'" data-t="'+esc(tt)+'"/>'});
+ ch.innerHTML='<svg class="w" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mutual funds: return over yardstick against volatility">'+g+'</svg><div class="ch-leg">'+['A+','A','B','C'].map(function(t){return '<span><i class="dot" style="background:'+TV[t]+'"></i>'+t+' '+TW[t]+'</span>'}).join('')+'</div>';
+ bind()}
+function bind(){var t=ch.querySelector('.ch-tip');if(!t){t=document.createElement('div');t.className='ch-tip';ch.appendChild(t)}
+ function place(cx,cy){var r=ch.getBoundingClientRect(),w=t.offsetWidth,h=t.offsetHeight,x=cx-r.left+14,y=cy-r.top-h-10;if(x+w>r.width-4)x=cx-r.left-w-14;if(x<4)x=4;if(y<4)y=cy-r.top+16;t.style.left=x+'px';t.style.top=y+'px'}
+ ch.querySelectorAll('circle.d').forEach(function(c){var sh=function(e){t.innerHTML=c.getAttribute('data-t');t.classList.add('on');var b=c.getBoundingClientRect();place(e&&e.clientX||b.left,e&&e.clientY||b.top)};
+  c.addEventListener('pointerenter',sh);c.addEventListener('pointermove',sh);c.addEventListener('focus',function(){sh()});c.addEventListener('pointerleave',function(){t.classList.remove('on')});c.addEventListener('blur',function(){t.classList.remove('on')});
+  c.addEventListener('click',function(e){if(e.pointerType==='touch'&&!c.__t){c.__t=1;e.preventDefault();sh(e);return}location.href=c.getAttribute('data-u')});
+  c.addEventListener('keydown',function(e){if(e.key==='Enter')location.href=c.getAttribute('data-u')})})}
+document.querySelectorAll('#all-dots .xs-seg').forEach(function(s){s.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;[].forEach.call(s.children,function(x){x.setAttribute('aria-pressed',x===b)});st[s.getAttribute('data-k')]=b.getAttribute('data-v');if(D){if(s.getAttribute('data-k')==='f')cats();draw()}})});
+sel.addEventListener('change',function(){st.c=sel.value;draw()});
+fetch('/data/dots.json').then(function(r){return r.json()}).then(function(d){D=d;cats();draw()}).catch(function(){ch.innerHTML='<p class="muted" style="padding:20px">The chart could not load.</p>'});})();</script>"""

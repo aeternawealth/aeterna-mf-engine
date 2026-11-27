@@ -1341,8 +1341,9 @@ def main():
                          f"<p class='muted' style='margin-top:6px'>{e(blurb)}</p>"
                          + (f"<div class='grid g3' style='margin-top:16px'>{''.join(cards)}</div>" if cards else ""))
     body = f"""<section class="band" style="padding-top:28px"><div class="wrap">
-{MV.CSS}<div class="mv-hero"><div><div class="eyebrow">Mutual fund research</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">Mutual funds in India, compared</h1>
+{MV.CSS}{CH.assets()}<div class="mv-hero"><div><div class="eyebrow">Mutual fund research</div><h1 style="font-size:clamp(30px,4vw,44px);margin-top:8px">Mutual funds in India, compared</h1>
 <p class="lede" style="margin-top:12px">{len(funds):,} plans in {len(cats)} categories, each measured against the right yardstick and against its peers: returns, risk, cost, holdings and a track-record rating. Built from AMFI, NSE Indices and fund-house data, refreshed every weekday; data as of {dmy(as_of)}.</p></div>{ILL.hero("rings")}</div>
+{MV.EXPLORER}
 {hub_sections}
 <div class="card row" style="margin-top:26px;justify-content:space-between;gap:14px;flex-wrap:wrap"><div><b style="font:500 18px var(--f-display)">Rather have us choose for you?</b><p class="muted" style="margin:4px 0 0;font-size:14px">We use this data to pick a small set of funds for your goals and review them every year.</p></div><a class="btn primary" href="/invest/mutual-funds/">Mutual fund investing with Aeterna</a></div>
 <h2 style="font-size:24px;margin-top:34px">Top-rated this month</h2><p class="muted" style="margin-top:6px">The funds rated A+ or A in each category, with why, what changed and how much they overlap.</p>
@@ -1350,6 +1351,8 @@ def main():
 <p style="margin-top:24px">Also: <a href="/mutual-funds/amc/">funds by fund house</a> · <a href="/mutual-funds/index-fund/">index funds by index</a> · <a href="/insights/">insights</a> · <a href="/calculators/">calculators</a></p>
 <p class="muted" style="margin-top:10px">Prefer a spreadsheet? Download <a href="/data/funds.csv">all funds as CSV</a>. See <a href="/method/">how the ratings work</a>.</p>
 </div></section>"""
+    (DIST / "data").mkdir(parents=True, exist_ok=True)
+    (DIST / "data" / "dots.json").write_text(json.dumps(MV.dots_data(funds, asset_class), separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
     write("/mutual-funds/", page("Every mutual fund in India compared: ratings, returns and costs | Aeterna Wealth",
                                  f"Compare {len(funds):,} Indian mutual fund plans, equity, index and arbitrage funds: track-record ratings, returns vs the right yardstick, risk, expense ratios and holdings. Updated every weekday.",
                                  "/mutual-funds/", body, (crumbs([("Mutual funds", "/mutual-funds/")]),)))

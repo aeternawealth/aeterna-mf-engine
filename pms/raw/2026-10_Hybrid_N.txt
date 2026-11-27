@@ -1,0 +1,2600 @@
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="container" >
+        <div class="row">
+            <div class="pms-fltr-box  col-12" style="padding-top: 0px;">
+                <div class="row pms-collbox mt-3">
+                    <div class="row pmssum-Maincollbox pmssum-Chartbox pad">
+                        <div class="col collapse show pmssum-Maincolbody" style="width: 100% !important;">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row tableDatafilter-head">
+                                        <div class="col-sm-6 col-12">
+                                            <h4 style="line-height: 24px;">Investment Approach Wise Performance As on
+                                                <span id="idspan">31/10/2026</span></h4>
+                                            <span></span>
+                                        </div>
+                                        <div class="col-sm-6 col-12">
+                                            <div class="row">
+                                                <div class="col-sm-5 col-12" style="padding: 4px;">
+                                                    <div id="load">
+                                                        <select class="form-control src-filterbox" id="tableFilter-benchmark"  name="tableFilter-benchmark"
+                                                                multiple="multiple" onchange="getSelectedData();">
+                                                            
+                                                                <option value="26" title="BSE S&P Hybrid">BSE S&P Hybrid</option>
+                                                            
+                                                                <option value="13" title="Crisil Hybrid 50+50 Moderate Index">Crisil Hybrid 50+50 Moderate Index</option>
+                                                            
+                                                                <option value="11" title="Nifty 50 Hybrid Composite Debt 50:50 Index">Nifty 50 Hybrid Composite Debt 50:50 Index</option>
+                                                            
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-5 col-12" style="padding: 4px;">
+                                                    <div id="months">
+                                                        <select class="form-control src-filterbox" id="tableFilter-select" name="tableFilter-select"
+                                                                multiple="multiple" onchange="javascript:showHideReportCols(this);">
+                                                            <option value="4" selected="">3 Months</option>
+                                                            <option value="5" selected="">6 Months</option>
+                                                            <option value="6" selected="">1 Year</option>
+                                                            <option value="7">2 Years</option>
+                                                            <option value="8">3 Years</option>
+                                                            <option value="9">4 Years</option>
+                                                            <option value="10" selected="">5 Years</option>
+                                                            <option value="11" selected="">Since Inception</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <!--                                                <div class="col-sm-2 col-xs-12" style="padding: 4px;">
+                                                                                                    <span id="download">
+                                                                                                        <button type="button" value="Export to Excel" onclick="downloadwebsiteExcel();"  class="btn" style="background-color: #007399;color: white;height: 30px;padding: 6px;width: 80px;">Export</button>
+                                                                                                    </span>
+                                                                                                </div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--</div>-->
+                                <div class="col-sm-12 col-12 text-center">
+                                    <div class="table-responsive" id="">
+                                        <table id="pmsGridTbl" class="table pms-table table-striped" >
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align: center;min-width: 154px !important;max-width: 200px !important;">PMS Provider Name</th>
+                                                    <th style="text-align: center;min-width: 90px !important;max-width: 120px !important;">IA Name</th>
+                                                    <th style="text-align: center;width: 10px !important;">AUM <br>(in INR Cr.)</th>
+                                                    <th style="text-align: center;width: 10px !important;">1 Month </th>
+                                                    <th style="text-align: center;width: 10px !important;">3 Months </th>
+                                                    <th style="text-align: center;width: 10px !important;">6 Months </th>
+                                                    <!--                        <th style="text-align: center;width: 10px !important;">9 Months </th>-->
+                                                    <th style="text-align: center;width: 10px !important;">1 Year</th>
+                                                    <th style="text-align: center;width: 10px !important;">2 Years</th>
+                                                    <th style="text-align: center;width: 10px !important;">3 Years</th>
+                                                    <th style="text-align: center;width: 10px !important;">4 Years</th>
+                                                    <th style="text-align: center;width: 10px !important;">5 Years</th>
+                                                    <th style="text-align: center;width: 10px !important;">Since <br> Inception</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Valtrust Partners Llp</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Valtrust NDPMS</a>-->
+                                                                <a href="IaInsight.htm?IAID=849" target="_blank">Valtrust NDPMS</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;7.79</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.60</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.41</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.31</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-6.22</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">1.93</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.69</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.85</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Avendus Wealth Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Hybrid Balanced</a>-->
+                                                                <a href="IaInsight.htm?IAID=1149" target="_blank">Hybrid Balanced</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA </td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">94.95</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">60.75</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">46.44</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">37.44</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.29</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Avendus Wealth Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Hybrid Conservative</a>-->
+                                                                <a href="IaInsight.htm?IAID=1147" target="_blank">Hybrid Conservative</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA </td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">1.52</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.47</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.23</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.56</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Avendus Wealth Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Hybrid Growth</a>-->
+                                                                <a href="IaInsight.htm?IAID=1150" target="_blank">Hybrid Growth</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA </td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-5.41</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-13.26</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-10.17</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-7.65</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.75</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-212.24</td>
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Avendus Wealth Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Hybrid Moderate</a>-->
+                                                                <a href="IaInsight.htm?IAID=1148" target="_blank">Hybrid Moderate</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA </td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.40</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.45</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.74</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">4.79</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.74</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Waterfield Financial And Investment Advisors Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">WFIA PARTNER YIELD ENHANCER</a>-->
+                                                                <a href="IaInsight.htm?IAID=2174" target="_blank">WFIA PARTNER YIELD ENHANCER</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA </td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.00</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">HDFC Asset Management Company Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">HDFC AMC MF Select Portfolio - Hybrid</a>-->
+                                                                <a href="IaInsight.htm?IAID=1255" target="_blank">HDFC AMC MF Select Portfolio - Hybrid</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;753.44</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.52</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.56</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.09</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.14</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">3.86</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">7.27</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">7.26</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">NJ Asset Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">NON-DISCRETIONARY CONSERVATIVE SCHEMES PORTFOLIO</a>-->
+                                                                <a href="IaInsight.htm?IAID=1847" target="_blank">NON-DISCRETIONARY CONSERVATIVE SCHEMES PORTFOLIO</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;3.80</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.54</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.46</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.83</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">2.55</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.28</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">4.88</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Axis Asset Management Company Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Axis NDPMS Mutual Fund - Customized</a>-->
+                                                                <a href="IaInsight.htm?IAID=2573" target="_blank">Axis NDPMS Mutual Fund - Customized</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;324.74</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.56</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.47</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.30</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.56</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">4.02</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">4.55</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">The Hongkong And Shanghai Banking Corporation Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Investment in Direct Schemes of Mutual Funds</a>-->
+                                                                <a href="IaInsight.htm?IAID=1806" target="_blank">Investment in Direct Schemes of Mutual Funds</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;683.67</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.66</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.35</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.55</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.73</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">15.83</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">15.38</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Avendus Wealth Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Hybrid NEXT</a>-->
+                                                                <a href="IaInsight.htm?IAID=1151" target="_blank">Hybrid NEXT</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;2021.94</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.71</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.75</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.78</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.51</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">3.16</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">5.46</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.53</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.55</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">18.20</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">NJ Asset Management Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">NON-DISCRETIONARY HYBRID SCHEMES PORTFOLIO</a>-->
+                                                                <a href="IaInsight.htm?IAID=96" target="_blank">NON-DISCRETIONARY HYBRID SCHEMES PORTFOLIO</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;118.07</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.09</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.29</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.71</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.41</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">1.82</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.80</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.08</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">ICICI Securities Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Sterling Consult Portfolio- Balanced</a>-->
+                                                                <a href="IaInsight.htm?IAID=300" target="_blank">Sterling Consult Portfolio- Balanced</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;221.58</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.19</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.91</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.58</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.76</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">3.05</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">8.30</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">8.59</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">ICICI Securities Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">ISEC Balanced Portfolio- Consult</a>-->
+                                                                <a href="IaInsight.htm?IAID=289" target="_blank">ISEC Balanced Portfolio- Consult</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;17.56</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.58</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.96</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.58</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.46</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">2.84</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">7.10</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">7.19</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.71</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Pioneer Client Associates Pvt Ltd</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">CA Diversified Hybrid</a>-->
+                                                                <a href="IaInsight.htm?IAID=1645" target="_blank">CA Diversified Hybrid</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;612.61</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.79</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.76</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.95</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.12</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">3.09</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">8.18</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">8.11</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Angel One Investment Managers & Advisors Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Ionic Large Value Portfolio</a>-->
+                                                                <a href="IaInsight.htm?IAID=2315" target="_blank">Ionic Large Value Portfolio</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;266.37</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.96</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.32</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.68</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">2.32</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Incred Capital Wealth Portfolio Managers Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">InCred Vantage Portfolio</a>-->
+                                                                <a href="IaInsight.htm?IAID=200" target="_blank">InCred Vantage Portfolio</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;624.49</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.52</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.63</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.88</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.18</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">1.06</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.76</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">8.25</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.59</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Klay Securities Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">NDPMS</a>-->
+                                                                <a href="IaInsight.htm?IAID=1459" target="_blank">NDPMS</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;631.65</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.53</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-6.80</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.79</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-6.28</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.68</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.82</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.95</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">4.80</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">2.80</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Spark PWM Private Limited (Spark Family Office And Investment Advisors (India) Private Limited)</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Spark Multi-Asset Class Portfolio (MAP)</a>-->
+                                                                <a href="IaInsight.htm?IAID=237" target="_blank">Spark Multi-Asset Class Portfolio (MAP)</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;522.55</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.58</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.91</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">1.49</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">0.03</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">2.66</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.58</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.46</td>
+                                                                
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">10.40</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Angel One Investment Managers & Advisors Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Ionic Co-Pilot Portfolio</a>-->
+                                                                <a href="IaInsight.htm?IAID=2277" target="_blank">Ionic Co-Pilot Portfolio</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;128.97</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.75</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.26</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.97</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.75</td>
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Angel One Investment Managers & Advisors Private Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Ionic Allocate Select Portfolio</a>-->
+                                                                <a href="IaInsight.htm?IAID=2069" target="_blank">Ionic Allocate Select Portfolio</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;82.36</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-2.86</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-4.36</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-3.33</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-0.87</td>
+                                                                
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                    <td class="pmsVal-positive" style="text-align: center;">6.20</td>
+                                                                
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                                    <tr>
+                                                        <!-- PMS NAME ROWSPAN START -->
+                                                        
+                                                            <td class="tdtext-wrap" rowspan="" style="text-align: left;">Nuvama Asset Management Limited</td>
+                                                        
+                                                        
+                                                        <!-- PMS NAME ROWSPAN END -->
+
+                                                        <!-- IANAME LINK START -->
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                            <td class="tdtext-wrap" style="text-align:left;">
+                                                                <!--<a href="javascript:void(0);" onclick="javascript:openIAInsightTab('IaInsight.htm?pmsname='+encodeURIComponent('')+'&ianame='+encodeURIComponent(''))">Infinity Core Real Assets Plus Approach</a>-->
+                                                                <a href="IaInsight.htm?IAID=2690" target="_blank">Infinity Core Real Assets Plus Approach</a>
+                                                            </td>
+                                                        
+                                                        
+                                                        <!-- IANAME LINK END -->
+
+                                                        
+                                                            
+                                                            
+                                                                <td style="text-align: center;">&#8377;4.94</td>
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                                <td style="text-align: center;">NA</td>
+                                                            
+                                                            
+                                                        
+
+                                                        
+                                                            
+                                                            
+                                                                
+                                                                
+                                                                    <td class="pmsVal-negative" style="text-align: center;">-1.30</td>
+                                                                
+                                                            
+                                                        
+                                                    </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+

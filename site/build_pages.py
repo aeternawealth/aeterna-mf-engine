@@ -804,11 +804,21 @@ def insight_pages(B, ins, urls, as_of):
         secs = "".join(f"""<div class="card" id="{B.e(c)}" style="margin-top:18px"><div class="big-fig">{B.e(i['figure'])}</div>
 <h2 style="font-size:24px;margin-top:6px">{B.e(i['title'])}</h2><p style="margin-top:8px">{B.e(i['text'])}</p>
 <p style="margin-top:10px"><a href="{tool(i)}">Check it yourself</a> · <a href="/mutual-funds/{B.e(c)}/">{B.e(c.replace('-', ' ').title().replace('Elss', 'ELSS'))} funds, rated</a></p></div>""" for c, i in L)
+        import research_pages as RPg
+        def _num(fig):
+            m = _re.findall(r"[\d.]+", fig.replace(",", ""))
+            if " of " in fig and len(m) >= 2 and float(m[1]):
+                return float(m[0]) / float(m[1]) * 100
+            return float(m[0]) if m else None
+        vals = [(B.e(c.replace("-", " ").title().replace("Elss", "ELSS")), _num(i["figure"]), "var(--teal)") for c, i in L]
+        vals = [v for v in vals if v[1] is not None]
+        unit = (lambda v: f"₹{v:.1f} lakh") if key == "sip-10y" else (lambda v: f"{v:.0f}%")
+        chart = (RPg.CSS + "<div style='margin-top:22px'>" + RPg._hbars(vals, unit, label=title) + "</div>") if len(vals) >= 2 else ""
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap" style="max-width:860px">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/insights/">Insights</a> › {B.e(title)}</nav>
 <h1 style="font-size:clamp(28px,4vw,40px);margin-top:14px">{B.e(title)}</h1>
 <p class="muted" style="margin-top:8px">Aeterna Wealth · worked out from AMFI NAVs and NSE total-return indices · data as of {upd}</p>
-<p class="lede" style="margin-top:16px">{B.e(intro)}</p>{secs}
+<p class="lede" style="margin-top:16px">{B.e(intro)}</p>{chart}{secs}
 <p class="note" style="margin-top:28px">Recomputed every weekday from public data. Describes what has happened, not what will; not a recommendation to buy or sell any fund.</p>
 </div></section>"""
         text = intro + " " + " ".join(i["text"] for _, i in L)
@@ -818,15 +828,8 @@ def insight_pages(B, ins, urls, as_of):
         for c, i in L:
             B.MOVED[f"/insights/{i['id']}/"] = f"{path}#{c}"
         cards.append((path, L[0][1]["figure"], title, intro))
-    cards_html = "".join(f"<a class='card stack' href='{p}' style='gap:8px;text-decoration:none;color:inherit'><div class='big-fig'>{B.e(f)}</div><b style='font:500 18px/1.3 var(--f-display)'>{B.e(t)}</b><span class='muted' style='font-size:14px'>{B.e(x[:160])}…</span></a>"
-                         for p, f, t, x in cards)
-    body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Indian mutual funds in numbers</h1>
-<p class="lede" style="margin-top:12px">Facts worked out from our own data every weekday: what SIPs have earned, how many funds beat their index, and how often patient investors made money. Last updated {upd}.</p>
-<div class="grid g3" style="margin-top:26px">{cards_html}</div></div></section>"""
-    B.write("/insights/", B.page("Mutual fund insights: SIP returns, funds vs index, costs | Aeterna Wealth",
-                                 "Data-backed facts on Indian mutual funds, recomputed every weekday: 10-year SIP returns by category, SIPs started at market highs, how many active funds beat their index, and how often funds held for 3 years made money.",
-                                 "/insights/", body, (B.crumbs([("Insights", "/insights/")]),)))
-    urls.append(("/insights/", "daily", "0.8"))
+    B.INSIGHT_CARDS = cards   # the /insights/ hub is written by research_pages.hub, with the data stories and everything else we publish
+
 
 
 # ------------------------------------------------------------------ legal

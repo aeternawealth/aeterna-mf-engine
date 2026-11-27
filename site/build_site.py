@@ -978,6 +978,8 @@ def main():
     TR.trust_pages(Bm, funds, urls)
     import pms_pages as PMS       # /pms/ and /aif/ (site/data/pms.json, from tools/pms_build.py)
     PMS.build(Bm, urls)
+    import research_pages as RP   # /insights/: data stories and the research hub (after every other page, so it can list them)
+    RP.build(Bm, urls, as_of)
     # on-page search for static pages: funds, stocks and pages in one light file (the app has its own search)
     pages = json.loads(re.search(r"const PAGES=(\[.*?\]);", app).group(1).replace("'", '"'))
     pages = [[n, ("/" + h if h.startswith("#") else h), d] for n, h, d in pages]

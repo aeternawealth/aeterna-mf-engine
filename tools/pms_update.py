@@ -4,7 +4,7 @@
 
 1. If data/pms/apmi_monthly.csv already holds the month, stop ("up to date").
 2. Fetch the month from APMI (engine/pms_fetch.py); fewer than 1,000 strategies = not published yet, stop.
-3. Add it to the history, refresh Nifty 500 / Nifty 50 TRI month-ends (data/pms/bench_monthly.csv).
+3. Add it to the history, refresh the style-index TRI month-ends (data/pms/bench_monthly.csv; the bond column is rebuilt by pms_build).
 4. Rebuild site/data/pms.json (tools/pms_build.py) and write outputs/latest/pms_changes.md: rating changes,
    strategies added and dropped. Writes "updated=1" to $GITHUB_OUTPUT when something changed.
 """
@@ -48,7 +48,7 @@ def refresh_bench(month):
     try:
         s.get("https://www.niftyindices.com/reports/historical-data", timeout=60)
         cols = {}
-        for n in ("NIFTY 500", "NIFTY 50"):
+        for n in ("NIFTY 50", "NIFTY 500", "NIFTY500 MULTICAP 50:25:25", "NIFTY MIDCAP 150", "NIFTY SMALLCAP 250"):
             ser = I.fetch_tri(s, n)
             if ser is None or ser.empty:
                 raise RuntimeError(f"no data for {n}")
@@ -56,7 +56,7 @@ def refresh_bench(month):
             me.index = me.index.strftime("%Y-%m")
             cols[n] = me
         b = pd.DataFrame(cols)
-        b = b[(b.index >= "2022-12") & (b.index <= month)]
+        b = b[(b.index >= "2015-01") & (b.index <= month)]
         b.index.name = "month"
         b.to_csv(BENCH)
         print("bench: to", b.index.max())

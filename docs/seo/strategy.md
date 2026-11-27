@@ -8,8 +8,8 @@
   from other sites, branded searches, and pages that are clearly the best answer.
 - Audit of 25 Nov (tools/seo_audit.py): pages technically clean (no duplicate titles, no stray noindex, valid structured
   data, canonical tags correct). Fixed the same day: a menu link to a missing /compare/ page on every page; IndexNow was
-  sent all 3,600 URLs on every deploy (now only changed pages). Open: www.aeternawealth.com serves a second copy (needs a
-  Cloudflare redirect rule, owner, 1 minute).
+  sent all 3,600 URLs on every deploy (now only changed pages). www.aeternawealth.com: Cloudflare 301 to
+  aeternawealth.com since 27 Nov (path and query kept); the stopgap script is removed.
 - We cannot see Search Console from here. Until we can, decisions use the owner's weekly export (Performance: queries and
   pages, last 28 days vs previous) and Cloudflare analytics.
 
@@ -83,8 +83,8 @@ advertising rules, which matter more to Aeterna than any ranking. Faster results
 Business Profile, not shortcuts.
 
 ## Owner's to-dos that unlock the most
-1. Cloudflare redirect rule: www.aeternawealth.com to aeternawealth.com, 301 (Rules > Redirect Rules > template
-   "Redirect from WWW to root").
+1. Done 27 Nov: Cloudflare redirect rule "www to root" (https://www.aeternawealth.com/* to https://aeternawealth.com/${1}, 301,
+   query string kept).
 2. Google Business Profile: create and verify; ask 5 real clients for reviews.
 3. Search Console: weekly export to the agent (or add read access when a connector exists); also verify the site in
    Bing Webmaster Tools (import from Search Console, 2 minutes).

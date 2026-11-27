@@ -473,8 +473,7 @@ RANGE_JS = ""   # the range-of-outcomes drawing, taken from the app so both use 
 MOVED = {}   # old fund address -> new, for redirects (site/moved_funds.json)
 SEARCH_TAG = ""   # the on-page search script, set in main() with a content version
 _FONTS = Path(__file__).resolve().parent / "fonts"
-WWW_JS = ("<script>if(/^www\\./.test(location.hostname))location.replace('https://aeternawealth.com'+location.pathname+location.search+location.hash)</script>")   # until the Cloudflare 301 rule exists
-FONT_HEAD = WWW_JS + ("".join(f'<link rel="preload" href="/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
+FONT_HEAD = ("".join(f'<link rel="preload" href="/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
                      for n in ("libre-franklin-latin", "source-serif-4-latin", "source-serif-4-italic-400-latin", "ibm-plex-mono-normal-400-latin"))
              + "<style>" + (_FONTS / "fonts.css").read_text(encoding="utf-8").split("\n", 1)[1].replace("\n", "") + "</style>")   # fonts served from this site
 HEADER = ""   # filled in main() from the app's own header, so every page has the same menu

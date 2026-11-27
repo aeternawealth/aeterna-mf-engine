@@ -47,11 +47,11 @@ def _month_end(ym):
     return f"{y}-{m:02d}-{calendar.monthrange(y, m)[1]:02d}"
 
 
-def fetch(out: Path, months, debug: Path = None):
+def fetch(out: Path, months, debug: Path = None, types=TYPES, services=SERVICES, bench=False):
     """For each month, strategy type and service type: the same request APMI's own form sends (action=loadIAReport),
     made from a browser session on the report page; the raw response is saved as is (OUT/raw/) for parsing."""
     from playwright.sync_api import sync_playwright
-    raw = out / "raw"
+    raw = out / ("raw_bench" if bench else "raw")
     raw.mkdir(parents=True, exist_ok=True)
     log = []
     with sync_playwright() as pw:
@@ -61,12 +61,15 @@ def fetch(out: Path, months, debug: Path = None):
         page.goto(URL, timeout=120000, wait_until="domcontentloaded")
         for ym in months:
             y, m = ym.split("-")
-            for t in TYPES:
-                for sv in SERVICES:
+            for t in types:
+                for sv in services:
                     row = {"month": ym, "type": t, "service": sv, "bytes": 0, "status": "", "note": ""}
                     try:
-                        r = ctx.request.post(POST, form={"strategyname": t, "servicetype": sv, "fromMonth": str(int(m)),
-                                                         "fromYears": y, "asOnDate": _month_end(ym)},
+                        form = {"strategyname": t, "servicetype": sv, "fromMonth": str(int(m)),
+                                "fromYears": y, "asOnDate": _month_end(ym)}
+                        if bench:   # the report adds BSE 500 TRI (22), MSEI SX 40 TRI (21) and Nifty 50 TRI (17) rows
+                            form.update(SelectedBenchmark="22,21,17", pmsProvideName="", pmsInvAprochName="", benchmark="null")
+                        r = ctx.request.post(POST, form=form,
                                              headers={"Referer": URL, "X-Requested-With": "XMLHttpRequest"}, timeout=180000)
                         body = r.text()
                         name = f"{ym}_{t.replace(' ', '')}_{sv}.txt"
@@ -139,6 +142,9 @@ def probe_bench(out: Path, ym="2026-10"):
 if __name__ == "__main__":
     out = Path(sys.argv[1])
     args = sys.argv[2:]
+    if args[:1] == ["--bench"]:
+        fetch(out, all_months(), types=("Equity",), services=("D",), bench=True)
+        sys.exit(0)
     if args[:1] == ["--probe-bench"]:
         probe_bench(out)
         sys.exit(0)

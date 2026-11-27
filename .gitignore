@@ -61,3 +61,4 @@ site/preview_home/.taste-skill/
 clients/
 # per-fund daily/weekly NAV points: committed once, in site/data/nav (copied into dist at build time)
 site/dist/data/nav/
+audit/pms/panel.csv

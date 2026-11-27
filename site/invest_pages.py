@@ -187,7 +187,7 @@ def _content(B, d):
                  ("Is PMS better than mutual funds?", "Not by default. PMS is more concentrated and usually costs more; it is worth it only if the strategy adds return or diversification after those costs."),
                  ("How is PMS taxed?", "Each sale inside the portfolio is taxed in your hands as short- or long-term capital gains, as if you had traded the shares yourself."),
                  ("Can I exit a PMS early?", "Yes. SEBI caps the exit load at 3% in the first year, 2% in the second and 1% in the third; after that, none.")],
-            links=[("/invest/aif/", "AIFs"), ("/invest/mutual-funds/", "Mutual funds"), ("/invest/portfolio-review/", "Portfolio review")],
+            links=[("/pms/", "PMS returns and ratings"), ("/invest/aif/", "AIFs"), ("/invest/mutual-funds/", "Mutual funds"), ("/invest/portfolio-review/", "Portfolio review")],
         ),
         "aif": dict(
             title="Alternative investment funds (AIFs)",
@@ -234,7 +234,7 @@ def _content(B, d):
                  ("Can I withdraw from an AIF early?", "Usually not. Category I and II funds are close-ended with a life of at least three years, often 6 to 10."),
                  ("How are AIFs taxed?", "Category I and II pass income through to investors, taxed in their hands; Category III pays tax at the fund level."),
                  ("Are AIFs regulated?", "Yes, by SEBI under the AIF Regulations, 2012. Regulation does not make them safe; it sets disclosure and conduct rules.")],
-            links=[("/invest/pms/", "PMS"), ("/invest/unlisted-shares/", "Unlisted shares"), ("/invest/portfolio-review/", "Portfolio review")],
+            links=[("/aif/", "AIF categories explained"), ("/invest/pms/", "PMS"), ("/invest/unlisted-shares/", "Unlisted shares"), ("/invest/portfolio-review/", "Portfolio review")],
         ),
         "bonds": dict(
             title="Bonds and fixed income",

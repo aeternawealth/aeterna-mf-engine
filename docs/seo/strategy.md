@@ -69,6 +69,12 @@ What works for a data site: being the source journalists and writers quote.
   searches in docs/seo/keywords.md: position, clicks, which page ranks.
 - Monthly: which pages gained and lost impressions; extend what works, fix or merge what does not.
 
+### 6. AI answers (ChatGPT, Gemini, AI Overviews, Perplexity)
+Same foundations: indexed pages, answer-first passages with a number and a date, trust on the page, consistent
+entity data, and mentions on other sites (news, Reddit, Quora, listings), which AI assistants weigh most. Rules and
+measurement: `.claude/skills/geo-ai-search/SKILL.md`. Programmatic pages: `.claude/skills/seo-programmatic/SKILL.md`
+(no new page types while Google is rationing indexing).
+
 ## What we will not do, and why
 Buying links, link networks, mass link swaps, comment and forum spam, fake reviews or accounts, AI-spun mass pages,
 hidden text or cloaking, copying other sites' content. These are Google spam-policy violations. Finance sites that use

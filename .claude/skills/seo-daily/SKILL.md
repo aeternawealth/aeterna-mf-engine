@@ -7,6 +7,9 @@ description: Aeterna Wealth's daily SEO routine. Run the SEO audit, fix what it 
 
 Read first, every run: `AGENTS.md` (publishing protocol and site messaging), `docs/seo/strategy.md` (why), the last 10
 entries of `docs/seo/log.md` (what was done; do not repeat it), and `docs/seo/backlog.md` (what to do next).
+Companion skills: `seo-programmatic` (bar for template-built pages: funds, stocks, categories, comparisons),
+`seo-content` (guides, tax and calculator pages), `geo-ai-search` (being the source ChatGPT, Gemini, AI Overviews and
+Perplexity cite). Load the one that fits the day's item.
 
 ## Hard rules (owner's standing instructions; never trade them for rankings)
 - No rating changes: never edit `engine/` scoring, peer groups or tiers. Ranking changes need a thesis and the owner's OK.
@@ -25,7 +28,7 @@ Work on `staging`. `staging` may hold commits awaiting the owner's approval (see
 and any commit titled "HELD ON STAGING"): never merge `staging` into `main` while one is there. Publish your own commits
 only: commit on staging, push, then `git checkout main && git pull && git cherry-pick <your commits> && git push`, then
 merge main back into staging. Before publishing: `python site/build_site.py`, `python tools/seo_audit.py`,
-`python tools/audit.py` (nothing marked FAIL goes live), the tests in `.github/workflows/tests.yml`, and a browser check
+`python tools/seo_guard.py` (the deploy runs it too; never weaken it), `python tools/audit.py` (nothing marked FAIL goes live), the tests in `.github/workflows/tests.yml`, and a browser check
 of every page you changed at 390px and 1280px, light and dark (Playwright is installed). Clean `site/dist` and
 `outputs/` before committing (only code and docs are committed; workflows rebuild data).
 
@@ -46,9 +49,10 @@ of every page you changed at 390px and 1280px, light and dark (Playwright is ins
    (what funds bought and sold, crowded stocks, fund-house watch, money flows) with the page link. Record each target in
    `docs/seo/outreach.csv` (date, name/outlet, public contact source, angle, status=drafted) and never pitch the same
    person twice in 60 days. Public contact details only (the outlet's own site or the writer's own public profile).
-5. **Log** one entry in `docs/seo/log.md`: date, audit result, signal changes, what shipped (with commit), outreach
+5. **First run of each month: AI visibility.** Follow `geo-ai-search` > Measuring; update `docs/seo/ai_visibility.md`.
+6. **Log** one entry in `docs/seo/log.md`: date, audit result, signal changes, what shipped (with commit), outreach
    drafted, next item. Publish.
-6. **Report.** Mondays, and any day with a FAIL you could not fix: email the owner (address in the task prompt; send_message), subject
+7. **Report.** Mondays, and any day with a FAIL you could not fix: email the owner (address in the task prompt; send_message), subject
    "Aeterna SEO <date>", 10 lines: rankings and Google visits this week, what shipped, drafts waiting in Gmail, what the
    owner needs to do. Other days: a one-line push notification.
 

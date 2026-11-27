@@ -1,5 +1,14 @@
 # SEO log (newest first). One entry per daily run.
 
+## 2026-11-27 (trust signals, AI search, skills)
+- Audit: 0 FAIL (seo_audit: I1 titles over 70 chars, 580, unchanged; audit.py CHECK lines are data items, unchanged).
+- Shipped: trust box on all data and tax pages; /editorial-policy/; publishingPrinciples in the organisation's
+  structured data; llms-full.txt method text corrected to match /method/ (it said cost was 10% of the score, against
+  the owner's rule and the live method); "How to cite" in llms.txt. Browser-checked at 390/1280, light/dark.
+- Skills: seo-programmatic (quality gate for template pages: with ~1,130 pages "Discovered - not indexed", improve
+  and earn trust before adding page types), seo-content (YMYL guides and tax pages), geo-ai-search (AI assistants).
+- Next: backlog item 1 (AI visibility baseline), then sitemap index by type.
+
 ## 2026-11-26 (night re-audit: "impressions fell to under 100")
 - Live, as Googlebot smartphone (Playwright, 85 pages: home, hubs, funds, stocks, compare, tax, calculators): all 200,
   rendered meta robots index, one self canonical, valid JSON-LD, visible H1, no script errors. robots.txt allows all;

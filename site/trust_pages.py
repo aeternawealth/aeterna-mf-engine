@@ -170,7 +170,31 @@ def contact(B, urls):
     urls.append(("/contact/", "monthly", "0.6"))
 
 
+def editorial(B, urls):
+    """/editorial-policy/: where the numbers come from, how they are checked, when they change and how errors are fixed.
+    Google asks finance sites to make this plain; schema.org publishingPrinciples on the organisation points here."""
+    O = B.ORG
+    body = f"""<section class="band" style="padding-top:28px"><div class="wrap">{CSS}
+<nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/">Home</a> › Editorial policy</nav>
+<h1 style="font-size:clamp(30px,4.2vw,46px);margin-top:14px">Editorial and corrections policy</h1>
+<p class="lede" style="margin-top:14px">How the numbers on this site are sourced, checked and updated, who stands behind them, and how to tell us when something is wrong.</p>
+{_sec(B, "Who publishes this site", f"<p>{B.e(O['name'])}, an AMFI-registered mutual fund distributor ({O['arn']}, which you can check on <a href='https://www.amfiindia.com/locate-distributor' target='_blank' rel='noopener'>AMFI's distributor search</a>), {B.e(O['street'])}, {B.e(O['city'])} {O['pin']}. We are not a SEBI-registered investment adviser. Ratings describe a fund's past record; they are not a forecast, and nothing on this site is a recommendation to buy or sell any fund or stock.</p>")}
+{_sec(B, "Where the numbers come from", "<ul style='padding-left:20px;display:grid;gap:8px'><li><b>AMFI:</b> daily NAVs and the scheme list (NAV history through mfapi.in, which republishes AMFI's NAVs), expense ratios, quarterly average AUM, and the half-yearly list of stocks by market cap.</li><li><b>NSE Indices:</b> total-return index history (dividends included), the yardstick for equity funds.</li><li><b>Fund houses:</b> the monthly portfolio each scheme must publish by the 10th of the following month, used for holdings, market-cap mix and the stock pages.</li><li><b>Tax pages:</b> the Income-tax Act, 2025, the Finance Act and CBDT notifications and circulars. New section numbers are shown only from the official CBDT mapping.</li></ul><p>We do not take ratings or opinions from other websites, and we do not accept payment from any fund house to include, rate or feature a fund.</p>")}
+{_sec(B, "How they are checked", "<ul style='padding-left:20px;display:grid;gap:8px'><li>Every number is computed by code from the sources above, so the same inputs always give the same result. The rules are published on <a href='/method/'>Method</a>, with a test of how past ratings did.</li><li>Before each update goes live, an automated audit checks the data and every page: stale NAVs, funds that merged or closed, face-value changes, portfolios that do not add up, missing values, broken links. Nothing that fails it is published.</li><li>Portfolios that look wrong (weights far from 100%, a different fund's holdings) are held back and the fund is shown without portfolio figures until a correct file arrives.</li><li>The same rules apply to every fund house. Regular plans are compared only with Regular plans and Direct with Direct.</li></ul>")}
+{_sec(B, "When pages change", "<p>NAVs, returns and period rankings update every weekday morning. Ratings are revised on the 11th of each month, after fund houses publish portfolios, and on the 16th for late portfolios; each revision is explained fund by fund on <a href='/ratings-update/'>this month's rating changes</a>. Every data page shows the date of its data.</p>")}
+{_sec(B, "Corrections", f"<p>If you find a number that is wrong, a fund that is missing, or a tax rule that has changed, write to <a href='mailto:{O['email']}'>{O['email']}</a> or WhatsApp {B.e(O['phone'])} with the page address. We reply within one working day. When a figure is wrong we fix the source or the rule that produced it, so the correction carries into every page that uses it, and the page shows the new data date.</p>")}
+{_sec(B, "How we are paid", "<p>As a mutual fund distributor, Aeterna earns commission from fund houses on Regular plans, included in the plan's expense ratio; it charges no separate fee. Commission is not an input to any rating. <a href='/disclosures/'>Full disclosures</a></p>")}
+</div></section>"""
+    ld = {"@context": "https://schema.org", "@type": "WebPage", "url": B.SITE + "/editorial-policy/", "name": "Editorial and corrections policy",
+          "publisher": {"@id": B.SITE + "/#org"}, "about": {"@id": B.SITE + "/#org"}}
+    B.write("/editorial-policy/", B.page("Editorial and corrections policy | Aeterna Wealth",
+                                         "Where Aeterna Wealth's fund ratings and tax figures come from (AMFI, NSE Indices, fund house portfolios, the Income-tax Act), how they are checked and updated, and how to report an error.",
+                                         "/editorial-policy/", body, (ld, B.crumbs([("Editorial policy", "/editorial-policy/")]))))
+    urls.append(("/editorial-policy/", "monthly", "0.5"))
+
+
 def trust_pages(B, funds, urls):
     about(B, funds, urls)
+    editorial(B, urls)
     method(B, urls, funds)
     contact(B, urls)

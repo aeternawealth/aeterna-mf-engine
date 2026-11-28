@@ -1,6 +1,6 @@
-# Audit 2026-11-27 04:40 UTC: 0 to fix, 5 to confirm
+# Audit 2026-11-28 04:27 UTC: 0 to fix, 5 to confirm
 CHECK C1 1 live AMFI plans in categories we cover are not on the site, e.g. Sundaram Banking and PSU Debt Fund (Formerly Known as Sundaram Banking and PSU Fund) (Regular, Banking & PSU)
-CHECK C3 9 plans with enough history shown as not rated, e.g. Groww Nifty Midcap 150 Index Fund (Direct); Groww Nifty Midcap 150 Index Fund (Regular); Motilal Oswal Nifty MidSmall IT and Telecom Index Fund (Regular); Kotak Consumption Fund (Direct); Kotak Consumption Fund (Regular); Aditya Birla Sun Life Transportation and Logistics Fund (Direct)
+CHECK C3 11 plans with enough history shown as not rated, e.g. HDFC BSE India Sector Leaders Index Fund (Direct); HDFC BSE India Sector Leaders Index Fund (Regular); Groww Nifty Midcap 150 Index Fund (Direct); Groww Nifty Midcap 150 Index Fund (Regular); Motilal Oswal Nifty MidSmall IT and Telecom Index Fund (Regular); Kotak Consumption Fund (Direct)
 CHECK C7 13 large active funds have no portfolio, e.g. HDFC DIVIDEND YIELD FUND; BANDHAN ELSS - Tax Saver Fund; JM Flexi Cap Fund; BANDHAN Flexi Cap Fund; JioBlackRock Flexi Cap Fund; Old Bridge Focused Fund
 CHECK D2 samco large cap fund: large 70 (needs >=80) (unclassified 9.4%), portfolio 2026-10
 CHECK D4 ELSS: no A+ fund this month (allowed by the score rule; the category table should say so)

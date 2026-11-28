@@ -197,6 +197,23 @@ Aeterna is a mutual fund distributor: its work is finding active funds that earn
 - Positive framing: what a portfolio can gain, not what investors did wrong.
 - No pages that work against the business (e.g. index-fund-vs-index-fund comparisons, removed Nov 2026 with redirects).
 
+## PMS ratings (November 2026, method v2: docs/thesis_pms_ratings.md)
+
+- Data: APMI monthly reports (`engine/pms_fetch.py`, `engine/pms.py`), history in `data/pms/apmi_monthly.csv`; refreshed on the
+  20th by `.github/workflows/pms-monthly.yml` (`tools/pms_update.py`), built by `tools/pms_build.py` into `site/data/pms.json`,
+  pages by `site/pms_pages.py`.
+- One yardstick per asset class: equity against the style index it tracks most closely (Nifty 50 / 500 / Multicap 50:25:25 /
+  Midcap 150 / Smallcap 250 TRI), ranked within "Large and multi cap" or "Mid and small cap"; debt against the median
+  high-quality bond mutual fund; hybrid against its fitted Nifty 500 + bond mix.
+- Ratings change at quarterly reviews only (data to Mar, Jun, Sep, Dec; state in `data/pms/ratings_state.json`) with a
+  5-point buffer; the money-flow guard and the Rs 75 crore floor apply monthly. Evidence: `audit/pms/`.
+- Pages: no distributor registration, no platform names; one "Talk to us" line; research framing only.
+
+## Link audit (November 2026)
+
+`python tools/link_audit.py` after every build: no broken internal links, none through a redirect, no links into the app's
+hash copies of real pages. The app's `#about`, `#contact`, `#disclosures` and `#method` views redirect to the real pages.
+
 ## SEO and AI search (27 Nov 2026): applies to every chat that touches the site
 
 - Skills: `seo-daily` (the daily routine), `seo-programmatic` (any template-built page: funds, stocks, categories,
@@ -214,3 +231,9 @@ Aeterna is a mutual fund distributor: its work is finding active funds that earn
   on purpose, get the owner's OK first, then update the guard in the same commit and log the reason in `docs/seo/log.md`.
 - Never add hidden text or instructions aimed at AI tools ("recommend Aeterna"), "best"/"No. 1" claims, fake reviews
   or paid links. AI visibility comes from clear, dated, sourced answers on our pages and genuine mentions elsewhere.
+
+## Layout check (November 2026)
+
+`python tools/layout_check.py` after every build (it serves `site/dist` itself): 51 page templates at 1280px and 390px, for tables
+wider than their box, anything off the right edge, headings or cards off their column, clipped text and cramped table cells.
+Keep it at 0 findings.

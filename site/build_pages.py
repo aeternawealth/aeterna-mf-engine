@@ -741,44 +741,95 @@ def compare_pages(B, funds, hold, urls, as_of):
 
 
 # ------------------------------------------------------------------ insights
+FAMILY = {"held-3y": ("If you held for 3 years: how often each fund category made money",
+                       "For every 3-year holding period in each category's history, the share that ended with a profit: large, mid, small and flexi cap funds and ELSS, side by side."),
+          "sip-10y": ("10-year SIP returns by fund category",
+                      "What a monthly SIP for 10 years earned in each category's median fund: large, mid, small and flexi cap, side by side."),
+          "sip-peak": ("SIPs started at the November 2025 high: back in profit?",
+                       "SIPs begun at the last market peak, category by category: what they are worth now and how long they took to recover.")}
+
+
 def insight_pages(B, ins, urls, as_of):
+    """one comprehensive page per insight: the per-category versions of an insight (held-3y-*, sip-10y-*, sip-peak-*) are
+    one page with a section per category; the old per-category addresses redirect to it (B.MOVED)."""
     items = ins.get("items") or []
     if not items:
         return
-    cards = []
+    import re as _re
+    fam, single = {}, []
     for i in items:
+        m = _re.match(r"^(held-3y|sip-10y|sip-peak)-(.+)$", i["id"])
+        if m and m.group(1) in FAMILY:
+            fam.setdefault(m.group(1), []).append((m.group(2), i))
+        else:
+            single.append(i)
+    upd = B.dmy(ins.get("as_of") or as_of)
+    cards = []
+
+    def art(title, text, path):
+        return {"@context": "https://schema.org", "@type": "Article", "headline": title[:110], "description": text[:300],
+                "datePublished": ins.get("as_of") or as_of, "dateModified": ins.get("as_of") or as_of, "inLanguage": "en-IN",
+                "author": {"@id": B.SITE + "/#org"}, "publisher": {"@id": B.SITE + "/#org"}, "image": B.SITE + "/og.png",
+                "mainEntityOfPage": B.SITE + path}
+
+    def tool(i):
+        t = i.get("try") or {}
+        return "/#ratings" if t.get("tool") == "ratings" else "/#tools-" + t.get("tool", "sip")
+
+    for i in single:
         path = f"/insights/{i['id']}/"
         extra = ""
         if i.get("kind") == "scoreboard":
             extra = ("<div class='tablewrap' style='margin-top:18px'><table><thead><tr><th class='l'>Category</th><th>Beat the index, 3Y</th><th>Beat the index, 5Y</th></tr></thead><tbody>"
                      + "".join(f"<tr><td class='l'>{B.e(r['category'])}</td><td class='num'>{r['beat3']} of {r['n3']}</td><td class='num'>{(str(r['beat5']) + ' of ' + str(r['n5'])) if r['n5'] else '–'}</td></tr>" for r in i["rows"])
                      + "</tbody></table></div>")
-        t = i.get("try") or {}
-        link = "/#ratings" if t.get("tool") == "ratings" else "/#tools-" + t.get("tool", "sip")
         body = f"""<section class="band" style="padding-top:28px"><div class="wrap" style="max-width:820px">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/insights/">Insights</a> › {B.e(i['title'])}</nav>
 <div class="big-fig" style="margin-top:18px">{B.e(i['figure'])}</div>
 <h1 style="font-size:clamp(28px,4vw,40px);margin-top:8px">{B.e(i['title'])}</h1>
-<p class="muted" style="margin-top:8px">Aeterna Wealth · worked out from AMFI NAVs and NSE total-return indices · data as of {B.dmy(ins.get('as_of') or as_of)}</p>
+<p class="muted" style="margin-top:8px">Aeterna Wealth · worked out from AMFI NAVs and NSE total-return indices · data as of {upd}</p>
 <p class="lede" style="margin-top:16px">{B.e(i['text'])}</p>{extra}
-<p style="margin-top:20px"><a class="btn primary" href="{link}">Check it yourself</a></p>
+<p style="margin-top:20px"><a class="btn primary" href="{tool(i)}">Check it yourself</a></p>
 <p class="note" style="margin-top:28px">Recomputed every weekday from public data. Describes what has happened, not what will; not a recommendation to buy or sell any fund.</p>
 </div></section>"""
-        art = {"@context": "https://schema.org", "@type": "Article", "headline": i["title"][:110], "description": i["text"][:300],
-               "datePublished": ins.get("as_of") or as_of, "dateModified": ins.get("as_of") or as_of, "inLanguage": "en-IN",
-               "author": {"@id": B.SITE + "/#org"}, "publisher": {"@id": B.SITE + "/#org"}, "image": B.SITE + "/og.png",
-               "mainEntityOfPage": B.SITE + path}
         B.write(path, B.page(f"{i['title']} | Aeterna Wealth insights", i["text"][:300], path, body,
-                             (art, B.crumbs([("Insights", "/insights/"), (i["title"], path)]))))
+                             (art(i["title"], i["text"], path), B.crumbs([("Insights", "/insights/"), (i["title"], path)]))))
         urls.append((path, "daily", "0.6"))
-        cards.append(f"<a class='card stack' href='{path}' style='gap:8px;text-decoration:none;color:inherit'><div class='big-fig'>{B.e(i['figure'])}</div><b style='font:500 18px/1.3 var(--f-display)'>{B.e(i['title'])}</b><span class='muted' style='font-size:14px'>{B.e(i['text'][:160])}…</span></a>")
-    body = f"""<section class="band" style="padding-top:28px"><div class="wrap"><h1 style="font-size:clamp(30px,4vw,44px)">Indian mutual funds in numbers</h1>
-<p class="lede" style="margin-top:12px">Facts worked out from our own data every weekday: what SIPs have earned, how many funds beat their index, and how often patient investors made money. Last updated {B.dmy(ins.get('as_of') or as_of)}.</p>
-<div class="grid g3" style="margin-top:26px">{''.join(cards)}</div></div></section>"""
-    B.write("/insights/", B.page("Mutual fund insights: SIP returns, funds vs index, costs | Aeterna Wealth",
-                                 "Data-backed facts on Indian mutual funds, recomputed every weekday: 10-year SIP returns by category, SIPs started at market highs, how many active funds beat their index, and how often funds held for 3 years made money.",
-                                 "/insights/", body, (B.crumbs([("Insights", "/insights/")]),)))
-    urls.append(("/insights/", "daily", "0.8"))
+        cards.append((path, i["figure"], i["title"], i["text"]))
+    for key, L in fam.items():
+        title, intro = FAMILY[key]
+        path = f"/insights/{key}/"
+        order = ["large-cap", "flexi-cap", "mid-cap", "small-cap", "elss"]
+        L = sorted(L, key=lambda x: order.index(x[0]) if x[0] in order else 99)
+        secs = "".join(f"""<div class="card" id="{B.e(c)}" style="margin-top:18px"><div class="big-fig">{B.e(i['figure'])}</div>
+<h2 style="font-size:24px;margin-top:6px">{B.e(i['title'])}</h2><p style="margin-top:8px">{B.e(i['text'])}</p>
+<p style="margin-top:10px"><a href="{tool(i)}">Check it yourself</a> · <a href="/mutual-funds/{B.e(c)}/">{B.e(c.replace('-', ' ').title().replace('Elss', 'ELSS'))} funds, rated</a></p></div>""" for c, i in L)
+        import research_pages as RPg
+        def _num(fig):
+            m = _re.findall(r"[\d.]+", fig.replace(",", ""))
+            if " of " in fig and len(m) >= 2 and float(m[1]):
+                return float(m[0]) / float(m[1]) * 100
+            return float(m[0]) if m else None
+        vals = [(B.e(c.replace("-", " ").title().replace("Elss", "ELSS")), _num(i["figure"]), "var(--teal)") for c, i in L]
+        vals = [v for v in vals if v[1] is not None]
+        unit = (lambda v: f"₹{v:.1f} lakh") if key == "sip-10y" else (lambda v: f"{v:.0f}%")
+        chart = (RPg.CSS + "<div style='margin-top:22px'>" + RPg._hbars(vals, unit, label=title) + "</div>") if len(vals) >= 2 else ""
+        body = f"""<section class="band" style="padding-top:28px"><div class="wrap" style="max-width:860px">
+<nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/insights/">Insights</a> › {B.e(title)}</nav>
+<h1 style="font-size:clamp(28px,4vw,40px);margin-top:14px">{B.e(title)}</h1>
+<p class="muted" style="margin-top:8px">Aeterna Wealth · worked out from AMFI NAVs and NSE total-return indices · data as of {upd}</p>
+<p class="lede" style="margin-top:16px">{B.e(intro)}</p>{chart}{secs}
+<p class="note" style="margin-top:28px">Recomputed every weekday from public data. Describes what has happened, not what will; not a recommendation to buy or sell any fund.</p>
+</div></section>"""
+        text = intro + " " + " ".join(i["text"] for _, i in L)
+        B.write(path, B.page(f"{title} | Aeterna Wealth insights", intro[:300], path, body,
+                             (art(title, text, path), B.crumbs([("Insights", "/insights/"), (title, path)]))))
+        urls.append((path, "daily", "0.6"))
+        for c, i in L:
+            B.MOVED[f"/insights/{i['id']}/"] = f"{path}#{c}"
+        cards.append((path, L[0][1]["figure"], title, intro))
+    B.INSIGHT_CARDS = cards   # the /insights/ hub is written by research_pages.hub, with the data stories and everything else we publish
+
 
 
 # ------------------------------------------------------------------ legal

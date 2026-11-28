@@ -227,8 +227,9 @@ PAGE_JS = r"""async () => {
 
 def pick_pages():
     pages = ["/", "/mutual-funds/", "/calculators/", "/ratings-update/", "/invest/", "/portfolio-check/", "/mutual-funds/dynamic-term/canara-robeco-dynamic-term-fund-direct/",
-             "/mutual-funds/mid-cap/", "/mutual-funds/small-cap/top-rated/", "/compare/hdfc-flexi-cap-fund-vs-parag-parikh-flexi-cap-fund/", "/mutual-funds/liquid/", "/mutual-funds/amc/", "/insights/", "/invest/mutual-funds/", "/invest/pms/", "/calculators/sip/",
-             "/#method", "/#about", "/#ratings", "/#compare", "/#contact"]
+             "/mutual-funds/mid-cap/", "/mutual-funds/small-cap/top-rated/", "/compare/hdfc-flexi-cap-fund-vs-parag-parikh-flexi-cap-fund/", "/mutual-funds/liquid/", "/mutual-funds/amc/", "/insights/", "/invest/mutual-funds/", "/pms/", "/calculators/sip/",
+             "/pms/ratings/equity/", "/pms/stallion-asset/stallion-asset-core-fund/", "/pms/how-pms-returns-are-measured/", "/aif/",
+             "/insights/category-returns-by-year/", "/insights/fund-choice-gap/", "/about/", "/method/", "/#ratings", "/#compare"]
     f = json.loads((ROOT / "site" / "data" / "funds.json").read_text()) if (ROOT / "site" / "data" / "funds.json").exists() else []
     urls = json.loads((DIST / "data" / "fund-urls.json").read_text()) if (DIST / "data" / "fund-urls.json").exists() else {}
     flagged = [x for x in f if x.get("flags") and str(x["code"]) in urls][:3]

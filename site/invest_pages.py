@@ -187,7 +187,7 @@ def _content(B, d):
                  ("Is PMS better than mutual funds?", "Not by default. PMS is more concentrated and usually costs more; it is worth it only if the strategy adds return or diversification after those costs."),
                  ("How is PMS taxed?", "Each sale inside the portfolio is taxed in your hands as short- or long-term capital gains, as if you had traded the shares yourself."),
                  ("Can I exit a PMS early?", "Yes. SEBI caps the exit load at 3% in the first year, 2% in the second and 1% in the third; after that, none.")],
-            links=[("/invest/aif/", "AIFs"), ("/invest/mutual-funds/", "Mutual funds"), ("/invest/portfolio-review/", "Portfolio review")],
+            links=[("/aif/", "AIFs"), ("/invest/mutual-funds/", "Mutual funds"), ("/invest/portfolio-review/", "Portfolio review")],
         ),
         "aif": dict(
             title="Alternative investment funds (AIFs)",
@@ -234,7 +234,7 @@ def _content(B, d):
                  ("Can I withdraw from an AIF early?", "Usually not. Category I and II funds are close-ended with a life of at least three years, often 6 to 10."),
                  ("How are AIFs taxed?", "Category I and II pass income through to investors, taxed in their hands; Category III pays tax at the fund level."),
                  ("Are AIFs regulated?", "Yes, by SEBI under the AIF Regulations, 2012. Regulation does not make them safe; it sets disclosure and conduct rules.")],
-            links=[("/invest/pms/", "PMS"), ("/invest/unlisted-shares/", "Unlisted shares"), ("/invest/portfolio-review/", "Portfolio review")],
+            links=[("/pms/", "PMS"), ("/invest/unlisted-shares/", "Unlisted shares"), ("/invest/portfolio-review/", "Portfolio review")],
         ),
         "bonds": dict(
             title="Bonds and fixed income",
@@ -325,7 +325,7 @@ def _content(B, d):
                  ("Can I sell pre-IPO shares on listing day?", "Usually not. Pre-IPO shareholders are typically locked in for six months from the IPO allotment date."),
                  ("How are unlisted shares taxed?", "Held more than 24 months: 12.5% on the gain. Held less: at your slab rate."),
                  ("How much should I put into unlisted shares?", "A small part of a large, diversified portfolio, only money that can stay invested for years.")],
-            links=[("/invest/aif/", "AIFs"), ("/invest/pms/", "PMS"), ("/invest/tax-planning/", "Tax planning")],
+            links=[("/aif/", "AIFs"), ("/pms/", "PMS"), ("/invest/tax-planning/", "Tax planning")],
         ),
         "tax-planning": dict(
             title="Tax-aware investment planning",
@@ -417,6 +417,10 @@ def REVIEW_BTNS(B):
             '<a class="btn" href="/invest/portfolio-review/sample/">See a sample report</a>')
 
 
+def _href(s):
+    return {"pms": "/pms/", "aif": "/aif/"}.get(s, f"/invest/{s}/")
+
+
 def invest_pages(B, funds, hold, ins, urls):
     d = _data(funds, hold, ins)
     C = _content(B, d)
@@ -441,8 +445,12 @@ def invest_pages(B, funds, hold, ins, urls):
             secs += f"<div class='inv-sec'><h2>{e(head)}</h2><div class='body'>{inner}</div></div>"
         steps = "".join(f"<li><b>{e(a)}</b><span>{e(b)}</span></li>" for a, b in c["steps"])
         faq = "".join(f"<details class='faq'><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in c["faq"])
+        if slug in ("pms", "aif"):   # one page per topic: this guide is folded into /pms/ and /aif/ (site/pms_pages.py)
+            B.INVEST_EXTRA = getattr(B, "INVEST_EXTRA", {})
+            B.INVEST_EXTRA[slug] = {"css": CSS, "facts": facts, "secs": secs, "steps": steps, "faq": c["faq"]}
+            continue
         more = "".join(f"<a class='btn' href='{u}'>{e(t)}</a>" for u, t in c["links"])
-        others = " · ".join(f"<a href='/invest/{s}/'>{e(NAMES[s])}</a>" for s in PAGES if s != slug)
+        others = " · ".join(f"<a href='{_href(s)}'>{e(NAMES[s])}</a>" for s in PAGES if s != slug)
         body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <nav aria-label="Breadcrumb" class="muted" style="font-size:13.5px"><a href="/invest/">Invest</a> › {e(NAMES[slug])}</nav>
 <div class="inv-hero" style="margin-top:16px"><div><div class="eyebrow">Invest · {e(NAMES[slug])}</div>
@@ -466,7 +474,7 @@ def invest_pages(B, funds, hold, ins, urls):
         B.write(path, B.page(c["seo"], c["desc"], path, body,
                              (svc_ld, faq_ld, B.crumbs([("Invest", "/invest/"), (NAMES[slug], path)]))))
         urls.append((path, "monthly", "0.8"))
-    cards = "".join(f"<a class='card stack sol' href='/invest/{s}/' style='gap:6px;text-decoration:none;color:inherit{';grid-column:1/-1' if s == 'portfolio-review' else ''}'><b style='font:500 19px var(--f-display)'>{e(NAMES[s])}</b>"
+    cards = "".join(f"<a class='card stack sol' href='{_href(s)}' style='gap:6px;text-decoration:none;color:inherit{';grid-column:1/-1' if s == 'portfolio-review' else ''}'><b style='font:500 19px var(--f-display)'>{e(NAMES[s])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(C[s]['lede'][:150].rsplit(' ', 1)[0])}…</span></a>" for s in PAGES)
     app = open(__file__.replace("invest_pages.py", "app.html"), encoding="utf-8").read()
     a = app.index('<h2 style="font-size:26px;margin-top:40px">How they compare</h2>')

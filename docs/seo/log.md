@@ -1,5 +1,28 @@
 # SEO log (newest first). One entry per daily run.
 
+## 2026-11-28 (owner's Search Console screenshot: impressions falling since 24 Nov)
+- Search Console, 28 days: 161 clicks, 33.1K impressions. Impressions about 2.4-2.8K a day 13-23 Nov, then roughly
+  1.8K (24 Nov), 0.7K (25 Nov), near 0 on the last point. Clicks held at about 12 a day to 25 Nov; the last point is 6.
+- The last 1-2 days in Search Console are always incomplete, so the final point understates. The fall from 24 Nov
+  is real, though: it began the day the Nov 2026 core update finished and the brand sitelinks disappeared.
+- Live as Googlebot today: home, hubs, a stock page, a category page and the tax calculator all 200, index,follow;
+  robots.txt and sitemap fine. Not a technical block. Our trust-box changes went live 27 Nov, after the fall began.
+- Reading: a new finance site re-tested after a core update, with about 1,130 pages already "Discovered - not
+  indexed". Brand clicks holding means the site is not removed. Need from the owner: Performance > Pages and Queries
+  with Compare (last 7 days vs previous 7), Indexing > Pages count, and Security & Manual actions, to see whether the
+  fall sits in one page type (stock, compare, fund pages) before acting.
+- Proposed: no URL, title, menu or page-type changes for 2 weeks while Google re-evaluates (owner to decide).
+
+## 2026-11-27 (brand sitelinks gone since about 24 Nov)
+- Owner: the "aeterna wealth" result had sitelinks until about 24 Nov; now a single result (title, description and logo correct).
+- Checked live as Googlebot: home and all section hubs 200, index,follow, self canonical; robots.txt allows all. Homepage
+  links vs the build of 23 Nov: none removed, 14 added (tax, compare, market-data pages). Nothing we changed before 24 Nov
+  explains it; the menu, noindex and section changes came on 25-27 Nov, after the drop.
+- Reading: the Nov 2026 core update finished on 24 Nov; sitelinks are algorithmic and often reshuffle for small brands
+  after one. Plan: request indexing for home and section hubs; keep section names and addresses stable; re-check 4 and 11 Dec.
+- www: owner added the Cloudflare 301 rule; tested www home, a deep page and a query string (all 301 to the same
+  address on aeternawealth.com). Stopgap www script removed from every page.
+
 ## 2026-11-27 (trust signals, AI search, skills)
 - Audit: 0 FAIL (seo_audit: I1 titles over 70 chars, 580, unchanged; audit.py CHECK lines are data items, unchanged).
 - Shipped: trust box on all data and tax pages; /editorial-policy/; publishingPrinciples in the organisation's

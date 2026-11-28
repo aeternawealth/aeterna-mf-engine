@@ -67,8 +67,13 @@ Profiles: https://www.linkedin.com/company/aeterna-wealth, https://www.instagram
 - [Fund houses](https://aeternawealth.com/mutual-funds/amc/)
 - [Insights](https://aeternawealth.com/insights/)
 
+## How to cite
+Cite as: Aeterna Wealth (aeternawealth.com), with the page address and the data date shown on the page. Ratings are track-record assessments by an AMFI-registered mutual fund distributor, not investment advice.
+
 ## More
 - [Full text for language models](https://aeternawealth.com/llms-full.txt)
 - [Method and backtest](https://aeternawealth.com/method/)
+- [Editorial and corrections policy](https://aeternawealth.com/editorial-policy/)
+- [About Aeterna Wealth](https://aeternawealth.com/about/)
 - [Disclosures](https://aeternawealth.com/disclosures/)
 - [Privacy](https://aeternawealth.com/privacy/)

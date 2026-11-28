@@ -1,0 +1,35 @@
+# PMS strategy data from APMI. While the PMS section is being built, results go to the `probe-results`
+# branch (pms/ folder) so main's tree is untouched; the monthly run will take over once the pages are live.
+name: PMS data (APMI)
+on:
+  workflow_dispatch:
+    inputs:
+      months:
+        description: "Months YYYY-MM separated by spaces, or --all"
+        required: false
+        default: "2026-10"
+  push:
+    branches: [staging]
+    paths: ["engine/pms_fetch.py", ".github/workflows/pms.yml"]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
+      - name: Fetch
+        env: { MONTHS: "${{ inputs.months || '2026-10' }}" }
+        run: python -m engine.pms_fetch /tmp/pms $MONTHS
+      - name: Push results to probe-results branch
+        if: always()
+        run: |
+          R=$(git config --get remote.origin.url); H=$(git config --get http.https://github.com/.extraheader || true)
+          mkdir /tmp/pr && cd /tmp/pr && git init -q && git checkout -q -b probe-results
+          git config user.name "aeterna-bot"; git config user.email "actions@users.noreply.github.com"
+          mkdir pms && cp -r /tmp/pms/* pms/ && git add pms && git commit -qm "PMS fetch $(date -u +%F_%H%M)"
+          git -c http.https://github.com/.extraheader="$H" push -f "$R" probe-results

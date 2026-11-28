@@ -202,7 +202,7 @@ def guides(d, f):
         faq=[("Is PMS better than mutual funds?", "Not by default. It is more concentrated and usually costs more; it is worth it only if it adds return or diversification after costs and tax."),
              ("What is the minimum for PMS?", "₹50 lakh, in cash or eligible shares."),
              ("Can I exit a PMS any time?", "Yes; SEBI caps exit loads at 3% in the first year, 2% in the second and 1% in the third.")],
-        links=[("/invest/pms/", "PMS with us"), ("/invest/mutual-funds/", "Mutual funds with us")],
+        links=[("/pms/", "PMS returns and how we help"), ("/invest/mutual-funds/", "Mutual funds with us")],
     ))
     G.append(dict(
         slug="index-funds-vs-active-funds",
@@ -681,7 +681,16 @@ def learn_pages(B, funds, hold, ins, urls, as_of):
         B.write(path, B.page(g["seo"] + " | Aeterna Wealth", g["desc"], path, body,
                              (art, faq_ld, B.crumbs([("Learn", "/learn/"), (g["title"], path)]))))
         urls.append((path, "weekly", "0.8"))
-    cards = "".join(f"<a class='card stack sol' href='/learn/{g['slug']}/' style='gap:6px;text-decoration:none;color:inherit'><b style='font:500 19px/1.3 var(--f-display)'>{e(g['title'])}</b>"
+    import illustrations as ILL
+    def _ic(sl):
+        for k, v in (("tax", "tax"), ("elss", "tax"), ("drawdown", "fall"), ("capture", "fall"), ("sip", "calendar"), ("swp", "calendar"), ("4-percent", "coins"),
+                     ("pms", "layers"), ("overlap", "dots"), ("how-many", "dots"), ("active", "lens"), ("index", "lens"), ("choose", "compass"), ("sell", "compass"),
+                     ("expense", "coins"), ("nav", "coins"), ("regular", "people"), ("cagr", "growth"), ("rolling", "growth"), ("tri", "bars"), ("volatility", "bars"),
+                     ("flexi", "scale"), ("exit", "calendar")):
+            if k in sl:
+                return v
+        return "growth"
+    cards = "".join(f"<a class='card stack sol' href='/learn/{g['slug']}/' style='gap:6px;text-decoration:none;color:inherit'>{ILL.icon(_ic(g['slug']), 44)}<b style='font:500 19px/1.3 var(--f-display)'>{e(g['title'])}</b>"
                     f"<span class='muted' style='font-size:14px'>{e(g['desc'][:140].rsplit(' ', 1)[0])}…</span></a>" for g in gs)
     body = f"""{CSS}<section class="band" style="padding-top:28px"><div class="wrap"><div class="inv-page">
 <div class="eyebrow">Learn</div><h1 style="font-size:clamp(32px,4.4vw,48px);margin-top:10px">Investor guides</h1>
